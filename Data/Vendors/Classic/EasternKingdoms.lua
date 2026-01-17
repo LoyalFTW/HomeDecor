@@ -1,0 +1,751 @@
+local ADDON, NS = ...
+
+NS.Data = NS.Data or {}
+NS.Data.Vendors = NS.Data.Vendors or {}
+
+NS.Data.Vendors["Classic"] = NS.Data.Vendors["Classic"] or {}
+
+NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
+
+  {
+    title="Riica",
+    source={
+      id=254603,
+      type="vendor",
+      faction="Alliance",
+      zone="Stormwind City",
+      worldmap="84:7780:6580",
+    },
+    items={
+      {decorID=3880, title="Kotmogu Pedestal", decorType="Ornamental", source={type="vendor", itemID=247740, currency="2000", currencytype="Honor"}, requirements={achievement={id=6981, title="Master of Temple of Kotmogu"}, rep="true"}},
+      {decorID=3881, title="Kotmogu Orb of Power", decorType="Uncategorized", source={type="vendor", itemID=247741, currency="1000", currencytype="Honor"}, requirements={achievement={id=6981, title="Master of Temple of Kotmogu"}, rep="true"}},
+      {decorID=3884, title="Alliance Dueling Flag", decorType="Ornamental", source={type="vendor", itemID=247744, currency="1000", currencytype="Honor"}, requirements={achievement={id=231, title="Wrecking Ball"}, rep="true"}},
+      {decorID=3886, title="Silverwing Sentinels Flag", decorType="Ornamental", source={type="vendor", itemID=247746, currency="800", currencytype="Honor"}, requirements={achievement={id=200, title="Persistent Defender"}, rep="true"}},
+      {decorID=3890, title="Deephaul Crystal", decorType="Ornamental", source={type="vendor", itemID=247750, currency="2500", currencytype="Honor"}, requirements={achievement={id=40612, title="Sprinting in the Ravine"}, rep="true"}},
+      {decorID=3893, title="Challenger's Dueling Flag", decorType="Ornamental", source={type="vendor", itemID=247756, currency="1000", currencytype="Honor"}, requirements={achievement={id=1157, title="Duel-icious"}, rep="true"}},
+      {decorID=3894, title="Alliance Battlefield Banner", decorType="Ornamental", source={type="vendor", itemID=247757, currency="600", currencytype="Honor"}, requirements={achievement={id=158, title="Me and the Cappin' Makin' It Happen"}, rep="true"}},
+      {decorID=3895, title="Fortified Alliance Banner", decorType="Ornamental", source={type="vendor", itemID=247758, currency="1200", currencytype="Honor"}, requirements={achievement={id=221, title="Alterac Grave Robber"}, rep="true"}},
+      {decorID=3898, title="Uncontested Battlefield Banner", decorType="Ornamental", source={type="vendor", itemID=247761, currency="400", currencytype="Honor"}, requirements={achievement={id=212, title="Storm Capper"}, rep="true"}},
+      {decorID=3899, title="Netherstorm Battlefield Flag", decorType="Ornamental", source={type="vendor", itemID=247762, currency="300", currencytype="Honor"}, requirements={achievement={id=213, title="Stormtrooper"}, rep="true"}},
+      {decorID=3900, title="Berserker's Empowerment", decorType="Ornamental", source={type="vendor", itemID=247763, currency="1200", currencytype="Resonance Crystals"}, requirements={achievement={id=61683, title="Entering Battle"}, rep="true"}},
+      {decorID=3902, title="Healer's Empowerment", decorType="Ornamental", source={type="vendor", itemID=247765, currency="1200", currencytype="Resonance Crystals"}, requirements={achievement={id=61687, title="Champion in Battle"}, rep="true"}},
+      {decorID=3903, title="Runner's Empowerment", decorType="Ornamental", source={type="vendor", itemID=247766, currency="1200", currencytype="Resonance Crystals"}, requirements={achievement={id=61688, title="Master in Battle"}, rep="true"}},
+      {decorID=3905, title="Guardian's Empowerment", decorType="Ornamental", source={type="vendor", itemID=247768, currency="5000", currencytype="Order Resources"}, requirements={achievement={id=61684, title="Progressing in Battle"}, rep="true"}},
+      {decorID=3906, title="Chaotic Empowerment", decorType="Ornamental", source={type="vendor", itemID=247769, currency="1200", currencytype="Resonance Crystals"}, requirements={achievement={id=61685, title="Proficient in Battle"}, rep="true"}},
+      {decorID=3907, title="Mysterious Empowerment", decorType="Ornamental", source={type="vendor", itemID=247770, currency="1000", currencytype="Honor"}, requirements={achievement={id=61686, title="Expert in Battle"}, rep="true"}},
+      {decorID=9244, title="Earthen Contender's Target", decorType="Misc Accents", source={type="vendor", itemID=253170, currency="750", currencytype="Honor"}, requirements={achievement={id=40210, title="Deephaul Ravine Victory"}, rep="true"}},
+      {decorID=11296, title="Smoke Lamppost", decorType="Large Lights", source={type="vendor", itemID=256896, currency="450", currencytype="Honor"}, requirements={achievement={id=5245, title="Battle for Gilneas Victory"}, rep="true"}},
+    }
+  },
+  {
+    title="Marie Allen",
+    source={
+      id=211065,
+      type="vendor",
+      faction="Alliance",
+      zone="Stormglen Village, Gilneas",
+      worldmap="217:6040:9240",
+    },
+    items={
+      {decorID=857, title="Gilnean Celebration Keg", decorType="Food and Drink", source={type="vendor", itemID=245520, currency="100", currencytype="Garrison Resources"}, requirements={achievement={id=19719, title="Reclamation of Gilneas"}, rep="true"}},
+      {decorID=859, title="Gilnean Bench", decorType="Seating", source={type="vendor", itemID=245516, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=860, title="Gilnean Wooden Bed", decorType="Beds", source={type="vendor", itemID=245515, currency="550", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=1795, title="Arched Rose Trellis", decorType="Misc Nature", source={type="vendor", itemID=245604}, requirements={rep="true"}},
+      {decorID=1826, title="Gilnean Stocks", decorType="Ornamental", source={type="vendor", itemID=245617}, requirements={rep="true"}},
+      {decorID=11944, title="Gilnean Washing Line", decorType="Ornamental", source={type="vendor", itemID=258301}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Trevor Grenner",
+    source={
+      id=255221,
+      type="vendor",
+      faction="Alliance",
+      zone="Founder's Point",
+      worldmap="2352:5347:4093",
+    },
+    items={
+      {decorID=520, title="Gift of Gilneas", decorType="Small Foliage", source={type="vendor", itemID=245369}, requirements={rep="true"}},
+      {decorID=521, title="Charming Laurel Tree", decorType="Large Foliage", source={type="vendor", itemID=245371}, requirements={rep="true"}},
+      {decorID=771, title="Small Poppy Cluster", decorType="Small Foliage", source={type="vendor", itemID=245329}, requirements={rep="true"}},
+      {decorID=772, title="Creeping Corner Ivy", decorType="Small Foliage", source={type="vendor", itemID=245327}, requirements={rep="true"}},
+      {decorID=773, title="Small Boxwood Bush", decorType="Bushes", source={type="vendor", itemID=245328, currency="250", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1864, title="Elwynn Cobblestone Round", decorType="Floor", source={type="vendor", itemID=245658}, requirements={rep="true"}},
+      {decorID=1865, title="Elwynn Cobblestone", decorType="Floor", source={type="vendor", itemID=245659}, requirements={rep="true"}},
+      {decorID=1866, title="Elwynn Cobblestone Pair", decorType="Floor", source={type="vendor", itemID=245660}, requirements={rep="true"}},
+      {decorID=1867, title="Elwynn Cobblestone Cluster", decorType="Floor", source={type="vendor", itemID=245661}, requirements={rep="true"}},
+      {decorID=4406, title="Round-Top Boulder", decorType="Miscellaneous - All", source={type="vendor", itemID=248337}, requirements={rep="true"}},
+      {decorID=4407, title="Flat Boulder", decorType="Miscellaneous - All", source={type="vendor", itemID=248338}, requirements={rep="true"}},
+      {decorID=4408, title="Hilltop Boulder", decorType="Miscellaneous - All", source={type="vendor", itemID=248339}, requirements={rep="true"}},
+      {decorID=4461, title="Elwynn Whitebrush", decorType="Bushes", source={type="vendor", itemID=248635}, requirements={rep="true"}},
+      {decorID=4465, title="Gloomrose", decorType="Large Foliage", source={type="vendor", itemID=248639}, requirements={rep="true"}},
+      {decorID=4466, title="Duskberry Bush", decorType="Bushes", source={type="vendor", itemID=248640}, requirements={rep="true"}},
+      {decorID=4467, title="Duskwood Shadebrush", decorType="Bushes", source={type="vendor", itemID=248641}, requirements={rep="true"}},
+      {decorID=4468, title="Creeping Lattice Ivy", decorType="Misc Nature", source={type="vendor", itemID=248642}, requirements={rep="true"}},
+      {decorID=4469, title="Duskwood Sycamore Shrub", decorType="Bushes", source={type="vendor", itemID=248643}, requirements={rep="true"}},
+      {decorID=4470, title="Spiritbloom Flower", decorType="Small Foliage", source={type="vendor", itemID=248644}, requirements={rep="true"}},
+      {decorID=4471, title="Pink Gilnean Rose", decorType="Large Foliage", source={type="vendor", itemID=248645}, requirements={rep="true"}},
+      {decorID=4472, title="Silvermoon Sunrise Bush", decorType="Bushes", source={type="vendor", itemID=248646}, requirements={rep="true"}},
+      {decorID=4473, title="Founder's Point Blooming Grass Patch", decorType="Ground Cover", source={type="vendor", itemID=248647}, requirements={rep="true"}},
+      {decorID=4474, title="Autumn Leaf Pile", decorType="Ground Cover", source={type="vendor", itemID=248648}, requirements={rep="true"}},
+      {decorID=4475, title="Young Chestnut Tree", decorType="Large Foliage", source={type="vendor", itemID=248649}, requirements={rep="true"}},
+      {decorID=4822, title="Elwynn Grass Patch", decorType="Ground Cover", source={type="vendor", itemID=248802}, requirements={rep="true"}},
+      {decorID=4823, title="Elwynn Grass Spread", decorType="Ground Cover", source={type="vendor", itemID=248803}, requirements={rep="true"}},
+      {decorID=4845, title="Elwynn Small Grass Patch", decorType="Ground Cover", source={type="vendor", itemID=248811}, requirements={rep="true"}},
+      {decorID=10855, title="Elwynn Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=255644}, requirements={rep="true"}},
+      {decorID=10856, title="Founder's Point Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=255646}, requirements={rep="true"}},
+      {decorID=12189, title="Elwynn Autumn Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=258658}, requirements={rep="true"}},
+      {decorID=12190, title="Founder's Point Autumn Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=258659}, requirements={rep="true"}},
+      --       {decorID=17868, title="Outer Banks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266239}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=17869, title="Founder's Point Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266240}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=17870, title="Brumewood Hollow Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266241}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=17871, title="Gilded Oaks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266242}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=17872, title="Stoneveil Ridge Large Garden Cluster", decorType="Ground Cover", source={type="vendor", itemID=266243}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+    }
+  },
+  {
+    title="Balen Starfinder",
+    source={
+      id=255216,
+      type="vendor",
+      faction="Alliance",
+      zone="Founder's Point",
+      worldmap="2352:5220:3800",
+    },
+    items={
+      {decorID=80, title="Ornate Stonework Fireplace", decorType="Large Lights", source={type="vendor", itemID=235994, currency="1000", currencytype="Order Resources"}, requirements={quest={id=93008, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=984, title="Elegant Padded Chair", decorType="Seating", source={type="vendor", itemID=241617}, requirements={quest={id=93143, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=985, title="Elegant Padded Footstool", decorType="Seating", source={type="vendor", itemID=241618}, requirements={quest={id=93000, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=987, title="Elegant Wooden Dresser", decorType="Storage", source={type="vendor", itemID=241620, currency="750", currencytype="Order Resources"}, requirements={quest={id=93150, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=988, title="Small Elegant End Table", decorType="Tables and Desks", source={type="vendor", itemID=241621, currency="200", currencytype="Order Resources"}, requirements={quest={id=93152, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=989, title="Ornate Weapon Rack", decorType="Storage", source={type="vendor", itemID=241622, currency="300", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=994, title="Grand Elven Bookcase", decorType="Storage", source={type="vendor", itemID=253441, currency="500", currencytype="Order Resources"}, requirements={quest={id=93005, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1153, title="Small Elegant Padded Chair", decorType="Seating", source={type="vendor", itemID=253479}, requirements={quest={id=93006, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1162, title="Elegant Elven Desk", decorType="Uncategorized", source={type="vendor", itemID=253490, currency="300", currencytype="Order Resources"}, requirements={quest={id=93002, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1163, title="Carved Elven Bookcase", decorType="Storage", source={type="vendor", itemID=253493, currency="500", currencytype="Order Resources"}, requirements={quest={id=93147, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1245, title="Circular Elven Floor Rug", decorType="Floor", source={type="vendor", itemID=243242, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=1246, title="Rectangular Elven Floor Rug", decorType="Floor", source={type="vendor", itemID=243243, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=1329, title="Elegant Padded Divan", decorType="Seating", source={type="vendor", itemID=243495}, requirements={quest={id=93149, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1487, title="Elegant Wall Drape", decorType="Ornamental", source={type="vendor", itemID=244781, currency="2000", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=1770, title="Bel'ameth Interior Wall", decorType="Walls and Columns", source={type="vendor", itemID=245575, currency="500", currencytype="Dragon Isles Supplies"}, requirements={quest={id=92994, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1771, title="Bel'ameth Round Interior Pillar", decorType="Walls and Columns", source={type="vendor", itemID=245576, currency="500", currencytype="Dragon Isles Supplies"}, requirements={quest={id=92993, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1772, title="Bel'ameth Interior Doorway", decorType="Walls and Columns", source={type="vendor", itemID=245578, currency="500", currencytype="Dragon Isles Supplies"}, requirements={quest={id=92992, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1773, title="Bel'ameth Interior Narrow Wall", decorType="Walls and Columns", source={type="vendor", itemID=245579, currency="500", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=1774, title="Silvermoon Round Interior Pillar", decorType="Walls and Columns", source={type="vendor", itemID=245581}, requirements={quest={id=93135, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1775, title="Silvermoon Interior Narrow Wall", decorType="Walls and Columns", source={type="vendor", itemID=245582}, requirements={rep="true"}},
+      {decorID=1776, title="Silvermoon Interior Wall", decorType="Walls and Columns", source={type="vendor", itemID=245583}, requirements={quest={id=93136, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1844, title="Silvermoon Interior Doorway", decorType="Walls and Columns", source={type="vendor", itemID=245649}, requirements={quest={id=93137, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2104, title="Silvermoon Beam Platform", decorType="Walls and Columns", source={type="vendor", itemID=246249}, requirements={quest={id=93140, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2105, title="Silvermoon Large Platform", decorType="Walls and Columns", source={type="vendor", itemID=246250}, requirements={quest={id=93138, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2106, title="Silvermoon Small Platform", decorType="Walls and Columns", source={type="vendor", itemID=246251}, requirements={rep="true"}},
+      {decorID=2107, title="Silvermoon Angled Platform", decorType="Walls and Columns", source={type="vendor", itemID=246252}, requirements={rep="true"}},
+      {decorID=2108, title="Silvermoon Round Platform", decorType="Walls and Columns", source={type="vendor", itemID=246253}, requirements={quest={id=93139, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2109, title="Bel'ameth Beam Platform", decorType="Walls and Columns", source={type="vendor", itemID=246254}, requirements={quest={id=92991, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2110, title="Bel'ameth Large Platform", decorType="Walls and Columns", source={type="vendor", itemID=246255}, requirements={quest={id=93009, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2111, title="Bel'ameth Small Platform", decorType="Walls and Columns", source={type="vendor", itemID=246256, currency="350", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=2112, title="Bel'ameth Angled Platform", decorType="Walls and Columns", source={type="vendor", itemID=246257, currency="350", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=2113, title="Bel'ameth Round Platform", decorType="Walls and Columns", source={type="vendor", itemID=246258}, requirements={quest={id=92990, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2254, title="Elegant Tied Curtain", decorType="Ornamental", source={type="vendor", itemID=246431, currency="2000", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=2458, title="Grand Elven Wall Curtain", decorType="Ornamental", source={type="vendor", itemID=246691, currency="2000", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=2474, title="Elegant Pillow Roll", decorType="Ornamental", source={type="vendor", itemID=246711, currency="750", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=2590, title="Elegant Seat Cushion", decorType="Ornamental", source={type="vendor", itemID=246961, currency="750", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=3826, title="Elegant Carved Door", decorType="Doors", source={type="vendor", itemID=247501}, requirements={rep="true"}},
+      {decorID=4562, title="Lovely Elven Shelf", decorType="Storage", source={type="vendor", itemID=248760, currency="75", currencytype="Order Resources"}, requirements={quest={id=93134, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=5563, title="Elven Standing Mirror", decorType="Ornamental", source={type="vendor", itemID=249558, currency="2000", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=8917, title="Elegant Elven Chandelier", decorType="Ceiling Lights", source={type="vendor", itemID=251981}, requirements={quest={id=93141, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=9254, title="Elegant Elven Canopy Bed", decorType="Beds", source={type="vendor", itemID=253180, currency="1200", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=9255, title="Gemmed Elven Chest", decorType="Storage", source={type="vendor", itemID=253181, currency="500", currencytype="Order Resources"}, requirements={quest={id=93007, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=10860, title="Elegant Table Lamp", decorType="Small Lights", source={type="vendor", itemID=255650, currency="10", currencytype="Dragon Isles Supplies"}, requirements={quest={id=92995, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=11719, title="Elegant Padded Chaise", decorType="Seating", source={type="vendor", itemID=257690}, requirements={quest={id=93003, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=15454, title="Homestone Doormat", decorType="Floor", source={type="vendor", itemID=264169}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Faarden the Builder",
+    source={
+      id=255213,
+      type="vendor",
+      faction="Alliance",
+      zone="Founder's Point",
+      worldmap="2352:5200:3840",
+    },
+    items={
+      {decorID=479, title="Empty Stormwind Market Stand", decorType="Large Structures", source={type="vendor", itemID=245365}, requirements={rep="true"}},
+      {decorID=480, title="Stormwind Bean Seller's Stand", decorType="Large Structures", source={type="vendor", itemID=245366}, requirements={rep="true"}},
+      {decorID=481, title="Stormwind Spice Merchant's Stand", decorType="Miscellaneous - All", source={type="vendor", itemID=245368}, requirements={rep="true"}},
+      {decorID=482, title="Gryphon Roost", decorType="Miscellaneous - All", source={type="vendor", itemID=245357}, requirements={rep="true"}},
+      {decorID=485, title="Open-Air Sturdy Tent", decorType="Large Structures", source={type="vendor", itemID=245377}, requirements={rep="true"}},
+      {decorID=486, title="Sturdy Sheltering Tent", decorType="Large Structures", source={type="vendor", itemID=245378}, requirements={rep="true"}},
+      {decorID=487, title="Small Stonework Fountain", decorType="Large Structures", source={type="vendor", itemID=245360, currency="500", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=488, title="Large Stonework Fountain", decorType="Large Structures", source={type="vendor", itemID=245359, currency="2000", currencytype="Apexis Crystal"}, requirements={rep="true"}},
+      {decorID=489, title="Sturdy Roofed Wagon", decorType="Miscellaneous - All", source={type="vendor", itemID=245379}, requirements={rep="true"}},
+      {decorID=490, title="Sturdy Open Wagon", decorType="Miscellaneous - All", source={type="vendor", itemID=245380}, requirements={rep="true"}},
+      {decorID=491, title="Sturdy Covered Wagon", decorType="Miscellaneous - All", source={type="vendor", itemID=245382}, requirements={rep="true"}},
+      {decorID=492, title="Well-Built Well", decorType="Large Structures", source={type="vendor", itemID=245385, currency="1000", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=493, title="Sturdy Wooden Wheelbarrow", decorType="Miscellaneous - All", source={type="vendor", itemID=245386}, requirements={rep="true"}},
+      {decorID=494, title="Sturdy Wooden Chair", decorType="Seating", source={type="vendor", itemID=235523, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=92965, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=496, title="Covered Wooden Table", decorType="Tables and Desks", source={type="vendor", itemID=245372}, requirements={quest={id=92983, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=497, title="Sturdy Wooden Table", decorType="Tables and Desks", source={type="vendor", itemID=245374}, requirements={rep="true"}},
+      {decorID=770, title="Stormwind Produce Seller's Stand", decorType="Miscellaneous - All", source={type="vendor", itemID=245367}, requirements={rep="true"}},
+      {decorID=1122, title="Sturdy Wooden Bench", decorType="Seating", source={type="vendor", itemID=242951}, requirements={quest={id=92969, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1280, title="Reinforced Wooden Chest", decorType="Storage", source={type="vendor", itemID=243334}, requirements={quest={id=92978, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1457, title="Restful Wooden Bench", decorType="Seating", source={type="vendor", itemID=244667, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1742, title="Worker's Wooden Desk", decorType="Tables and Desks", source={type="vendor", itemID=245551, currency="300", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=1862, title="Wooden Gazebo", decorType="Large Structures", source={type="vendor", itemID=245656}, requirements={rep="true"}},
+      {decorID=1863, title="Stonework Fountain", decorType="Large Structures", source={type="vendor", itemID=245657, currency="500", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1878, title="Carved Wooden Bar Table", decorType="Tables and Desks", source={type="vendor", itemID=245662}, requirements={quest={id=92999, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1992, title="Large Covered Wooden Table", decorType="Tables and Desks", source={type="vendor", itemID=246102}, requirements={quest={id=92998, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1994, title="Carved Wooden Crate", decorType="Storage", source={type="vendor", itemID=246104}, requirements={quest={id=92971, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1995, title="Sturdy Weapon Rack", decorType="Storage", source={type="vendor", itemID=246105}, requirements={rep="true"}},
+      {decorID=1996, title="Wooden Chamberstick", decorType="Small Lights", source={type="vendor", itemID=246106, currency="350", currencytype="Order Resources"}, requirements={quest={id=92985, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1997, title="Large Sturdy Wooden Table", decorType="Tables and Desks", source={type="vendor", itemID=246107}, requirements={quest={id=92997, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1999, title="Open Carved Wooden Crate", decorType="Storage", source={type="vendor", itemID=246109}, requirements={rep="true"}},
+      {decorID=2089, title="Weather-Treated Wooden Table", decorType="Tables and Desks", source={type="vendor", itemID=246219}, requirements={rep="true"}},
+      {decorID=2385, title="Sturdy Wooden Trellis", decorType="Misc Structural", source={type="vendor", itemID=246588}, requirements={rep="true"}},
+      {decorID=2496, title="Tall Sturdy Wooden Chair", decorType="Seating", source={type="vendor", itemID=246742}, requirements={quest={id=92970, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=9472, title="Coal-Fired Stovetop", decorType="Uncategorized", source={type="vendor", itemID=253590}, requirements={rep="true"}},
+      {decorID=14814, title="Sturdy Wine Press", decorType="Storage", source={type="vendor", itemID=263025, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Klasa",
+    source={
+      id=256750,
+      type="vendor",
+      faction="Alliance",
+      zone="Founder's Point",
+      worldmap="2352:5830:6168",
+    },
+    items={
+      {decorID=721, title="Ceiling Cobweb", decorType="Misc Accents", source={type="vendor", itemID=245400, currency="300", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=722, title="Tented Cobweb", decorType="Misc Accents", source={type="vendor", itemID=245401, currency="300", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=723, title="Small Dangling Cobweb", decorType="Misc Accents", source={type="vendor", itemID=245402, currency="200", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=724, title="Large Dangling Cobweb", decorType="Misc Accents", source={type="vendor", itemID=245403, currency="300", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=725, title="Pillar Cobweb", decorType="Misc Accents", source={type="vendor", itemID=245404, currency="200", currencytype="War Resources"}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Harlowe Marl",
+    source={
+      id=257897,
+      type="vendor",
+      faction="Neutral",
+      zone="Founder's Point",
+      worldmap="2352:5304:3804",
+    },
+    items={
+      --       {decorID=16227, title="Decorated Underground Table", decorType="Tables and Desks", source={type="vendor", itemID=264915}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16228, title="Loamm Bartering Stall", decorType="Large Structures", source={type="vendor", itemID=264916}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16229, title="Ceramic Loamm Bowl", decorType="Food and Drink", source={type="vendor", itemID=264917}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16230, title="Zaralek Candles", decorType="Large Lights", source={type="vendor", itemID=264918}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16231, title="Loamm Archway", decorType="Doors", source={type="vendor", itemID=264919, currency="5000", currencytype="Honor"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16232, title="Gooey Niffen Jar", decorType="Storage", source={type="vendor", itemID=264920, currency="1000", currencytype="Voidlight Marl"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16233, title="Zaralek Snail Cart", decorType="Ornamental", source={type="vendor", itemID=264921}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16234, title="Strong Sniffin' Incense", decorType="Miscellaneous - All", source={type="vendor", itemID=264922}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16235, title="Underdecorated Underground Table", decorType="Tables and Desks", source={type="vendor", itemID=264923}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16236, title="Loamm Wheelpot", decorType="Ornamental", source={type="vendor", itemID=264924, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16237, title="Kilnmaster's Bucket", decorType="Miscellaneous - All", source={type="vendor", itemID=264925}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16315, title="Hearty Niffen Grub", decorType="Food and Drink", source={type="vendor", itemID=265032, currency="500", currencytype="Order Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      --       {decorID=16962, title="Loammy Soil", decorType="Misc Nature", source={type="vendor", itemID=265541, currency="1000", currencytype="Honor"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+    }
+  },
+    {
+    title="Quackenbush",
+    source={
+      id=68363,
+      type="vendor",
+      faction="Alliance",
+      zone="Bizmo's Brawlpub",
+      worldmap="499:5100:3000",
+    },
+    items={
+      {decorID=10913, title="Champion Brawler's Gloves", decorType="Uncategorized", source={type="vendor", itemID=255840, currency="1000", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=12263, title="Brawler's Guild Punching Bag", decorType="Misc Accents", source={type="vendor", itemID=259071, currency="750", currencytype="Honor"}, requirements={rep="true"}},
+      {decorID=14815, title="Brawler's Barricade", decorType="Miscellaneous - All", source={type="vendor", itemID=263026, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Xiao Dan",
+    source={
+      id=255203,
+      type="vendor",
+      faction="Alliance",
+      zone="Founder's Point",
+      worldmap="2352:5195:3831",
+    },
+    items={
+      {decorID=373, title="Sturdy Wooden Bookcase", decorType="Storage", source={type="vendor", itemID=245375}, requirements={quest={id=92437, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=374, title="Sturdy Wooden Shelf", decorType="Storage", source={type="vendor", itemID=245384}, requirements={quest={id=92961, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=377, title="Three-Candle Wrought Iron Chandelier", decorType="Ceiling Lights", source={type="vendor", itemID=235675, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=92988, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=378, title="Sturdy Wooden Interior Door", decorType="Doors", source={type="vendor", itemID=245355}, requirements={quest={id=92962, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=379, title="Small Fruit Platter", decorType="Food and Drink", source={type="vendor", itemID=245358, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=383, title="Wrought Iron Floor Lamp", decorType="Large Lights", source={type="vendor", itemID=235677, currency="800", currencytype="War Resources"}, requirements={quest={id=92987, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=388, title="\"Sunrise Canyon\" Painting", decorType="Wall Hangings", source={type="vendor", itemID=245383, currency="1000", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=389, title="Goldshire Window", decorType="Windows", source={type="vendor", itemID=245356, currency="350", currencytype="War Resources"}, requirements={quest={id=92963, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=390, title="Tall Sturdy Wooden Bookcase", decorType="Storage", source={type="vendor", itemID=245376}, requirements={quest={id=92964, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=478, title="Wooden Coffin Lid", decorType="Storage", source={type="vendor", itemID=245354}, requirements={rep="true"}},
+      {decorID=483, title="Sturdy Wooden Coffin", decorType="Storage", source={type="vendor", itemID=245352}, requirements={rep="true"}},
+      {decorID=484, title="Open Wooden Coffin", decorType="Storage", source={type="vendor", itemID=245353}, requirements={rep="true"}},
+      {decorID=495, title="Sturdy Wooden Bed", decorType="Beds", source={type="vendor", itemID=245336}, requirements={quest={id=92984, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=498, title="Circular Woolen Rug", decorType="Floor", source={type="vendor", itemID=235633, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=527, title="Stormwind Interior Pillar", decorType="Walls and Columns", source={type="vendor", itemID=236675}, requirements={rep="true"}},
+      {decorID=528, title="Stormwind Interior Narrow Wall", decorType="Walls and Columns", source={type="vendor", itemID=236676}, requirements={quest={id=92966, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=529, title="Stormwind Interior Wall", decorType="Walls and Columns", source={type="vendor", itemID=236677}, requirements={quest={id=92968, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=530, title="Stormwind Interior Doorway", decorType="Walls and Columns", source={type="vendor", itemID=236678}, requirements={quest={id=92967, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=533, title="Sturdy Wooden Interior Pillar", decorType="Walls and Columns", source={type="vendor", itemID=245392}, requirements={rep="true"}},
+      {decorID=534, title="Plain Interior Wall", decorType="Walls and Columns", source={type="vendor", itemID=245393}, requirements={rep="true"}},
+      {decorID=535, title="Plain Interior Doorway", decorType="Walls and Columns", source={type="vendor", itemID=245394}, requirements={rep="true"}},
+      {decorID=536, title="Plain Interior Narrow Wall", decorType="Walls and Columns", source={type="vendor", itemID=245395}, requirements={rep="true"}},
+      {decorID=726, title="Wrought Iron Chandelier", decorType="Ceiling Lights", source={type="vendor", itemID=239075}, requirements={quest={id=92986, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1044, title="Stormwind Hall Rug", decorType="Floor", source={type="vendor", itemID=242255, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
+      -- Says Test Item?{decorID=1083, title="Secretive Bookcase Wall", decorType="Storage", source={type="vendor", itemID=245370, currency="550", currencytype="War Resources"}, requirements={quest={id=93119, title="[DNT] TEST HOUSE DECOR REWARD"}, rep="true"}},
+      {decorID=1123, title="Wicker Basket", decorType="Storage", source={type="vendor", itemID=245334}, requirements={quest={id=92979, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1244, title="Empty Wicker Basket", decorType="Storage", source={type="vendor", itemID=245335}, requirements={rep="true"}},
+      {decorID=1434, title="Sturdy Wall Rack", decorType="Storage", source={type="vendor", itemID=244530}, requirements={rep="true"}},
+      {decorID=1435, title="Sturdy Fireplace", decorType="Large Lights", source={type="vendor", itemID=244531}, requirements={quest={id=92982, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1454, title="Tied-Open Folk Curtains", decorType="Wall Hangings", source={type="vendor", itemID=244664}, requirements={rep="true"}},
+      {decorID=1455, title="Closed Folk Curtains", decorType="Wall Hangings", source={type="vendor", itemID=244665, currency="1000", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1456, title="Durable Folk Valance", decorType="Wall Hangings", source={type="vendor", itemID=244666, currency="300", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=1701, title="Charming Seat Cushion", decorType="Seating", source={type="vendor", itemID=245267}, requirements={rep="true"}},
+      {decorID=1702, title="Checkered Charming Seat Cushion", decorType="Seating", source={type="vendor", itemID=245268}, requirements={rep="true"}},
+      {decorID=1738, title="Wide Charming Couch", decorType="Seating", source={type="vendor", itemID=245547}, requirements={quest={id=92981, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1739, title="Iron-Reinforced Cupboard", decorType="Storage", source={type="vendor", itemID=245548}, requirements={quest={id=92977, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1745, title="Iron-Reinforced Standing Mirror", decorType="Misc Furnishings", source={type="vendor", itemID=245556}, requirements={quest={id=92980, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1991, title="Small Wooden Stool", decorType="Seating", source={type="vendor", itemID=246101, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=92973, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1993, title="Small Wooden Nightstand", decorType="Storage", source={type="vendor", itemID=246103}, requirements={quest={id=92972, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1996, title="Wooden Chamberstick", decorType="Small Lights", source={type="vendor", itemID=246106, currency="350", currencytype="Order Resources"}, requirements={quest={id=92985, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2099, title="Stormwind Beam Platform", decorType="Walls and Columns", source={type="vendor", itemID=246243}, requirements={quest={id=92976, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2100, title="Stormwind Round Platform", decorType="Walls and Columns", source={type="vendor", itemID=246245}, requirements={quest={id=92975, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2101, title="Stormwind Large Platform", decorType="Walls and Columns", source={type="vendor", itemID=246246}, requirements={quest={id=92974, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2102, title="Stormwind Small Platform", decorType="Walls and Columns", source={type="vendor", itemID=246247}, requirements={rep="true"}},
+      {decorID=2103, title="Stormwind Angled Platform", decorType="Walls and Columns", source={type="vendor", itemID=246248}, requirements={rep="true"}},
+      {decorID=2342, title="Charming Couch", decorType="Seating", source={type="vendor", itemID=246502}, requirements={quest={id=92996, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=9064, title="Plush Cushioned Chair", decorType="Seating", source={type="vendor", itemID=252417}, requirements={rep="true"}},
+      {decorID=9144, title="Founder's Point Front Door", decorType="Doors", source={type="vendor", itemID=252659}, requirements={rep="true"}},
+      {decorID=9471, title="Short Wooden Cabinet", decorType="Tables and Desks", source={type="vendor", itemID=253589}, requirements={quest={id=92989, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=9473, title="Sturdy Wooden Washbasin", decorType="Tables and Desks", source={type="vendor", itemID=253592}, requirements={rep="true"}},
+      {decorID=9474, title="Sturdy Wooden Bathtub", decorType="Misc Furnishings", source={type="vendor", itemID=253593}, requirements={rep="true"}},
+      {decorID=12199, title="Empty Wooden Bathtub", decorType="Misc Furnishings", source={type="vendor", itemID=258670}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Argan Hammerfist",
+    source={
+      id=255218,
+      type="vendor",
+      faction="Alliance",
+      zone="Founder's Point",
+      worldmap="2352:5220:3779",
+    },
+    items={
+      {decorID=986, title="Elegant Covered Bench", decorType="Seating", source={type="vendor", itemID=253437, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=991, title="Elegant Carved Bench", decorType="Seating", source={type="vendor", itemID=253439, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
+      --       {decorID=992, title="Open Elven Wood Crate", decorType="Storage", source={type="vendor", itemID=241625}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=1155, title="Standing Ornate Weapon Rack", decorType="Storage", source={type="vendor", itemID=243088, currency="500", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=1165, title="Grand Elven Bench", decorType="Seating", source={type="vendor", itemID=253495, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=1350, title="Rectangular Elegant Table", decorType="Tables and Desks", source={type="vendor", itemID=244118, currency="350", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=1356, title="Elegant Almond Table", decorType="Tables and Desks", source={type="vendor", itemID=244169, currency="350", currencytype="Dragon Isles Supplies"}, requirements={quest={id=93148, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1486, title="Circular Elven Table", decorType="Tables and Desks", source={type="vendor", itemID=244780, currency="175", currencytype="Order Resources"}, requirements={quest={id=93004, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1488, title="Elven Floral Window", decorType="Windows", source={type="vendor", itemID=244782, currency="175", currencytype="Order Resources"}, requirements={quest={id=93001, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=3827, title="Elven Woodvine Trellis", decorType="Misc Nature", source={type="vendor", itemID=247502}, requirements={rep="true"}},
+      {decorID=4484, title="Elven Wood Crate", decorType="Storage", source={type="vendor", itemID=248658}, requirements={rep="true"}},
+      {decorID=11720, title="Open Elegant Elven Barrel", decorType="Storage", source={type="vendor", itemID=257691}, requirements={quest={id=93142, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=11721, title="Elegant Curved Table", decorType="Tables and Desks", source={type="vendor", itemID=257692, currency="400", currencytype="Order Resources"}, requirements={quest={id=93151, title="Decor Treasure Hunt"}, rep="true"}},
+    }
+  },
+  {
+    title="Captain Lancy Revshon",
+    source={
+      id=49877,
+      type="vendor",
+      faction="Alliance",
+      zone="Stormwind City, Trade District, Stormwind",
+      worldmap="84:6779:7305",
+    },
+    items={
+      {decorID=4402, title="Stormwind Large Wooden Table", decorType="Tables and Desks", source={type="vendor", itemID=248333, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=4405, title="Stormwind Wooden Table", decorType="Tables and Desks", source={type="vendor", itemID=248336, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=59583, title="Welcome to Stormwind"}, rep="true"}},
+      {decorID=4443, title="Stormwind Keg Stand", decorType="Food and Drink", source={type="vendor", itemID=248617, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=4444, title="Westfall Woven Basket", decorType="Ornamental", source={type="vendor", itemID=248618, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=26270, title="You Have Our Thanks"}, rep="true"}},
+      {decorID=4445, title="Stormwind Gazebo", decorType="Large Structures", source={type="vendor", itemID=248619, currency="1000", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=4446, title="Stormwind Trellis and Basin", decorType="Large Foliage", source={type="vendor", itemID=248620, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=4447, title="Stormwind Arched Trellis", decorType="Large Foliage", source={type="vendor", itemID=248621, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=26390, title="Ending the Invasion!"}, rep="true"}},
+      {decorID=4487, title="Jewelcrafter's Tent", decorType="Large Structures", source={type="vendor", itemID=248662, currency="1000", currencytype="Order Resources"}, requirements={quest={id=543, title="The Perenolde Tiara"}, rep="true"}},
+      {decorID=4490, title="Stormwind Peddler's Cart", decorType="Miscellaneous - All", source={type="vendor", itemID=248665, currency="1500", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=4811, title="Elwynn Fence", decorType="Misc Structural", source={type="vendor", itemID=248794}, requirements={rep="true"}},
+      {decorID=4812, title="Elwynn Fencepost", decorType="Misc Structural", source={type="vendor", itemID=248795}, requirements={rep="true"}},
+      {decorID=4814, title="City Wanderer's Candleholder", decorType="Small Lights", source={type="vendor", itemID=248797, currency="350", currencytype="Order Resources"}, requirements={quest={id=26229, title="\"I TAKE Candle!\""}, rep="true"}},
+      {decorID=4815, title="Northshire Barrel", decorType="Storage", source={type="vendor", itemID=248798, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=54, title="Report to Goldshire"}, rep="true"}},
+      {decorID=4819, title="Stormwind Weapon Rack", decorType="Storage", source={type="vendor", itemID=248801, currency="1500", currencytype="Order Resources"}, requirements={quest={id=26297, title="The Dawning of a New Day"}, rep="true"}},
+      {decorID=5115, title="Hooded Iron Lantern", decorType="Small Lights", source={type="vendor", itemID=248938, currency="350", currencytype="Order Resources"}, requirements={quest={id=60, title="Kobold Candles"}, rep="true"}},
+      {decorID=5116, title="Stormwind Lamppost", decorType="Large Lights", source={type="vendor", itemID=248939, currency="300", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=9242, title="Earthen Storage Crate", decorType="Storage", source={type="vendor", itemID=253168, currency="600", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=11274, title="Stormwind Forge", decorType="Uncategorized", source={type="vendor", itemID=256673}, requirements={quest={id=7604, title="A Binding Contract"}, rep="true"}},
+    }
+  },
+  {
+    title="\"High Tides\" Ren",
+    source={
+      id=255222,
+      type="vendor",
+      faction="Alliance",
+      zone="Founder's Point",
+      worldmap="2352:6240:8020",
+    },
+    items={
+      {decorID=81, title="Tusked Fireplace", decorType="Large Lights", source={type="vendor", itemID=245398}, requirements={quest={id=93110, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=522, title="Orgrimmar Interior Narrow Wall", decorType="Walls and Columns", source={type="vendor", itemID=236653}, requirements={rep="true"}},
+      {decorID=523, title="Orgrimmar Interior Doorway", decorType="Walls and Columns", source={type="vendor", itemID=236654}, requirements={quest={id=93073, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=524, title="Orgrimmar Interior Wall", decorType="Walls and Columns", source={type="vendor", itemID=236655}, requirements={quest={id=93074, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=525, title="Orgrimmar Round Interior Pillar", decorType="Walls and Columns", source={type="vendor", itemID=236666}, requirements={quest={id=93075, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=526, title="Orgrimmar Square Interior Pillar", decorType="Walls and Columns", source={type="vendor", itemID=236667}, requirements={rep="true"}},
+      {decorID=534, title="Plain Interior Wall", decorType="Walls and Columns", source={type="vendor", itemID=245393}, requirements={rep="true"}},
+      {decorID=535, title="Plain Interior Doorway", decorType="Walls and Columns", source={type="vendor", itemID=245394}, requirements={rep="true"}},
+      {decorID=536, title="Plain Interior Narrow Wall", decorType="Walls and Columns", source={type="vendor", itemID=245395}, requirements={rep="true"}},
+      {decorID=1437, title="Iron Chain Chandelier", decorType="Ceiling Lights", source={type="vendor", itemID=244533}, requirements={quest={id=93078, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1438, title="Iron-Reinforced Door", decorType="Doors", source={type="vendor", itemID=244534, currency="5000", currencytype="Honor"}, requirements={quest={id=93079, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1451, title="Tied-Open Leather Curtains", decorType="Wall Hangings", source={type="vendor", itemID=244661, currency="150", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1452, title="Closed Leather Curtains", decorType="Wall Hangings", source={type="vendor", itemID=244662, currency="150", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1453, title="Leather Valance", decorType="Wall Hangings", source={type="vendor", itemID=244663, currency="150", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1698, title="Round Stitched Cushion", decorType="Seating", source={type="vendor", itemID=245264, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1699, title="Stitched Pillow Roll", decorType="Seating", source={type="vendor", itemID=245265}, requirements={rep="true"}},
+      {decorID=1700, title="Iron-Studded Wooden Window", decorType="Windows", source={type="vendor", itemID=245266, currency="175", currencytype="Order Resources"}, requirements={quest={id=93080, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1723, title="Orgrimmar Chair", decorType="Seating", source={type="vendor", itemID=245532, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=93081, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1736, title="Orgrimmar Nightstand", decorType="Tables and Desks", source={type="vendor", itemID=245545, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=93083, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1744, title="Orgrimmar Tusked Bed", decorType="Beds", source={type="vendor", itemID=245555, currency="1500", currencytype="Garrison Resources"}, requirements={quest={id=93111, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1879, title="Orgrimmar Bureaucrat's Desk", decorType="Tables and Desks", source={type="vendor", itemID=245680, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=93109, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1977, title="High-Backed Orgrimmar Chair", decorType="Seating", source={type="vendor", itemID=246036, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=93091, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1978, title="Iron-Reinforced Wooden Rack", decorType="Storage", source={type="vendor", itemID=246037}, requirements={rep="true"}},
+      {decorID=1979, title="Stitched Leather Rug", decorType="Floor", source={type="vendor", itemID=246038, currency="250", currencytype="Ancient Mana"}, requirements={rep="true"}},
+      {decorID=2092, title="Cozy Hide-Covered Bench", decorType="Seating", source={type="vendor", itemID=246223}, requirements={rep="true"}},
+      {decorID=2093, title="Large Orgrimmar Bookcase", decorType="Storage", source={type="vendor", itemID=246224, currency="500", currencytype="Garrison Resources"}, requirements={quest={id=93099, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2094, title="Small Leather Rug", decorType="Floor", source={type="vendor", itemID=246225, currency="150", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=2114, title="Orgrimmar Beam Platform", decorType="Walls and Columns", source={type="vendor", itemID=246259}, requirements={quest={id=93085, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2115, title="Orgrimmar Round Platform", decorType="Walls and Columns", source={type="vendor", itemID=246260}, requirements={quest={id=93087, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2116, title="Orgrimmar Large Platform", decorType="Walls and Columns", source={type="vendor", itemID=246261}, requirements={quest={id=93088, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2117, title="Orgrimmar Small Platform", decorType="Walls and Columns", source={type="vendor", itemID=246262}, requirements={rep="true"}},
+      {decorID=2118, title="Orgrimmar Angled Platform", decorType="Walls and Columns", source={type="vendor", itemID=246263}, requirements={rep="true"}},
+      {decorID=2384, title="Short Orgrimmar Bookcase", decorType="Storage", source={type="vendor", itemID=246587, currency="500", currencytype="Garrison Resources"}, requirements={quest={id=93100, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2439, title="Durable Hex Table", decorType="Tables and Desks", source={type="vendor", itemID=246607, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=2440, title="Long Leather-Clad Table", decorType="Tables and Desks", source={type="vendor", itemID=246608, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=2441, title="Orgrimmar Open Dresser", decorType="Storage", source={type="vendor", itemID=246609, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=2442, title="Razorwind Standing Mirror", decorType="Misc Furnishings", source={type="vendor", itemID=246610, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=2445, title="Long Durable Table", decorType="Tables and Desks", source={type="vendor", itemID=246613, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=2446, title="Razorwind Bar Table", decorType="Tables and Desks", source={type="vendor", itemID=246614, currency="1500", currencytype="Garrison Resources"}, requirements={quest={id=93115, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2454, title="Tusked Candleholder", decorType="Small Lights", source={type="vendor", itemID=246687, currency="300", currencytype="War Resources"}, requirements={quest={id=93101, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2535, title="Razorwind Wall Mirror", decorType="Wall Hangings", source={type="vendor", itemID=246869, currency="1000", currencytype="Order Resources"}, requirements={quest={id=93132, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2545, title="Tusked Hanging Sconce", decorType="Wall Lights", source={type="vendor", itemID=246879, currency="150", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=2592, title="Small Orgrimmar Chair", decorType="Seating", source={type="vendor", itemID=247221, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=93106, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=4386, title="Razorwind Storage Table", decorType="Tables and Desks", source={type="vendor", itemID=248246, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=93107, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=5853, title="Tusked Weapon Rack", decorType="Uncategorized", source={type="vendor", itemID=250093}, requirements={rep="true"}},
+      {decorID=5854, title="Empty Orgrimmar Bathtub", decorType="Misc Furnishings", source={type="vendor", itemID=250094}, requirements={rep="true"}},
+      {decorID=7836, title="Small Razorwind Bar Table", decorType="Tables and Desks", source={type="vendor", itemID=250913, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=7842, title="Horned Hanging Sconce", decorType="Wall Lights", source={type="vendor", itemID=250920, currency="150", currencytype="Dragon Isles Supplies"}, requirements={quest={id=93102, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=8771, title="Hide-Covered Bench", decorType="Seating", source={type="vendor", itemID=251639}, requirements={rep="true"}},
+      {decorID=8907, title="Hide-Covered Wall Shelf", decorType="Storage", source={type="vendor", itemID=251973, currency="500", currencytype="Order Resources"}, requirements={quest={id=93108, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=8910, title="Tusked Chandelier", decorType="Ceiling Lights", source={type="vendor", itemID=251974}, requirements={rep="true"}},
+      {decorID=8911, title="Tusked Sconce", decorType="Wall Lights", source={type="vendor", itemID=251975, currency="150", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=8912, title="Wolf Pelt Rug", decorType="Uncategorized", source={type="vendor", itemID=251976}, requirements={rep="true"}},
+      {decorID=9143, title="Tied-Right Leather Curtains", decorType="Wall Hangings", source={type="vendor", itemID=252657, currency="150", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=10324, title="Small Orgrimmar Tusked Bed", decorType="Beds", source={type="vendor", itemID=254316, currency="550", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=10367, title="Small Razorwind Square Table", decorType="Tables and Desks", source={type="vendor", itemID=254560, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=10952, title="Razorwind Shores Front Door", decorType="Doors", source={type="vendor", itemID=256050, currency="5000", currencytype="Honor"}, requirements={rep="true"}},
+      {decorID=11480, title="Iron-Reinforced Wooden Window", decorType="Windows", source={type="vendor", itemID=257389, currency="175", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=11874, title="Orgrimmar Bathtub", decorType="Miscellaneous - All", source={type="vendor", itemID=258148}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="\"Len\" Splinthoof",
+    source={
+      id=255228,
+      type="vendor",
+      faction="Alliance",
+      zone="Founder's Point",
+      worldmap="2352:6240:8000",
+    },
+    items={
+      {decorID=1436, title="Rugged Stool", decorType="Seating", source={type="vendor", itemID=244532, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=93077, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1439, title="Tusked Gazebo", decorType="Large Structures", source={type="vendor", itemID=244535, currency="900", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=1724, title="Rugged Brazier", decorType="Large Lights", source={type="vendor", itemID=245533, currency="600", currencytype="Resonance Crystals"}, requirements={quest={id=93082, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=1737, title="Durable Wooden Chest", decorType="Storage", source={type="vendor", itemID=245546}, requirements={quest={id=93084, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2087, title="Short Orgrimmar Bench", decorType="Seating", source={type="vendor", itemID=246217, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=93097, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2088, title="Iron-Reinforced Crate", decorType="Storage", source={type="vendor", itemID=246218}, requirements={quest={id=93098, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2090, title="Leather-Banded Wooden Bench", decorType="Seating", source={type="vendor", itemID=246220, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=2098, title="Spiky Banded Barrel", decorType="Storage", source={type="vendor", itemID=246241, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=93103, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2443, title="Razorwind Fountain", decorType="Large Structures", source={type="vendor", itemID=246611, currency="500", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=2444, title="Logger's Picnic Table", decorType="Tables and Desks", source={type="vendor", itemID=246612, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=2447, title="Open Spiky Banded Barrel", decorType="Storage", source={type="vendor", itemID=246615}, requirements={rep="true"}},
+      {decorID=2448, title="Open Iron-Reinforced Crate", decorType="Storage", source={type="vendor", itemID=246616}, requirements={rep="true"}},
+      {decorID=2534, title="Wide Hide-Covered Bench", decorType="Seating", source={type="vendor", itemID=246868}, requirements={quest={id=93131, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2546, title="Horned Banded Barrel", decorType="Storage", source={type="vendor", itemID=246880, currency="150", currencytype="War Resources"}, requirements={quest={id=93104, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2547, title="Open Horned Banded Barrel", decorType="Storage", source={type="vendor", itemID=246881, currency="150", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=2548, title="Long Orgrimmar Bench", decorType="Seating", source={type="vendor", itemID=246882, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=93133, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2549, title="Crude Banded Crate", decorType="Storage", source={type="vendor", itemID=246883, currency="150", currencytype="War Resources"}, requirements={quest={id=93105, title="Decor Treasure Hunt"}, rep="true"}},
+      {decorID=2550, title="Open Crude Banded Crate", decorType="Storage", source={type="vendor", itemID=246884, currency="150", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=5561, title="Wind Rider Roost", decorType="Large Structures", source={type="vendor", itemID=249550, currency="400", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=8236, title="Razorwind Cooking Grill", decorType="Misc Furnishings", source={type="vendor", itemID=251545}, requirements={rep="true"}},
+      {decorID=8769, title="Tusked Weapon Stand", decorType="Storage", source={type="vendor", itemID=251637}, requirements={rep="true"}},
+      {decorID=8770, title="Jagged Orgrimmar Trellis", decorType="Uncategorized", source={type="vendor", itemID=251638}, requirements={rep="true"}},
+      {decorID=10791, title="Large Razorwind Gazebo", decorType="Large Structures", source={type="vendor", itemID=254893}, requirements={rep="true"}},
+      {decorID=10892, title="Small Jagged Orgrimmar Trellis", decorType="Misc Structural", source={type="vendor", itemID=255708}, requirements={rep="true"}},
+      {decorID=11139, title="Razorwind Porch Chair", decorType="Seating", source={type="vendor", itemID=256357, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=11437, title="Razorwind Covered Well", decorType="Large Structures", source={type="vendor", itemID=257099}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Dedric Sleetshaper",
+    source={
+      id=253235,
+      type="vendor",
+      faction="Alliance",
+      zone="Dun Morogh",
+      worldmap="87:2472:4393",
+    },
+    items={
+      {decorID=1118, title="Dark Iron Expedition Tent", decorType="Large Structures", source={type="vendor", itemID=245427, currency="900", currencytype="Resonance Crystals"}, requirements={quest={id=53566, title="Dark Iron Dwarves"}, rep="true"}},
+      {decorID=1216, title="Dark Iron Brazier", decorType="Large Lights", source={type="vendor", itemID=245426, currency="600", currencytype="Resonance Crystals"}, requirements={achievement={id=4859, title="Kings Under the Mountain"}, rep="true"}},
+      {decorID=2243, title="Ornate Ironforge Table", decorType="Tables and Desks", source={type="vendor", itemID=246426, currency="400", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=2333, title="Ironforge Fencepost", decorType="Misc Structural", source={type="vendor", itemID=246490}, requirements={rep="true"}},
+      {decorID=2334, title="Ironforge Fence", decorType="Misc Structural", source={type="vendor", itemID=246491}, requirements={rep="true"}},
+      {decorID=8982, title="Ornate Ironforge Bench", decorType="Seating", source={type="vendor", itemID=252010, currency="400", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=11133, title="Ornate Dwarven Wardrobe", decorType="Storage", source={type="vendor", itemID=256333, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=11160, title="Shadowforge Stone Chair", decorType="Seating", source={type="vendor", itemID=256425}, requirements={achievement={id=8316, title="Blood in the Snow"}, rep="true"}},
+    }
+  },
+  {
+    title="Breana Bitterbrand",
+    source={
+      id=253227,
+      type="vendor",
+      faction="Neutral",
+      zone="Twilight Highlands",
+      worldmap="241:4974:2957",
+    },
+    items={
+      {decorID=1998, title="Embellished Dwarven Tome", decorType="Ornamental", source={type="vendor", itemID=246108, currency="750", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=2242, title="Round Dwarven Table", decorType="Tables and Desks", source={type="vendor", itemID=246425, currency="175", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=2244, title="Dilapidated Wildhammer Well", decorType="Misc Structural", source={type="vendor", itemID=246427, currency="1000", currencytype="Order Resources"}, requirements={quest={id=28244, title="Eye Spy"}, rep="true"}},
+      {decorID=2245, title="Overgrown Wildhammer Fountain", decorType="Large Structures", source={type="vendor", itemID=246428, currency="2000", currencytype="Apexis Crystal"}, requirements={quest={id=28655, title="Wild, Wild, Wildhammer Wedding"}, rep="true"}},
+    }
+  },
+  {
+    title="Craw MacGraw",
+    source={
+      id=49386,
+      type="vendor",
+      faction="Neutral",
+      zone="Twilight Highlands",
+      worldmap="241:4861:3068",
+    },
+    items={
+      {decorID=1998, title="Embellished Dwarven Tome", decorType="Ornamental", source={type="vendor", itemID=246108, currency="750", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=2242, title="Round Dwarven Table", decorType="Tables and Desks", source={type="vendor", itemID=246425, currency="175", currencytype="Order Resources"}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Fiona",
+    source={
+      id=45417,
+      type="vendor",
+      faction="Neutral",
+      zone="Light's Hope Chapel",
+      worldmap="23:7380:5220",
+    },
+    items={
+      {decorID=4813, title="Goldshire Food Cart", decorType="Miscellaneous - All", source={type="vendor", itemID=248796, currency="1500", currencytype="Garrison Resources"}, requirements={achievement={id=5442, title="Full Caravan"}, rep="true"}},
+    }
+  },
+  {
+    title="Inge Brightview",
+    source={
+      id=253232,
+      type="vendor",
+      faction="Alliance",
+      zone="The Library, Ironforge",
+      worldmap="87:7580:0940",
+    },
+    items={
+      {decorID=2228, title="Ironforge Bookcase", decorType="Storage", source={type="vendor", itemID=246411, currency="500", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=2229, title="Small Ironforge Bookcase", decorType="Storage", source={type="vendor", itemID=246412, currency="550", currencytype="War Resources"}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Captain Stonehelm",
+    source={
+      id=50309,
+      type="vendor",
+      faction="Alliance",
+      zone="Dun Morogh, Ironforge",
+      worldmap="87:5560:4820",
+    },
+    items={
+      {decorID=2243, title="Ornate Ironforge Table", decorType="Tables and Desks", source={type="vendor", itemID=246426, currency="400", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=2333, title="Ironforge Fencepost", decorType="Misc Structural", source={type="vendor", itemID=246490}, requirements={rep="true"}},
+      {decorID=2334, title="Ironforge Fence", decorType="Misc Structural", source={type="vendor", itemID=246491}, requirements={rep="true"}},
+      {decorID=8982, title="Ornate Ironforge Bench", decorType="Seating", source={type="vendor", itemID=252010, currency="400", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=11133, title="Ornate Dwarven Wardrobe", decorType="Storage", source={type="vendor", itemID=256333, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Innkeeper Belm",
+    source={
+      id=1247,
+      type="vendor",
+      faction="Alliance",
+      zone="Kharanos, Dun Morogh",
+      worldmap="27:5440:5080",
+    },
+    items={
+      {decorID=11130, title="Kharanos Stone Bed", decorType="Beds", source={type="vendor", itemID=256330, currency="550", currencytype="War Resources"}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Captain Donald Adams",
+    source={
+      id=50304,
+      type="vendor",
+      faction="Horde",
+      zone="Undercity, Orgrimmar",
+      worldmap="90:6320:4900",
+    },
+    items={
+      {decorID=923, title="Lordaeron Fence", decorType="Misc Structural", source={type="vendor", itemID=245504, currency="450", currencytype="Resonance Crystals"}, requirements={quest={id=27098, title="Lordaeron"}, rep="true"}},
+      {decorID=924, title="Lordaeron Fencepost", decorType="Misc Structural", source={type="vendor", itemID=245505, currency="350", currencytype="Resonance Crystals"}, requirements={quest={id=27098, title="Lordaeron"}, rep="true"}},
+    }
+  },
+  {
+    title="Lonalo",
+    source={
+      id=256119,
+      type="vendor",
+      faction="Horde",
+      zone="Orgrimmar",
+      worldmap="86:9987:1210",
+    },
+    items={
+      {decorID=766, title="Open Tome of Twilight Nihilism", decorType="Ornamental", source={type="vendor", itemID=239177, currency="1200", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=768, title="Tome of Twilight Nihilism", decorType="Ornamental", source={type="vendor", itemID=239179, currency="3000", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=2511, title="Tome of Shadowforge Cunning", decorType="Ornamental", source={type="vendor", itemID=246845, currency="750", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=2513, title="Tome of Draenei Faith", decorType="Ornamental", source={type="vendor", itemID=246847, currency="750", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=2514, title="Scribe's Working Notes", decorType="Ornamental", source={type="vendor", itemID=246848, currency="1200", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=2526, title="Tome of Forsaken Resilience", decorType="Ornamental", source={type="vendor", itemID=246860, currency="750", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Solelo",
+    source={
+      id=256071,
+      type="vendor",
+      faction="Alliance",
+      zone="Stormwind City",
+      worldmap="84:4926:8009",
+    },
+    items={
+      {decorID=766, title="Open Tome of Twilight Nihilism", decorType="Ornamental", source={type="vendor", itemID=239177, currency="1200", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=768, title="Tome of Twilight Nihilism", decorType="Ornamental", source={type="vendor", itemID=239179, currency="3000", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=2511, title="Tome of Shadowforge Cunning", decorType="Ornamental", source={type="vendor", itemID=246845, currency="750", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=2513, title="Tome of Draenei Faith", decorType="Ornamental", source={type="vendor", itemID=246847, currency="750", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=2514, title="Scribe's Working Notes", decorType="Ornamental", source={type="vendor", itemID=246848, currency="1200", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=2526, title="Tome of Forsaken Resilience", decorType="Ornamental", source={type="vendor", itemID=246860, currency="750", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Eadric the Pure",
+    source={
+      id=100196,
+      type="vendor",
+      faction="Neutral",
+      zone="Sanctum of Light",
+      worldmap="23:7564:4909",
+    },
+    items={
+      {decorID=7571, title="Replica Altar of Ancient Kings", decorType="Ornamental", source={type="vendor", itemID=250230, currency="5000", currencytype="Order Resources"}, requirements={achievement={id=42293, title="Hidden Potential of the Highlord"}, rep="true"}},
+      {decorID=7572, title="Silver Hand Banner", decorType="Wall Hangings", source={type="vendor", itemID=250231, currency="500", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=7573, title="Sanctum of Light Hallway Rug", decorType="Floor", source={type="vendor", itemID=250232, currency="500", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=7574, title="Replica Libram of Ancient Kings", decorType="Ornamental", source={type="vendor", itemID=250233, currency="3000", currencytype="Order Resources"}, requirements={achievement={id=60968, title="Legendary Research of the Silver Hand"}, rep="true"}},
+      {decorID=7575, title="Sanctum of Light Candelabra", decorType="Large Lights", source={type="vendor", itemID=250234, currency="1500", currencytype="Order Resources"}, requirements={achievement={id=42276, title="The Highlord's Campaign"}, rep="true"}},
+      {decorID=7576, title="Silver Hand Tribute to the Fallen", decorType="Ornamental", source={type="vendor", itemID=250235, currency="1000", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=7577, title="Silver Hand Weapon Rack", decorType="Storage", source={type="vendor", itemID=250236, currency="2000", currencytype="Order Resources"}, requirements={achievement={id=60987, title="Raise an Army for the Sanctum of Light"}, rep="true"}},
+    }
+  },
+  {
+    title="Master Smith Burninate",
+    source={
+      id=14624,
+      type="vendor",
+      faction="Horde",
+      zone="Searing Gorge",
+      worldmap="32:3860:2870",
+    },
+    items={
+      {decorID=1315, title="Shadowforge Wooden Box", decorType="Storage", source={type="vendor", itemID=245333}, requirements={quest={id=28035, title="The Mountain-Lord's Support"}, rep="true"}},
+      {decorID=2226, title="Shadowforge Grinding Wheel", decorType="Misc Accents", source={type="vendor", itemID=246409, currency="750", currencytype="Honor"}, requirements={quest={id=28064, title="Welcome to the Brotherhood"}, rep="true"}},
+    }
+  },
+  {
+    title="Hoddruc Bladebender",
+    source={
+      id=115805,
+      type="vendor",
+      faction="Horde",
+      zone="Burning Steppes",
+      worldmap="36:4680:4460",
+    },
+    items={
+      {decorID=11131, title="Shadowforge Lamppost", decorType="Misc Lighting", source={type="vendor", itemID=256331, currency="1000", currencytype="Garrison Resources"}, requirements={quest={id=35685, title="Socrethar's Demise"}, rep="true"}},
+    }
+  },
+  {
+    title="Wilkinson",
+    source={
+      id=44114,
+      type="vendor",
+      faction="Alliance",
+      zone="Duskwood",
+      worldmap="47:2027:5835",
+    },
+    items={
+      {decorID=1833, title="Waning Wood Fence", decorType="Misc Structural", source={type="vendor", itemID=245624, currency="1000", currencytype="Order Resources"}, requirements={quest={id=26760, title="Cry For The Moon"}, rep="true"}},
+      {decorID=11305, title="Small Gilnean Table", decorType="Tables and Desks", source={type="vendor", itemID=256905}, requirements={quest={id=26754, title="Morbent's Bane"}, rep="true"}},
+    }
+  },
+  {
+    title="Thanthaldis Snowgleam",
+    source={
+      id=13217,
+      type="vendor",
+      faction="Alliance",
+      zone="Hillsbrad Foothills",
+      worldmap="25:4480:4640",
+    },
+    items={
+      {decorID=2241, title="Square Stormpike Table", decorType="Tables and Desks", source={type="vendor", itemID=246424}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="Edwin Harly",
+    source={
+      id=2140,
+      type="vendor",
+      faction="Horde",
+      zone="Silverpine Forest",
+      worldmap="21:4406:3968",
+    },
+    items={
+      {decorID=11498, title="Stoppered Gilnean Barrel", decorType="Storage", source={type="vendor", itemID=257412, currency="175", currencytype="Order Resources"}, requirements={quest={id=27550, title="Pyrewood's Fall"}, rep="true"}},
+    }
+  },
+  {
+    title="Maurice Essman",
+    source={
+      id=44337,
+      type="vendor",
+      faction="Alliance",
+      zone="Surwich, Blasted Lands",
+      worldmap="17:4580:8860",
+    },
+    items={
+      {decorID=1481, title="Surwich Peddler's Wagon", decorType="Miscellaneous - All", source={type="vendor", itemID=244777, currency="1500", currencytype="Garrison Resources"}, requirements={quest={id=80516, title="Bump off the Boss"}, rep="true"}},
+    }
+  },
+}

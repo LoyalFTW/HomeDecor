@@ -1,0 +1,38 @@
+## Interface: 120001, 110207, 120000
+## Title: HomeDecor
+## Notes: Housing & Decor Browser
+## SavedVariables: HomeDecorDB
+## IconTexture: Interface\AddOns\HomeDecor\Media\Icon
+## Category-enUS: Housing
+
+Libs\LibStub\LibStub.lua
+Libs\AceAddon-3.0\AceAddon-3.0.lua
+Libs\AceDB-3.0\AceDB-3.0.lua
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+
+Core\Init.lua
+HomeDecor.xml
+
+Systems\Collection.lua
+Systems\GlobalIndex.lua
+
+UI\Theme.lua
+UI\Controls.lua
+UI\Widgets\FilterPopup.lua
+UI\Widgets\Dropdown.lua
+UI\Layout.lua
+
+UI\Widgets\HeaderController.lua
+UI\Widgets\Filters.lua
+UI\Widgets\DecorIndex.lua
+UI\Widgets\ResizeBar.lua
+UI\Widgets\Navigation.lua
+UI\Widgets\FavoriteStar.lua
+UI\Widgets\Tooltips.lua
+UI\Widgets\DropPanel.lua
+UI\Widgets\ProgressBar.lua
+UI\Widgets\StatusIcon.lua
+UI\Viewer.lua
+UI\MainFrame.lua
+

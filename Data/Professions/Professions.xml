@@ -1,0 +1,124 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+    <!-- ===================================== -->
+    <!-- Alchemy                             -->
+    <!-- ===================================== -->
+    <Script file="Alchemy/Cataclysm.lua"/>
+    <Script file="Alchemy/Classic.lua"/>
+    <Script file="Alchemy/Dragon.lua"/>
+    <Script file="Alchemy/Khaz.lua"/>
+    <Script file="Alchemy/Kul.lua"/>
+	<Script file="Alchemy/Legion.lua"/>
+    <Script file="Alchemy/Northrend.lua"/>
+    <Script file="Alchemy/Outland.lua"/>
+    <Script file="Alchemy/Pandaria.lua"/>
+    <Script file="Alchemy/Shadowlands.lua"/>
+
+    <!-- ===================================== -->
+    <!-- Blacksmithing                       -->
+    <!-- ===================================== -->
+    <Script file="Blacksmithing/Cataclysm.lua"/>
+	<Script file="Blacksmithing/Classic.lua"/>
+    <Script file="Blacksmithing/Dragon.lua"/>
+    <Script file="Blacksmithing/Khaz.lua"/>
+    <Script file="Blacksmithing/Kul.lua"/>
+    <Script file="Blacksmithing/Legion.lua"/>
+    <Script file="Blacksmithing/Northrend.lua"/>
+    <Script file="Blacksmithing/Outland.lua"/>
+    <Script file="Blacksmithing/Pandaren.lua"/>
+    <Script file="Blacksmithing/Shadowlands.lua"/>
+
+    <!-- ===================================== -->
+    <!-- Cooking                             -->
+    <!-- ===================================== -->
+    <Script file="Cooking/Dragon.lua"/>
+    <Script file="Cooking/Khaz.lua"/>
+    <Script file="Cooking/Kul.lua"/>
+    <Script file="Cooking/Pandaren.lua"/>
+    <Script file="Cooking/Shadowlands.lua"/>
+
+    <!-- ===================================== -->
+    <!-- Enchanting                          -->
+    <!-- ===================================== -->
+    <Script file="Enchanting/Cataclysm.lua"/>
+    <Script file="Enchanting/Classic.lua"/>
+    <Script file="Enchanting/Dragon.lua"/>
+    <Script file="Enchanting/Khaz.lua"/>
+    <Script file="Enchanting/Kul.lua"/>
+    <Script file="Enchanting/Legion.lua"/>
+    <Script file="Enchanting/Northrend.lua"/>
+    <Script file="Enchanting/Outland.lua"/>
+    <Script file="Enchanting/Pandaria.lua"/>
+    <Script file="Enchanting/Shadowlands.lua"/>
+
+    <!-- ===================================== -->
+    <!-- Engineering                         -->
+    <!-- ===================================== -->
+    <Script file="Engineering/Cataclysm.lua"/>
+    <Script file="Engineering/Classic.lua"/>
+    <Script file="Engineering/Dragon.lua"/>
+    <Script file="Engineering/Khaz.lua"/>
+    <Script file="Engineering/Kul.lua"/>
+    <Script file="Engineering/Legion.lua"/>
+    <Script file="Engineering/Northrend.lua"/>
+    <Script file="Engineering/Outland.lua"/>
+    <Script file="Engineering/Pandaria.lua"/>
+    <Script file="Engineering/Shadowlands.lua"/>
+
+    <!-- ===================================== -->
+    <!-- Inscription                         -->
+    <!-- ===================================== -->
+    <Script file="Inscription/Cataclysm.lua"/>
+    <Script file="Inscription/Classic.lua"/>
+    <Script file="Inscription/Dragon.lua"/>
+    <Script file="Inscription/Khaz.lua"/>
+    <Script file="Inscription/Kul.lua"/>
+    <Script file="Inscription/Legion.lua"/>
+    <Script file="Inscription/Northrend.lua"/>
+    <Script file="Inscription/Outland.lua"/>
+    <Script file="Inscription/Pandaria.lua"/>
+    <Script file="Inscription/Shadowlands.lua"/>
+
+    <!-- ===================================== -->
+    <!-- Jewelcrafting                       -->
+    <!-- ===================================== -->
+    <Script file="Jewelcrafting/Cataclysm.lua"/>
+    <Script file="Jewelcrafting/Dragon.lua"/>
+    <Script file="Jewelcrafting/Khaz.lua"/>
+    <Script file="Jewelcrafting/Kul.lua"/>
+    <Script file="Jewelcrafting/Legion.lua"/>
+    <Script file="Jewelcrafting/Northrend.lua"/>
+    <Script file="Jewelcrafting/Outland.lua"/>
+    <Script file="Jewelcrafting/Pandaria.lua"/>
+    <Script file="Jewelcrafting/Shadowlands.lua"/>
+    <Script file="Jewelcrafting/Jewelcrafting.lua"/>
+
+    <!-- ===================================== -->
+    <!-- Leatherworking                      -->
+    <!-- ===================================== -->
+    <Script file="Leatherworking/Cataclysm.lua"/>
+    <Script file="Leatherworking/Dragon.lua"/>
+    <Script file="Leatherworking/Khaz.lua"/>
+    <Script file="Leatherworking/Kul.lua"/>
+    <Script file="Leatherworking/Legion.lua"/>
+    <Script file="Leatherworking/Northrend.lua"/>
+    <Script file="Leatherworking/Outland.lua"/>
+    <Script file="Leatherworking/Pandaria.lua"/>
+    <Script file="Leatherworking/Shadowlands.lua"/>
+    <Script file="Leatherworking/Leatherworking.lua"/>
+
+    <!-- ===================================== -->
+    <!-- Tailoring                           -->
+    <!-- ===================================== -->
+    <Script file="Tailoring/Cataclysm.lua"/>
+    <Script file="Tailoring/Dragon.lua"/>
+    <Script file="Tailoring/Khaz.lua"/>
+    <Script file="Tailoring/Kul.lua"/>
+    <Script file="Tailoring/Legion.lua"/>
+    <Script file="Tailoring/Northrend.lua"/>
+    <Script file="Tailoring/Outland.lua"/>
+    <Script file="Tailoring/Pandaria.lua"/>
+    <Script file="Tailoring/Shadowlands.lua"/>
+    <Script file="Tailoring/Tailoring.lua"/>
+
+</Ui>
