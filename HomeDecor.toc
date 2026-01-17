@@ -1,8 +1,13 @@
 ## Interface: 120001, 110207, 120000
 ## Title: HomeDecor
+## Author: Jay
+## Version: @project-version@
+## X-Website: https://www.curseforge.com/wow/addons/homedecor
 ## Notes: Housing & Decor Browser
 ## SavedVariables: HomeDecorDB
 ## IconTexture: Interface\AddOns\HomeDecor\Media\Icon
+## X-Curse-Project-ID: 1402921
+## X-Wago-ID: O67DjgK3
 ## Category-enUS: Housing
 
 Libs\LibStub\LibStub.lua
