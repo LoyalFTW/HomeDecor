@@ -1,6 +1,6 @@
 local ADDON, NS = ...
 local View = {}
-NS.UI.AchievementView = View
+NS.UI.Viewer = View
 
 local C           = NS.UI.Controls
 local T           = NS.UI.Theme.colors
@@ -470,6 +470,36 @@ local function BuildWowheadQuestURL(questID)
     return "https://www.wowhead.com/quest=" .. tostring(questID)
 end
 
+
+local function GetRequirementLink(it)
+    if not it then return nil end
+
+    local r = it.requirements
+    if not r and DecorIndex and it.decorID then
+        local entry = DecorIndex[it.decorID]
+        local item  = entry and entry.item
+        r = item and item.requirements or nil
+    end
+    if not r then return nil end
+
+    if r.quest and r.quest.id then
+        return { kind = "quest", id = r.quest.id, text = r.quest.title }
+    end
+    if r.achievement and r.achievement.id then
+        return { kind = "achievement", id = r.achievement.id, text = r.achievement.title }
+    end
+    return nil
+end
+
+local function BuildReqDisplay(req, hover)
+    if not req then return "" end
+    local sym = (req.kind == "quest") and "!" or "*"
+    local symCol = "|cffffd100" .. sym .. "|r "
+    local txtCol = hover and "|cfffff2a0" or "|cffffffff"
+    return symCol .. txtCol .. (req.text or "") .. "|r"
+end
+
+
 local function ShowWowheadLinks(links)
     if not links or #links == 0 then return end
 
@@ -807,7 +837,7 @@ local function countItems(items, vendor)
 end
 
 local ROW_GAP      = 8
-local LIST_H       = 26
+local LIST_H       = 46
 local LIST_GAP     = 4
 local PAD_TOP      = 10
 local PAD_BOTTOM   = 16
@@ -855,6 +885,10 @@ function View:Create(parent)
         if fr._statusIcon then fr._statusIcon:Hide() end
         if fr._status then fr._status:Hide() end
         if fr.bar then fr.bar:Hide() end
+        if fr.req then fr.req:Hide() end
+        if fr.reqBtn then fr.reqBtn:Hide() end
+        if fr.req then fr.req:Hide() end
+        if fr.reqBtn then fr.reqBtn:Hide() end
     end
 
     local function ReleaseFrame(frame)
@@ -908,7 +942,23 @@ function View:Create(parent)
         r:EnableMouse(true)
 
         r.text = r:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        r.text:SetPoint("LEFT", 64, 0)
+        r.text:SetPoint("TOPLEFT", 64, -8)
+
+        r.req = r:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+        r.req:SetPoint("TOPLEFT", r.text, "BOTTOMLEFT", 0, -2)
+        r.req:SetTextColor(0.8, 0.8, 0.8)
+        r.req:Hide()
+
+        
+		r.req = r:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		r.req:SetPoint("TOPLEFT", r.text, "BOTTOMLEFT", 0, 0)
+        r.req:SetJustifyH("LEFT")
+		r.req:Hide()
+
+		r.reqBtn = CreateFrame("Button", nil, r)
+		r.reqBtn:Hide()
+		r.reqBtn:EnableMouse(true)
+		r.reqBtn:RegisterForClicks("AnyUp")
 
         return r
     end
@@ -926,6 +976,16 @@ function View:Create(parent)
 
         r.label = r:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         r.label:SetJustifyH("CENTER")
+
+        r.req = r:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        r.req:SetJustifyH("CENTER")
+        r.req:SetText("")
+        r.req:Hide()
+
+        r.reqBtn = CreateFrame("Button", nil, r)
+        r.reqBtn:Hide()
+        r.reqBtn:EnableMouse(true)
+        r.reqBtn:RegisterForClicks("AnyUp")
 
         return r
     end
@@ -1449,6 +1509,42 @@ function f:UpdateVisible()
                     fr.label:SetText(it.title or "")
                 end
 
+local req = GetRequirementLink(it)
+if req and fr.req and fr.reqBtn and fr.label then
+    fr.req:ClearAllPoints()
+    fr.req:SetPoint("TOP", fr.label, "BOTTOM", 0, -2)
+    fr.req:SetWidth(tileW - 20)
+    fr.req._req = req
+    fr.req:SetText(BuildReqDisplay(req, false))
+    fr.req:Show()
+
+    fr.reqBtn:ClearAllPoints()
+    fr.reqBtn:SetPoint("TOPLEFT", fr.req, "TOPLEFT", -2, 2)
+    fr.reqBtn:SetPoint("BOTTOMRIGHT", fr.req, "BOTTOMRIGHT", 2, -2)
+    fr.reqBtn:SetFrameStrata(fr:GetFrameStrata())
+    fr.reqBtn:SetFrameLevel((fr:GetFrameLevel() or 1) + 10)
+    fr.reqBtn:Show()
+
+    fr.reqBtn:SetScript("OnEnter", function()
+        fr.req:SetText(BuildReqDisplay(fr.req._req, true))
+    end)
+    fr.reqBtn:SetScript("OnLeave", function()
+        fr.req:SetText(BuildReqDisplay(fr.req._req, false))
+    end)
+    fr.reqBtn:SetScript("OnClick", function()
+        local r = fr.req._req
+        if not r then return end
+        if r.kind == "quest" then
+            ShowWowheadLinks({ { label = "Quest Link", url = BuildWowheadQuestURL(r.id) } })
+        else
+            ShowWowheadLinks({ { label = "Achievement Link", url = BuildWowheadAchievementURL(r.id) } })
+        end
+    end)
+else
+    if fr.req then fr.req:Hide() end
+    if fr.reqBtn then fr.reqBtn:Hide() end
+end
+
                 if StatusIcon and StatusIcon.Attach then
                     StatusIcon:Attach(fr, state, it)
                 end
@@ -1532,6 +1628,44 @@ function f:UpdateVisible()
                 if fr.text then
                     fr.text:SetText(it.title or "")
                 end
+
+                local req = GetRequirementLink(it)
+if req and fr.req and fr.reqBtn then
+    fr.req:Show()
+
+    local maxW = (e.w or 0) - 72
+    fr.req:SetWidth(maxW)
+
+    fr.req._req = req
+    fr.req:SetText(BuildReqDisplay(req, false))
+
+    fr.reqBtn:ClearAllPoints()
+    fr.reqBtn:SetPoint("TOPLEFT", fr.req, "TOPLEFT", -2, 2)
+    fr.reqBtn:SetPoint("BOTTOMRIGHT", fr.req, "BOTTOMRIGHT", 2, -2)
+    fr.reqBtn:SetFrameStrata(fr:GetFrameStrata())
+    fr.reqBtn:SetFrameLevel((fr:GetFrameLevel() or 1) + 10)
+    fr.reqBtn:Show()
+
+    fr.reqBtn:SetScript("OnEnter", function()
+        fr.req:SetText(BuildReqDisplay(fr.req._req, true))
+    end)
+    fr.reqBtn:SetScript("OnLeave", function()
+        fr.req:SetText(BuildReqDisplay(fr.req._req, false))
+    end)
+    fr.reqBtn:SetScript("OnClick", function()
+        local r = fr.req._req
+        if not r then return end
+        if r.kind == "quest" then
+            ShowWowheadLinks({ { label = "Quest Link", url = BuildWowheadQuestURL(r.id) } })
+        else
+            ShowWowheadLinks({ { label = "Achievement Link", url = BuildWowheadAchievementURL(r.id) } })
+        end
+    end)
+else
+    if fr.req then fr.req:Hide() end
+    if fr.reqBtn then fr.reqBtn:Hide() end
+end
+
 
                 if StatusIcon and StatusIcon.Attach then
                     StatusIcon:Attach(fr, state, it)

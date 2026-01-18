@@ -6,7 +6,7 @@ function UI:CreateMainFrame()
   if self.MainFrame then return end
 
   local Layout = self.Layout
-  local View = self.AchievementView
+  local View = self.Viewer
   if not Layout or not View then return end
 
   local frame = Layout:CreateShell()
