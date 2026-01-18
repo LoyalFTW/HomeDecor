@@ -218,26 +218,40 @@ function TT:Attach(frame, data)
             end
         end
 
-        if t=="quest" and s.id then
-            if ShowQuest(s.id) then
-                AddLabel("[Quest]")
-                GameTooltip:AddLine(" ")
-                GameTooltip:AddLine("Left Click: View Item", 0.8,0.8,0.8)
-                GameTooltip:AddLine("Right Click: Vendor Location", 0.8,0.8,0.8)
-                GameTooltip:AddLine("Alt + Click: Wowhead Link", 0.8,0.8,0.8)
-                local title = (data.title or s.name or "")
-                if title:lower():find("decor treasure hunt") then
-                    GameTooltip:AddLine(" ")
-                    GameTooltip:AddLine("There are many version of the Decor Treasure Hunt quest",1,0.2,0.2)
-                    GameTooltip:AddLine("Use Ctrl+Click to open the correct WoWHead link.",1,0.2,0.2)
-                end
-                local n,z = VendorInfo(data)
-                AddKey("Vendor", n)
-                AddKey("Zone", z)
-                AddKey("Faction", ResolveFaction(data))
-                GameTooltip:Show(); return
-            end
+		if t=="quest" and s.id then
+			if ShowQuest(s.id) then
+				AddLabel("[Quest]")
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine("Left Click: View Item", 0.8,0.8,0.8)
+				GameTooltip:AddLine("Right Click: Vendor Location", 0.8,0.8,0.8)
+				GameTooltip:AddLine("Alt + Click: Wowhead Link", 0.8,0.8,0.8)
+
+        local titleObj = _G.GameTooltipTextLeft1
+        local questTitle = titleObj and titleObj:GetText()
+
+        if questTitle and questTitle:lower():find("decor treasure hunt", 1, true) then
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine(
+                "There are many versions of the Decor Treasure Hunt quest.",
+                1, 0.2, 0.2, true
+            )
+            GameTooltip:AddLine(
+                "Use Ctrl+Click to open the correct WoWHead link.",
+                1, 0.2, 0.2, true
+            )
         end
+
+        local n, z = VendorInfo(data)
+        if n then AddKey("Vendor", n) end
+        if z then AddKey("Zone", z) end
+        local f = ResolveFaction(data)
+        if f then AddKey("Faction", f) end
+
+        GameTooltip:Show()
+        return
+    end
+end
+
 
         if data.title then GameTooltip:AddLine(data.title,1,1,1) end
         AddKey("Zone", s.zone)
