@@ -83,11 +83,11 @@ local function ResolveAchievementDecor(it)
     local st = it.source and it.source.type
     if st ~= "achievement" and st ~= "quest" and st ~= "pvp" then return it end
     if it._navVendor or it.vendor then return it end
+
     local entry = DecorIndex[it.decorID]
     if not entry then return it end
 
     local resolved = {}
-
     for k, v in pairs(it) do
         resolved[k] = v
     end
@@ -105,20 +105,47 @@ local function ResolveAchievementDecor(it)
         end
     end
 
-    local vsrc = entry.vendor and entry.vendor.source
+    local desiredFaction = resolved.faction or (resolved.source and resolved.source.faction)
+    if desiredFaction ~= "Alliance" and desiredFaction ~= "Horde" then
+        desiredFaction = nil
+    end
+
+    local function vendorFaction(v)
+        if type(v) ~= "table" then return nil end
+        local src = v.source or {}
+        local f = v.faction or src.faction
+        if f == "Alliance" or f == "Horde" then return f end
+        return nil
+    end
+
+    local picked = nil
+    local vendors = entry.vendors or (entry.vendor and { entry.vendor }) or {}
+
+    if desiredFaction and type(vendors) == "table" then
+        for _, v in ipairs(vendors) do
+            if vendorFaction(v) == desiredFaction then
+                picked = v
+                break
+            end
+        end
+    end
+
+    picked = picked or entry.vendor or vendors[1]
+
+    local vsrc = picked and picked.source
     if vsrc then
         if vsrc.id then
-            resolved.npcID = vsrc.id
+            resolved.npcID = resolved.npcID or vsrc.id
             resolved.source.npcID = resolved.source.npcID or vsrc.id
         end
 
         if vsrc.worldmap then
-            resolved.worldmap = vsrc.worldmap
+            resolved.worldmap = resolved.worldmap or vsrc.worldmap
             resolved.source.worldmap = resolved.source.worldmap or vsrc.worldmap
         end
 
         if vsrc.zone then
-            resolved.zone = vsrc.zone
+            resolved.zone = resolved.zone or vsrc.zone
             resolved.source.zone = resolved.source.zone or vsrc.zone
         end
 
@@ -150,8 +177,8 @@ local function ResolveAchievementDecor(it)
         end
     end
 
-    resolved.vendor     = entry.vendor
-    resolved._navVendor = entry.vendor
+    resolved.vendor     = picked or entry.vendor
+    resolved._navVendor = picked or entry.vendor
 
     return resolved
 end
