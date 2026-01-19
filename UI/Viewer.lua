@@ -951,12 +951,10 @@ function View:Create(parent)
 
             if payload and payload.decorID and f.RefreshDecor then
                 f:RefreshDecor(payload.decorID)
-                -- Update header counts with a single delayed render (avoid 3-pass spikes).
                 QueueOneFullRender()
                 return
             end
 
-            -- Fallback (no decorID): do a normal refresh.
             if f.RequestCollectionRefresh then
                 f:RequestCollectionRefresh()
             end
@@ -1253,7 +1251,7 @@ end
                 local cols, startX = computeGrid(12)
                 local col = 0
                 for _, it in ipairs(CollectAllFavorites()) do
-                    if ((FiltersSys and FiltersSys.Passes) and FiltersSys:Passes(it, (DB() and DB().ui) or {}, (DB() or {})) or true) then
+                    if ((FiltersSys and FiltersSys.Passes) and FiltersSys:Passes(it, (DB() and DB().ui) or {}, (DB() or {}))) then
                         addTile(12, it, nil, col, cols, startX)
                         col = col + 1
                         if col >= cols then
@@ -1265,7 +1263,7 @@ end
                 if col > 0 then y = y + tileH + tileGap end
             else
                 for _, it in ipairs(CollectAllFavorites()) do
-                    if ((FiltersSys and FiltersSys.Passes) and FiltersSys:Passes(it, (DB() and DB().ui) or {}, (DB() or {})) or true) then
+                    if ((FiltersSys and FiltersSys.Passes) and FiltersSys:Passes(it, (DB() and DB().ui) or {}, (DB() or {}))) then
                         addListItem(12, it, nil)
                     end
                 end
@@ -1454,7 +1452,7 @@ end
                                                     local col = 0
                                                     for _, it in ipairs(items) do
                                                         if not (it.source and it.source.type == "vendor" and it.items) then
-                                                            if ((FiltersSys and FiltersSys.Passes) and FiltersSys:Passes(it, (DB() and DB().ui) or {}, (DB() or {})) or true) then
+                                                            if ((FiltersSys and FiltersSys.Passes) and FiltersSys:Passes(it, (DB() and DB().ui) or {}, (DB() or {}))) then
                                                                 addTile(44, it, nil, col, cols, startX)
                                                                 col = col + 1
                                                                 if col >= cols then
@@ -1489,7 +1487,7 @@ end
 
                                                     for _, it in ipairs(items) do
                                                         if not (it.source and it.source.type == "vendor" and it.items) then
-                                                            if ((FiltersSys and FiltersSys.Passes) and FiltersSys:Passes(it, (DB() and DB().ui) or {}, (DB() or {})) or true) then
+                                                            if ((FiltersSys and FiltersSys.Passes) and FiltersSys:Passes(it, (DB() and DB().ui) or {}, (DB() or {}))) then
                                                                 addListItem(44, it, nil)
                                                             end
                                                         end
