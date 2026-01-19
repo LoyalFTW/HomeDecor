@@ -7,35 +7,35 @@ NS.Data.Vendors["Legion"] = NS.Data.Vendors["Legion"] or {}
 
 NS.Data.Vendors["Legion"]["BrokenIsles"] = {
 
-  {
-    title="Domelius",
-    source={
-      id=251042,
-      type="vendor",
-      faction="Neutral",
-      zone="Dalaran",
-      worldmap="619:5506:7797",
-    },
-    items={
-      {decorID=7610, title="Tome of the Corrupt", decorType="Ornamental", source={type="vendor", itemID=250307, currency="10000", currencytype="Bronze"}, requirements={achievement={id=42318, title="Court of Farondis"}, rep="true"}},
-      {decorID=7620, title="Vrykul Lord's Throne", decorType="Seating", source={type="vendor", itemID=250402, currency="20000", currencytype="Bronze"}, requirements={achievement={id=42658, title="Valarjar"}, rep="true"}},
-      {decorID=7621, title="Legion's Holo-Communicator", decorType="Miscellaneous - All", source={type="vendor", itemID=250403, currency="30000", currencytype="Bronze"}, requirements={achievement={id=42692, title="Broken Isles Dungeoneer"}, rep="true"}},
-      {decorID=7622, title="Hanging Felsteel Chain", decorType="Misc Accents", source={type="vendor", itemID=250404, currency="5000", currencytype="Bronze"}, requirements={rep="true"}},
-      {decorID=7623, title="Legion's Fel Torch", decorType="Large Lights", source={type="vendor", itemID=250405, currency="5000", currencytype="Bronze"}, requirements={achievement={id=61060, title="Power of the Obelisks II"}, rep="true"}},
-      {decorID=7624, title="Corruption Pit", decorType="Large Structures", source={type="vendor", itemID=250406, currency="30000", currencytype="Bronze"}, requirements={achievement={id=42321, title="Legion Remix Raids"}, rep="true"}},
-      {decorID=7625, title="Legion's Fel Brazier", decorType="Large Lights", source={type="vendor", itemID=250407, currency="5000", currencytype="Bronze"}, requirements={achievement={id=42619, title="Dreamweavers"}, rep="true"}},
-      {decorID=7658, title="Vertical Felsteel Chain", decorType="Misc Accents", source={type="vendor", itemID=250622, currency="5000", currencytype="Bronze"}, requirements={achievement={id=42675, title="Defending the Broken Isles III"}, rep="true"}},
-      {decorID=7686, title="Legion Torture Rack", decorType="Large Structures", source={type="vendor", itemID=250689, currency="10000", currencytype="Bronze"}, requirements={achievement={id=61054, title="Heroic Broken Isles World Quests III"}, rep="true"}},
-      {decorID=7687, title="Eredar Lord's Fel Torch", decorType="Large Lights", source={type="vendor", itemID=250690, currency="5000", currencytype="Bronze"}, requirements={achievement={id=42627, title="Argussian Reach"}, rep="true"}},
-      {decorID=7690, title="Altar of the Corrupted Flames", decorType="Ornamental", source={type="vendor", itemID=250693, currency="30000", currencytype="Bronze"}, requirements={achievement={id=42674, title="Broken Isles World Quests V"}, rep="true"}},
-      {decorID=8810, title="Sentinel's Moonwing Gaze", decorType="Misc Accents", source={type="vendor", itemID=251778, currency="30000", currencytype="Bronze"}, requirements={achievement={id=61218, title="The Wardens"}, rep="true"}},
-      {decorID=8811, title="Fel Fountain", decorType="Large Structures", source={type="vendor", itemID=251779, currency="30000", currencytype="Bronze"}, requirements={achievement={id=42689, title="Timeworn Keystone Master"}, rep="true"}},
-      {decorID=9165, title="Demonic Storage Chest", decorType="Storage", source={type="vendor", itemID=252753, currency="5000", currencytype="Bronze"}, requirements={achievement={id=42655, title="The Armies of Legionfall"}, rep="true"}},
-      {decorID=11278, title="Large Legion Candle", decorType="Small Lights", source={type="vendor", itemID=256677, currency="5000", currencytype="Bronze"}, requirements={achievement={id=42628, title="The Nightfallen"}, rep="true"}},
-      {decorID=11279, title="Small Legion Candle", decorType="Small Lights", source={type="vendor", itemID=256678, currency="2500", currencytype="Bronze"}, requirements={rep="true"}},
-      {decorID=11942, title="Hanging Felsteel Cage", decorType="Misc Structural", source={type="vendor", itemID=258299, currency="20000", currencytype="Bronze"}, requirements={achievement={id=42547, title="Highmountain Tribe"}, rep="true"}},
-    }
-  },
+   -- {
+   --Legion Remix not sure if it'll be added back some where else.   title="Domelius",
+   -- source={
+   --   id=251042,
+   --   type="vendor",
+   --  faction="Neutral",
+   --   zone="Dalaran",
+   --   worldmap="619:5506:7797",
+   -- },
+   -- items={
+   --   {decorID=7610, title="Tome of the Corrupt", decorType="Ornamental", source={type="vendor", itemID=250307, currency="10000", currencytype="Bronze"}, requirements={achievement={id=42318, title="Court of Farondis"}, rep="true"}},
+   --   {decorID=7620, title="Vrykul Lord's Throne", decorType="Seating", source={type="vendor", itemID=250402, currency="20000", currencytype="Bronze"}, requirements={achievement={id=42658, title="Valarjar"}, rep="true"}},
+   --   {decorID=7621, title="Legion's Holo-Communicator", decorType="Miscellaneous - All", source={type="vendor", itemID=250403, currency="30000", currencytype="Bronze"}, requirements={achievement={id=42692, title="Broken Isles Dungeoneer"}, rep="true"}},
+   --   {decorID=7622, title="Hanging Felsteel Chain", decorType="Misc Accents", source={type="vendor", itemID=250404, currency="5000", currencytype="Bronze"}, requirements={rep="true"}},
+   --   {decorID=7623, title="Legion's Fel Torch", decorType="Large Lights", source={type="vendor", itemID=250405, currency="5000", currencytype="Bronze"}, requirements={achievement={id=61060, title="Power of the Obelisks II"}, rep="true"}},
+   --   {decorID=7624, title="Corruption Pit", decorType="Large Structures", source={type="vendor", itemID=250406, currency="30000", currencytype="Bronze"}, requirements={achievement={id=42321, title="Legion Remix Raids"}, rep="true"}},
+   --   {decorID=7625, title="Legion's Fel Brazier", decorType="Large Lights", source={type="vendor", itemID=250407, currency="5000", currencytype="Bronze"}, requirements={achievement={id=42619, title="Dreamweavers"}, rep="true"}},
+   --   {decorID=7658, title="Vertical Felsteel Chain", decorType="Misc Accents", source={type="vendor", itemID=250622, currency="5000", currencytype="Bronze"}, requirements={achievement={id=42675, title="Defending the Broken Isles III"}, rep="true"}},
+   --   {decorID=7686, title="Legion Torture Rack", decorType="Large Structures", source={type="vendor", itemID=250689, currency="10000", currencytype="Bronze"}, requirements={achievement={id=61054, title="Heroic Broken Isles World Quests III"}, rep="true"}},
+   --   {decorID=7687, title="Eredar Lord's Fel Torch", decorType="Large Lights", source={type="vendor", itemID=250690, currency="5000", currencytype="Bronze"}, requirements={achievement={id=42627, title="Argussian Reach"}, rep="true"}},
+   --   {decorID=7690, title="Altar of the Corrupted Flames", decorType="Ornamental", source={type="vendor", itemID=250693, currency="30000", currencytype="Bronze"}, requirements={achievement={id=42674, title="Broken Isles World Quests V"}, rep="true"}},
+   --   {decorID=8810, title="Sentinel's Moonwing Gaze", decorType="Misc Accents", source={type="vendor", itemID=251778, currency="30000", currencytype="Bronze"}, requirements={achievement={id=61218, title="The Wardens"}, rep="true"}},
+   --   {decorID=8811, title="Fel Fountain", decorType="Large Structures", source={type="vendor", itemID=251779, currency="30000", currencytype="Bronze"}, requirements={achievement={id=42689, title="Timeworn Keystone Master"}, rep="true"}},
+   --   {decorID=9165, title="Demonic Storage Chest", decorType="Storage", source={type="vendor", itemID=252753, currency="5000", currencytype="Bronze"}, requirements={achievement={id=42655, title="The Armies of Legionfall"}, rep="true"}},
+   --  {decorID=11278, title="Large Legion Candle", decorType="Small Lights", source={type="vendor", itemID=256677, currency="5000", currencytype="Bronze"}, requirements={achievement={id=42628, title="The Nightfallen"}, rep="true"}},
+   --   {decorID=11279, title="Small Legion Candle", decorType="Small Lights", source={type="vendor", itemID=256678, currency="2500", currencytype="Bronze"}, requirements={rep="true"}},
+   --   {decorID=11942, title="Hanging Felsteel Cage", decorType="Misc Structural", source={type="vendor", itemID=258299, currency="20000", currencytype="Bronze"}, requirements={achievement={id=42547, title="Highmountain Tribe"}, rep="true"}},
+   -- }
+   --},
   {
     title="First Arcanist Thalyssra",
     source={
