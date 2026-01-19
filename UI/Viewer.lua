@@ -526,109 +526,6 @@ local function BuildReqDisplay(req, hover)
     return symCol .. txtCol .. (req.text or "") .. "|r"
 end
 
-local function _reqResolveFaction(it)
-    if not it then return nil end
-    local f = (it.source and it.source.faction) or it.faction
-    if not f then return nil end
-    if type(f) == "table" then
-        local a,h=false,false
-        for _,v in pairs(f) do
-            if v=="Alliance" then a=true end
-            if v=="Horde" then h=true end
-        end
-        if a and h then return "Both" end
-        if a then return "Alliance" end
-        if h then return "Horde" end
-        return nil
-    end
-    if f=="Alliance" or f=="Horde" or f=="Neutral" or f=="Both" then
-        return f
-    end
-    return tostring(f)
-end
-
-local function _reqVendorInfo(it)
-    if not it then return nil,nil end
-    local v = it._navVendor or it.vendor
-    if type(v) ~= "table" then return nil,nil end
-    local src = v.source
-    local name = v.title or v.name or v.vendorName or (src and (src.vendor or src.vendorName or src.npc))
-    local zone = v.zone or (src and src.zone) or it.zone or (it.source and it.source.zone)
-    return name, zone
-end
-
-local function _reqAddKey(k, v)
-    if v and v ~= "" then
-        GameTooltip:AddDoubleLine(k, tostring(v), 0.8,0.8,0.8, 0.8,0.8,0.8)
-    end
-end
-
-local function _reqShowTooltip(owner, it, req)
-    if not owner or not req then return end
-    GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
-    GameTooltip:ClearLines()
-
-    if req.kind == "achievement" then
-        local link = req.id and GetAchievementLink and GetAchievementLink(req.id)
-        if link then
-            GameTooltip:SetHyperlink(link)
-        else
-            GameTooltip:AddLine(req.text or "Achievement", 1,1,1)
-        end
-
-        GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("[Achievement]", 0.6, 0.8, 1)
-        GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("Left Click: View Item", 0.8,0.8,0.8)
-        GameTooltip:AddLine("Right Click: Vendor Location", 0.8,0.8,0.8)
-        GameTooltip:AddLine("Ctrl + Click: View Achievement", 0.8,0.8,0.8)
-        GameTooltip:AddLine("Alt + Click: Wowhead Link", 0.8,0.8,0.8)
-
-        local n,z = _reqVendorInfo(it)
-        _reqAddKey("Vendor", n)
-        _reqAddKey("Zone", z)
-        _reqAddKey("Faction", _reqResolveFaction(it))
-        GameTooltip:Show()
-        return
-    end
-
-    if req.kind == "quest" then
-        if req.id then
-            GameTooltip:SetHyperlink("quest:" .. tostring(req.id))
-        else
-            GameTooltip:AddLine(req.text or "Quest", 1,1,1)
-        end
-
-        GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("[Quest]", 0.6, 0.8, 1)
-        GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("Left Click: View Item", 0.8,0.8,0.8)
-        GameTooltip:AddLine("Right Click: Vendor Location", 0.8,0.8,0.8)
-        GameTooltip:AddLine("Alt + Click: Wowhead Link", 0.8,0.8,0.8)
-
-        local titleObj = _G.GameTooltipTextLeft1
-        local questTitle = titleObj and titleObj:GetText()
-        if questTitle and questTitle:lower():find("decor treasure hunt", 1, true) then
-            GameTooltip:AddLine(" ")
-            GameTooltip:AddLine(
-                "There are many versions of the Decor Treasure Hunt quest.",
-                1, 0.2, 0.2, true
-            )
-            GameTooltip:AddLine(
-                "Use Ctrl+Click to open the correct WoWHead link.",
-                1, 0.2, 0.2, true
-            )
-        end
-
-        local n,z = _reqVendorInfo(it)
-        _reqAddKey("Vendor", n)
-        _reqAddKey("Zone", z)
-        _reqAddKey("Faction", _reqResolveFaction(it))
-        GameTooltip:Show()
-        return
-    end
-end
-
 
 local function ShowWowheadLinks(links)
     if not links or #links == 0 then return end
@@ -985,6 +882,40 @@ function View:Create(parent)
     local f = CreateFrame("Frame", nil, parent)
     f:SetAllPoints()
 
+    local _colQueued = false
+    local function QueueRender(delay)
+        C_Timer.After(delay or 0, function()
+            if not f or not f.IsShown or not f:IsShown() then return end
+            if f.Render then f:Render() end
+        end)
+    end
+
+    function f:RequestCollectionRefresh()
+        if _colQueued then return end
+        _colQueued = true
+        C_Timer.After(0, function()
+            _colQueued = false
+            QueueRender(0)
+        end)
+    end
+
+    function f:RefreshDecor(decorID)
+        if not decorID then return end
+        for i = 1, #self._active do
+            local fr = self._active[i]
+            local e = fr and fr._entry
+            if e and e.kind ~= "header" then
+                local it = ResolveAchievementDecor(e.it)
+                if it and it.decorID == decorID then
+                    local state = GetStateSafe(it)
+                    if StatusIcon and StatusIcon.Attach then
+                        StatusIcon:Attach(fr, state, it)
+                    end
+                end
+            end
+        end
+    end
+
     local sf = CreateFrame("ScrollFrame", nil, f, "ScrollFrameTemplate")
     sf:SetPoint("TOPLEFT", 8, -52)
     sf:SetPoint("BOTTOMRIGHT", -28, 8)
@@ -1001,6 +932,36 @@ function View:Create(parent)
     sf:SetScript("OnVerticalScroll", function()
         if f.UpdateVisible then f:UpdateVisible() end
     end)
+
+    if Collection and Collection.OnChange then
+        local _fullQueued = false
+        local function QueueOneFullRender()
+            if _fullQueued then return end
+            _fullQueued = true
+            C_Timer.After(0.35, function()
+                _fullQueued = false
+                if f and f.RequestCollectionRefresh then
+                    f:RequestCollectionRefresh()
+                end
+            end)
+        end
+
+        Collection:OnChange(function(payload)
+            if not f then return end
+
+            if payload and payload.decorID and f.RefreshDecor then
+                f:RefreshDecor(payload.decorID)
+                -- Update header counts with a single delayed render (avoid 3-pass spikes).
+                QueueOneFullRender()
+                return
+            end
+
+            -- Fallback (no decorID): do a normal refresh.
+            if f.RequestCollectionRefresh then
+                f:RequestCollectionRefresh()
+            end
+        end)
+    end
 
     f._poolHeader = {}
     f._poolList   = {}
@@ -1655,13 +1616,11 @@ if req and fr.req and fr.reqBtn and fr.label then
     fr.reqBtn:SetFrameLevel((fr:GetFrameLevel() or 1) + 10)
     fr.reqBtn:Show()
 
-    fr.reqBtn:SetScript("OnEnter", function(self)
+    fr.reqBtn:SetScript("OnEnter", function()
         fr.req:SetText(BuildReqDisplay(fr.req._req, true))
-        _reqShowTooltip(self, fr._it or it, fr.req._req)
     end)
     fr.reqBtn:SetScript("OnLeave", function()
         fr.req:SetText(BuildReqDisplay(fr.req._req, false))
-        GameTooltip:Hide()
     end)
     fr.reqBtn:SetScript("OnClick", function()
         local r = fr.req._req
@@ -1778,13 +1737,11 @@ if req and fr.req and fr.reqBtn then
     fr.reqBtn:SetFrameLevel((fr:GetFrameLevel() or 1) + 10)
     fr.reqBtn:Show()
 
-    fr.reqBtn:SetScript("OnEnter", function(self)
+    fr.reqBtn:SetScript("OnEnter", function()
         fr.req:SetText(BuildReqDisplay(fr.req._req, true))
-        _reqShowTooltip(self, fr._it or it, fr.req._req)
     end)
     fr.reqBtn:SetScript("OnLeave", function()
         fr.req:SetText(BuildReqDisplay(fr.req._req, false))
-        GameTooltip:Hide()
     end)
     fr.reqBtn:SetScript("OnClick", function()
         local r = fr.req._req

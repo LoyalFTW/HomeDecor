@@ -21,6 +21,7 @@ HomeDecor.xml
 
 Systems\Collection.lua
 Systems\GlobalIndex.lua
+Systems\VendorChecks.lua
 
 UI\Theme.lua
 UI\Controls.lua

@@ -10,6 +10,37 @@ Collection.State = {
 
 local decorCache = {}
 
+local listeners = {}
+local notifyQueued = false
+local pendingDecorIDs = {}
+
+local function NotifyChanged(payload)
+    if payload and payload.decorID then
+        pendingDecorIDs[payload.decorID] = true
+    end
+
+    if notifyQueued then return end
+    notifyQueued = true
+    C_Timer.After(0, function()
+        notifyQueued = false
+
+        local deco
+        for id in pairs(pendingDecorIDs) do
+            deco = id
+            break
+        end
+        wipe(pendingDecorIDs)
+
+        local p = deco and { decorID = deco } or nil
+        for i = 1, #listeners do
+            local fn = listeners[i]
+            if type(fn) == "function" then
+                pcall(fn, p)
+            end
+        end
+    end)
+end
+
 local function getType(it)
     if it.source and it.source.type then
         return it.source.type
@@ -95,12 +126,77 @@ function Collection:GetState(it)
     return self.State.NOT_COLLECTED
 end
 
+function Collection:OnChange(fn)
+    if type(fn) ~= "function" then return end
+    listeners[#listeners + 1] = fn
+end
+
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")
+f:RegisterEvent("NEW_HOUSING_ITEM_ACQUIRED")
+f:RegisterEvent("CRITERIA_UPDATE")
+f:RegisterEvent("ACHIEVEMENT_EARNED")
 
-f:SetScript("OnEvent", function()
-    wipe(decorCache)
+local function InvalidateAndNotify(payload, multiPass)
+    if payload and payload.decorID then
+        -- Make the UI responsive immediately.
+        decorCache[payload.decorID] = true
+        NotifyChanged(payload)
+    else
+        wipe(decorCache)
+        NotifyChanged()
+    end
+
+    if not multiPass then return end
+
+    -- Catalog updates can lag behind the toast/event; do a couple light follow-ups.
+    C_Timer.After(0.25, function()
+        if payload and payload.decorID then
+            decorCache[payload.decorID] = nil
+            NotifyChanged(payload)
+        else
+            wipe(decorCache)
+            NotifyChanged()
+        end
+    end)
+    C_Timer.After(1.0, function()
+        if payload and payload.decorID then
+            decorCache[payload.decorID] = nil
+            NotifyChanged(payload)
+        else
+            wipe(decorCache)
+            NotifyChanged()
+        end
+    end)
+end
+
+f:SetScript("OnEvent", function(_, event, ...)
+    if event == "PLAYER_ENTERING_WORLD" then
+        InvalidateAndNotify(nil, false)
+        return
+    end
+
+    if event == "HOUSE_DECOR_ADDED_TO_CHEST" then
+        local _, decorID = ...
+        if type(decorID) == "number" then
+            InvalidateAndNotify({ decorID = decorID }, true)
+        else
+            InvalidateAndNotify(nil, true)
+        end
+        return
+    end
+
+    if event == "NEW_HOUSING_ITEM_ACQUIRED" then
+        -- This event doesn't reliably include decorID on all clients; treat as a soft trigger.
+        InvalidateAndNotify(nil, true)
+        return
+    end
+
+    if event == "CRITERIA_UPDATE" or event == "ACHIEVEMENT_EARNED" then
+        InvalidateAndNotify(nil, false)
+        return
+    end
 end)
 
 return Collection
