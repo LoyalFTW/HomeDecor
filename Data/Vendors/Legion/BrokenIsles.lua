@@ -67,7 +67,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     },
     items={
       {decorID=1740, title="Trueshot Lodge Fireplace", decorType="Large Lights", source={type="vendor", itemID=245549, currency="500", currencytype="Order Resources"}, requirements={rep="true"}},
-      {decorID=4042, title="Trueshot Skeletal Dragon Head", decorType="Wall Hangings", source={type="vendor", itemID=248011, currency="1500", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=4042, title="Trueshot Skeletal Dragon Head", decorType="Wall Hangings", source={type="vendor", itemID=248011, currency="1500", currencytype="Order Resources"}, requirements={achievement={id=42273, title="The Huntmaster's Campaign"}, rep="true"}},
       {decorID=5877, title="Trueshot Lodge Weapon Rack", decorType="Storage", source={type="vendor", itemID=250110, currency="500", currencytype="Order Resources"}, requirements={rep="true"}},
       {decorID=5890, title="Replica Altar of the Eternal Hunt", decorType="Ornamental", source={type="vendor", itemID=250125, currency="5000", currencytype="Order Resources"}, requirements={achievement={id=42290, title="Hidden Potential of the Huntmaster"}, rep="true"}},
       {decorID=5891, title="Unseen Path Archer's Gallery", decorType="Ornamental", source={type="vendor", itemID=250126, currency="2000", currencytype="Order Resources"}, requirements={achievement={id=60984, title="Raise an Army for the Trueshot Lodge"}, rep="true"}},
@@ -80,7 +80,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=112434,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="Dreadscar Rift",
       worldmap="717:5876:3269",
     },
@@ -186,7 +186,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=112401,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Netherlight Temple",
       worldmap="702:3861:2377",
     },
@@ -469,7 +469,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=112392,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Skyhold",
       worldmap="695:5549:2591",
     },
@@ -481,6 +481,26 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       {decorID=5534, title="Valarjar Shield Wall", decorType="Wall Hangings", source={type="vendor", itemID=249466, currency="1500", currencytype="Order Resources"}, requirements={achievement={id=42282, title="The Battlelord's Campaign"}, rep="true"}},
       {decorID=5562, title="Skyhold Spear Rack", decorType="Storage", source={type="vendor", itemID=249551, currency="500", currencytype="Order Resources"}, requirements={rep="true"}},
       {decorID=11486, title="Replica Saga of the Valarjar", decorType="Miscellaneous - All", source={type="vendor", itemID=257396, currency="3000", currencytype="Order Resources"}, requirements={achievement={id=60973, title="Legendary Research of the Valarjar"}, rep="true"}},
+    }
+  },
+  {
+    title="Quartermaster Ozorg",
+    source={
+      id=93550,
+      type="vendor",
+      faction="Neutral",
+      zone="Acherus: Ebon Hold",
+      worldmap="647:4390:3717",
+    },
+    items={
+      {decorID=5575, title="Replica Tome of Fel Secrets", decorType="Ornamental", source={type="vendor", itemID=249690, currency="3000", currencytype="Order Resources"}, requirements={achievement={id=60963, title="Legendary Research of the Illidari"}, rep="true"}},
+      {decorID=5879, title="Ebon Blade Planning Map", decorType="Tables and Desks", source={type="vendor", itemID=250112, currency="2000", currencytype="Order Resources"}, requirements={achievement={id=60981, title="Raise an Army for Acherus"}, rep="true"}},
+      {decorID=5880, title="Ebon Blade Tome", decorType="Ornamental", source={type="vendor", itemID=250113, currency="500", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=5881, title="Acherus Worktable", decorType="Tables and Desks", source={type="vendor", itemID=250114, currency="500", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=5882, title="Ebon Blade Weapon Rack", decorType="Storage", source={type="vendor", itemID=250115, currency="1500", currencytype="Order Resources"}, requirements={achievement={id=42270, title="The Deathlord's Campaign"}, rep="true"}},
+      {decorID=5888, title="Replica Acherus Soul Forge", decorType="Large Structures", source={type="vendor", itemID=250123, currency="5000", currencytype="Order Resources"}, requirements={achievement={id=42287, title="Hidden Potential of the Deathlord"}, rep="true"}},
+      {decorID=5889, title="Ebon Blade Banner", decorType="Wall Hangings", source={type="vendor", itemID=250124, currency="1000", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=14361, title="Replica Libram of the Dead", decorType="Ornamental", source={type="vendor", itemID=260584, currency="3000", currencytype="Order Resources"}, requirements={achievement={id=60962, title="Legendary Research of the Ebon Blade"}, rep="true"}},
     }
   },
   {

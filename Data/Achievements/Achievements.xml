@@ -16,7 +16,7 @@
 	
 	<!-- Legion -->
     <Script file="Legion/BrokenIsles.lua"/>
-	
+	<Script file="Legion/ClassHalls.lua"/>
 	<!-- BfA -->
     <Script file="BattleForAzeroth/KulTiras.lua"/>
 	<Script file="BattleForAzeroth/Zandalar.lua"/>

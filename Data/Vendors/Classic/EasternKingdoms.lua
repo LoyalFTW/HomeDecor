@@ -393,6 +393,7 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="2352:6240:8020",
     },
     items={
+	  {decorID=1482, title="Sethraliss Priest's Pillow", decorType="Ornamental", source={type="vendor", itemID=244778, currency="2", currencytype="Silver"}, requirements={rep="true"}},
       {decorID=81, title="Tusked Fireplace", decorType="Large Lights", source={type="vendor", itemID=245398}, requirements={quest={id=93110, title="Decor Treasure Hunt"}, rep="true"}},
       {decorID=522, title="Orgrimmar Interior Narrow Wall", decorType="Walls and Columns", source={type="vendor", itemID=236653}, requirements={rep="true"}},
       {decorID=523, title="Orgrimmar Interior Doorway", decorType="Walls and Columns", source={type="vendor", itemID=236654}, requirements={quest={id=93073, title="Decor Treasure Hunt"}, rep="true"}},
