@@ -29,24 +29,16 @@ jobs:
           TAG: ${{ github.ref_name }}
           REPO: ${{ github.repository }}
         run: |
-          python - << 'PY'
-          import os, json, urllib.request
+          content="📦 **New Release Published**\n**${REPO}** — \`${TAG}\`\nhttps://github.com/${REPO}/releases/tag/${TAG}"
 
-          webhook = os.environ["DISCORD_WEBHOOK"]
-          tag = os.environ["TAG"]
-          repo = os.environ["REPO"]
-
-          content = (
-            f"📦 **New Release Published**\n"
-            f"**{repo}** — `{tag}`\n"
-            f"https://github.com/{repo}/releases/tag/{tag}"
+          payload=$(python - <<'PY'
+          import json, os
+          print(json.dumps({"content": os.environ["content"]}))
+PY
           )
 
-          data = json.dumps({"content": content}).encode("utf-8")
-          req = urllib.request.Request(
-              webhook,
-              data=data,
-              headers={"Content-Type": "application/json"}
-          )
-          urllib.request.urlopen(req).read()
-          PY
+          curl -sS -X POST \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: HomeDecorReleaseBot (GitHub Actions)" \
+            --data "$payload" \
+            "${DISCORD_WEBHOOK}?wait=true"
