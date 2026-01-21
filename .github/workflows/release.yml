@@ -29,12 +29,11 @@ jobs:
           TAG: ${{ github.ref_name }}
           REPO: ${{ github.repository }}
         run: |
-          content="📦 **New Release Published**\n**${REPO}** — \`${TAG}\`\nhttps://github.com/${REPO}/releases/tag/${TAG}"
-
-          payload=$(python - <<'PY'
-          import json, os
-          print(json.dumps({"content": os.environ["content"]}))
-PY
+          payload=$(cat <<EOF
+          {
+            "content": "📦 **New Release Published**\n**${REPO}** — \`${TAG}\`\nhttps://github.com/${REPO}/releases/tag/${TAG}"
+          }
+          EOF
           )
 
           curl -sS -X POST \
