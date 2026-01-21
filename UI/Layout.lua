@@ -208,12 +208,27 @@ function L:CreateShell()
   header.title:SetText("HomeDecor")
   header.title:SetTextColor(unpack(T.accent))
 
+  header.closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  C:Backdrop(header.closeBtn, T.panel, T.border)
+  header.closeBtn:SetSize(26, 26)
+  header.closeBtn:SetPoint("RIGHT", header, "RIGHT", -10, 0)
+  C:ApplyHover(header.closeBtn, T.panel, T.hover)
+
+  header.closeBtn.icon = header.closeBtn:CreateTexture(nil, "OVERLAY")
+  header.closeBtn.icon:SetSize(14, 14)
+  header.closeBtn.icon:SetPoint("CENTER", 0, 0)
+  header.closeBtn.icon:SetTexture("Interface\\Buttons\\UI-StopButton")
+  header.closeBtn.icon:SetVertexColor(1, 0.82, 0.2, 1)
+
+  header.closeBtn:SetScript("OnClick", function()
+    if f and f.Hide then f:Hide() end
+  end)
+
   header.viewToggle = C:Segmented(
     header, {"Icon","List"},
     function() return UI.viewMode end,
     function(v) UI.viewMode=v end
   )
-  header.viewToggle:SetPoint("RIGHT",-14,0)
   f.Header = header
 
   local left = CreateFrame("Frame",nil,f,"BackdropTemplate")
@@ -400,14 +415,30 @@ function L:CreateShell()
     SelectCategory("Saved Items")
   end)
 
+  do
+    if header and header.viewToggle then
+      header.viewToggle:SetParent(bar)
+      header.viewToggle:ClearAllPoints()
+      header.viewToggle:SetPoint("RIGHT", bar, "RIGHT", -8, 0)
+    end
+  end
+
   local search=CreateFrame("EditBox",nil,bar,"BackdropTemplate")
   C:Backdrop(search,T.panel,T.border)
   search:SetPoint("LEFT",savedBtn,"RIGHT",8,0)
-  search:SetPoint("RIGHT",-8,0)
+  if header and header.viewToggle and header.viewToggle.GetLeft then
+    search:SetPoint("RIGHT", header.viewToggle, "LEFT", -8, 0)
+  else
+    search:SetPoint("RIGHT", -8, 0)
+  end
   search:SetHeight(24)
   search:SetAutoFocus(false)
   search:SetFontObject(GameFontHighlightSmall)
-  search:SetTextInsets(8,8,0,0)
+  search:SetTextInsets(8, 26, 0, 0)
+  search:SetScript("OnEscapePressed", function(self)
+    self:ClearFocus()
+end)
+
 
   local placeholder=search:CreateFontString(nil,"OVERLAY","GameFontDisableSmall")
   placeholder:SetPoint("LEFT",search,"LEFT",8,0)
@@ -417,18 +448,55 @@ function L:CreateShell()
   f.SearchBox = search
   f.SearchPlaceholder = placeholder
 
-  search:SetText(UI.search or "")
-  placeholder:SetShown(search:GetText()=="")
+	local clearBtn = CreateFrame("Button", nil, search, "BackdropTemplate")
+	C:Backdrop(clearBtn, T.panel, T.border)
+	clearBtn:SetSize(18, 18)
+	clearBtn:SetPoint("RIGHT", search, "RIGHT", -6, 0)
+	C:ApplyHover(clearBtn, T.panel, T.hover)
+
+	clearBtn.icon = clearBtn:CreateTexture(nil, "OVERLAY")
+	clearBtn.icon:SetSize(12, 12)
+	clearBtn.icon:SetPoint("CENTER", 0, 0)
+	clearBtn.icon:SetTexture("Interface\\Buttons\\UI-StopButton")
+	clearBtn.icon:SetVertexColor(1, 0.82, 0.2, 0.95)
+
+	clearBtn:Hide()
+	search._clearBtn = clearBtn
+
+	search:SetText(UI.search or "")
+	if search._clearBtn then search._clearBtn:SetShown((search:GetText() or "") ~= "") end
+	placeholder:SetShown(search:GetText()=="")
+
+
+	clearBtn:SetScript("OnClick", function()
+	search:SetText("")
+	search:ClearFocus()
+	UI.search = ""
+	if db and db.ui then db.ui.search = "" end
+	placeholder:Show()
+	clearBtn:Hide()
+	rerender()
+end)
 
   search:SetScript("OnTextChanged",function(self)
-    UI.search=(self:GetText() or "")
-    if db and db.ui then db.ui.search = UI.search end
-    placeholder:SetShown(self:GetText()=="" and not self:HasFocus())
-    rerender()
+  UI.search=(self:GetText() or "")
+  if db and db.ui then db.ui.search = UI.search end
+
+  local hasText = (UI.search ~= "")
+  if self._clearBtn then
+    self._clearBtn:SetShown(hasText)
+  end
+
+  placeholder:SetShown(self:GetText()=="" and not self:HasFocus())
+  rerender()
+end)
+  search:SetScript("OnEditFocusGained",function(self)
+    placeholder:Hide()
+    if self._clearBtn then self._clearBtn:SetShown((self:GetText() or "") ~= "") end
   end)
-  search:SetScript("OnEditFocusGained",function() placeholder:Hide() end)
   search:SetScript("OnEditFocusLost",function(self)
     placeholder:SetShown(self:GetText()=="")
+    if self._clearBtn then self._clearBtn:SetShown((self:GetText() or "") ~= "") end
   end)
 
   f.Right=right
