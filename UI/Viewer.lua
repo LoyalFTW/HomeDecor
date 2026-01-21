@@ -1614,11 +1614,13 @@ if req and fr.req and fr.reqBtn and fr.label then
     fr.reqBtn:SetFrameLevel((fr:GetFrameLevel() or 1) + 10)
     fr.reqBtn:Show()
 
-    fr.reqBtn:SetScript("OnEnter", function()
+    fr.reqBtn:SetScript("OnEnter", function(btn)
         fr.req:SetText(BuildReqDisplay(fr.req._req, true))
+        if TT and TT.ShowRequirement then TT:ShowRequirement(btn, fr.req._req) end
     end)
     fr.reqBtn:SetScript("OnLeave", function()
         fr.req:SetText(BuildReqDisplay(fr.req._req, false))
+        GameTooltip:Hide()
     end)
     fr.reqBtn:SetScript("OnClick", function()
         local r = fr.req._req
@@ -1735,11 +1737,13 @@ if req and fr.req and fr.reqBtn then
     fr.reqBtn:SetFrameLevel((fr:GetFrameLevel() or 1) + 10)
     fr.reqBtn:Show()
 
-    fr.reqBtn:SetScript("OnEnter", function()
+    fr.reqBtn:SetScript("OnEnter", function(btn)
         fr.req:SetText(BuildReqDisplay(fr.req._req, true))
+        if TT and TT.ShowRequirement then TT:ShowRequirement(btn, fr.req._req) end
     end)
     fr.reqBtn:SetScript("OnLeave", function()
         fr.req:SetText(BuildReqDisplay(fr.req._req, false))
+        GameTooltip:Hide()
     end)
     fr.reqBtn:SetScript("OnClick", function()
         local r = fr.req._req

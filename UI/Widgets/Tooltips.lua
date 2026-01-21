@@ -262,4 +262,32 @@ end
     frame:SetScript("OnLeave", Hide)
 end
 
+function TT:ShowRequirement(owner, req)
+    if not owner or not req then return end
+    GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
+    GameTooltip:ClearLines()
+
+    if req.kind == "achievement" and req.id then
+        local link = GetAchievementLink(req.id)
+        if link then
+            GameTooltip:SetHyperlink(link)
+        end
+        AddLabel("[Achievement]")
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine("Click: Wowhead Link", 0.8,0.8,0.8)
+        GameTooltip:Show()
+        return
+    end
+
+    if req.kind == "quest" and req.id then
+        GameTooltip:SetHyperlink("quest:" .. req.id)
+        AddLabel("[Quest]")
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine("Click: Wowhead Link", 0.8,0.8,0.8)
+        GameTooltip:Show()
+        return
+    end
+end
+
 return TT
+
