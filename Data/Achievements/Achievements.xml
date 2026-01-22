@@ -12,8 +12,7 @@
 	<!-- MoP -->
     <Script file="Pandaria/Pandaria.lua"/>
 	<!-- WoD -->
-    <!-- <Script file="Warlords/Draenor.lua"/> -->
-	
+    <Script file="Warlords/Draenor.lua"/>
 	<!-- Legion -->
     <Script file="Legion/BrokenIsles.lua"/>
 	<Script file="Legion/ClassHalls.lua"/>
