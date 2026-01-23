@@ -19,44 +19,11 @@ jobs:
 
       - name: Generate Version.lua
         shell: bash
-        run: |
-          set -euo pipefail
-          TAG="${GITHUB_REF_NAME}"
-          DATE="$(date -u +"%Y-%m-%d")"
-
-          mkdir -p HomeDecor/Core
-          cat > HomeDecor/Core/Version.lua <<EOF
-HomeDecor_Version = {
-  version = "${TAG}",
-  date    = "${DATE}",
-}
-EOF
+        run: bash -lc 'set -euo pipefail; TAG="$GITHUB_REF_NAME"; DATE="$(date -u +%Y-%m-%d)"; mkdir -p HomeDecor/Core; printf "HomeDecor_Version = {\n  version = \"%s\",\n  date    = \"%s\",\n}\n" "$TAG" "$DATE" > HomeDecor/Core/Version.lua'
 
       - name: Generate Changelog.lua
         shell: bash
-        run: |
-          set -euo pipefail
-          TAG="${GITHUB_REF_NAME}"
-          DATE="$(date -u +"%Y-%m-%d")"
-
-          PREV_TAG="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"
-          if [ -n "${PREV_TAG}" ]; then
-            RANGE="${PREV_TAG}..${TAG}"
-          else
-            RANGE="${TAG}"
-          fi
-
-          mkdir -p HomeDecor/Core
-          {
-            echo "HomeDecor_Changelog = [["
-            echo "# HomeDecor"
-            echo
-            echo "## ${TAG} (${DATE})"
-            echo
-            git log "${RANGE}" --no-merges --pretty=format:"- %s"
-            echo
-            echo "]]"
-          } > HomeDecor/Core/Changelog.lua
+        run: bash -lc 'set -euo pipefail; TAG="$GITHUB_REF_NAME"; DATE="$(date -u +%Y-%m-%d)"; PREV_TAG="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"; if [ -n "$PREV_TAG" ]; then RANGE="${PREV_TAG}..${TAG}"; else RANGE="${TAG}"; fi; mkdir -p HomeDecor/Core; CHANGES="$(git log "$RANGE" --no-merges --pretty=format:"- %s")"; printf "HomeDecor_Changelog = [[\n# HomeDecor\n\n## %s (%s)\n\n%s\n\n]]\n" "$TAG" "$DATE" "$CHANGES" > HomeDecor/Core/Changelog.lua'
 
       - name: Package and Upload
         uses: BigWigsMods/packager@master
@@ -68,20 +35,5 @@ EOF
 
       - name: Announce on Discord
         if: success()
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          TAG: ${{ github.ref_name }}
-          REPO: ${{ github.repository }}
-        run: |
-          payload=$(cat <<EOF
-          {
-            "content": "📦 **New Release Published**\n**${REPO}** — \`${TAG}\`\nhttps://github.com/${REPO}/releases/tag/${TAG}"
-          }
-          EOF
-          )
-
-          curl -sS -X POST \
-            -H "Content-Type: application/json" \
-            -H "User-Agent: HomeDecorReleaseBot (GitHub Actions)" \
-            --data "$payload" \
-            "${DISCORD_WEBHOOK}?wait=true"
+        shell: bash
+        run: bash -lc 'set -euo pipefail; payload="$(printf "{\n  \"content\": \"📦 **New Release Published**\\n**%s** — `%s`\\nhttps://github.com/%s/releases/tag/%s\"\n}\n" "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME")"; curl -sS -X POST -H "Content-Type: application/json" -H "User-Agent: HomeDecorReleaseBot (GitHub Actions)" --data "$payload" "${{ secrets.DISCORD_WEBHOOK }}?wait=true"'
