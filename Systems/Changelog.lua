@@ -17,7 +17,8 @@ end
 
 function CLog:IsAutoOpenEnabled()
   local s = Ensure()
-  return s and s.autoOpen or true
+  if not s then return true end
+  return s.autoOpen and true or false
 end
 
 function CLog:SetAutoOpen(v)

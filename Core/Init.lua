@@ -66,7 +66,6 @@ local defaults = {
 
     minimap = { hide = false },
 
-    -- Changelog state (FIXED)
     changelog = {
       autoOpen = true,
       lastSeenVersion = "",
@@ -158,5 +157,4 @@ function Addon:OnEnable()
   if NS.Systems.DecorIndex then
     NS.Systems.DecorIndex:Build()
   end
-  -- NO forced changelog popup here (respects autoOpen + version)
 end
