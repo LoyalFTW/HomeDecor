@@ -1,6 +1,6 @@
 name: Release
 
-on:
+"on":
   push:
     tags:
       - "v*"
@@ -63,4 +63,28 @@ EOF
           } > HomeDecor/Core/Changelog.lua
 
       - name: Package and Upload
-        uses:
+        uses: BigWigsMods/packager@master
+        env:
+          CF_API_KEY: "${{ secrets.CF_API_KEY }}"
+          WOWI_API_TOKEN: "${{ secrets.WOWI_API_TOKEN }}"
+          WAGO_API_TOKEN: "${{ secrets.WAGO_API_TOKEN }}"
+          GITHUB_OAUTH: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Announce on Discord
+        if: success()
+        env:
+          DISCORD_WEBHOOK: "${{ secrets.DISCORD_WEBHOOK }}"
+          TAG: "${{ github.ref_name }}"
+          REPO: "${{ github.repository }}"
+        run: |
+          payload=$(cat <<EOF
+          {
+            "content": "📦 **New Release Published**\n**${REPO}** — \`${TAG}\`\nhttps://github.com/${REPO}/releases/tag/${TAG}"
+          }
+          EOF
+          )
+          curl -sS -X POST \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: HomeDecorReleaseBot (GitHub Actions)" \
+            --data "$payload" \
+            "${DISCORD_WEBHOOK}?wait=true"
