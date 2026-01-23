@@ -1,38 +1,43 @@
 name: Release
 
-"on":
+on:
   push:
     tags:
-      - 'v*'
+      - "v*"
+
+permissions:
+  contents: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Generate Version.lua + Changelog.lua
+      - name: Generate Version.lua
         shell: bash
         run: |
           set -euo pipefail
-
           TAG="${GITHUB_REF_NAME}"
           DATE="$(date -u +"%Y-%m-%d")"
 
           mkdir -p HomeDecor/Core
+          printf '%s\n' \
+'HomeDecor_Version = {' \
+"  version = \"${TAG}\"," \
+"  date    = \"${DATE}\"," \
+'}' \
+          > HomeDecor/Core/Version.lua
 
-          cat > HomeDecor/Core/Version.lua <<EOF
--- Auto-generated. Do not edit.
-
-HomeDecor_Version = {
-  version = "${TAG}",
-  date    = "${DATE}",
-}
-EOF
+      - name: Generate Changelog.lua
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          DATE="$(date -u +"%Y-%m-%d")"
 
           PREV_TAG="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"
           if [ -n "${PREV_TAG}" ]; then
@@ -41,36 +46,32 @@ EOF
             RANGE="${TAG}"
           fi
 
+          mkdir -p HomeDecor/Core
           {
-            echo "-- Auto-generated. Do not edit."
+            echo "HomeDecor_Changelog = [["
+            echo "# HomeDecor"
             echo
-            echo "HomeDecor_Changelog = {"
-            echo "  version = \"${TAG}\","
-            echo "  date    = \"${DATE}\","
-            echo "  changes = {"
-            git log "${RANGE}" --no-merges --pretty=format:%s | while IFS= read -r line; do
-              esc="${line//\\/\\\\}"
-              esc="${esc//\"/\\\"}"
-              printf "    \"%s\",\n" "$esc"
-            done
-            echo "  },"
-            echo "}"
+            echo "## ${TAG} (${DATE})"
+            echo
+            git log "${RANGE}" --no-merges --pretty=format:"- %s"
+            echo
+            echo "]]"
           } > HomeDecor/Core/Changelog.lua
 
       - name: Package and Upload
         uses: BigWigsMods/packager@master
         env:
-          CF_API_KEY: '${{ secrets.CF_API_KEY }}'
-          WOWI_API_TOKEN: '${{ secrets.WOWI_API_TOKEN }}'
-          WAGO_API_TOKEN: '${{ secrets.WAGO_API_TOKEN }}'
-          GITHUB_OAUTH: '${{ secrets.GITHUB_TOKEN }}'
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Announce on Discord
         if: success()
         env:
-          DISCORD_WEBHOOK: '${{ secrets.DISCORD_WEBHOOK }}'
-          TAG: '${{ github.ref_name }}'
-          REPO: '${{ github.repository }}'
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
         run: |
           payload=$(cat <<EOF
           {
@@ -78,6 +79,7 @@ EOF
           }
           EOF
           )
+
           curl -sS -X POST \
             -H "Content-Type: application/json" \
             -H "User-Agent: HomeDecorReleaseBot (GitHub Actions)" \
