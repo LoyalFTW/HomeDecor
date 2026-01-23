@@ -1,13 +1,18 @@
 HomeDecor_Changelog = [[
-# HomeDecor
+#HomeDecor
 
-## [v12.0.10](https://github.com/LoyalFTW/HomeDecor/tree/v12.0.10) (2026-01-22)
-[Full Changelog](https://github.com/LoyalFTW/HomeDecor/compare/v12.0.09...v12.0.10) [Previous Releases](https://github.com/LoyalFTW/HomeDecor/releases)
+What's New button added,
+you can enable it or disable it
+Its now in the bottom left
 
-- Updated missing Achievements  
-    Added missing Achievements items  
-    * Ebon Blade Planning Map  
-    * Fel Hammer Scouting Map  
-    * Glorious Pendant of Rukhmar - Added for Midnight 12.0 should be working now.  
+Added missing quests (added new ones as well as added their vendors
+* Candle-Festooned Wooden Awning
+* Kobold Candle Trio
+* Kobold Digger's Chair
+* Kobold Wagon
+* Driftwood Barrel
+* Driftwood Junk Pile
+* Murloc's Wind Chimes
+* Writings of Reshad the Outcast
 
 ]]
