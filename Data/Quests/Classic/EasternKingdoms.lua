@@ -119,6 +119,7 @@ NS.Data.Quests["Classic"]["EasternKingdoms"] = {
   { decorID=8907, source={ type="quest" } },
   { decorID=8917, source={ type="quest" } },
   { decorID=9255, source={ type="quest" } },
+ -- { decorID=9424, title="Goldshire Wardrobe", decorType="Storage", source={type="quest", itemID=1256595}, requirements={quest={id=114, title="The Escape"}, rep="true"}},   -- No vendor
   { decorID=9471, source={ type="quest" } },
   { decorID=10860, source={ type="quest" } },
   { decorID=11131, source={ type="quest" } },

@@ -132,11 +132,11 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="542:4670:4496",
     },
     items={
-      --       {decorID=12200, title="Glorious Pendant of Rukhmar", decorType="Ornamental", source={type="vendor", itemID=258740, currency="800", currencytype="Apexis Crystal"}, requirements={achievement={id=9415, title="Secrets of Skettis"}, rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=12201, title="Writings of Reshad the Outcast", decorType="Ornamental", source={type="vendor", itemID=258741, currency="1200", currencytype="Resonance Crystals"}, requirements={quest={id=35671, title="A Gathering of Shadows"}, rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=12205, title="High Arakkoan Library Shelf", decorType="Storage", source={type="vendor", itemID=258745, currency="700", currencytype="Apexis Crystal"}, requirements={quest={id=35704, title="When All Is Aligned"}, rep="true"}}, -- Early Access / Midnight pre-patch
+       {decorID=12200, title="Glorious Pendant of Rukhmar", decorType="Ornamental", source={type="vendor", itemID=258740, currency="800", currencytype="Apexis Crystal"}, requirements={achievement={id=9415, title="Secrets of Skettis"}, rep="true"}}, 
+       {decorID=12201, title="Writings of Reshad the Outcast", decorType="Ornamental", source={type="vendor", itemID=258741, currency="1200", currencytype="Resonance Crystals"}, requirements={quest={id=35671, title="A Gathering of Shadows"}, rep="true"}},
+       {decorID=12205, title="High Arakkoan Library Shelf", decorType="Storage", source={type="vendor", itemID=258745, currency="700", currencytype="Apexis Crystal"}, requirements={quest={id=35704, title="When All Is Aligned"}, rep="true"}},
       --       {decorID=12208, title="\"Rising Glory of Rukhmar\" Statue", decorType="Misc Accents", source={type="vendor", itemID=258748, currency="1000", currencytype="Garrison Resources"}, requirements={quest={id=35273, title="Hot Seat"}, rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=12209, title="Uncorrupted Eye of Terokk", decorType="Ornamental", source={type="vendor", itemID=258749, currency="10000", currencytype="Echoes of Ny'alotha"}, requirements={quest={id=35896, title="The Avatar of Terokk"}, rep="true"}}, -- Early Access / Midnight pre-patch
+       {decorID=12209, title="Uncorrupted Eye of Terokk", decorType="Ornamental", source={type="vendor", itemID=258749, currency="10000", currencytype="Echoes of Ny'alotha"}, requirements={quest={id=35896, title="The Avatar of Terokk"}, rep="true"}},
     }
   },
   {

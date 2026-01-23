@@ -30,160 +30,108 @@ end
 local _communityPopup
 
 local function ShowCommunityPopup()
-  if not _communityPopup then
-    local p = CreateFrame("Frame", "HomeDecorCommunityPopup", UIParent, "BackdropTemplate")
-    _communityPopup = p
-
-    if type(UISpecialFrames) == "table" then
-      local already
-      for i = 1, #UISpecialFrames do
-        if UISpecialFrames[i] == "HomeDecorCommunityPopup" then
-          already = true
-          break
-        end
-      end
-      if not already then
-        tinsert(UISpecialFrames, 1, "HomeDecorCommunityPopup")
-      end
-    end
-
-    p:SetFrameStrata("FULLSCREEN_DIALOG")
-    p:SetFrameLevel(9999)
-    p:SetToplevel(true)
-    p:SetClampedToScreen(true)
-    p:SetPoint("CENTER")
-
-    if C and C.Backdrop then
-      C:Backdrop(p, T.panel, T.border)
-    else
-      p:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true, tileSize = 16, edgeSize = 16,
-        insets = { left = 4, right = 4, top = 4, bottom = 4 },
-      })
-      p:SetBackdropColor(0, 0, 0, 0.96)
-      p:SetBackdropBorderColor(1, 0.75, 0.15, 1)
-    end
-
-    p:EnableMouse(true)
-    p:SetMovable(true)
-    p:RegisterForDrag("LeftButton")
-    p:SetScript("OnDragStart", p.StartMoving)
-    p:SetScript("OnDragStop", p.StopMovingOrSizing)
-
-    local topStrip = CreateFrame("Frame", nil, p, "BackdropTemplate")
-    topStrip:SetPoint("TOPLEFT", 6, -6)
-    topStrip:SetPoint("TOPRIGHT", -6, -6)
-    topStrip:SetHeight(52)
-    if C and C.Backdrop then
-      C:Backdrop(topStrip, T.header, T.border)
-    else
-      topStrip:SetBackdrop({
-        bgFile = "Interface\\Buttons\\WHITE8X8",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = false, edgeSize = 12,
-        insets = { left = 3, right = 3, top = 3, bottom = 3 },
-      })
-      topStrip:SetBackdropColor(0.08, 0.08, 0.08, 0.95)
-    end
-    p._topStrip = topStrip
-
-    local title = topStrip:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    title:SetPoint("TOPLEFT", 14, -10)
-    title:SetText("Support Info")
-    title:SetTextColor(unpack(T.accent))
-    p._title = title
-
-    local hint = topStrip:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    hint:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
-    hint:SetText("Click a link box, press Ctrl+C, then paste in your browser.")
-    hint:SetTextColor(1, 1, 1, 0.9)
-    p._hint = hint
-
-    local div = p:CreateTexture(nil, "ARTWORK")
-    div:SetColorTexture(1, 1, 1, 0.10)
-    div:SetHeight(1)
-    div:SetPoint("TOPLEFT", 12, -62)
-    div:SetPoint("TOPRIGHT", -12, -62)
-    p._divider = div
-
-    local close = CreateFrame("Button", nil, p, "UIPanelCloseButton")
-    close:SetPoint("TOPRIGHT", -6, -6)
-    close:SetFrameStrata(p:GetFrameStrata())
-    close:SetFrameLevel(p:GetFrameLevel() + 20)
-    close:SetScript("OnClick", function() p:Hide() end)
-    close:Show()
-    p._close = close
-
-
-    p._rows = {}
-    for i = 1, 4 do
-      local row = {}
-
-      local lab = p:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-      lab:SetTextColor(1, 1, 1, 0.95)
-      row.label = lab
-
-      local eb = CreateFrame("EditBox", nil, p, "InputBoxTemplate")
-      eb:SetAutoFocus(false)
-      eb:SetTextInsets(12, 12, 0, 0)
-      eb:SetFontObject("GameFontHighlight")
-      eb:SetHeight(30)
-      eb:SetScript("OnEscapePressed", function() p:Hide() end)
-      eb:SetScript("OnEnterPressed", function() p:Hide() end)
-
-      eb:HookScript("OnEditFocusGained", function(self)
-        if self.SetBackdropBorderColor then self:SetBackdropBorderColor(1, 0.82, 0.2, 1) end
-      end)
-      eb:HookScript("OnEditFocusLost", function(self)
-        if self.SetBackdropBorderColor then self:SetBackdropBorderColor(1, 0.75, 0.15, 0.6) end
-      end)
-
-      row.editbox = eb
-      p._rows[i] = row
-    end
-
-    p:Hide()
+  if _communityPopup then
+    _communityPopup:Show()
+    return
   end
 
-  local p = _communityPopup
+  local p = CreateFrame("Frame", "HomeDecorCommunityPopup", UIParent, "BackdropTemplate")
+  _communityPopup = p
+
+  tinsert(UISpecialFrames, "HomeDecorCommunityPopup")
+
+  p:SetSize(560, 360)
+  p:SetPoint("CENTER")
+  p:SetFrameStrata("FULLSCREEN_DIALOG")
+  p:SetFrameLevel(9999)
+  p:SetToplevel(true)
+  p:SetClampedToScreen(true)
+
+  C:Backdrop(p, T.panel, T.border)
+
+  p:EnableMouse(true)
+  p:SetMovable(true)
+  p:RegisterForDrag("LeftButton")
+  p:SetScript("OnDragStart", p.StartMoving)
+  p:SetScript("OnDragStop", p.StopMovingOrSizing)
+
+  p:SetPropagateKeyboardInput(true)
+  p:SetScript("OnKeyDown", function(self, key)
+    if key == "ESCAPE" then
+      self:Hide()
+    end
+  end)
+
+  local header = CreateFrame("Frame", nil, p, "BackdropTemplate")
+  C:Backdrop(header, T.header, T.border)
+  header:SetPoint("TOPLEFT", 6, -6)
+  header:SetPoint("TOPRIGHT", -6, -6)
+  header:SetHeight(48)
+
+  header.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+  header.title:SetPoint("CENTER")
+  header.title:SetText("Community")
+  header.title:SetTextColor(unpack(T.accent))
+
+  header.closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  C:Backdrop(header.closeBtn, T.panel, T.border)
+  header.closeBtn:SetSize(26, 26)
+  header.closeBtn:SetPoint("RIGHT", header, "RIGHT", -10, 0)
+  C:ApplyHover(header.closeBtn, T.panel, T.hover)
+
+  header.closeBtn.icon = header.closeBtn:CreateTexture(nil, "OVERLAY")
+  header.closeBtn.icon:SetSize(14, 14)
+  header.closeBtn.icon:SetPoint("CENTER")
+  header.closeBtn.icon:SetTexture("Interface\\Buttons\\UI-StopButton")
+  header.closeBtn.icon:SetVertexColor(1, 0.82, 0.2, 1)
+
+  header.closeBtn:SetScript("OnClick", function()
+    p:Hide()
+  end)
+
+  local div = p:CreateTexture(nil, "ARTWORK")
+  div:SetColorTexture(1, 1, 1, 0.12)
+  div:SetHeight(1)
+  div:SetPoint("TOPLEFT", 12, -60)
+  div:SetPoint("TOPRIGHT", -12, -60)
 
   local links = {
-    { label = "Join our discord community!", url = "https://discord.gg/f8njqW6Tgm" },
-    { label = "If you'd like to help support us", url = "buymeacoffee.com/azroaddons" },
-    { label = "PayPal Donate", url = "https://www.paypal.com/donate/?business=Jhookftw1@hotmail.com" },
-    { label = "Help us grow, share the link to your friends!", url = "https://legacy.curseforge.com/wow/addons/home-decor" },
+    { "Join our Discord community", "https://discord.gg/f8njqW6Tgm" },
+    { "Support development (BuyMeACoffee)", "https://buymeacoffee.com/azroaddons" },
+    { "Donate via PayPal", "https://www.paypal.com/donate/?business=Jhookftw1@hotmail.com" },
+    { "Share HomeDecor with friends", "https://legacy.curseforge.com/wow/addons/home-decor" },
   }
 
-  local maxRows = #links
-  local width = 680
-  local topY = -78
-  local rowGap = 60
+  local y = -78
+  local gap = 60
 
-  p:SetWidth(width)
-  p:SetHeight(110 + (maxRows * rowGap))
+  for i, info in ipairs(links) do
+    local label = p:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    label:SetPoint("TOPLEFT", 16, y - ((i - 1) * gap))
+    label:SetText(info[1])
+    label:SetTextColor(1, 1, 1, 0.95)
 
-  for i = 1, maxRows do
-    local row = p._rows[i]
-    local l = links[i]
+    local edit = CreateFrame("EditBox", nil, p, "InputBoxTemplate")
+    edit:SetAutoFocus(false)
+    edit:SetHeight(30)
+    edit:SetPoint("TOPLEFT", label, "BOTTOMLEFT", -6, -6)
+    edit:SetPoint("RIGHT", -16, 0)
+    edit:SetTextInsets(12, 12, 0, 0)
+    edit:SetFontObject("GameFontHighlight")
+    edit:SetText(info[2])
 
-    row.label:ClearAllPoints()
-    row.label:SetPoint("TOPLEFT", 16, topY - ((i - 1) * rowGap))
-    row.label:SetText(l.label or "Link")
-    row.label:Show()
+    local function Highlight(self)
+      self:SetFocus()
+      self:HighlightText()
+    end
 
-    row.editbox:ClearAllPoints()
-    row.editbox:SetPoint("TOPLEFT", row.label, "BOTTOMLEFT", -6, -6)
-    row.editbox:SetPoint("TOPRIGHT", p, "TOPRIGHT", -16, topY - ((i - 1) * rowGap) - 22)
-    row.editbox:SetText(l.url or "")
-    row.editbox:Show()
+    edit:SetScript("OnMouseUp", Highlight)
+    edit:SetScript("OnEditFocusGained", Highlight)
+    edit:SetScript("OnEscapePressed", function() p:Hide() end)
+    edit:SetScript("OnEnterPressed", function() p:Hide() end)
   end
 
-  p:ClearAllPoints()
-  p:SetPoint("CENTER")
   p:Show()
-
 end
 
 function L:CreateShell()
@@ -543,21 +491,21 @@ end)
     ShowCommunityPopup()
   end)
 
-  local closeBtn = CreateFrame("Button",nil,left,"BackdropTemplate")
-  C:Backdrop(closeBtn,T.panel,T.border)
-  closeBtn:SetPoint("BOTTOMLEFT",10,10)
-  closeBtn:SetPoint("BOTTOMRIGHT",-10,10)
-  closeBtn:SetHeight(26)
+  local whatsNewBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
+  C:Backdrop(whatsNewBtn, T.panel, T.border)
+  whatsNewBtn:SetPoint("BOTTOMLEFT", 10, 10)
+  whatsNewBtn:SetPoint("BOTTOMRIGHT", -10, 10)
+  whatsNewBtn:SetHeight(26)
 
-  closeBtn.text = closeBtn:CreateFontString(nil,"OVERLAY","GameFontNormal")
-  closeBtn.text:SetPoint("CENTER")
-  closeBtn.text:SetText("Close")
-
-  C:ApplyHover(closeBtn, T.panel, T.hover)
-
-  closeBtn:SetScript("OnClick", function()
-    if left:GetParent() then
-      left:GetParent():Hide()
+  whatsNewBtn.text = whatsNewBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+  whatsNewBtn.text:SetPoint("CENTER")
+  whatsNewBtn.text:SetText("What's New")
+  
+  C:ApplyHover(whatsNewBtn, T.header, T.hover)
+  
+  whatsNewBtn:SetScript("OnClick", function()
+    if NS.UI and NS.UI.ShowChangelogPopup then
+      NS.UI:ShowChangelogPopup(true)
     end
   end)
 

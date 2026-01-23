@@ -276,9 +276,9 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="650:4162:1044",
     },
     items={
-      --       {decorID=11905, title="Driftwood Barrel", decorType="Storage", source={type="vendor", itemID=258219, currency="175", currencytype="Order Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=11907, title="Driftwood Junk Pile", decorType="Storage", source={type="vendor", itemID=258221, currency="450", currencytype="Order Resources"}, requirements={quest={id=40230, title="Oh, the Clawdacity!"}, rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=11909, title="Murloc's Wind Chimes", decorType="Ornamental", source={type="vendor", itemID=258223, currency="400", currencytype="Order Resources"}, requirements={achievement={id=11699, title="Grand Fin-ale"}, rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=11905, title="Driftwood Barrel", decorType="Storage", source={type="vendor", itemID=258219, currency="175", currencytype="Order Resources"}, requirements={rep="true"}}, 
+      {decorID=11907, title="Driftwood Junk Pile", decorType="Storage", source={type="vendor", itemID=258221, currency="450", currencytype="Order Resources"}, requirements={quest={id=40230, title="Oh, the Clawdacity!"}, rep="true"}},
+      {decorID=11909, title="Murloc's Wind Chimes", decorType="Ornamental", source={type="vendor", itemID=258223, currency="400", currencytype="Order Resources"}, requirements={achievement={id=11699, title="Grand Fin-ale"}, rep="true"}},
     }
   },
   {

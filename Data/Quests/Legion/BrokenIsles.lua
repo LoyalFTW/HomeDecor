@@ -34,5 +34,6 @@ NS.Data.Quests["Legion"]["BrokenIsles"] = {
   { decorID=11491, source={ type="quest" } },
   { decorID=11752, source={ type="quest" } },
   { decorID=11753, source={ type="quest" } },
+  { decorID=11907, source={ type="quest" } },
   { decorID=14379, source={ type="quest" } },
 }

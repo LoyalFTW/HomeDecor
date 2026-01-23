@@ -53,7 +53,12 @@ function UI:ToggleMainFrame()
     f:Hide()
   else
     f:Show()
+
+    if NS.Systems and NS.Systems.Changelog then
+      NS.Systems.Changelog:TryAutoPopup()
+    end
   end
 end
+
 
 return UI

@@ -328,10 +328,10 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2214:4335:3327",
     },
     items={
-      --       {decorID=11930, title="Kobold Digger's Chair", decorType="Seating", source={type="vendor", itemID=258262, currency="400", currencytype="War Resources"}, requirements={quest={id=79510, title="The Wickless Candle"}, rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=11931, title="Kobold Candle Trio", decorType="Small Lights", source={type="vendor", itemID=258264, currency="450", currencytype="Resonance Crystals"}, requirements={quest={id=78642, title="New Candle, New Hope"}, rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=11932, title="Kobold Wagon", decorType="Miscellaneous - All", source={type="vendor", itemID=258265, currency="1200", currencytype="Resonance Crystals"}, requirements={quest={id=80516, title="Bump off the Boss"}, rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=11933, title="Candle-Festooned Wooden Awning", decorType="Large Structures", source={type="vendor", itemID=258267, currency="1000", currencytype="Order Resources"}, requirements={quest={id=79565, title="Janky Candles"}, rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=11930, title="Kobold Digger's Chair", decorType="Seating", source={type="vendor", itemID=258262, currency="400", currencytype="War Resources"}, requirements={quest={id=79510, title="The Wickless Candle"}, rep="true"}}, 
+      {decorID=11931, title="Kobold Candle Trio", decorType="Small Lights", source={type="vendor", itemID=258264, currency="450", currencytype="Resonance Crystals"}, requirements={quest={id=78642, title="New Candle, New Hope"}, rep="true"}},
+      {decorID=11932, title="Kobold Wagon", decorType="Miscellaneous - All", source={type="vendor", itemID=258265, currency="1200", currencytype="Resonance Crystals"}, requirements={quest={id=80516, title="Bump off the Boss"}, rep="true"}}, 
+      {decorID=11933, title="Candle-Festooned Wooden Awning", decorType="Large Structures", source={type="vendor", itemID=258267, currency="1000", currencytype="Order Resources"}, requirements={quest={id=79565, title="Janky Candles"}, rep="true"}}, 
     }
   },
   {

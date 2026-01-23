@@ -17,7 +17,7 @@ NS.Data.Vendors["Wrath"]["Northrend"] = {
       worldmap="114:4304:1381",
     },
     items={
-      --       {decorID=11906, title="Murloc Driftwood Hut", decorType="Large Structures", source={type="vendor", itemID=258220, currency="1000", currencytype="Order Resources"}, requirements={quest={id=11566, title="Surrender... Not!"}, rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=11906, title="Murloc Driftwood Hut", decorType="Large Structures", source={type="vendor", itemID=258220, currency="1000", currencytype="Order Resources"}, requirements={quest={id=11566, title="Surrender... Not!"}, rep="true"}}, 
     }
   },
   {

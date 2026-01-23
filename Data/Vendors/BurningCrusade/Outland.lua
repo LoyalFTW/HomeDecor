@@ -17,7 +17,8 @@ NS.Data.Vendors["BurningCrusade"]["Outland"] = {
     },
     items={
       {decorID=10950, title="Sin'dorei Sleeper", decorType="Beds", source={type="vendor", itemID=256049, currency="1200", currencytype="Order Resources"}, requirements={rep="true"}},
-      {decorID=11500, title="Sin'dorei Crafter's Forge", decorType="Uncategorized", source={type="vendor", itemID=257419, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      -- { decorID=925, title="Elodor Barrel", decorType="Storage", source={type="quest", itemID=1230952}, requirements={quest={id=38201, title="Missive: Assault on Shattrath Harbor"}, rep="true"}},   -- No vendor
+	  {decorID=11500, title="Sin'dorei Crafter's Forge", decorType="Uncategorized", source={type="vendor", itemID=257419, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
     }
   },
 }
