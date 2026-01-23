@@ -7,5 +7,5 @@ NS.Data.Quests["Wrath"] = NS.Data.Quests["Wrath"] or {}
 
 NS.Data.Quests["Wrath"]["Northrend"] = {
   { decorID=4448, source={ type="quest" } },
-  { decorID=11906, source={ type="quest" } },
+-- Murloc not working  { decorID=11906, source={ type="quest" } },
 }
