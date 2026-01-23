@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -13,6 +16,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Debug - confirm workflow is running
+        run: |
+          echo "Running Release workflow for tag: ${GITHUB_REF_NAME}"
+          git --version
 
       - name: Generate Version.lua
         shell: bash
@@ -40,9 +48,8 @@ EOF
           TAG="${GITHUB_REF_NAME}"
           DATE="$(date -u +"%Y-%m-%d")"
 
-          # Previous tag (if any). Needed so we only include THIS release's commits.
+          # Use previous tag ONLY to limit commits to "this release"
           PREV_TAG="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"
-
           if [ -n "${PREV_TAG}" ]; then
             RANGE="${PREV_TAG}..${TAG}"
           else
@@ -50,7 +57,6 @@ EOF
           fi
 
           mkdir -p HomeDecor/Core
-
           {
             echo "-- Auto-generated. Do not edit."
             echo
