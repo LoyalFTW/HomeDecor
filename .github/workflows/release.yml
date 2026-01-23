@@ -25,12 +25,12 @@ jobs:
           DATE="$(date -u +"%Y-%m-%d")"
 
           mkdir -p HomeDecor/Core
-          printf '%s\n' \
-'HomeDecor_Version = {' \
-"  version = \"${TAG}\"," \
-"  date    = \"${DATE}\"," \
-'}' \
-          > HomeDecor/Core/Version.lua
+          cat > HomeDecor/Core/Version.lua <<EOF
+HomeDecor_Version = {
+  version = "${TAG}",
+  date    = "${DATE}",
+}
+EOF
 
       - name: Generate Changelog.lua
         shell: bash
