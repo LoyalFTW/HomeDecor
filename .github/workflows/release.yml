@@ -1,4 +1,4 @@
-name: Release
+name: Release (Test Build)
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
       - "v*"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,34 +17,40 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Generate Changelog.lua
+      - name: Generate Changelog.lua (writes to addon root)
         shell: bash
-        run: bash -lc 'set -euo pipefail; TAG="$GITHUB_REF_NAME"; DATE="$(date -u +%Y-%m-%d)"; PREV_TAG="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"; if [ -n "$PREV_TAG" ]; then RANGE="${PREV_TAG}..${TAG}"; else RANGE="${TAG}"; fi; mkdir -p HomeDecor/Core; CHANGES="$(git log "$RANGE" --no-merges --pretty=format:"- %s")"; printf "HomeDecor_Changelog = [[\n# HomeDecor\n\n## %s (%s)\n\n%s\n\n]]\n" "$TAG" "$DATE" "$CHANGES" > HomeDecor/Core/Changelog.lua; echo "Wrote HomeDecor/Core/Changelog.lua"; ls -la HomeDecor/Core | sed -n "1,200p"'
+        run: bash -lc '
+          set -euo pipefail
+          TAG="$GITHUB_REF_NAME"
+          DATE="$(date -u +%Y-%m-%d)"
 
-      - name: Package and Upload
-        uses: BigWigsMods/packager@master
-        env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
-          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+          TOC_PATH="$(find . -maxdepth 3 -name "*.toc" | head -n 1)"
+          [ -n "$TOC_PATH" ] || (echo "No .toc found" && exit 1)
+          ADDON_DIR="$(dirname "$TOC_PATH")"
 
-      - name: Announce on Discord
-        if: success()
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          TAG: ${{ github.ref_name }}
-          REPO: ${{ github.repository }}
+          PREV_TAG="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"
+          if [ -n "$PREV_TAG" ]; then RANGE="${PREV_TAG}..${TAG}"; else RANGE="${TAG}"; fi
+
+          CHANGES="$(git log "$RANGE" --no-merges --pretty=format:"- %s")"
+
+          printf "HomeDecor_Changelog = [[\n# HomeDecor\n\n## %s (%s)\n\n%s\n\n]]\n" \
+            "$TAG" "$DATE" "$CHANGES" > "$ADDON_DIR/Changelog.lua"
+
+          echo "Wrote: $ADDON_DIR/Changelog.lua"
+          sed -n "1,40p" "$ADDON_DIR/Changelog.lua"
+        '
+
+      - name: Package (no uploads)
+        shell: bash
         run: |
-          payload=$(cat <<EOF
-          {
-            "content": "📦 **New Release Published**\n**${REPO}** — \`${TAG}\`\nhttps://github.com/${REPO}/releases/tag/${TAG}"
-          }
-          EOF
-          )
+          set -euo pipefail
+          curl -sSL https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh -o release.sh
+          chmod +x release.sh
+          ./release.sh -d
 
-          curl -sS -X POST \
-            -H "Content-Type: application/json" \
-            -H "User-Agent: HomeDecorReleaseBot (GitHub Actions)" \
-            --data "$payload" \
-            "${DISCORD_WEBHOOK}?wait=true"
+      - name: Upload packaged zip as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HomeDecor-TestBuild-${{ github.ref_name }}
+          path: .release/*.zip
+          if-no-files-found: error
