@@ -15,10 +15,14 @@ jobs:
           fetch-depth: 0
 
       - name: Generate Version.lua
+        shell: bash
         run: |
-          TAG="${GITHUB_REF_NAME}"
-          DATE=$(date -u +"%Y-%m-%d")
+          set -euo pipefail
 
+          TAG="${GITHUB_REF_NAME}"
+          DATE="$(date -u +"%Y-%m-%d")"
+
+          mkdir -p HomeDecor/Core
           cat > HomeDecor/Core/Version.lua <<EOF
 -- Auto-generated. Do not edit.
 
@@ -27,6 +31,38 @@ HomeDecor_Version = {
     date    = "${DATE}",
 }
 EOF
+
+      - name: Generate Changelog.lua (no links)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TAG="${GITHUB_REF_NAME}"
+          DATE="$(date -u +"%Y-%m-%d")"
+
+          # Previous tag (if any). Needed so we only include THIS release's commits.
+          PREV_TAG="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"
+
+          if [ -n "${PREV_TAG}" ]; then
+            RANGE="${PREV_TAG}..${TAG}"
+          else
+            RANGE="${TAG}"
+          fi
+
+          mkdir -p HomeDecor/Core
+
+          {
+            echo "-- Auto-generated. Do not edit."
+            echo
+            echo "HomeDecor_Changelog = [["
+            echo "# HomeDecor"
+            echo
+            echo "## ${TAG} (${DATE})"
+            echo
+            git log "${RANGE}" --no-merges --pretty=format:"- %s"
+            echo
+            echo "]]"
+          } > HomeDecor/Core/Changelog.lua
 
       - name: Package and Upload
         uses: BigWigsMods/packager@master
