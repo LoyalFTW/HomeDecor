@@ -35,5 +35,20 @@ jobs:
 
       - name: Announce on Discord
         if: success()
-        shell: bash
-        run: bash -lc 'set -euo pipefail; payload="$(printf "{\n  \"content\": \"📦 **New Release Published**\\n**%s** — `%s`\\nhttps://github.com/%s/releases/tag/%s\"\n}\n" "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME")"; curl -sS -X POST -H "Content-Type: application/json" -H "User-Agent: HomeDecorReleaseBot (GitHub Actions)" --data "$payload" "${{ secrets.DISCORD_WEBHOOK }}?wait=true"'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          payload=$(cat <<EOF
+          {
+            "content": "📦 **New Release Published**\n**${REPO}** — \`${TAG}\`\nhttps://github.com/${REPO}/releases/tag/${TAG}"
+          }
+          EOF
+          )
+
+          curl -sS -X POST \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: HomeDecorReleaseBot (GitHub Actions)" \
+            --data "$payload" \
+            "${DISCORD_WEBHOOK}?wait=true"
