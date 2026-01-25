@@ -83,7 +83,13 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       {decorID=10856, title="Founder's Point Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=255646}, requirements={rep="true"}},
       {decorID=12189, title="Elwynn Autumn Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=258658}, requirements={rep="true"}},
       {decorID=12190, title="Founder's Point Autumn Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=258659}, requirements={rep="true"}},
-    }
+      {decorID=17868, title="Outer Banks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266239}, requirements={rep="true"}},
+      {decorID=17869, title="Founder's Point Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266240}, requirements={rep="true"}},
+      {decorID=17870, title="Brumewood Hollow Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266241}, requirements={rep="true"}},
+      {decorID=17871, title="Gilded Oaks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266242}, requirements={rep="true"}},
+      {decorID=17872, title="Stoneveil Ridge Large Garden Cluster", decorType="Ground Cover", source={type="vendor", itemID=266243}, requirements={rep="true"}},
+   
+	}
   },
   {
     title="Botanist Boh'an",
@@ -463,6 +469,30 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
     }
   },
   {
+    title="Hordranin",
+    source={
+      id=250820,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5420:5620",
+    },
+    items={
+      {decorID=7668, title="Forbidden Fork", decorType="Ornamental", source={type="vendor", itemID=250627, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7691, title="Draconic Metalshaper's Anvil", decorType="Ornamental", source={type="vendor", itemID=250694, currency="15", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7692, title="Replica Grathardormu's Hammer", decorType="Wall Hangings", source={type="vendor", itemID=250695, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7693, title="Green Thumb's Watering Can", decorType="Ornamental", source={type="vendor", itemID=250696, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7694, title="Draconic Auctioneer's Lectern", decorType="Tables and Desks", source={type="vendor", itemID=250697, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7695, title="Obsidian Warder Pennant", decorType="Wall Hangings", source={type="vendor", itemID=250698, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7696, title="Dark Talon Pennant", decorType="Wall Hangings", source={type="vendor", itemID=250699, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7697, title="Roasted Ram Leg", decorType="Food and Drink", source={type="vendor", itemID=250700, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7698, title="Draconic Trader's Cart", decorType="Miscellaneous - All", source={type="vendor", itemID=250701, currency="20", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7699, title="Artisan's Measuring Scales", decorType="Ornamental", source={type="vendor", itemID=250702, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7700, title="War Creche Teaching Crystal", decorType="Ornamental", source={type="vendor", itemID=250703, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=7701, title="Ancient Weyrn Device", decorType="Misc Functional", source={type="vendor", itemID=250704, currency="15", currencytype="Community Coupons"}, requirements={rep="true"}},
+    }
+  },
+  {
     title="Shon'ja",
     source={
       id=255297,
@@ -635,6 +665,19 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
     }
   },
   {
+    title="The Last Architect",
+    source={
+      id=253596,
+      type="vendor",
+      faction="Horde",
+      zone="Razorwind Shores",
+      worldmap="2351:5380:5740",
+    },
+    items={
+      {decorID=14583, title="Hearthlight Armillary", decorType="Ornamental", source={type="vendor", itemID=262453}, requirements={rep="true"}},
+    }
+  },
+  {
     title="Drac Roughcut",
     source={
       id=1465,
@@ -645,6 +688,30 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
     },
     items={
       {decorID=2239, title="Thelsamar Hanging Lantern", decorType="Ceiling Lights", source={type="vendor", itemID=246422}, requirements={quest={id=26868, title="Axis of Awful"}, rep="true"}},
+    }
+  },
+  {
+    title="Aeeshna",
+    source={
+      id=252605,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5440:5620",
+    },
+    items={
+      {decorID=14677, title="Complete Guide to K'areshi Wrappings, Vol. 11", decorType="Ornamental", source={type="vendor", itemID=262664, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14678, title="K'areshi Holo-Crystal Projector", decorType="Miscellaneous - All", source={type="vendor", itemID=262665, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14679, title="K'areshi Incense Burner", decorType="Miscellaneous - All", source={type="vendor", itemID=262666, currency="2", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14680, title="Oath Scale", decorType="Miscellaneous - All", source={type="vendor", itemID=262667, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14793, title="Consortium Glowpost", decorType="Large Lights", source={type="vendor", itemID=262884, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14800, title="Tazaveshi Hookah", decorType="Miscellaneous - All", source={type="vendor", itemID=262907, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14829, title="Consortium Energy Barrel", decorType="Storage", source={type="vendor", itemID=263043, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14830, title="Empty Consortium Energy Barrel", decorType="Storage", source={type="vendor", itemID=263044, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14831, title="Consortium Energy Collector", decorType="Large Lights", source={type="vendor", itemID=263045, currency="20", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14832, title="Consortium Energy Crate", decorType="Storage", source={type="vendor", itemID=263046, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14833, title="Empty Consortium Energy Crate", decorType="Storage", source={type="vendor", itemID=263047, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=14834, title="Consortium Energy Banner", decorType="Ornamental", source={type="vendor", itemID=263048, currency="15", currencytype="Community Coupons"}, requirements={rep="true"}},
     }
   },
 }

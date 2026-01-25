@@ -12,16 +12,36 @@ local built = false
 local CHECK_ATLAS = "common-icon-checkmark"
 local CHECK_FALLBACK = "Interface\\RaidFrame\\ReadyCheck-Ready"
 
+local function hdCanAccess(v)
+  if v == nil then return false end
+  if issecretvalue and issecretvalue(v) then return false end
+  if canaccessvalue and not canaccessvalue(v) then return false end
+  return true
+end
+
+
 local function getNpcIDFromGUID(guid)
-  if not guid then return nil end
-  local unitType, _, _, _, _, npcID = strsplit("-", guid)
+  if not hdCanAccess(guid) then return nil end
+  if type(guid) ~= "string" then
+    local ok, s = pcall(tostring, guid)
+    if not ok or not s or not hdCanAccess(s) then return nil end
+    guid = s
+  end
+  local ok, unitType, _, _, _, _, npcID = pcall(strsplit, "-", guid)
+  if not ok then return nil end
   if unitType ~= "Creature" and unitType ~= "Vehicle" and unitType ~= "Pet" then return nil end
-  return tonumber(npcID)
+  return npcID and tonumber(npcID) or nil
 end
 
 local function itemIDFromLink(link)
-  if not link then return nil end
-  local id = link:match("item:(%d+)")
+  if not hdCanAccess(link) then return nil end
+  if type(link) ~= "string" then
+    local ok, s = pcall(tostring, link)
+    if not ok or not s then return nil end
+    link = s
+  end
+  local ok, id = pcall(string.match, link, "item:(%d+)")
+  if not ok then return nil end
   return id and tonumber(id) or nil
 end
 

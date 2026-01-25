@@ -489,7 +489,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       id=93550,
       type="vendor",
       faction="Neutral",
-      zone="Acherus: Ebon Hold",
+      zone="Acherus: The Ebon Hold",
       worldmap="647:4390:3717",
     },
     items={

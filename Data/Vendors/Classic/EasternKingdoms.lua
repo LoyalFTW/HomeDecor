@@ -96,12 +96,17 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=10856, title="Founder's Point Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=255646}, requirements={rep="true"}},
       {decorID=12189, title="Elwynn Autumn Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=258658}, requirements={rep="true"}},
       {decorID=12190, title="Founder's Point Autumn Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=258659}, requirements={rep="true"}},
-      --       {decorID=17868, title="Outer Banks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266239}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=17869, title="Founder's Point Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266240}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=17870, title="Brumewood Hollow Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266241}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=17871, title="Gilded Oaks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266242}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=17872, title="Stoneveil Ridge Large Garden Cluster", decorType="Ground Cover", source={type="vendor", itemID=266243}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-    }
+      {decorID=17868, title="Outer Banks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266239}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=17869, title="Founder's Point Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266240}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=17870, title="Brumewood Hollow Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266241}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=17871, title="Gilded Oaks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266242}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=17872, title="Stoneveil Ridge Large Garden Cluster", decorType="Ground Cover", source={type="vendor", itemID=266243}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=17873, title="Granite Cobblestone Path Corner", decorType="Floor", source={type="vendor", itemID=266244}, requirements={rep="true"}},
+      {decorID=17874, title="Granite Cobblestone Path Arc", decorType="Floor", source={type="vendor", itemID=266245}, requirements={rep="true"}},
+      {decorID=17918, title="Granite Cobblestone Long Path", decorType="Floor", source={type="vendor", itemID=266443}, requirements={rep="true"}},
+      {decorID=17919, title="Granite Cobblestone Path", decorType="Floor", source={type="vendor", itemID=266444}, requirements={rep="true"}},
+    
+	}
   },
   {
     title="Balen Starfinder",
@@ -153,7 +158,8 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=4562, title="Lovely Elven Shelf", decorType="Storage", source={type="vendor", itemID=248760, currency="75", currencytype="Order Resources"}, requirements={quest={id=93134, title="Decor Treasure Hunt"}, rep="true"}},
       {decorID=5563, title="Elven Standing Mirror", decorType="Ornamental", source={type="vendor", itemID=249558, currency="2000", currencytype="Order Resources"}, requirements={rep="true"}},
       {decorID=8917, title="Elegant Elven Chandelier", decorType="Ceiling Lights", source={type="vendor", itemID=251981}, requirements={quest={id=93141, title="Decor Treasure Hunt"}, rep="true"}},
-      {decorID=9254, title="Elegant Elven Canopy Bed", decorType="Beds", source={type="vendor", itemID=253180, currency="1200", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=8918, title="Gilded Silvermoon Candelabra", decorType="Large Lights", source={type="vendor", itemID=251982}, requirements={rep="true"}},
+	  {decorID=9254, title="Elegant Elven Canopy Bed", decorType="Beds", source={type="vendor", itemID=253180, currency="1200", currencytype="Order Resources"}, requirements={rep="true"}},
       {decorID=9255, title="Gemmed Elven Chest", decorType="Storage", source={type="vendor", itemID=253181, currency="500", currencytype="Order Resources"}, requirements={quest={id=93007, title="Decor Treasure Hunt"}, rep="true"}},
       {decorID=10860, title="Elegant Table Lamp", decorType="Small Lights", source={type="vendor", itemID=255650, currency="10", currencytype="Dragon Isles Supplies"}, requirements={quest={id=92995, title="Decor Treasure Hunt"}, rep="true"}},
       {decorID=11719, title="Elegant Padded Chaise", decorType="Seating", source={type="vendor", itemID=257690}, requirements={quest={id=93003, title="Decor Treasure Hunt"}, rep="true"}},
@@ -205,6 +211,50 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=2496, title="Tall Sturdy Wooden Chair", decorType="Seating", source={type="vendor", itemID=246742}, requirements={quest={id=92970, title="Decor Treasure Hunt"}, rep="true"}},
       {decorID=9472, title="Coal-Fired Stovetop", decorType="Uncategorized", source={type="vendor", itemID=253590}, requirements={rep="true"}},
       {decorID=14814, title="Sturdy Wine Press", decorType="Storage", source={type="vendor", itemID=263025, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+    }
+  },
+  {
+    title="\"Yen\" Malone",
+    source={
+      id=255230,
+      type="vendor",
+      faction="Alliance",
+      zone="Founder's Point",
+      worldmap="2352:6223:8030",
+    },
+    items={
+      {decorID=4406, title="Round-Top Boulder", decorType="Miscellaneous - All", source={type="vendor", itemID=248337}, requirements={rep="true"}},
+      {decorID=4407, title="Flat Boulder", decorType="Miscellaneous - All", source={type="vendor", itemID=248338}, requirements={rep="true"}},
+      {decorID=4408, title="Hilltop Boulder", decorType="Miscellaneous - All", source={type="vendor", itemID=248339}, requirements={rep="true"}},
+      {decorID=4451, title="Razorwind Succulent Palm", decorType="Large Foliage", source={type="vendor", itemID=248625}, requirements={rep="true"}},
+      {decorID=4452, title="Razorwind Fighting Cactus", decorType="Large Foliage", source={type="vendor", itemID=248626}, requirements={rep="true"}},
+      {decorID=4453, title="Razorwind Tumbleweed", decorType="Miscellaneous - All", source={type="vendor", itemID=248627}, requirements={rep="true"}},
+      {decorID=4454, title="Razorwind Palm Tree", decorType="Large Foliage", source={type="vendor", itemID=248628}, requirements={rep="true"}},
+      {decorID=4455, title="Nagrand Blueberry Bush", decorType="Bushes", source={type="vendor", itemID=248629, currency="250", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=4456, title="Barrens Hosta Bush", decorType="Bushes", source={type="vendor", itemID=248630}, requirements={rep="true"}},
+      {decorID=4457, title="Azsharan Firespear Tree", decorType="Bushes", source={type="vendor", itemID=248631}, requirements={rep="true"}},
+      {decorID=4458, title="Hardy Razorwind Grass Patch", decorType="Ground Cover", source={type="vendor", itemID=248632}, requirements={rep="true"}},
+      {decorID=4459, title="Flowering Durotar Cactus", decorType="Large Foliage", source={type="vendor", itemID=248633}, requirements={rep="true"}},
+      {decorID=4460, title="Razorwind Acacia Tree", decorType="Large Foliage", source={type="vendor", itemID=248634}, requirements={rep="true"}},
+      {decorID=4462, title="Razorwind Gobtree", decorType="Bushes", source={type="vendor", itemID=248636}, requirements={rep="true"}},
+      {decorID=4463, title="Sunset Aster Flowers", decorType="Small Foliage", source={type="vendor", itemID=248637}, requirements={rep="true"}},
+      {decorID=4464, title="Pink Razorwind Paintbrush", decorType="Small Foliage", source={type="vendor", itemID=248638}, requirements={rep="true"}},
+      {decorID=4476, title="Razorwind Flamebrush", decorType="Bushes", source={type="vendor", itemID=248650}, requirements={rep="true"}},
+      {decorID=11461, title="Slate Cobblestone Pair", decorType="Floor", source={type="vendor", itemID=257359}, requirements={rep="true"}},
+      {decorID=11479, title="Slate Cobblestone", decorType="Floor", source={type="vendor", itemID=257388}, requirements={rep="true"}},
+      {decorID=11481, title="Slate Cobblestone Path", decorType="Floor", source={type="vendor", itemID=257390}, requirements={rep="true"}},
+      {decorID=11482, title="Slate Cobblestone Trio", decorType="Floor", source={type="vendor", itemID=257392}, requirements={rep="true"}},
+      {decorID=14382, title="Red Razorwind Paintbrush", decorType="Ground Cover", source={type="vendor", itemID=260701}, requirements={rep="true"}},
+      {decorID=14383, title="Dry Razorwind Grass Patch", decorType="Ground Cover", source={type="vendor", itemID=260702}, requirements={rep="true"}},
+      {decorID=17863, title="Saltfang Shoals Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266234}, requirements={rep="true"}},
+      {decorID=17864, title="Razorwind Cactus Large Garden Cluster", decorType="Ground Cover", source={type="vendor", itemID=266235}, requirements={rep="true"}},
+      {decorID=17865, title="Razorwind Blooms Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266236}, requirements={rep="true"}},
+      {decorID=17866, title="Runetotem's Bounty Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266237}, requirements={rep="true"}},
+      {decorID=17867, title="Cragthorn Highlands Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266238}, requirements={rep="true"}},
+      {decorID=17873, title="Granite Cobblestone Path Corner", decorType="Floor", source={type="vendor", itemID=266244}, requirements={rep="true"}},
+      {decorID=17874, title="Granite Cobblestone Path Arc", decorType="Floor", source={type="vendor", itemID=266245}, requirements={rep="true"}},
+      {decorID=17918, title="Granite Cobblestone Long Path", decorType="Floor", source={type="vendor", itemID=266443}, requirements={rep="true"}},
+      {decorID=17919, title="Granite Cobblestone Path", decorType="Floor", source={type="vendor", itemID=266444}, requirements={rep="true"}},
     }
   },
   {
@@ -339,7 +389,8 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
     },
     items={
       {decorID=986, title="Elegant Covered Bench", decorType="Seating", source={type="vendor", itemID=253437, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
-      {decorID=991, title="Elegant Carved Bench", decorType="Seating", source={type="vendor", itemID=253439, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
+      {decorID=990, title="Elegant Elven Barrel", decorType="Storage", source={type="vendor", itemID=241623}, requirements={quest={id=93142, title="Decor Treasure Hunt"}, rep="true"}},
+	  {decorID=991, title="Elegant Carved Bench", decorType="Seating", source={type="vendor", itemID=253439, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
       --       {decorID=992, title="Open Elven Wood Crate", decorType="Storage", source={type="vendor", itemID=241625}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
       {decorID=1155, title="Standing Ornate Weapon Rack", decorType="Storage", source={type="vendor", itemID=243088, currency="500", currencytype="Order Resources"}, requirements={rep="true"}},
       {decorID=1165, title="Grand Elven Bench", decorType="Seating", source={type="vendor", itemID=253495, currency="750", currencytype="Order Resources"}, requirements={rep="true"}},
@@ -350,7 +401,7 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=3827, title="Elven Woodvine Trellis", decorType="Misc Nature", source={type="vendor", itemID=247502}, requirements={rep="true"}},
       {decorID=4484, title="Elven Wood Crate", decorType="Storage", source={type="vendor", itemID=248658}, requirements={rep="true"}},
       {decorID=11720, title="Open Elegant Elven Barrel", decorType="Storage", source={type="vendor", itemID=257691}, requirements={quest={id=93142, title="Decor Treasure Hunt"}, rep="true"}},
-      {decorID=11721, title="Elegant Curved Table", decorType="Tables and Desks", source={type="vendor", itemID=257692, currency="400", currencytype="Order Resources"}, requirements={quest={id=93151, title="Decor Treasure Hunt"}, rep="true"}},
+	  {decorID=11721, title="Elegant Curved Table", decorType="Tables and Desks", source={type="vendor", itemID=257692, currency="400", currencytype="Order Resources"}, requirements={quest={id=93151, title="Decor Treasure Hunt"}, rep="true"}},
     }
   },
   {
@@ -593,7 +644,7 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       id=1247,
       type="vendor",
       faction="Alliance",
-      zone="Kharanos, Dun Morogh",
+      zone="Dun Morogh",
       worldmap="27:5440:5080",
     },
     items={

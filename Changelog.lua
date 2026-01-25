@@ -1,15 +1,24 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Jan 25, 2026
-Added some missing Decor
-* Cragthorn Highlands Large Garden Cluster
-* Razorwind Blooms Large Garde
-* Razorwind Cactus Large Garden Cluster
-* Granite Cobblestone Path
-* Granite Cobblestone Path Arc
-* Granite Cobblestone Long Path
-* Granite Cobblestone Path Corner
-* Saltfang Shoals Large Garden Cluster
+Jan 26, 2026
+* Duskcaller Erthix Npc + items
+* Hordranin Npc + items
+* Aeeshna Npc + items
+* The Last Architect Npc + items
+* Sage Whiteheart Npc + items
+* Sergeant Crowler  Npc + Items
+* Murloc Driftwood Hut
+* Outer Banks Large Garden Cluster
+* Founder's Point Large Garden Cluster
+* Brumewood Hollow Large Garden Cluster
+* Gilded Oaks Large Garden Cluster
+* Stoneveil Ridge Large Garden Cluster
+* Elegant Elven Barrel
+* Elegant Carved Bench 
+* Elegant Curved Table
+* Sin'dorei Sleeper
+
+Fixed Vendor Error while in a dungeon.
 
 ]]

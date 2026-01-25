@@ -92,6 +92,20 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       {decorID=15605, title="Golden Pandaren Privacy Screen", decorType="Misc Furnishings", source={type="vendor", itemID=264362}, requirements={quest={id=30000, title="The Jade Serpent"}, rep="true"}},
     }
   },
+    {
+    title="Sage Whiteheart",
+    source={
+      id=64032,
+      type="vendor",
+      faction="Alliance",
+      zone="Shrine of Seven Stars, Vale of Eternal Blossoms, Vale of Eternal Blossoms",
+      worldmap="1530:8520:6160",
+    },
+    items={
+      {decorID=3869, title="Pandaren Stone Lamppost", decorType="Misc Structural", source={type="vendor", itemID=247729}, requirements={quest={id=31230, title="Welcome to Dawn's Blossom"}, rep="true"}},
+      {decorID=15605, title="Golden Pandaren Privacy Screen", decorType="Misc Furnishings", source={type="vendor", itemID=264362}, requirements={quest={id=92980, title="Decor Treasure Hunt"}, rep="true"}},
+    }
+  },
   {
     title="Brother Furtrim",
     source={

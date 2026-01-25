@@ -182,14 +182,20 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
   {
     title="Sergeant Crowler",
     source={
-      id=78564,
+      id=88223,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="Lunarfall",
-      worldmap="579:3779:3340",
+      worldmap="582:3772:3589",
     },
     items={
       {decorID=126, title="Rolled Scroll", decorType="Ornamental", source={type="vendor", itemID=245275, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=4403, title="Stormwind Wooden Bench", decorType="Seating", source={type="vendor", itemID=248334, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36404, title="Clearing the Garden"}, rep="true"}},
+      {decorID=4404, title="Stormwind Wooden Stool", decorType="Seating", source={type="vendor", itemID=248335, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=36202, title="Anglin' In Our Garrison"}, rep="true"}},
+      {decorID=4485, title="Stormwind Workbench", decorType="Tables and Desks", source={type="vendor", itemID=248660, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=34192, title="Things Are Not Goren Our Way"}, rep="true"}},
+      {decorID=4486, title="Northshire Scribe's Desk", decorType="Tables and Desks", source={type="vendor", itemID=248661, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36592, title="Bigger is Better"}, rep="true"}},
+      {decorID=4816, title="Wooden Storage Crate", decorType="Storage", source={type="vendor", itemID=248799, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=34586, title="Establish Your Garrison"}, rep="true"}},
+      {decorID=4844, title="Rough Wooden Chair", decorType="Seating", source={type="vendor", itemID=248810, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=35176, title="Keeping it Together"}, rep="true"}},
     }
   },
   {
