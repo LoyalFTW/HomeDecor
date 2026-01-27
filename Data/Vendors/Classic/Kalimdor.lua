@@ -263,7 +263,7 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
     items={
       {decorID=10339, title="Triple-Tested Steam Valve", decorType="Ornamental", source={type="vendor", itemID=254400, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, 
       {decorID=10340, title="Mad Science Blueprints", decorType="Ornamental", source={type="vendor", itemID=254401, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, 
-      {decorID=10341, title="Safety Electrical Cabling", decorType="Miscellaneous - All", source={type="vendor", itemID=254402, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}}, pre-patch
+      {decorID=10341, title="Safety Electrical Cabling", decorType="Miscellaneous - All", source={type="vendor", itemID=254402, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}},
       {decorID=10342, title="Mechagon Control Console", decorType="Ornamental", source={type="vendor", itemID=254403, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, 
       {decorID=10343, title="Sticky Lever", decorType="Uncategorized", source={type="vendor", itemID=254404}, requirements={rep="true"}}, 
       {decorID=10344, title="Dual-Action Turbo Pro Lever", decorType="Uncategorized", source={type="vendor", itemID=254405}, requirements={rep="true"}}, 
