@@ -96,11 +96,11 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=10856, title="Founder's Point Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=255646}, requirements={rep="true"}},
       {decorID=12189, title="Elwynn Autumn Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=258658}, requirements={rep="true"}},
       {decorID=12190, title="Founder's Point Autumn Apple Tree", decorType="Large Foliage", source={type="vendor", itemID=258659}, requirements={rep="true"}},
-      {decorID=17868, title="Outer Banks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266239}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      {decorID=17869, title="Founder's Point Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266240}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      {decorID=17870, title="Brumewood Hollow Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266241}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      {decorID=17871, title="Gilded Oaks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266242}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      {decorID=17872, title="Stoneveil Ridge Large Garden Cluster", decorType="Ground Cover", source={type="vendor", itemID=266243}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=17868, title="Outer Banks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266239}, requirements={rep="true"}}, 
+      {decorID=17869, title="Founder's Point Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266240}, requirements={rep="true"}}, 
+      {decorID=17870, title="Brumewood Hollow Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266241}, requirements={rep="true"}}, 
+      {decorID=17871, title="Gilded Oaks Large Garden Cluster", decorType="Bushes", source={type="vendor", itemID=266242}, requirements={rep="true"}}, 
+      {decorID=17872, title="Stoneveil Ridge Large Garden Cluster", decorType="Ground Cover", source={type="vendor", itemID=266243}, requirements={rep="true"}},
       {decorID=17873, title="Granite Cobblestone Path Corner", decorType="Floor", source={type="vendor", itemID=266244}, requirements={rep="true"}},
       {decorID=17874, title="Granite Cobblestone Path Arc", decorType="Floor", source={type="vendor", itemID=266245}, requirements={rep="true"}},
       {decorID=17918, title="Granite Cobblestone Long Path", decorType="Floor", source={type="vendor", itemID=266443}, requirements={rep="true"}},
@@ -284,19 +284,19 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="2352:5304:3804",
     },
     items={
-      --       {decorID=16227, title="Decorated Underground Table", decorType="Tables and Desks", source={type="vendor", itemID=264915}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16228, title="Loamm Bartering Stall", decorType="Large Structures", source={type="vendor", itemID=264916}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16229, title="Ceramic Loamm Bowl", decorType="Food and Drink", source={type="vendor", itemID=264917}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16230, title="Zaralek Candles", decorType="Large Lights", source={type="vendor", itemID=264918}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16231, title="Loamm Archway", decorType="Doors", source={type="vendor", itemID=264919, currency="5000", currencytype="Honor"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16232, title="Gooey Niffen Jar", decorType="Storage", source={type="vendor", itemID=264920, currency="1000", currencytype="Voidlight Marl"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16233, title="Zaralek Snail Cart", decorType="Ornamental", source={type="vendor", itemID=264921}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16234, title="Strong Sniffin' Incense", decorType="Miscellaneous - All", source={type="vendor", itemID=264922}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16235, title="Underdecorated Underground Table", decorType="Tables and Desks", source={type="vendor", itemID=264923}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16236, title="Loamm Wheelpot", decorType="Ornamental", source={type="vendor", itemID=264924, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16237, title="Kilnmaster's Bucket", decorType="Miscellaneous - All", source={type="vendor", itemID=264925}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16315, title="Hearty Niffen Grub", decorType="Food and Drink", source={type="vendor", itemID=265032, currency="500", currencytype="Order Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=16962, title="Loammy Soil", decorType="Misc Nature", source={type="vendor", itemID=265541, currency="1000", currencytype="Honor"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=16227, title="Decorated Underground Table", decorType="Tables and Desks", source={type="vendor", itemID=264915}, requirements={rep="true"}}, 
+      {decorID=16228, title="Loamm Bartering Stall", decorType="Large Structures", source={type="vendor", itemID=264916}, requirements={rep="true"}}, 
+      {decorID=16229, title="Ceramic Loamm Bowl", decorType="Food and Drink", source={type="vendor", itemID=264917}, requirements={rep="true"}}, 
+      {decorID=16230, title="Zaralek Candles", decorType="Large Lights", source={type="vendor", itemID=264918}, requirements={rep="true"}}, 
+      {decorID=16231, title="Loamm Archway", decorType="Doors", source={type="vendor", itemID=264919, currency="5000", currencytype="Honor"}, requirements={rep="true"}},
+      {decorID=16232, title="Gooey Niffen Jar", decorType="Storage", source={type="vendor", itemID=264920, currency="1000", currencytype="Voidlight Marl"}, requirements={rep="true"}}, 
+      {decorID=16233, title="Zaralek Snail Cart", decorType="Ornamental", source={type="vendor", itemID=264921}, requirements={rep="true"}}, 
+      {decorID=16234, title="Strong Sniffin' Incense", decorType="Miscellaneous - All", source={type="vendor", itemID=264922}, requirements={rep="true"}}, 
+      {decorID=16235, title="Underdecorated Underground Table", decorType="Tables and Desks", source={type="vendor", itemID=264923}, requirements={rep="true"}}, 
+      {decorID=16236, title="Loamm Wheelpot", decorType="Ornamental", source={type="vendor", itemID=264924, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}}, 
+      {decorID=16237, title="Kilnmaster's Bucket", decorType="Miscellaneous - All", source={type="vendor", itemID=264925}, requirements={rep="true"}},
+      {decorID=16315, title="Hearty Niffen Grub", decorType="Food and Drink", source={type="vendor", itemID=265032, currency="500", currencytype="Order Resources"}, requirements={rep="true"}}, 
+      {decorID=16962, title="Loammy Soil", decorType="Misc Nature", source={type="vendor", itemID=265541, currency="1000", currencytype="Honor"}, requirements={rep="true"}}, 
     }
   },
     {

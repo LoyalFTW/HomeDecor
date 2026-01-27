@@ -1,24 +1,17 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Jan 26, 2026
-* Duskcaller Erthix Npc + items
-* Hordranin Npc + items
-* Aeeshna Npc + items
-* The Last Architect Npc + items
-* Sage Whiteheart Npc + items
-* Sergeant Crowler  Npc + Items
-* Murloc Driftwood Hut
-* Outer Banks Large Garden Cluster
-* Founder's Point Large Garden Cluster
-* Brumewood Hollow Large Garden Cluster
-* Gilded Oaks Large Garden Cluster
-* Stoneveil Ridge Large Garden Cluster
-* Elegant Elven Barrel
-* Elegant Carved Bench 
-* Elegant Curved Table
-* Sin'dorei Sleeper
+Jan 27, 2026
+Added Harlowe Marl Npc + Items
+Pascal-K1N6 Npc + Items
+Brother Dovetail Npc + Items
 
-Fixed Vendor Error while in a dungeon.
+Other Items Added
+* Gilded Silvermoon Candelabra
+
+Will be doing a big update soon
+Adding a tracker for zones
+and tool tip to show missing items
+when hovering over them. 
 
 ]]

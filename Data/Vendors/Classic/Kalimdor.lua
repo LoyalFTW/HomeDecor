@@ -212,7 +212,7 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       {decorID=4562, title="Lovely Elven Shelf", decorType="Storage", source={type="vendor", itemID=248760, currency="75", currencytype="Order Resources"}, requirements={quest={id=93134, title="Decor Treasure Hunt"}, rep="true"}},
       {decorID=5563, title="Elven Standing Mirror", decorType="Ornamental", source={type="vendor", itemID=249558, currency="2000", currencytype="Order Resources"}, requirements={rep="true"}},
       {decorID=8917, title="Elegant Elven Chandelier", decorType="Ceiling Lights", source={type="vendor", itemID=251981}, requirements={quest={id=93141, title="Decor Treasure Hunt"}, rep="true"}},
-      --       {decorID=8918, title="Gilded Silvermoon Candelabra", decorType="Large Lights", source={type="vendor", itemID=251982, currency="600", currencytype="Resonance Crystals"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=8918, title="Gilded Silvermoon Candelabra", decorType="Large Lights", source={type="vendor", itemID=251982, currency="600", currencytype="Resonance Crystals"}, requirements={rep="true"}}, 
       {decorID=9254, title="Elegant Elven Canopy Bed", decorType="Beds", source={type="vendor", itemID=253180, currency="1200", currencytype="Order Resources"}, requirements={rep="true"}},
       {decorID=9255, title="Gemmed Elven Chest", decorType="Storage", source={type="vendor", itemID=253181, currency="500", currencytype="Order Resources"}, requirements={quest={id=93007, title="Decor Treasure Hunt"}, rep="true"}},
       {decorID=10860, title="Elegant Table Lamp", decorType="Small Lights", source={type="vendor", itemID=255650, currency="10", currencytype="Dragon Isles Supplies"}, requirements={quest={id=92995, title="Decor Treasure Hunt"}, rep="true"}},
@@ -261,23 +261,23 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       worldmap="2351:5413:5598",
     },
     items={
-      --       {decorID=10339, title="Triple-Tested Steam Valve", decorType="Ornamental", source={type="vendor", itemID=254400, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10340, title="Mad Science Blueprints", decorType="Ornamental", source={type="vendor", itemID=254401, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10341, title="Safety Electrical Cabling", decorType="Miscellaneous - All", source={type="vendor", itemID=254402, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10342, title="Mechagon Control Console", decorType="Ornamental", source={type="vendor", itemID=254403, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10343, title="Sticky Lever", decorType="Uncategorized", source={type="vendor", itemID=254404}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10344, title="Dual-Action Turbo Pro Lever", decorType="Uncategorized", source={type="vendor", itemID=254405}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10345, title="Mechanical Gauge", decorType="Uncategorized", source={type="vendor", itemID=254406}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10346, title="Dual Mechanical Gauge", decorType="Ornamental", source={type="vendor", itemID=254407, currency="150", currencytype="War Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10347, title="Lively Pistons", decorType="Uncategorized", source={type="vendor", itemID=254408}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10348, title="Sturdy Drive Belt", decorType="Ornamental", source={type="vendor", itemID=254409, currency="150", currencytype="War Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10349, title="Blue-Glo Lantern", decorType="Small Lights", source={type="vendor", itemID=254410, currency="150", currencytype="War Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10350, title="Z-205 Mechanical Device", decorType="Ornamental", source={type="vendor", itemID=254411, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10351, title="Well-Oiled Machine Cog", decorType="Ornamental", source={type="vendor", itemID=254412, currency="150", currencytype="War Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10352, title="Jury-Rigged Electrical Couple", decorType="Ornamental", source={type="vendor", itemID=254413, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10354, title="Miniature Charging Station", decorType="Large Lights", source={type="vendor", itemID=254415, currency="15", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10355, title="Galvanic Storage and Maintenance Device", decorType="Large Lights", source={type="vendor", itemID=254416, currency="15", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=10537, title="Ineffective Mechanical Privacy Screen", decorType="Misc Furnishings", source={type="vendor", itemID=254766}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=10339, title="Triple-Tested Steam Valve", decorType="Ornamental", source={type="vendor", itemID=254400, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, 
+      {decorID=10340, title="Mad Science Blueprints", decorType="Ornamental", source={type="vendor", itemID=254401, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, 
+      {decorID=10341, title="Safety Electrical Cabling", decorType="Miscellaneous - All", source={type="vendor", itemID=254402, currency="10", currencytype="Community Coupons"}, requirements={rep="true"}}, pre-patch
+      {decorID=10342, title="Mechagon Control Console", decorType="Ornamental", source={type="vendor", itemID=254403, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, 
+      {decorID=10343, title="Sticky Lever", decorType="Uncategorized", source={type="vendor", itemID=254404}, requirements={rep="true"}}, 
+      {decorID=10344, title="Dual-Action Turbo Pro Lever", decorType="Uncategorized", source={type="vendor", itemID=254405}, requirements={rep="true"}}, 
+      {decorID=10345, title="Mechanical Gauge", decorType="Uncategorized", source={type="vendor", itemID=254406}, requirements={rep="true"}}, 
+      {decorID=10346, title="Dual Mechanical Gauge", decorType="Ornamental", source={type="vendor", itemID=254407, currency="150", currencytype="War Resources"}, requirements={rep="true"}}, 
+      {decorID=10347, title="Lively Pistons", decorType="Uncategorized", source={type="vendor", itemID=254408}, requirements={rep="true"}}, 
+      {decorID=10348, title="Sturdy Drive Belt", decorType="Ornamental", source={type="vendor", itemID=254409, currency="150", currencytype="War Resources"}, requirements={rep="true"}}, 
+      {decorID=10349, title="Blue-Glo Lantern", decorType="Small Lights", source={type="vendor", itemID=254410, currency="150", currencytype="War Resources"}, requirements={rep="true"}}, 
+      {decorID=10350, title="Z-205 Mechanical Device", decorType="Ornamental", source={type="vendor", itemID=254411, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, 
+      {decorID=10351, title="Well-Oiled Machine Cog", decorType="Ornamental", source={type="vendor", itemID=254412, currency="150", currencytype="War Resources"}, requirements={rep="true"}}, 
+      {decorID=10352, title="Jury-Rigged Electrical Couple", decorType="Ornamental", source={type="vendor", itemID=254413, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}},
+      {decorID=10354, title="Miniature Charging Station", decorType="Large Lights", source={type="vendor", itemID=254415, currency="15", currencytype="Community Coupons"}, requirements={rep="true"}}, 
+      {decorID=10355, title="Galvanic Storage and Maintenance Device", decorType="Large Lights", source={type="vendor", itemID=254416, currency="15", currencytype="Community Coupons"}, requirements={rep="true"}}, 
+      {decorID=10537, title="Ineffective Mechanical Privacy Screen", decorType="Misc Furnishings", source={type="vendor", itemID=254766}, requirements={rep="true"}}, 
     }
   },
   {
@@ -354,21 +354,21 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       worldmap="2351:5436:5612",
     },
     items={
-      --       {decorID=2453, title="Grummle Sleeping Bag", decorType="Beds", source={type="vendor", itemID=246686, currency="700", currencytype="Order Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=2495, title="Grummle Bedroll", decorType="Beds", source={type="vendor", itemID=246741, currency="550", currencytype="War Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=2510, title="Kafa Press", decorType="Food and Drink", source={type="vendor", itemID=246838}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=4424, title="Grummle Kafa Refinery", decorType="Miscellaneous - All", source={type="vendor", itemID=248402}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=4425, title="Grummle Tent", decorType="Large Structures", source={type="vendor", itemID=248403, currency="150", currencytype="Garrison Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=4427, title="Kafa Creamer", decorType="Food and Drink", source={type="vendor", itemID=248405, currency="500", currencytype="Order Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=4428, title="Legerdemain Lounge Sign Board", decorType="Ornamental", source={type="vendor", itemID=248406, currency="2000", currencytype="Order Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=4429, title="Dalaran Kafa Table", decorType="Tables and Desks", source={type="vendor", itemID=248407, currency="2000", currencytype="Order Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=8179, title="Pandaren Wooden Cart", decorType="Ornamental", source={type="vendor", itemID=251472}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=8180, title="Commander's Kafa Mug", decorType="Food and Drink", source={type="vendor", itemID=251473, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=8181, title="Ceramic Kafa Mug", decorType="Food and Drink", source={type="vendor", itemID=251474, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=8182, title="Dalaran Kafa Grinder", decorType="Food and Drink", source={type="vendor", itemID=251475}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=8987, title="Open Sack of Roasted Kafa", decorType="Food and Drink", source={type="vendor", itemID=252039, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=8988, title="Sealed Sack of Roasted Kafa", decorType="Food and Drink", source={type="vendor", itemID=252040, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=8989, title="Dalaran Espresso Machine", decorType="Food and Drink", source={type="vendor", itemID=252041, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=2453, title="Grummle Sleeping Bag", decorType="Beds", source={type="vendor", itemID=246686, currency="700", currencytype="Order Resources"}, requirements={rep="true"}}, 
+      {decorID=2495, title="Grummle Bedroll", decorType="Beds", source={type="vendor", itemID=246741, currency="550", currencytype="War Resources"}, requirements={rep="true"}}, 
+      {decorID=2510, title="Kafa Press", decorType="Food and Drink", source={type="vendor", itemID=246838}, requirements={rep="true"}}, 
+      {decorID=4424, title="Grummle Kafa Refinery", decorType="Miscellaneous - All", source={type="vendor", itemID=248402}, requirements={rep="true"}}, 
+      {decorID=4425, title="Grummle Tent", decorType="Large Structures", source={type="vendor", itemID=248403, currency="150", currencytype="Garrison Resources"}, requirements={rep="true"}}, 
+      {decorID=4427, title="Kafa Creamer", decorType="Food and Drink", source={type="vendor", itemID=248405, currency="500", currencytype="Order Resources"}, requirements={rep="true"}}, 
+      {decorID=4428, title="Legerdemain Lounge Sign Board", decorType="Ornamental", source={type="vendor", itemID=248406, currency="2000", currencytype="Order Resources"}, requirements={rep="true"}}, 
+      {decorID=4429, title="Dalaran Kafa Table", decorType="Tables and Desks", source={type="vendor", itemID=248407, currency="2000", currencytype="Order Resources"}, requirements={rep="true"}}, 
+      {decorID=8179, title="Pandaren Wooden Cart", decorType="Ornamental", source={type="vendor", itemID=251472}, requirements={rep="true"}}, 
+      {decorID=8180, title="Commander's Kafa Mug", decorType="Food and Drink", source={type="vendor", itemID=251473, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, 
+      {decorID=8181, title="Ceramic Kafa Mug", decorType="Food and Drink", source={type="vendor", itemID=251474, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=8182, title="Dalaran Kafa Grinder", decorType="Food and Drink", source={type="vendor", itemID=251475}, requirements={rep="true"}}, 
+      {decorID=8987, title="Open Sack of Roasted Kafa", decorType="Food and Drink", source={type="vendor", itemID=252039, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, 
+      {decorID=8988, title="Sealed Sack of Roasted Kafa", decorType="Food and Drink", source={type="vendor", itemID=252040, currency="5", currencytype="Community Coupons"}, requirements={rep="true"}}, 
+      {decorID=8989, title="Dalaran Espresso Machine", decorType="Food and Drink", source={type="vendor", itemID=252041, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}}, 
     }
   },
   {
