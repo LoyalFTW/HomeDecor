@@ -6,7 +6,21 @@ NS.Data.Vendors = NS.Data.Vendors or {}
 NS.Data.Vendors["Classic"] = NS.Data.Vendors["Classic"] or {}
 
 NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
-
+     {
+    title="Materialist Ophinell",
+    source={
+      id=249196,
+      type="vendor",
+      faction="Neutral",
+      zone="Twilight Highlands",
+      worldmap="241:4960:8120",
+    },
+    items={
+	  {decorID=714, title="Silvermoon Wooden Chair", decorType="Seating", source={type="vendor", itemID=245284, currency="2000", currencytype="Honor"}, requirements={rep="true"}},
+	  {decorID=1236, title="Enchanted Blood Elven Candelabra", decorType="Large Lights", source={type="vendor", itemID=245330, currency="2000", currencytype="Honor"}, requirements={rep="true"}},
+	  {decorID=1227, title="Sin'dorei Winged Chaise", decorType="Seating", source={type="vendor", itemID=251997, currency="2000", currencytype="Honor"}, requirements={rep="true"}},
+	}
+  },
   {
     title="Riica",
     source={
