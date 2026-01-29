@@ -99,7 +99,7 @@ local function CreatePopup()
   edit:SetSize(260, 24)
   edit:SetPoint("LEFT", label, "RIGHT", 6, 0)
   edit:SetAutoFocus(false)
-  edit:SetText("https://discord.gg/8XJwEmGy")
+  edit:SetText("https://discord.gg/G2gCV9Zc57")
   edit:SetCursorPosition(0)
 
   local function Highlight(self)

@@ -96,7 +96,7 @@ local function ShowCommunityPopup()
   div:SetPoint("TOPRIGHT", -12, -60)
 
   local links = {
-    { "Join our Discord community", "https://discord.gg/f8njqW6Tgm" },
+    { "Join our Discord community", "https://discord.gg/G2gCV9Zc57" },
     { "Support development (BuyMeACoffee)", "https://buymeacoffee.com/azroaddons" },
     { "Donate via PayPal", "https://www.paypal.com/donate/?business=Jhookftw1@hotmail.com" },
     { "Share HomeDecor with friends", "https://legacy.curseforge.com/wow/addons/home-decor" },
