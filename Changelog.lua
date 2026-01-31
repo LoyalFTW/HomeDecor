@@ -1,15 +1,18 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Jan 28, 2026
-Added to EasternKingdoms Vendors
- Until Event Tab is made
- 
-* Silvermoon Wooden Chair
-* Enchanted Blood Elven Candelabra
-* Sin'dorei Winged Chaise
+Jan 31, 2026
+Some missing items.. Will add more. 
+I know theres a few more to get. 
+Just been busy adding 
+auto zone tracking system
+tooltips and few other things.
+Big release soon!
 
-Will be adding a event tab with all events
-but I don't want it to look horrible. 
+Some items added
+* Glazed Sin'dorei Vial
+* Shadow Council Torch
+* Stranglekelp Sack
+* Orcish Felblood Cauldron
 
 ]]
