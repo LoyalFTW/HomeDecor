@@ -17,7 +17,7 @@ NS.Data.Vendors["Wrath"]["Northrend"] = {
       worldmap="114:4304:1381",
     },
     items={
-      {decorID=11906, title="Murloc Driftwood Hut", decorType="Large Structures", source={type="vendor", itemID=258220, currency="1000", currencytype="Order Resources"}, requirements={quest={id=11566, title="Surrender... Not!"}, rep="true"}}, 
+      {decorID=11906, decorType="Large Structures", source={type="vendor", itemID=258220, currency="1000", currencytype="Order Resources"}, requirements={quest={id=11566}}}, 
     }
   },
   {
@@ -30,7 +30,7 @@ NS.Data.Vendors["Wrath"]["Northrend"] = {
       worldmap="119:2680:5920",
     },
     items={
-      {decorID=4839, title="Nesingwary Mounted Shoveltusk Head", decorType="Wall Hangings", source={type="vendor", itemID=248807, currency="1000", currencytype="Order Resources"}, requirements={achievement={id=938, title="The Snows of Northrend"}, rep="true"}},
+      {decorID=4839, decorType="Wall Hangings", source={type="vendor", itemID=248807, currency="1000", currencytype="Order Resources"}, requirements={achievement={id=938}}},
     }
   },
   {
@@ -43,7 +43,7 @@ NS.Data.Vendors["Wrath"]["Northrend"] = {
       worldmap="116:3240:5980",
     },
     items={
-      {decorID=4448, title="Wooden Outhouse", decorType="Large Structures", source={type="vendor", itemID=248622, currency="1000", currencytype="Order Resources"}, requirements={quest={id=12227, title="Doing Your Duty"}, rep="true"}},
+      {decorID=4448, decorType="Large Structures", source={type="vendor", itemID=248622, currency="1000", currencytype="Order Resources"}, requirements={quest={id=12227}}},
     }
   },
 }

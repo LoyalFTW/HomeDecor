@@ -12,6 +12,7 @@
     <Script file="Alchemy/Northrend.lua"/>
     <Script file="Alchemy/Outland.lua"/>
     <Script file="Alchemy/Pandaria.lua"/>
+	<Script file="Alchemy/Warlords.lua"/>
     <Script file="Alchemy/Shadowlands.lua"/>
 
     <!-- ===================================== -->

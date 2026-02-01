@@ -29,6 +29,7 @@ NS.Addon = Addon
 
 local defaults = {
   profile = {
+    eventTimers = {},
     ui = {
       viewMode = "Icon",
       activeCategory = "Achievements",
@@ -59,6 +60,20 @@ local defaults = {
         Alliance = true,
         Horde = true,
       },
+    },
+
+    tracker = {
+      open = false,
+      collapsed = false,
+      trackZone = true,
+      hideCompleted = false,
+      alpha = 0.7,
+      width = 310,
+      height = 520,
+      point = "TOPRIGHT",
+      relPoint = "TOPRIGHT",
+      x = -40,
+      y = -80,
     },
 
     favorites = {},
@@ -156,5 +171,13 @@ end
 function Addon:OnEnable()
   if NS.Systems.DecorIndex then
     NS.Systems.DecorIndex:Build()
+  end
+
+  do
+    local prof = self.db and self.db.profile
+    local tdb = prof and prof.tracker
+    if tdb and tdb.open and NS.UI and NS.UI.Tracker and NS.UI.Tracker.Create then
+      NS.UI.Tracker:Create()
+    end
   end
 end

@@ -3,6 +3,8 @@
 	 <!-- Classic -->
     <Script file="Classic/EasternKingdoms.lua"/>
 	<Script file="Classic/Kalimdor.lua"/>
+	<!-- BC -->
+	<Script file="BurningCrusade/Outland.lua"/>
 	<!-- Wrath -->
 	<Script file="Wrath/Northrend.lua"/>
 	<!-- MoP -->

@@ -6,4 +6,5 @@
     <Include file="Data/Drops/Drops.xml"/>
     <Include file="Data/Professions/Professions.xml"/>
 	<Include file="Data/Pvp/Pvp.xml"/>
+	<Include file="Data/Events/Events.xml"/>
 </Ui>

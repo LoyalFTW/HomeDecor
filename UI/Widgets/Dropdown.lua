@@ -1,633 +1,467 @@
-local ADDON, NS = ...
+local _, NS = ...
 NS.UI = NS.UI or {}
 NS.UI.Util = NS.UI.Util or {}
-local U = NS.UI.Util
 
-if not U.Backdrop then
-  function U.Backdrop(frame, controls, bg, border)
-    if not frame then return end
-    if controls and controls.Backdrop then
-      controls:Backdrop(frame, bg, border)
-      return
-    end
-    frame:SetBackdrop({
-      bgFile = "Interface/Buttons/WHITE8x8",
-      edgeFile = "Interface/Buttons/WHITE8x8",
-      edgeSize = 1,
-    })
-    frame:SetBackdropColor(unpack(bg))
-    frame:SetBackdropBorderColor(unpack(border))
-  end
-end
-
-if not U.SetFont then
-  function U.SetFont(fs, size)
-    if fs then fs:SetFont(STANDARD_TEXT_FONT, size, "") end
-  end
-end
-
-if not U.SafeBorder then
-  function U.SafeBorder(frame, col)
-    if frame and frame.SetBackdropBorderColor and col then
-      frame:SetBackdropBorderColor(col[1], col[2], col[3], col[4] or 1)
-    end
-  end
-end
-
-if not U.BindBorderHover then
-  function U.BindBorderHover(frame, accent, border)
-    if not frame or not frame.SetScript or not frame.SetBackdropBorderColor then return end
-    frame:SetScript("OnEnter", function() frame:SetBackdropBorderColor(unpack(accent)) end)
-    frame:SetScript("OnLeave", function() frame:SetBackdropBorderColor(unpack(border)) end)
-  end
-end
-
-local Dropdown = {}
+local Util = NS.UI.Util
+local Dropdown = NS.UI.Dropdown or {}
 NS.UI.Dropdown = Dropdown
 
-local counter = 0
-local OPEN = nil
+local OPEN, COUNTER = nil, 0
 local SCROLL_THRESHOLD = 14
 local SEARCH_THRESHOLD = 20
 
-local function IsShown(f) return f and f.IsShown and f:IsShown() end
+local function shown(f) return f and f.IsShown and f:IsShown() end
+local function closeOpen() if OPEN and OPEN.Close then OPEN:Close() end end
 
-local function CloseAny()
-  if OPEN and OPEN.Close then OPEN:Close() end
+local function children(opt)
+    if not opt or not opt.children then return end
+    if type(opt.children) == "table" then return opt.children end
+    if type(opt.children) == "function" then
+        local ok, res = pcall(opt.children)
+        if ok and type(res) == "table" then return res end
+    end
 end
 
-local function SafeChildren(opt)
-  if not opt or not opt.children then return nil end
-  if type(opt.children) == "table" then return opt.children end
-  if type(opt.children) == "function" then
-    local ok, res = pcall(opt.children)
-    if ok then return res end
-  end
-  return nil
+local function backdrop(f, C, T)
+    if Util and Util.Backdrop then return Util.Backdrop(f, C, T.panel, T.border) end
+    f:SetBackdrop({ bgFile="Interface/Buttons/WHITE8x8", edgeFile="Interface/Buttons/WHITE8x8", edgeSize=1 })
+    f:SetBackdropColor(T.panel[1],T.panel[2],T.panel[3],T.panel[4] or 1)
+    f:SetBackdropBorderColor(T.border[1],T.border[2],T.border[3],T.border[4] or 1)
+end
+
+local function setFont(fs, size)
+    if Util and Util.SetFont then return Util.SetFont(fs, size) end
+    if fs then fs:SetFont(STANDARD_TEXT_FONT, size, "") end
+end
+
+local function setBorder(f, col)
+    if Util and Util.SafeBorder then return Util.SafeBorder(f, col) end
+    if f and f.SetBackdropBorderColor then f:SetBackdropBorderColor(col[1], col[2], col[3], col[4] or 1) end
+end
+
+local function wantsBox(opt) return opt and not opt.separator and (opt.checkable or opt.children) end
+
+local function pickText(dd, opts, v)
+    if dd._get and opts then
+        local picked = {}
+        for _, o in ipairs(opts) do
+            if o and not o.separator and not o.children and o.checkable and o.value ~= nil then
+                if dd._get(o.value) then picked[#picked+1] = o.text or tostring(o.value) end
+            end
+        end
+        if #picked > 0 then return table.concat(picked, ", ") end
+    end
+
+    if v ~= nil and opts then
+        for _, o in ipairs(opts) do
+            if o and not o.separator and not o.children and not o.checkable and o.value == v then
+                return o.text or tostring(o.value)
+            end
+        end
+    end
+end
+
+local function labelPrefix(dd, txt)
+    local lbl = dd._label
+    if not lbl or lbl == "" then return txt or "" end
+    lbl = tostring(lbl)
+    if lbl:sub(-1) == ":" then return lbl .. " " .. (txt or "") end
+    return lbl .. ": " .. (txt or "")
+end
+
+local function filterOpts(dd, opts)
+    if not dd._hasSearch or not dd.search then return opts end
+    local q = tostring(dd.search:GetText() or ""):lower()
+    if q == "" then return opts end
+
+    local out = {}
+    for _, o in ipairs(opts) do
+        if o and (o.separator or o.title) then
+            out[#out+1] = o
+        else
+            local t = tostring(o and o.text or ""):lower()
+            if t:find(q, 1, true) then out[#out+1] = o end
+        end
+    end
+    return out
+end
+
+local function anyChildOn(dd, opt)
+    local kids = children(opt)
+    if not (kids and dd._get) then return false end
+    for _, o in ipairs(kids) do
+        if o and not o.separator and o.value ~= nil and dd._get(o.value) then return true end
+    end
+    return false
+end
+
+local function ensureBtn(dd, pool, i, parentFrame, isSub, T)
+    local b = pool[i]
+    if not b then
+        b = CreateFrame("Button", nil, parentFrame)
+        b:SetHeight(dd._rowH)
+
+        b.hl = b:CreateTexture(nil, "BACKGROUND")
+        b.hl:SetAllPoints()
+        b.hl:SetColorTexture(unpack(T.accent))
+        b.hl:SetAlpha(0.18)
+        b.hl:Hide()
+
+        b.sel = b:CreateTexture(nil, "ARTWORK")
+        b.sel:SetPoint("LEFT", 6, 0)
+        b.sel:SetSize(2, dd._rowH - 6)
+        b.sel:SetColorTexture(unpack(T.accent))
+        b.sel:Hide()
+
+        b.box = b:CreateTexture(nil, "OVERLAY")
+        b.box:SetSize(14, 14)
+        b.box:SetPoint("LEFT", 8, 0)
+        b.box:SetTexture("Interface\\Buttons\\UI-CheckBox-Up")
+        b.box:Hide()
+
+        b.check = b:CreateTexture(nil, "OVERLAY")
+        b.check:SetSize(14, 14)
+        b.check:SetPoint("CENTER", b.box, "CENTER", 0, 0)
+        b.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
+        b.check:Hide()
+
+        b.arrow = b:CreateTexture(nil, "OVERLAY")
+        b.arrow:SetSize(10, 10)
+        b.arrow:SetPoint("RIGHT", -6, 0)
+        b.arrow:SetTexture("Interface\\Buttons\\UI-MicroStream-Green")
+        b.arrow:SetRotation(1.57)
+        b.arrow:Hide()
+
+        b.div = b:CreateTexture(nil, "ARTWORK")
+        b.div:SetHeight(1)
+        b.div:SetPoint("LEFT", 10, 0)
+        b.div:SetPoint("RIGHT", -10, 0)
+        b.div:SetColorTexture(1, 1, 1, 0.15)
+        b.div:Hide()
+
+        b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        setFont(b.text, 12)
+        b.text:SetWordWrap(false)
+        if b.text.SetMaxLines then b.text:SetMaxLines(1) end
+
+        b:SetScript("OnEnter", function()
+            b.hl:Show()
+            if (not isSub) and b.children then
+                dd.sub._parentOpt = b.opt
+                dd:PositionSub(b)
+                dd:BuildSub(b.opt)
+                dd.sub:Show()
+            end
+        end)
+        b:SetScript("OnLeave", function() b.hl:Hide() end)
+
+        b:SetScript("OnClick", function()
+            if b.separator or b.children then return end
+            if dd._set then dd._set(b.value, b.opt) end
+            dd:ApplyText()
+            dd:RefreshStates()
+            if not b.keepOpen then dd:Close() end
+            if dd._parent and dd._parent.Refresh then dd._parent:Refresh() end
+        end)
+
+        pool[i] = b
+    end
+
+    if b:GetParent() ~= parentFrame then b:SetParent(parentFrame) end
+    return b
 end
 
 function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn, C, T)
-  counter = counter + 1
-  local dd = CreateFrame("Button", "HD_CustomDrop_"..counter, parent, "BackdropTemplate")
+    COUNTER = COUNTER + 1
 
-  dd:SetHeight(26)
-  dd:SetClampedToScreen(true)
-  dd:RegisterForClicks("LeftButtonUp")
-  U.Backdrop(dd, C, T.panel, T.border)
+    local dd = CreateFrame("Button", "HD_CustomDrop_" .. COUNTER, parent, "BackdropTemplate")
+    dd:SetHeight(26)
+    dd:SetClampedToScreen(true)
+    dd:RegisterForClicks("LeftButtonUp")
 
-  dd._get = get
-  dd._set = set
-  dd._valuesFn = valuesFn
-  dd._visibleFn = visibleFn
+    dd._parent = parent
+    dd._label = label
+    dd._get, dd._set = get, set
+    dd._valuesFn, dd._visibleFn = valuesFn, visibleFn
 
-  dd._label = label
+    dd._rowH, dd._pad = 24, 6
 
-  dd.text = dd:CreateFontString(nil,"OVERLAY","GameFontNormal")
-  dd.text:SetPoint("LEFT",8,0)
-  dd.text:SetPoint("RIGHT",-22,0)
-  dd.text:SetJustifyH("LEFT")
-  U.SetFont(dd.text, 12)
-  dd.text:SetWordWrap(false)
-  if dd.text.SetMaxLines then dd.text:SetMaxLines(1) end
+    backdrop(dd, C, T)
 
-  dd.arrow = dd:CreateTexture(nil,"OVERLAY")
-  dd.arrow:SetSize(12,12)
-  dd.arrow:SetPoint("RIGHT",-6,0)
-  dd.arrow:SetTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+    dd.text = dd:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    dd.text:SetPoint("LEFT", 8, 0)
+    dd.text:SetPoint("RIGHT", -22, 0)
+    dd.text:SetJustifyH("LEFT")
+    setFont(dd.text, 12)
+    dd.text:SetWordWrap(false)
+    if dd.text.SetMaxLines then dd.text:SetMaxLines(1) end
 
-  dd:SetScript("OnEnter", function() U.SafeBorder(dd, T.accent) end)
-  dd:SetScript("OnLeave", function() U.SafeBorder(dd, T.border) end)
+    dd.arrow = dd:CreateTexture(nil, "OVERLAY")
+    dd.arrow:SetSize(12, 12)
+    dd.arrow:SetPoint("RIGHT", -6, 0)
+    dd.arrow:SetTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
 
-  dd._catcher = CreateFrame("Frame", nil, UIParent)
-  dd._catcher:SetAllPoints(UIParent)
-  dd._catcher:SetFrameStrata("FULLSCREEN_DIALOG")
-  dd._catcher:SetFrameLevel(1)
-  dd._catcher:EnableMouse(true)
-  dd._catcher:Hide()
-  dd._catcher:SetScript("OnMouseDown", function()
-    if OPEN == dd then dd:Close() end
-  end)
+    dd:SetScript("OnEnter", function() setBorder(dd, T.accent) end)
+    dd:SetScript("OnLeave", function() setBorder(dd, T.border) end)
 
-  dd.list = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-  dd.list:SetFrameStrata("FULLSCREEN_DIALOG")
-  dd.list:SetFrameLevel(100)
-  dd.list:SetClampedToScreen(true)
-  dd.list:Hide()
-  U.Backdrop(dd.list, C, T.panel, T.border)
-
-  dd.list.rowH, dd.list.pad = 24, 6
-
-  dd.list.plain = CreateFrame("Frame", nil, dd.list)
-  dd.list.plain:SetPoint("TOPLEFT", dd.list, "TOPLEFT", 0, 0)
-  dd.list.plain:SetPoint("TOPRIGHT", dd.list, "TOPRIGHT", 0, 0)
-  dd.list.plain:Show()
-
-  dd.list.scroll = CreateFrame("ScrollFrame", nil, dd.list, "ScrollFrameTemplate")
-  dd.list.scroll:SetPoint("TOPLEFT", 6, -6)
-  dd.list.scroll:SetPoint("BOTTOMRIGHT", -26, 6)
-  dd.list.scroll:Hide()
-
-  dd.list.content = CreateFrame("Frame", nil, dd.list.scroll)
-
-  dd.search = CreateFrame("EditBox", nil, dd.list, "BackdropTemplate")
-  dd.search:SetAutoFocus(false)
-  dd.search:SetHeight(22)
-  dd.search:SetFont(STANDARD_TEXT_FONT, 12, "")
-  dd.search:SetTextInsets(8,8,4,4)
-  U.Backdrop(dd.search, nil, T.panel, T.border)
-  dd.search:ClearAllPoints()
-  dd.search:SetPoint("TOPLEFT", dd.list, "TOPLEFT", 6, -6)
-  dd.search:SetPoint("TOPRIGHT", dd.list, "TOPRIGHT", -6, -6)
-  dd.search:Hide()
-  dd._hasSearch = false
-
-  dd.list.content:SetPoint("TOPLEFT", 0, 0)
-  dd.list.scroll:SetScrollChild(dd.list.content)
-
-  local function LayoutListChrome()
-    dd.list.scroll:ClearAllPoints()
-    if dd._hasSearch then
-      dd.list.scroll:SetPoint("TOPLEFT", 6, -(6 + 26))
-      dd.list.scroll:SetPoint("BOTTOMRIGHT", -26, 6)
-    else
-      dd.list.scroll:SetPoint("TOPLEFT", 6, -6)
-      dd.list.scroll:SetPoint("BOTTOMRIGHT", -26, 6)
-    end
-  end
-
-  dd.list.buttons = {}
-
-  dd.sub = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-  dd.sub:SetFrameStrata("FULLSCREEN_DIALOG")
-  dd.sub:SetFrameLevel(101)
-  dd.sub:SetClampedToScreen(true)
-  dd.sub:Hide()
-  U.Backdrop(dd.sub, C, T.panel, T.border)
-  dd.sub.rowH, dd.sub.pad = 24, 6
-  dd.sub.buttons = {}
-
-  local function PrefixLabel(txt)
-    local lbl = dd._label
-    if not lbl or lbl == "" then
-      return txt or ""
-    end
-    lbl = tostring(lbl)
-    if lbl:sub(-1) == ":" then
-      return lbl .. " " .. (txt or "")
-    end
-    return lbl .. ": " .. (txt or "")
-  end
-
-  local function ResolveSelectedText(opts, v)
-    local pickedList = nil
-
-    if dd._get and opts then
-      local list = {}
-      for _,o in ipairs(opts) do
-        if o and not o.separator and not o.children and o.checkable and o.value ~= nil then
-          if dd._get(o.value) then
-            list[#list+1] = o.text or tostring(o.value)
-          end
-        end
-      end
-      if #list > 0 then
-        pickedList = table.concat(list, ", ")
-      end
-    end
-
-    if pickedList and pickedList ~= "" then return pickedList end
-
-    if v ~= nil and opts then
-      for _,o in ipairs(opts) do
-        if o and not o.separator and not o.children and not o.checkable and o.value == v then
-          return o.text or tostring(o.value)
-        end
-      end
-    end
-
-    return nil
-  end
-
-  local function ApplyText(ph)
-    local v = dd._get and dd._get()
-    local opts = dd._valuesFn and dd._valuesFn() or {}
-    local txt = ResolveSelectedText(opts, v)
-
-    if txt and txt ~= "" then
-      dd.text:SetText(PrefixLabel(txt))
-    else
-      dd.text:SetText(PrefixLabel(ph or ""))
-    end
-  end
-
-  local function HideSub()
-    dd.sub:Hide()
-    dd.sub._parentOpt = nil
-  end
-
-  function dd:Close()
-    dd.list:Hide()
-    HideSub()
+    dd._catcher = CreateFrame("Frame", nil, UIParent)
+    dd._catcher:SetAllPoints(UIParent)
+    dd._catcher:SetFrameStrata("FULLSCREEN_DIALOG")
+    dd._catcher:SetFrameLevel(1)
+    dd._catcher:EnableMouse(true)
     dd._catcher:Hide()
-    if OPEN == dd then OPEN = nil end
-  end
+    dd._catcher:SetScript("OnMouseDown", function()
+        if OPEN == dd then dd:Close() end
+    end)
 
-  local function PositionMain()
-    dd.list:ClearAllPoints()
-    local left, bottom = dd:GetLeft(), dd:GetBottom()
-    if left and bottom then
-      dd.list:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, bottom - 4)
-      dd.list:SetWidth(math.max(dd:GetWidth(), 180))
+    dd.list = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+    dd.list:SetFrameStrata("FULLSCREEN_DIALOG")
+    dd.list:SetFrameLevel(100)
+    dd.list:SetClampedToScreen(true)
+    dd.list:Hide()
+    backdrop(dd.list, C, T)
+
+    dd.scroll = CreateFrame("ScrollFrame", nil, dd.list, "ScrollFrameTemplate")
+    if C and C.SkinScrollFrame then C:SkinScrollFrame(dd.scroll) end
+    dd.scroll:SetPoint("TOPLEFT", 6, -6)
+    dd.scroll:SetPoint("BOTTOMRIGHT", -26, 6)
+
+    dd.content = CreateFrame("Frame", nil, dd.scroll)
+    dd.content:SetPoint("TOPLEFT", 0, 0)
+    dd.scroll:SetScrollChild(dd.content)
+
+    dd.search = CreateFrame("EditBox", nil, dd.list, "BackdropTemplate")
+    dd.search:SetAutoFocus(false)
+    dd.search:SetHeight(22)
+    dd.search:SetFont(STANDARD_TEXT_FONT, 12, "")
+    dd.search:SetTextInsets(8, 8, 4, 4)
+    backdrop(dd.search, nil, T)
+    dd.search:SetPoint("TOPLEFT", dd.list, "TOPLEFT", 6, -6)
+    dd.search:SetPoint("TOPRIGHT", dd.list, "TOPRIGHT", -6, -6)
+    dd.search:Hide()
+
+    dd.sub = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+    dd.sub:SetFrameStrata("FULLSCREEN_DIALOG")
+    dd.sub:SetFrameLevel(101)
+    dd.sub:SetClampedToScreen(true)
+    dd.sub:Hide()
+    backdrop(dd.sub, C, T)
+
+    dd.btns, dd.subBtns = {}, {}
+
+    function dd:ApplyText(placeholder)
+        local v = self._get and self._get()
+        local opts = self._valuesFn and self._valuesFn() or {}
+        local txt = pickText(self, opts, v)
+        self.text:SetText(labelPrefix(self, (txt and txt ~= "" and txt) or (placeholder or "")))
     end
-  end
 
-  local function PositionSub(anchorBtn)
-    dd.sub:ClearAllPoints()
-    local l, t = anchorBtn:GetLeft(), anchorBtn:GetTop()
-    if l and t then
-      dd.sub:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", l + dd.list:GetWidth() - 6, t)
-      dd.sub:SetWidth(dd.list:GetWidth())
-    end
-  end
-
-  local RefreshStates -- forward
-  local UpdateMain    -- forward
-
-  local function GetFilteredOptions(allOpts)
-    local opts = allOpts or {}
-    if not dd._hasSearch then
-      return opts
-    end
-
-    local q = (dd.search and dd.search.GetText and dd.search:GetText()) or ""
-    q = tostring(q):lower()
-    if q == "" then
-      return opts
-    end
-
-    local out = {}
-    for _, opt in ipairs(opts) do
-      if opt and (opt.separator or opt.title) then
-        out[#out+1] = opt
-      else
-        local text = tostring(opt and opt.text or ""):lower()
-        if text:find(q, 1, true) then
-          out[#out+1] = opt
+    function dd:PositionMain()
+        self.list:ClearAllPoints()
+        local l, b = self:GetLeft(), self:GetBottom()
+        if l and b then
+            self.list:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", l, b - 4)
+            self.list:SetWidth(math.max(self:GetWidth(), 180))
         end
-      end
     end
-    return out
-  end
 
-  local function EnsureButton(pool, i, parentFrame, isSub)
-    local b = pool[i]
-    if not b then
-      b = CreateFrame("Button", nil, parentFrame)
-      b:SetHeight(dd.list.rowH)
-
-      b.hl = b:CreateTexture(nil,"BACKGROUND")
-      b.hl:SetAllPoints()
-      b.hl:SetColorTexture(unpack(T.accent))
-      b.hl:SetAlpha(0.18)
-      b.hl:Hide()
-
-      b.sel = b:CreateTexture(nil,"ARTWORK")
-      b.sel:SetPoint("LEFT",6,0)
-      b.sel:SetSize(2, dd.list.rowH-6)
-      b.sel:SetColorTexture(unpack(T.accent))
-      b.sel:Hide()
-
-      b.box = b:CreateTexture(nil,"OVERLAY")
-      b.box:SetSize(14,14)
-      b.box:SetPoint("LEFT",8,0)
-      b.box:SetTexture("Interface\\Buttons\\UI-CheckBox-Up")
-      b.box:Hide()
-
-      b.check = b:CreateTexture(nil,"OVERLAY")
-      b.check:SetSize(14,14)
-      b.check:SetPoint("CENTER", b.box, "CENTER", 0, 0)
-      b.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
-      b.check:SetVertexColor(1, 1, 1, 1) -- white check
-      b.check:Hide()
-
-      b.arrow = b:CreateTexture(nil,"OVERLAY")
-      b.arrow:SetSize(10,10)
-      b.arrow:SetPoint("RIGHT",-6,0)
-      b.arrow:SetTexture("Interface\\Buttons\\UI-MicroStream-Green")
-      b.arrow:SetRotation(1.57) -- point right
-      b.arrow:Hide()
-
-      b.div = b:CreateTexture(nil,"ARTWORK")
-      b.div:SetHeight(1)
-      b.div:SetPoint("LEFT", 10, 0)
-      b.div:SetPoint("RIGHT", -10, 0)
-      b.div:SetColorTexture(1,1,1,0.15)
-      b.div:Hide()
-
-      b.text = b:CreateFontString(nil,"OVERLAY","GameFontNormal")
-      b.text:SetPoint("LEFT",12,0)
-      b.text:SetPoint("RIGHT",-18,0)
-      U.SetFont(b.text, 12)
-      b.text:SetWordWrap(false)
-      if b.text.SetMaxLines then b.text:SetMaxLines(1) end
-
-      b:SetScript("OnEnter", function()
-        b.hl:Show()
-        if b.children and not isSub then
-          dd.sub._parentOpt = b.opt
-          PositionSub(b)
-          dd:_BuildSubmenu(b.opt)
-          dd.sub:Show()
+    function dd:PositionSub(anchorBtn)
+        self.sub:ClearAllPoints()
+        local l, t = anchorBtn:GetLeft(), anchorBtn:GetTop()
+        if l and t then
+            self.sub:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", l + self.list:GetWidth() - 6, t)
+            self.sub:SetWidth(self.list:GetWidth())
         end
-      end)
-      b:SetScript("OnLeave", function() b.hl:Hide() end)
+    end
 
-      b:SetScript("OnClick", function()
-        if b.separator or b.children then return end
+    function dd:Close()
+        self.list:Hide()
+        self.sub:Hide()
+        self.sub._parentOpt = nil
+        self._catcher:Hide()
+        if OPEN == self then OPEN = nil end
+    end
 
-        if b.checkable then
-          if dd._set then dd._set(b.value, b.opt) end
-          ApplyText()
-          RefreshStates()
-          if not b.keepOpen then dd:Close() end
-          if parent and parent.Refresh then parent:Refresh() end
-          return
+    function dd:BuildSub(parentOpt)
+        local opts = children(parentOpt) or {}
+        local total = #opts
+        local visible = math.min(total, SCROLL_THRESHOLD)
+        self.sub:SetHeight(self._pad * 2 + visible * self._rowH)
+
+        for i = 1, total do
+            local opt = opts[i] or {}
+            local b = ensureBtn(self, self.subBtns, i, self.sub, true, T)
+            b.opt, b.value = opt, opt.value
+            b.separator, b.checkable, b.keepOpen = opt.separator, opt.checkable, opt.keepOpen
+            b.children = nil
+
+            if opt.separator then
+                b.text:SetText("")
+                b.div:Show()
+                b.box:Hide(); b.check:Hide(); b.sel:Hide(); b.arrow:Hide()
+            else
+                b.div:Hide()
+                b.text:SetText(opt.text or "")
+                b.text:SetTextColor(1,1,1,1)
+                b.text:ClearAllPoints()
+                if wantsBox(opt) then
+                    b.box:Show()
+                    b.text:SetPoint("LEFT", 28, 0)
+                else
+                    b.box:Hide(); b.check:Hide()
+                    b.text:SetPoint("LEFT", 12, 0)
+                end
+                b.text:SetPoint("RIGHT", -18, 0)
+                b.arrow:Hide()
+            end
+
+            b:ClearAllPoints()
+            b:SetPoint("TOPLEFT", self.sub, "TOPLEFT", 0, -(self._pad + (i-1)*self._rowH))
+            b:SetPoint("TOPRIGHT", self.sub, "TOPRIGHT", 0, -(self._pad + (i-1)*self._rowH))
+            b:Show()
         end
 
-        if dd._set then dd._set(b.value, b.opt) end
-        ApplyText()
-        RefreshStates()
-        if not b.keepOpen then dd:Close() end
-        if parent and parent.Refresh then parent:Refresh() end
-      end)
+        for i = total + 1, #self.subBtns do
+            if self.subBtns[i] then self.subBtns[i]:Hide() end
+        end
 
-      pool[i] = b
+        self:RefreshStates()
     end
 
-    if b:GetParent() ~= parentFrame then
-      b:SetParent(parentFrame)
-    end
-    return b
-  end
+    function dd:UpdateMain()
+        local all = self._valuesFn and self._valuesFn() or {}
+        self._hasSearch = (#all >= SEARCH_THRESHOLD)
 
-  local function LayoutButtons(pool, total, container, frame, useScroll)
-    for i=1, total do
-      local b = pool[i]
-      b:ClearAllPoints()
-      if useScroll then
-        b:SetPoint("TOPLEFT", container, "TOPLEFT", 0, -(i-1)*frame.rowH)
-        b:SetPoint("TOPRIGHT", container, "TOPRIGHT", 0, -(i-1)*frame.rowH)
-      else
-        local topPad = frame.pad + (dd._hasSearch and 26 or 0)
-        b:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -(topPad + (i-1)*frame.rowH))
-        b:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -(topPad + (i-1)*frame.rowH))
-      end
-    end
-  end
-
-  local function WantsCheckbox(opt)
-    if not opt or opt.separator then return false end
-    if opt.checkable then return true end
-    if opt.children then return true end -- parent rows like "Faction"
-    return false
-  end
-
-  UpdateMain = function()
-    local allOpts = dd._valuesFn and dd._valuesFn() or {}
-
-    dd._hasSearch = (#allOpts >= SEARCH_THRESHOLD)
-    dd.search:SetShown(dd._hasSearch)
-    LayoutListChrome()
-
-    local opts = GetFilteredOptions(allOpts)
-
-    local total = #opts
-    local useScroll = total > SCROLL_THRESHOLD
-    local container = useScroll and dd.list.content or dd.list.plain
-
-    dd.list.scroll:SetShown(useScroll)
-    dd.list.plain:SetShown(not useScroll)
-
-    local visible = useScroll and SCROLL_THRESHOLD or total
-    dd.list:SetHeight(dd.list.pad*2 + visible*dd.list.rowH + (dd._hasSearch and 28 or 0))
-
-    if useScroll then
-      dd.list.scroll:SetVerticalScroll(0)
-      dd.list.content:SetWidth(dd.list:GetWidth() - 26)
-      dd.list.content:SetHeight(total * dd.list.rowH)
-    else
-      dd.list.plain:SetHeight(dd.list.pad*2 + total*dd.list.rowH)
-    end
-
-    for i=1, total do
-      local opt = opts[i] or {}
-      local b = EnsureButton(dd.list.buttons, i, container, false)
-      b.opt = opt
-      b.value = opt.value
-      b.separator = opt.separator
-      b.checkable = opt.checkable
-      b.keepOpen = opt.keepOpen
-      b.children = opt.children
-
-      b.text:SetText(opt.text or "")
-      b.arrow:SetShown(opt.children and true or false)
-
-      if opt.separator then
-        b.text:SetText("")
-        b.div:Show()
-        b.box:Hide()
-        b.check:Hide()
-        b.sel:Hide()
-        b.arrow:Hide()
-      else
-        b.div:Hide()
-        b.text:SetTextColor(1,1,1,1)
-        b.text:ClearAllPoints()
-        if WantsCheckbox(opt) then
-          b.box:Show()
-          b.text:SetPoint("LEFT", 28, 0)
-          b.text:SetPoint("RIGHT", -18, 0)
+        self.search:SetShown(self._hasSearch)
+        self.scroll:ClearAllPoints()
+        if self._hasSearch then
+            self.scroll:SetPoint("TOPLEFT", 6, -(6 + 26))
+            self.scroll:SetPoint("BOTTOMRIGHT", -26, 6)
         else
-          b.box:Hide()
-          b.check:Hide()
-          b.text:SetPoint("LEFT", 12, 0)
-          b.text:SetPoint("RIGHT", -18, 0)
+            self.scroll:SetPoint("TOPLEFT", 6, -6)
+            self.scroll:SetPoint("BOTTOMRIGHT", -26, 6)
         end
-      end
 
-      b:Show()
-    end
+        local opts = filterOpts(self, all)
+        local total = #opts
+        local visible = math.min(total, SCROLL_THRESHOLD)
 
-    for i=total+1, #dd.list.buttons do
-      if dd.list.buttons[i] then dd.list.buttons[i]:Hide() end
-    end
+        self.list:SetHeight(self._pad*2 + visible*self._rowH + (self._hasSearch and 28 or 0))
 
-    LayoutButtons(dd.list.buttons, total, container, dd.list, useScroll)
-  end
+        self.scroll:SetVerticalScroll(0)
+        self.content:SetWidth(self.list:GetWidth() - 26)
+        self.content:SetHeight(total * self._rowH)
 
-  function dd:_BuildSubmenu(parentOpt)
-    local opts = SafeChildren(parentOpt) or {}
-    local total = #opts
+        for i = 1, total do
+            local opt = opts[i] or {}
+            local b = ensureBtn(self, self.btns, i, self.content, false, T)
+            b.opt, b.value = opt, opt.value
+            b.separator, b.checkable, b.keepOpen, b.children = opt.separator, opt.checkable, opt.keepOpen, opt.children
 
-    dd.sub:SetHeight(dd.sub.pad*2 + math.min(total, SCROLL_THRESHOLD) * dd.sub.rowH)
+            if opt.separator then
+                b.text:SetText("")
+                b.div:Show()
+                b.box:Hide(); b.check:Hide(); b.sel:Hide(); b.arrow:Hide()
+            else
+                b.div:Hide()
+                b.text:SetText(opt.text or "")
+                b.text:SetTextColor(1,1,1,1)
+                b.text:ClearAllPoints()
+                if wantsBox(opt) then
+                    b.box:Show()
+                    b.text:SetPoint("LEFT", 28, 0)
+                else
+                    b.box:Hide(); b.check:Hide()
+                    b.text:SetPoint("LEFT", 12, 0)
+                end
+                b.text:SetPoint("RIGHT", -18, 0)
+                b.arrow:SetShown(opt.children and true or false)
+            end
 
-    for i=1, total do
-      local opt = opts[i] or {}
-      local b = EnsureButton(dd.sub.buttons, i, dd.sub, true)
-      b.opt = opt
-      b.value = opt.value
-      b.separator = opt.separator
-      b.checkable = opt.checkable
-      b.keepOpen = opt.keepOpen
-      b.children = nil
-
-      b.text:SetText(opt.text or "")
-      b.arrow:Hide()
-
-      if opt.separator then
-        b.text:SetText("")
-        b.box:Hide()
-        b.check:Hide()
-        b.sel:Hide()
-      else
-        b.text:SetTextColor(1,1,1,1)
-        b.text:ClearAllPoints()
-        if WantsCheckbox(opt) then
-          b.box:Show()
-          b.text:SetPoint("LEFT", 28, 0)
-          b.text:SetPoint("RIGHT", -18, 0)
-        else
-          b.box:Hide()
-          b.check:Hide()
-          b.text:SetPoint("LEFT", 12, 0)
-          b.text:SetPoint("RIGHT", -18, 0)
+            b:ClearAllPoints()
+            b:SetPoint("TOPLEFT", self.content, "TOPLEFT", 0, -(i-1)*self._rowH)
+            b:SetPoint("TOPRIGHT", self.content, "TOPRIGHT", 0, -(i-1)*self._rowH)
+            b:Show()
         end
-      end
 
-      b:Show()
-      b:ClearAllPoints()
-      b:SetPoint("TOPLEFT", dd.sub, "TOPLEFT", 0, -(dd.sub.pad + (i-1)*dd.sub.rowH))
-      b:SetPoint("TOPRIGHT", dd.sub, "TOPRIGHT", 0, -(dd.sub.pad + (i-1)*dd.sub.rowH))
-    end
-
-    for i=total+1, #dd.sub.buttons do
-      if dd.sub.buttons[i] then dd.sub.buttons[i]:Hide() end
-    end
-
-    RefreshStates()
-  end
-
-  local function AnyChildSelected(opt)
-    local kids = SafeChildren(opt)
-    if not kids or not dd._get then return false end
-    for _,o in ipairs(kids) do
-      if o and not o.separator and o.value ~= nil and dd._get(o.value) then
-        return true
-      end
-    end
-    return false
-  end
-
-  RefreshStates = function()
-    local v = dd._get and dd._get()
-
-    for _,b in ipairs(dd.list.buttons) do
-      if b and b:IsShown() then
-        if b.separator then
-          b.sel:Hide()
-          b.box:Hide()
-          b.check:Hide()
-        elseif b.children then
-          b.sel:Hide()
-          b.box:SetShown(true)
-          b.check:SetShown(AnyChildSelected(b.opt))
-        elseif b.checkable then
-          local on = (dd._get and b.value ~= nil and dd._get(b.value)) and true or false
-          b.sel:Hide()
-          b.box:SetShown(true)
-          b.check:SetShown(on)
-        else
-          b.sel:SetShown(b.value == v)
-          b.box:Hide()
-          b.check:Hide()
+        for i = total + 1, #self.btns do
+            if self.btns[i] then self.btns[i]:Hide() end
         end
-      end
     end
 
-    for _,b in ipairs(dd.sub.buttons) do
-      if b and b:IsShown() then
-        if b.separator then
-          b.sel:Hide()
-          b.box:Hide()
-          b.check:Hide()
-        elseif b.children then
-          b.sel:Hide()
-          b.box:SetShown(true)
-          b.check:SetShown(AnyChildSelected(b.opt))
-        elseif b.checkable then
-          local on = (dd._get and b.value ~= nil and dd._get(b.value)) and true or false
-          b.sel:Hide()
-          b.box:SetShown(true)
-          b.check:SetShown(on)
-        else
-          b.sel:SetShown(b.value == v)
-          b.box:Hide()
-          b.check:Hide()
+    function dd:RefreshStates()
+        local v = self._get and self._get()
+
+        local function sync(pool, isSub)
+            for _, b in ipairs(pool) do
+                if b and b:IsShown() then
+                    if b.separator then
+                        b.sel:Hide(); b.box:Hide(); b.check:Hide()
+                    elseif b.children and not isSub then
+                        b.sel:Hide()
+                        b.box:Show()
+                        b.check:SetShown(anyChildOn(self, b.opt))
+                    elseif b.checkable then
+                        b.sel:Hide()
+                        b.box:Show()
+                        b.check:SetShown((self._get and b.value ~= nil and self._get(b.value)) and true or false)
+                    else
+                        b.sel:SetShown(b.value == v)
+                        b.box:Hide()
+                        b.check:Hide()
+                    end
+                end
+            end
         end
-      end
-    end
-  end
 
-  dd.search:SetScript("OnEscapePressed", function(self)
-    self:SetText("")
-    self:ClearFocus()
-    UpdateMain()
-    RefreshStates()
-  end)
-
-  dd.search:SetScript("OnTextChanged", function(self)
-    if IsShown(dd.list) then
-      UpdateMain()
-      RefreshStates()
-    end
-  end)
-
-  dd:SetScript("OnClick", function()
-    if dd._visibleFn and not dd._visibleFn() then return end
-
-    if OPEN and OPEN ~= dd then
-      CloseAny()
+        sync(self.btns, false)
+        sync(self.subBtns, true)
     end
 
-    if IsShown(dd.list) then
-      dd:Close()
-      return
-    end
+    dd.search:SetScript("OnEscapePressed", function(self)
+        self:SetText("")
+        self:ClearFocus()
+        dd:UpdateMain()
+        dd:RefreshStates()
+    end)
 
-    if dd.search then dd.search:SetText("") end
+    dd.search:SetScript("OnTextChanged", function()
+        if shown(dd.list) then
+            dd:UpdateMain()
+            dd:RefreshStates()
+        end
+    end)
 
-    PositionMain()
-    UpdateMain()
-    HideSub()
-    dd.list:Show()
-    dd._catcher:Show()
-    OPEN = dd
-    RefreshStates()
-    ApplyText()
-  end)
+    dd:SetScript("OnClick", function()
+        if dd._visibleFn and not dd._visibleFn() then return end
+        if OPEN and OPEN ~= dd then closeOpen() end
+        if shown(dd.list) then dd:Close(); return end
 
-  dd:HookScript("OnHide", function() dd:Close() end)
-  dd:HookScript("OnSizeChanged", function()
-    if IsShown(dd.list) then
-      dd.list:SetWidth(dd:GetWidth())
-      UpdateMain()
-      RefreshStates()
-      ApplyText()
-    end
-  end)
+        if dd.search then dd.search:SetText("") end
 
-  ApplyText()
-  return dd
+        dd:PositionMain()
+        dd:UpdateMain()
+        dd.sub:Hide()
+        dd.list:Show()
+        dd._catcher:Show()
+        OPEN = dd
+
+        dd:RefreshStates()
+        dd:ApplyText()
+    end)
+
+    dd:HookScript("OnHide", function() dd:Close() end)
+    dd:HookScript("OnSizeChanged", function()
+        if shown(dd.list) then
+            dd.list:SetWidth(dd:GetWidth())
+            dd:UpdateMain()
+            dd:RefreshStates()
+            dd:ApplyText()
+        end
+    end)
+
+    dd:ApplyText()
+    return dd
 end
 
 return Dropdown

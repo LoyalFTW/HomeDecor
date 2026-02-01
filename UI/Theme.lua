@@ -22,6 +22,26 @@ NS.UI.Theme = {
     warning     = { 0.85, 0.55, 0.22, 1 },
     danger      = { 0.80, 0.28, 0.28, 1 },
   },
+
+  textures = {
+    ButtonNormal   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\button_normal.tga",
+    ButtonHover    = "Interface\\AddOns\\HomeDecor\\Media\\UI\\button_hover.tga",
+    ButtonPushed   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\button_pushed.tga",
+    ButtonDisabled = "Interface\\AddOns\\HomeDecor\\Media\\UI\\button_disabled.tga",
+
+    TabNormal   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\tab_normal.tga",
+    TabHover    = "Interface\\AddOns\\HomeDecor\\Media\\UI\\tab_hover.tga",
+    TabPushed   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\tab_pushed.tga",
+    TabDisabled = "Interface\\AddOns\\HomeDecor\\Media\\UI\\tab_disabled.tga",
+
+    ScrollTrack = "Interface\\AddOns\\HomeDecor\\Media\\UI\\scroll_track.tga",
+    ScrollThumb = "Interface\\AddOns\\HomeDecor\\Media\\UI\\scroll_thumb.tga",
+
+    ScrollArrowUp   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\scroll_arrow_up.tga",
+    ScrollArrowDown = "Interface\\AddOns\\HomeDecor\\Media\\UI\\scroll_arrow_down.tga",
+    DropdownBox     = "Interface\\AddOns\\HomeDecor\\Media\\UI\\dropdown_box.tga",
+    DropdownArrow   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\dropdown_arrow.tga",
+  },
 }
 
 return NS.UI.Theme

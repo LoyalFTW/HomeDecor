@@ -1,10 +1,9 @@
 local ADDON, NS = ...
+
 NS.Systems = NS.Systems or {}
 
 local VendorChecks = {}
 NS.Systems.VendorChecks = VendorChecks
-
-local Collection = NS.Systems and NS.Systems.Collection
 
 local npcItems = nil
 local built = false
@@ -18,7 +17,6 @@ local function hdCanAccess(v)
   if canaccessvalue and not canaccessvalue(v) then return false end
   return true
 end
-
 
 local function getNpcIDFromGUID(guid)
   if not hdCanAccess(guid) then return nil end
@@ -65,7 +63,6 @@ local function BuildIndex()
             map = {}
             npcItems[npcID] = map
           end
-
           for _, it in ipairs(vendor.items or {}) do
             local itemID = it and it.source and tonumber(it.source.itemID)
             local decorID = it and tonumber(it.decorID)
@@ -85,10 +82,15 @@ function VendorChecks:Ensure()
   if not built then BuildIndex() end
 end
 
+function VendorChecks:Invalidate()
+  built = false
+  npcItems = nil
+end
+
 local function HideMerchantCheckmarks()
   local perPage = MERCHANT_ITEMS_PER_PAGE or 10
   for i = 1, perPage do
-    local button = _G["MerchantItem"..i.."ItemButton"]
+    local button = _G["MerchantItem" .. i .. "ItemButton"]
     if button and button.hdCheckmark then
       button.hdCheckmark:Hide()
     end
@@ -96,11 +98,12 @@ local function HideMerchantCheckmarks()
 end
 
 local function EnsureCheck(button)
+  if not button or not button.CreateTexture then return nil end
   if button.hdCheckmark then return button.hdCheckmark end
 
   local t = button:CreateTexture(nil, "OVERLAY", nil, 7)
   t:SetSize(18, 18)
-  t:SetPoint("BOTTOM", 0, -8) 
+  t:SetPoint("BOTTOM", 0, -8)
 
   if t.SetAtlas then
     t:SetAtlas(CHECK_ATLAS, true)
@@ -113,15 +116,58 @@ local function EnsureCheck(button)
   return t
 end
 
+local function IsDecorCollected(Collection, decorID)
+  if not (Collection and Collection.IsCollected and decorID) then return false end
+
+  local fn = Collection.IsCollected
+
+  local payload1 = { decorID = decorID, source = { type = "vendor" } }
+
+  do
+    local ok, res = pcall(fn, Collection, payload1)
+    if ok and res ~= nil then return res and true or false end
+  end
+
+  do
+    local ok, res = pcall(fn, payload1)
+    if ok and res ~= nil then return res and true or false end
+  end
+
+  local payload2 = { decorID = decorID }
+
+  do
+    local ok, res = pcall(fn, Collection, payload2)
+    if ok and res ~= nil then return res and true or false end
+  end
+
+  do
+    local ok, res = pcall(fn, payload2)
+    if ok and res ~= nil then return res and true or false end
+  end
+
+  return false
+end
+
 local function UpdateMerchantChecks()
   if not MerchantFrame or not MerchantFrame:IsShown() then return end
-  if not (Collection and Collection.IsCollected) then return end
+
+  local Collection = NS.Systems and NS.Systems.Collection
+  if not (Collection and Collection.IsCollected) then
+    HideMerchantCheckmarks()
+    return
+  end
 
   local guid = UnitGUID("npc")
-  if not guid then return end
+  if not guid then
+    HideMerchantCheckmarks()
+    return
+  end
 
   local npcID = getNpcIDFromGUID(guid)
-  if not npcID then return end
+  if not npcID then
+    HideMerchantCheckmarks()
+    return
+  end
 
   VendorChecks:Ensure()
 
@@ -136,19 +182,18 @@ local function UpdateMerchantChecks()
   local page = (MerchantFrame and MerchantFrame.page) or 1
 
   for i = 1, perPage do
-    local button = _G["MerchantItem"..i.."ItemButton"]
-    if button and button:IsShown() then
-      local check = EnsureCheck(button)
-
+    local button = _G["MerchantItem" .. i .. "ItemButton"]
+    local check = button and EnsureCheck(button)
+    if check then
       local checked = false
-      local index = (((page - 1) * perPage) + i)
+      local index = ((page - 1) * perPage) + i
 
-      if index <= numMerchantItems then
+      if button:IsShown() and index <= numMerchantItems then
         local link = GetMerchantItemLink(index)
         local itemID = itemIDFromLink(link)
         local decorID = itemID and map[itemID]
         if decorID then
-          checked = Collection:IsCollected({ decorID = decorID, source = { type = "vendor" } }) and true or false
+          checked = IsDecorCollected(Collection, decorID)
         end
       end
 

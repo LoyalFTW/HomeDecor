@@ -16,8 +16,8 @@ NS.Data.Vendors["BurningCrusade"]["Outland"] = {
       worldmap="95:4760:3240",
     },
     items={
-      {decorID=10950, title="Sin'dorei Sleeper", decorType="Beds", source={type="vendor", itemID=256049, currency="1200", currencytype="Order Resources"}, requirements={rep="true"}}, 
-	  {decorID=11500, title="Sin'dorei Crafter's Forge", decorType="Uncategorized", source={type="vendor", itemID=257419, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=10950, decorType="Beds", source={type="vendor", itemID=256049, currency="1200", currencytype="Order Resources"}, requirements={rep="true"}}, 
+	  {decorID=11500, decorType="Uncategorized", source={type="vendor", itemID=257419, currency="250", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
     }
   },
     {
@@ -30,7 +30,7 @@ NS.Data.Vendors["BurningCrusade"]["Outland"] = {
       worldmap="535:7040:5760",
     },
     items={
-      {decorID=12202, title="Scroll of the Adherent", decorType="Ornamental", source={type="vendor", itemID=258742, currency="1500", currencytype="Order Resources"}, requirements={quest={id=33582, title="Kura's Vengeance"}, rep="true"}},
+      {decorID=12202, decorType="Ornamental", source={type="vendor", itemID=258742, currency="1500", currencytype="Order Resources"}, requirements={quest={id=33582}}},
     }
   },
 }

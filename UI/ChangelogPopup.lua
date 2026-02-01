@@ -115,7 +115,7 @@ local function CreatePopup()
     txt:SetText(CLog:GetText() or "")
     content:SetHeight(math.max(1, txt:GetStringHeight()))
   end)
-  
+
   p:SetPropagateKeyboardInput(true)
   p:SetScript("OnKeyDown", function(self, key)
   if key == "ESCAPE" then

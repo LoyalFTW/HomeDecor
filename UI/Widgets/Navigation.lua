@@ -117,6 +117,26 @@ local function AddBlizzardWaypoint(fromMapID, x, y)
     C_SuperTrack.SetSuperTrackedUserWaypoint(true)
 end
 
+
+local function PrintCoords(src)
+    if not src or not src.mapID or not src.x or not src.y then return end
+
+    PrintCoords(src)
+    local name = nil
+    if C_Map and C_Map.GetMapInfo then
+        local info = C_Map.GetMapInfo(src.mapID)
+        name = info and info.name
+    end
+    local x = math.floor((src.x or 0) * 10000 + 0.5) / 100
+    local y = math.floor((src.y or 0) * 10000 + 0.5) / 100
+    local msg = string.format("HomeDecor: %s (%.2f, %.2f)%s", name or ("MapID "..tostring(src.mapID)), x, y, src.title and (" - "..tostring(src.title)) or "")
+    if DEFAULT_CHAT_FRAME and DEFAULT_CHAT_FRAME.AddMessage then
+        DEFAULT_CHAT_FRAME:AddMessage(msg)
+    else
+        print(msg)
+    end
+end
+
 function Nav:AddWaypoint(item, context)
     local src = ResolveCoords(item, context)
     if not src or not src.mapID or not src.x or not src.y then return end
@@ -130,7 +150,7 @@ function Nav:AddWaypoint(item, context)
         end
     end
 
-    
+
     if C_Timer and C_Timer.After then
         C_Timer.After(0, function()
             AddBlizzardWaypoint(src.mapID, src.x, src.y)

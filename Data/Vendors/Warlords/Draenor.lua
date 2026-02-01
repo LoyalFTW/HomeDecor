@@ -17,9 +17,9 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="624:5348:5974",
     },
     items={
-      --       {decorID=12203, title="Arakkoan Alchemy Tools", decorType="Ornamental", source={type="vendor", itemID=258743, currency="800", currencytype="Apexis Crystal"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=12206, title="High Arakkoan Alchemist's Shelf", decorType="Storage", source={type="vendor", itemID=258746, currency="1500", currencytype="Apexis Crystal"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=12207, title="High Arakkoan Shelf", decorType="Storage", source={type="vendor", itemID=258747, currency="700", currencytype="Apexis Crystal"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=12203, decorType="Ornamental", source={type="vendor", itemID=258743, currency="800", currencytype="Apexis Crystal"}, requirements={rep="true"}},
+      {decorID=12206, decorType="Storage", source={type="vendor", itemID=258746, currency="1500", currencytype="Apexis Crystal"}, requirements={rep="true"}}, 
+      {decorID=12207, decorType="Storage", source={type="vendor", itemID=258747, currency="700", currencytype="Apexis Crystal"}, requirements={rep="true"}}, 
     }
   },
   {
@@ -32,9 +32,9 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="622:4440:7520",
     },
     items={
-      --       {decorID=12203, title="Arakkoan Alchemy Tools", decorType="Ornamental", source={type="vendor", itemID=258743, currency="800", currencytype="Apexis Crystal"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=12206, title="High Arakkoan Alchemist's Shelf", decorType="Storage", source={type="vendor", itemID=258746, currency="1500", currencytype="Apexis Crystal"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
-      --       {decorID=12207, title="High Arakkoan Shelf", decorType="Storage", source={type="vendor", itemID=258747, currency="700", currencytype="Apexis Crystal"}, requirements={rep="true"}}, -- Early Access / Midnight pre-patch
+      {decorID=12203, decorType="Ornamental", source={type="vendor", itemID=258743, currency="800", currencytype="Apexis Crystal"}, requirements={rep="true"}},
+      {decorID=12206, decorType="Storage", source={type="vendor", itemID=258746, currency="1500", currencytype="Apexis Crystal"}, requirements={rep="true"}}, 
+      {decorID=12207, decorType="Storage", source={type="vendor", itemID=258747, currency="700", currencytype="Apexis Crystal"}, requirements={rep="true"}}, 
     }
   },
   {
@@ -47,8 +47,8 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="525:4800:6600",
     },
     items={
-      {decorID=1317, title="Draenor Cookpot", decorType="Food and Drink", source={type="vendor", itemID=245431, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}},
-      {decorID=1322, title="Blackrock Strongbox", decorType="Storage", source={type="vendor", itemID=245433, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}},
+      {decorID=1317, decorType="Food and Drink", source={type="vendor", itemID=245431, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}},
+      {decorID=1322, decorType="Storage", source={type="vendor", itemID=245433, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}},
     }
   },
   {
@@ -61,14 +61,14 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="622:4640:7459",
     },
     items={
-      {decorID=927, title="Spherical Draenic Topiary", decorType="Bushes", source={type="vendor", itemID=245423, currency="250", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=8185, title="Embroidered Embaari Tent", decorType="Large Structures", source={type="vendor", itemID=251476, currency="1000", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=8188, title="Shadowmoon Greenhouse", decorType="Large Structures", source={type="vendor", itemID=251479, currency="1500", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=8190, title="Elodor Armory Rack", decorType="Ornamental", source={type="vendor", itemID=251481, currency="500", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=8192, title="Draenethyst Lantern", decorType="Small Lights", source={type="vendor", itemID=251483, currency="250", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=8193, title="\"Dawning Hope\" Mosaic", decorType="Wall Hangings", source={type="vendor", itemID=251484, currency="1000", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=8194, title="Small Karabor Fountain", decorType="Large Structures", source={type="vendor", itemID=251493, currency="500", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=8242, title="Grand Draenethyst Lamp", decorType="Large Lights", source={type="vendor", itemID=251551, currency="1500", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=927, decorType="Bushes", source={type="vendor", itemID=245423, currency="250", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=8185, decorType="Large Structures", source={type="vendor", itemID=251476, currency="1000", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=8188, decorType="Large Structures", source={type="vendor", itemID=251479, currency="1500", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=8190, decorType="Ornamental", source={type="vendor", itemID=251481, currency="500", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=8192, decorType="Small Lights", source={type="vendor", itemID=251483, currency="250", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=8193, decorType="Wall Hangings", source={type="vendor", itemID=251484, currency="1000", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=8194, decorType="Large Structures", source={type="vendor", itemID=251493, currency="500", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=8242, decorType="Large Lights", source={type="vendor", itemID=251551, currency="1500", currencytype="Garrison Resources"}, requirements={rep="true"}},
     }
   },
   {
@@ -81,15 +81,15 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="622:4097:5954",
     },
     items={
-      {decorID=928, title="Hanging Draenethyst Light", decorType="Ceiling Lights", source={type="vendor", itemID=245425, currency="500", currencytype="Apexis Crystal"}, requirements={quest={id=35396, title="The Dark Heart of Oshu'gun"}, rep="true"}},
-      {decorID=8177, title="Draenic Fencepost", decorType="Misc Structural", source={type="vendor", itemID=251330, currency="300", currencytype="Apexis Crystal"}, requirements={quest={id=34792, title="The Traitor's True Name"}, rep="true"}},
-      {decorID=8186, title="Draenic Wooden Table", decorType="Tables and Desks", source={type="vendor", itemID=251477, currency="1000", currencytype="Garrison Resources"}, requirements={quest={id=36169, title="The Trial of Champions"}, rep="true"}},
-      {decorID=8187, title="Square Draenic Table", decorType="Tables and Desks", source={type="vendor", itemID=251478, currency="1000", currencytype="Garrison Resources"}, requirements={quest={id=35196, title="Forging Ahead"}, rep="true"}},
-      {decorID=8239, title="Draenic Fence", decorType="Misc Structural", source={type="vendor", itemID=251548, currency="500", currencytype="Apexis Crystal"}, requirements={quest={id=34792, title="The Traitor's True Name"}, rep="true"}},
-      {decorID=8240, title="Emblem of the Naaru's Blessing", decorType="Wall Hangings", source={type="vendor", itemID=251549, currency="2000", currencytype="Garrison Resources"}, requirements={quest={id=37322, title="The Prophet's Final Message"}, rep="true"}},
-      {decorID=8772, title="Draenic Forge", decorType="Uncategorized", source={type="vendor", itemID=251640, currency="1000", currencytype="Apexis Crystal"}, requirements={quest={id=34099, title="The Battle for Shattrath"}, rep="true"}},
-      {decorID=8785, title="Draenethyst Lamppost", decorType="Large Lights", source={type="vendor", itemID=251653, currency="1000", currencytype="Garrison Resources"}, requirements={quest={id=35685, title="Socrethar's Demise"}, rep="true"}},
-      {decorID=8786, title="Large Karabor Fountain", decorType="Large Structures", source={type="vendor", itemID=251654, currency="2000", currencytype="Apexis Crystal"}, requirements={quest={id=33256, title="The Defense of Karabor"}, rep="true"}},
+      {decorID=928, decorType="Ceiling Lights", source={type="vendor", itemID=245425, currency="500", currencytype="Apexis Crystal"}, requirements={quest={id=35396}}},
+      {decorID=8177, decorType="Misc Structural", source={type="vendor", itemID=251330, currency="300", currencytype="Apexis Crystal"}, requirements={quest={id=34792}}},
+      {decorID=8186, decorType="Tables and Desks", source={type="vendor", itemID=251477, currency="1000", currencytype="Garrison Resources"}, requirements={quest={id=36169}}},
+      {decorID=8187, decorType="Tables and Desks", source={type="vendor", itemID=251478, currency="1000", currencytype="Garrison Resources"}, requirements={quest={id=35196}}},
+      {decorID=8239, decorType="Misc Structural", source={type="vendor", itemID=251548, currency="500", currencytype="Apexis Crystal"}, requirements={quest={id=34792}}},
+      {decorID=8240, decorType="Wall Hangings", source={type="vendor", itemID=251549, currency="2000", currencytype="Garrison Resources"}, requirements={quest={id=37322}}},
+      {decorID=8772, decorType="Uncategorized", source={type="vendor", itemID=251640, currency="1000", currencytype="Apexis Crystal"}, requirements={quest={id=34099}}},
+      {decorID=8785, decorType="Large Lights", source={type="vendor", itemID=251653, currency="1000", currencytype="Garrison Resources"}, requirements={quest={id=35685}}},
+      {decorID=8786, decorType="Large Structures", source={type="vendor", itemID=251654, currency="2000", currencytype="Apexis Crystal"}, requirements={quest={id=33256}}},
     }
   },
   {
@@ -102,8 +102,8 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="539:3100:1500",
     },
     items={
-      {decorID=931, title="Draenic Storage Chest", decorType="Storage", source={type="vendor", itemID=245424, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}},
-      {decorID=8235, title="Telredor Recliner", decorType="Seating", source={type="vendor", itemID=251544, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}},
+      {decorID=931, decorType="Storage", source={type="vendor", itemID=245424, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}},
+      {decorID=8235, decorType="Seating", source={type="vendor", itemID=251544, currency="1000", currencytype="Apexis Crystal"}, requirements={rep="true"}},
     }
   },
   {
@@ -116,10 +116,10 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="539:3100:1500",
     },
     items={
-      {decorID=1354, title="Orcish Communal Stove", decorType="Food and Drink", source={type="vendor", itemID=245444, currency="250", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=1355, title="Frostwolf Axe-Dart Board", decorType="Wall Hangings", source={type="vendor", itemID=245445, currency="150", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=1413, title="Orcish Lumberjack's Stool", decorType="Seating", source={type="vendor", itemID=244321, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=1414, title="Frostwolf Banded Stool", decorType="Seating", source={type="vendor", itemID=244322, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1354, decorType="Food and Drink", source={type="vendor", itemID=245444, currency="250", currencytype="Garrison Resources"}},
+      {decorID=1355, decorType="Wall Hangings", source={type="vendor", itemID=245445, currency="150", currencytype="Garrison Resources"}},
+      {decorID=1413, decorType="Seating", source={type="vendor", itemID=244321, currency="100", currencytype="Garrison Resources"}},
+      {decorID=1414, decorType="Seating", source={type="vendor", itemID=244322, currency="100", currencytype="Garrison Resources"}},
     }
   },
   {
@@ -132,11 +132,11 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="542:4670:4496",
     },
     items={
-       {decorID=12200, title="Glorious Pendant of Rukhmar", decorType="Ornamental", source={type="vendor", itemID=258740, currency="800", currencytype="Apexis Crystal"}, requirements={achievement={id=9415, title="Secrets of Skettis"}, rep="true"}}, 
-       {decorID=12201, title="Writings of Reshad the Outcast", decorType="Ornamental", source={type="vendor", itemID=258741, currency="1200", currencytype="Resonance Crystals"}, requirements={quest={id=35671, title="A Gathering of Shadows"}, rep="true"}},
-       {decorID=12205, title="High Arakkoan Library Shelf", decorType="Storage", source={type="vendor", itemID=258745, currency="700", currencytype="Apexis Crystal"}, requirements={quest={id=35704, title="When All Is Aligned"}, rep="true"}},
-      --       {decorID=12208, title="\"Rising Glory of Rukhmar\" Statue", decorType="Misc Accents", source={type="vendor", itemID=258748, currency="1000", currencytype="Garrison Resources"}, requirements={quest={id=35273, title="Hot Seat"}, rep="true"}}, -- Early Access / Midnight pre-patch
-       {decorID=12209, title="Uncorrupted Eye of Terokk", decorType="Ornamental", source={type="vendor", itemID=258749, currency="10000", currencytype="Echoes of Ny'alotha"}, requirements={quest={id=35896, title="The Avatar of Terokk"}, rep="true"}},
+       {decorID=12200, decorType="Ornamental", source={type="vendor", itemID=258740, currency="800", currencytype="Apexis Crystal"}, requirements={achievement={id=9415}}}, 
+       {decorID=12201, decorType="Ornamental", source={type="vendor", itemID=258741, currency="1200", currencytype="Resonance Crystals"}, requirements={quest={id=35671}}},
+       {decorID=12205, decorType="Storage", source={type="vendor", itemID=258745, currency="700", currencytype="Apexis Crystal"}, requirements={quest={id=35704}}},
+       {decorID=12208, decorType="Misc Accents", source={type="vendor", itemID=258748, currency="1000", currencytype="Garrison Resources"}, requirements={quest={id=35273}}}, 
+       {decorID=12209, decorType="Ornamental", source={type="vendor", itemID=258749, currency="10000", currencytype="Echoes of Ny'alotha"}, requirements={quest={id=35896}}},
     }
   },
   {
@@ -149,7 +149,7 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="539:4620:3929",
     },
     items={
-      {decorID=11451, title="Naaru Crystal Icon", decorType="Miscellaneous - All", source={type="vendor", itemID=257349, currency="300", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=11451, decorType="Miscellaneous - All", source={type="vendor", itemID=257349, currency="300", currencytype="Garrison Resources"}},
     }
   },
   {
@@ -162,8 +162,8 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="525:4800:6600",
     },
     items={
-      {decorID=1326, title="Orc-Forged Weaponry", decorType="Storage", source={type="vendor", itemID=245437, currency="500", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=1352, title="Warsong Footrest", decorType="Seating", source={type="vendor", itemID=245442, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1326, decorType="Storage", source={type="vendor", itemID=245437, currency="500", currencytype="Garrison Resources"}},
+      {decorID=1352, decorType="Seating", source={type="vendor", itemID=245442, currency="100", currencytype="Garrison Resources"}},
     }
   },
   {
@@ -176,7 +176,7 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="525:4800:6600",
     },
     items={
-      {decorID=1416, title="Peon's Work Bucket", decorType="Misc Accents", source={type="vendor", itemID=244324, currency="150", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=1416, decorType="Misc Accents", source={type="vendor", itemID=244324, currency="150", currencytype="Garrison Resources"}},
     }
   },
   {
@@ -189,13 +189,13 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="582:3772:3589",
     },
     items={
-      {decorID=126, title="Rolled Scroll", decorType="Ornamental", source={type="vendor", itemID=245275, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
-      {decorID=4403, title="Stormwind Wooden Bench", decorType="Seating", source={type="vendor", itemID=248334, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36404, title="Clearing the Garden"}, rep="true"}},
-      {decorID=4404, title="Stormwind Wooden Stool", decorType="Seating", source={type="vendor", itemID=248335, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=36202, title="Anglin' In Our Garrison"}, rep="true"}},
-      {decorID=4485, title="Stormwind Workbench", decorType="Tables and Desks", source={type="vendor", itemID=248660, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=34192, title="Things Are Not Goren Our Way"}, rep="true"}},
-      {decorID=4486, title="Northshire Scribe's Desk", decorType="Tables and Desks", source={type="vendor", itemID=248661, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36592, title="Bigger is Better"}, rep="true"}},
-      {decorID=4816, title="Wooden Storage Crate", decorType="Storage", source={type="vendor", itemID=248799, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=34586, title="Establish Your Garrison"}, rep="true"}},
-      {decorID=4844, title="Rough Wooden Chair", decorType="Seating", source={type="vendor", itemID=248810, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=35176, title="Keeping it Together"}, rep="true"}},
+      {decorID=126, decorType="Ornamental", source={type="vendor", itemID=245275, currency="100", currencytype="Garrison Resources"}},
+      {decorID=4403, decorType="Seating", source={type="vendor", itemID=248334, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36404}}},
+      {decorID=4404, decorType="Seating", source={type="vendor", itemID=248335, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=36202}}},
+      {decorID=4485, decorType="Tables and Desks", source={type="vendor", itemID=248660, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=34192}}},
+      {decorID=4486, decorType="Tables and Desks", source={type="vendor", itemID=248661, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36592}}},
+      {decorID=4816, decorType="Storage", source={type="vendor", itemID=248799, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=34586}}},
+      {decorID=4844, decorType="Seating", source={type="vendor", itemID=248810, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=35176}}},
     }
   },
   {
@@ -208,7 +208,7 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="539:3100:1500",
     },
     items={
-      {decorID=751, title="Wooden Mug", decorType="Food and Drink", source={type="vendor", itemID=239162, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=751, decorType="Food and Drink", source={type="vendor", itemID=239162, currency="100", currencytype="Garrison Resources"}},
     }
   },
   {
@@ -221,7 +221,7 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="525:4800:6600",
     },
     items={
-      {decorID=751, title="Wooden Mug", decorType="Food and Drink", source={type="vendor", itemID=239162, currency="100", currencytype="Garrison Resources"}, requirements={rep="true"}},
+      {decorID=751, decorType="Food and Drink", source={type="vendor", itemID=239162, currency="100", currencytype="Garrison Resources"}},
     }
   },
 }

@@ -6,7 +6,6 @@ NS.Data.Achievements = NS.Data.Achievements or {}
 NS.Data.Achievements["Classic"] = NS.Data.Achievements["Classic"] or {}
 
 NS.Data.Achievements["Classic"]["Kalimdor"] = {
-  { decorID=857, source={ type="achievement" } },
   { decorID=1674, source={ type="achievement" } },
   { decorID=3867, source={ type="achievement" } },
   { decorID=3880, source={ type="achievement" } },

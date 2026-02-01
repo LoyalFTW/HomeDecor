@@ -26,9 +26,13 @@ Systems\Collection.lua
 Systems\GlobalIndex.lua
 Systems\VendorChecks.lua
 Systems\Changelog.lua
+Systems\MapTracker.lua
+Systems\Reputation.lua
+Systems\Events.lua
 
 UI\Theme.lua
 UI\Controls.lua
+UI\Widgets\RowStyles.lua
 UI\ChangelogPopup.lua
 UI\Widgets\FilterPopup.lua
 UI\Widgets\Dropdown.lua
@@ -44,6 +48,22 @@ UI\Widgets\Tooltips.lua
 UI\Widgets\DropPanel.lua
 UI\Widgets\ProgressBar.lua
 UI\Widgets\StatusIcon.lua
-UI\Viewer.lua
-UI\MainFrame.lua
+UI\Widgets\ItemInteractions.lua
 
+UI\Tracker\Tracker_Util.lua
+UI\Tracker\Tracker_Rows.lua
+UI\Tracker\Tracker_UI.lua
+UI\Tracker\Tracker_Render.lua
+UI\Tracker\Tracker_Events.lua
+UI\Tracker\Tracker.lua
+UI\Tracker\TrackerButton.lua
+
+UI\Viewer\Viewer.lua
+UI\Viewer\Viewer_Util.lua
+UI\Viewer\Viewer_Data.lua
+UI\Viewer\Viewer_Requirements.lua
+UI\Viewer\Viewer_Search.lua
+UI\Viewer\Viewer_Frames.lua
+UI\Viewer\Viewer_Render.lua
+
+UI\MainFrame.lua
