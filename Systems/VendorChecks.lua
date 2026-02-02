@@ -1,38 +1,13 @@
 local ADDON, NS = ...
-
 NS.Systems = NS.Systems or {}
 
 local VendorChecks = {}
 NS.Systems.VendorChecks = VendorChecks
 
-local npcItems = nil
-local built = false
-
 local CHECK_ATLAS = "common-icon-checkmark"
 local CHECK_FALLBACK = "Interface\\RaidFrame\\ReadyCheck-Ready"
 
-local function hdCanAccess(v)
-  if v == nil then return false end
-  if issecretvalue and issecretvalue(v) then return false end
-  if canaccessvalue and not canaccessvalue(v) then return false end
-  return true
-end
-
-local function getNpcIDFromGUID(guid)
-  if not hdCanAccess(guid) then return nil end
-  if type(guid) ~= "string" then
-    local ok, s = pcall(tostring, guid)
-    if not ok or not s or not hdCanAccess(s) then return nil end
-    guid = s
-  end
-  local ok, unitType, _, _, _, _, npcID = pcall(strsplit, "-", guid)
-  if not ok then return nil end
-  if unitType ~= "Creature" and unitType ~= "Vehicle" and unitType ~= "Pet" then return nil end
-  return npcID and tonumber(npcID) or nil
-end
-
 local function itemIDFromLink(link)
-  if not hdCanAccess(link) then return nil end
   if type(link) ~= "string" then
     local ok, s = pcall(tostring, link)
     if not ok or not s then return nil end
@@ -43,67 +18,40 @@ local function itemIDFromLink(link)
   return id and tonumber(id) or nil
 end
 
-local function BuildIndex()
-  npcItems = {}
-
-  local vendors = NS.Data and NS.Data.Vendors
-  if type(vendors) ~= "table" then
-    built = true
-    return
+local function getMerchantItemIDSafe(index)
+  if type(GetMerchantItemID) == "function" then
+    local ok, id = pcall(GetMerchantItemID, index)
+    if ok and type(id) == "number" and id > 0 then return id end
   end
-
-  for _, exp in pairs(vendors) do
-    for _, zone in pairs(exp or {}) do
-      for _, vendor in ipairs(zone or {}) do
-        local src = vendor and vendor.source
-        local npcID = src and tonumber(src.id)
-        if npcID then
-          local map = npcItems[npcID]
-          if not map then
-            map = {}
-            npcItems[npcID] = map
-          end
-          for _, it in ipairs(vendor.items or {}) do
-            local itemID = it and it.source and tonumber(it.source.itemID)
-            local decorID = it and tonumber(it.decorID)
-            if itemID and decorID then
-              map[itemID] = decorID
-            end
-          end
-        end
-      end
-    end
-  end
-
-  built = true
+  local link = GetMerchantItemLink(index)
+  return itemIDFromLink(link)
 end
 
-function VendorChecks:Ensure()
-  if not built then BuildIndex() end
+local function GetCatalogInfoByItem(itemID)
+  if not (C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByItem) then return nil end
+  local ok, info = pcall(C_HousingCatalog.GetCatalogEntryInfoByItem, itemID, true)
+  if not ok then return nil end
+  return info
 end
 
-function VendorChecks:Invalidate()
-  built = false
-  npcItems = nil
-end
-
-local function HideMerchantCheckmarks()
-  local perPage = MERCHANT_ITEMS_PER_PAGE or 10
-  for i = 1, perPage do
-    local button = _G["MerchantItem" .. i .. "ItemButton"]
-    if button and button.hdCheckmark then
-      button.hdCheckmark:Hide()
-    end
-  end
+local function GetTotalOwned(info)
+  if type(info) ~= "table" then return 0 end
+  local qty = info.quantity
+  local redeem = info.remainingRedeemable
+  local placed = info.numPlaced
+  if type(qty) ~= "number" then qty = 0 end
+  if type(redeem) ~= "number" then redeem = 0 end
+  if type(placed) ~= "number" then placed = 0 end
+  return (qty + redeem + placed)
 end
 
 local function EnsureCheck(button)
-  if not button or not button.CreateTexture then return nil end
   if button.hdCheckmark then return button.hdCheckmark end
 
   local t = button:CreateTexture(nil, "OVERLAY", nil, 7)
-  t:SetSize(18, 18)
-  t:SetPoint("BOTTOM", 0, -8)
+  t:SetSize(13, 13) 
+  t:ClearAllPoints()
+  t:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", 1, 1)
 
   if t.SetAtlas then
     t:SetAtlas(CHECK_ATLAS, true)
@@ -111,112 +59,103 @@ local function EnsureCheck(button)
     t:SetTexture(CHECK_FALLBACK)
   end
 
+  t:SetVertexColor(0.75, 0.95, 0.75, 0.95)
+
   t:Hide()
   button.hdCheckmark = t
   return t
 end
 
-local function IsDecorCollected(Collection, decorID)
-  if not (Collection and Collection.IsCollected and decorID) then return false end
+local function EnsureOwnedText(button)
+  if button.hdOwnedText then return button.hdOwnedText end
 
-  local fn = Collection.IsCollected
+  local owned = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  owned:ClearAllPoints()
+  owned:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
 
-  local payload1 = { decorID = decorID, source = { type = "vendor" } }
+  owned:SetTextColor(0.86, 0.84, 0.78, 1)
 
-  do
-    local ok, res = pcall(fn, Collection, payload1)
-    if ok and res ~= nil then return res and true or false end
+  if owned.SetFontObject then
+    owned:SetFontObject(GameFontNormalSmall)
   end
 
-  do
-    local ok, res = pcall(fn, payload1)
-    if ok and res ~= nil then return res and true or false end
-  end
-
-  local payload2 = { decorID = decorID }
-
-  do
-    local ok, res = pcall(fn, Collection, payload2)
-    if ok and res ~= nil then return res and true or false end
-  end
-
-  do
-    local ok, res = pcall(fn, payload2)
-    if ok and res ~= nil then return res and true or false end
-  end
-
-  return false
+  owned:Hide()
+  button.hdOwnedText = owned
+  return owned
 end
 
-local function UpdateMerchantChecks()
-  if not MerchantFrame or not MerchantFrame:IsShown() then return end
-
-  local Collection = NS.Systems and NS.Systems.Collection
-  if not (Collection and Collection.IsCollected) then
-    HideMerchantCheckmarks()
-    return
-  end
-
-  local guid = UnitGUID("npc")
-  if not guid then
-    HideMerchantCheckmarks()
-    return
-  end
-
-  local npcID = getNpcIDFromGUID(guid)
-  if not npcID then
-    HideMerchantCheckmarks()
-    return
-  end
-
-  VendorChecks:Ensure()
-
-  local map = npcItems and npcItems[npcID]
-  if not map then
-    HideMerchantCheckmarks()
-    return
-  end
-
-  local numMerchantItems = GetMerchantNumItems() or 0
+local function HideMerchantOverlays()
   local perPage = MERCHANT_ITEMS_PER_PAGE or 10
-  local page = (MerchantFrame and MerchantFrame.page) or 1
-
   for i = 1, perPage do
-    local button = _G["MerchantItem" .. i .. "ItemButton"]
-    local check = button and EnsureCheck(button)
-    if check then
-      local checked = false
-      local index = ((page - 1) * perPage) + i
-
-      if button:IsShown() and index <= numMerchantItems then
-        local link = GetMerchantItemLink(index)
-        local itemID = itemIDFromLink(link)
-        local decorID = itemID and map[itemID]
-        if decorID then
-          checked = IsDecorCollected(Collection, decorID)
-        end
-      end
-
-      check:SetShown(checked)
+    local button = _G["MerchantItem"..i.."ItemButton"]
+    if button then
+      if button.hdCheckmark then button.hdCheckmark:Hide() end
+      if button.hdOwnedText then button.hdOwnedText:Hide() end
     end
   end
 end
 
-local function HookMerchantFrame()
-  if not hooksecurefunc or not MerchantFrame_Update then return end
+local function UpdateMerchantButtons()
+  if not MerchantFrame or not MerchantFrame:IsShown() then return end
 
-  hooksecurefunc("MerchantFrame_Update", function()
-    UpdateMerchantChecks()
-  end)
+  local numItems = GetMerchantNumItems() or 0
+  local perPage = MERCHANT_ITEMS_PER_PAGE or 10
+  local page = (MerchantFrame and MerchantFrame.page) or 1
+
+  for i = 1, perPage do
+    local button = _G["MerchantItem"..i.."ItemButton"]
+    if button and button:IsShown() then
+      local check = EnsureCheck(button)
+      local ownedText = EnsureOwnedText(button)
+
+      local totalOwned = 0
+      local collected = false
+
+      local index = ((page - 1) * perPage) + i
+      if index <= numItems then
+        local itemID = getMerchantItemIDSafe(index)
+        if itemID then
+          local info = GetCatalogInfoByItem(itemID)
+          totalOwned = GetTotalOwned(info)
+          collected = totalOwned > 0
+        end
+      end
+
+      check:SetShown(collected)
+
+      if collected then
+        ownedText:SetText(tostring(totalOwned))
+        ownedText:Show()
+      else
+        ownedText:Hide()
+      end
+    end
+  end
+end
+
+local function HookMerchant()
+  if not hooksecurefunc then return end
+
+  if MerchantFrame_UpdateMerchantInfo then
+    hooksecurefunc("MerchantFrame_UpdateMerchantInfo", function()
+      UpdateMerchantButtons()
+    end)
+  end
+
+  if MerchantFrame_Update then
+    hooksecurefunc("MerchantFrame_Update", function()
+      UpdateMerchantButtons()
+    end)
+  end
 
   if MerchantNextPageButton and MerchantNextPageButton.HookScript then
     MerchantNextPageButton:HookScript("OnClick", function()
-      C_Timer.After(0, UpdateMerchantChecks)
+      C_Timer.After(0, UpdateMerchantButtons)
     end)
   end
   if MerchantPrevPageButton and MerchantPrevPageButton.HookScript then
     MerchantPrevPageButton:HookScript("OnClick", function()
-      C_Timer.After(0, UpdateMerchantChecks)
+      C_Timer.After(0, UpdateMerchantButtons)
     end)
   end
 end
@@ -227,27 +166,26 @@ init:RegisterEvent("MERCHANT_SHOW")
 init:RegisterEvent("MERCHANT_UPDATE")
 init:RegisterEvent("MERCHANT_CLOSED")
 init:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")
+init:RegisterEvent("HOUSING_STORAGE_UPDATED")
+init:RegisterEvent("HOUSING_STORAGE_ENTRY_UPDATED")
 
 init:SetScript("OnEvent", function(_, event)
   if event == "PLAYER_LOGIN" then
-    HookMerchantFrame()
-    return
-  end
-
-  if event == "MERCHANT_SHOW" or event == "MERCHANT_UPDATE" then
-    C_Timer.After(0, UpdateMerchantChecks)
+    HookMerchant()
     return
   end
 
   if event == "MERCHANT_CLOSED" then
-    HideMerchantCheckmarks()
+    HideMerchantOverlays()
     return
   end
 
-  if event == "HOUSE_DECOR_ADDED_TO_CHEST" then
-    if MerchantFrame and MerchantFrame:IsShown() then
-      C_Timer.After(0, UpdateMerchantChecks)
-    end
+  if event == "MERCHANT_SHOW" or event == "MERCHANT_UPDATE"
+    or event == "HOUSE_DECOR_ADDED_TO_CHEST"
+    or event == "HOUSING_STORAGE_UPDATED"
+    or event == "HOUSING_STORAGE_ENTRY_UPDATED"
+  then
+    C_Timer.After(0, UpdateMerchantButtons)
     return
   end
 end)

@@ -12,6 +12,7 @@ local Rows = NS.UI.TrackerRows
 local U = NS.UI.TrackerUtil
 local IA = NS.UI.ItemInteractions
 local Map = NS.Systems and NS.Systems.MapTracker
+local DecorCounts = NS.Systems and NS.Systems.DecorCounts
 
 local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
 local max = math.max
@@ -224,6 +225,22 @@ function Render:Attach(_, ctx)
               if ir.icon then
                 ir.icon:SetTexture((GetDecorIcon and GetDecorIcon(it.decorID)) or "Interface\\Icons\\INV_Misc_QuestionMark")
               end
+              if ir.owned and DecorCounts then
+                local itemID = tonumber((it.source and it.source.itemID) or it.itemID or it.id)
+                local totalOwned = 0
+                if itemID and itemID > 0 then
+                  totalOwned = (DecorCounts.GetByItem and select(1, DecorCounts:GetByItem(itemID))) or 0
+                end
+                if totalOwned and totalOwned > 0 then
+                  ir.owned:SetText(tostring(totalOwned))
+                  ir.owned:Show()
+                else
+                  ir.owned:Hide()
+                end
+              elseif ir.owned then
+                ir.owned:Hide()
+              end
+
 
               local aq, rep = nil, nil
               if GetReqLines then

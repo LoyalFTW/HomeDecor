@@ -9,19 +9,19 @@ Collection.State = Collection.State or {
   NOT_COLLECTED = "NOT_COLLECTED",
 }
 
-local cache = Collection._decorCache or {}
-Collection._decorCache = cache
+local cacheDecor = Collection._decorCache or {}
+Collection._decorCache = cacheDecor
+
+local cacheItem = Collection._itemCache or {}
+Collection._itemCache = cacheItem
 
 local listeners = Collection._listeners or {}
 Collection._listeners = listeners
 
-local function Fire(decorID)
+local function Fire(id)
   for i = 1, #listeners do
     local fn = listeners[i]
-    if fn then
-      local ok, err = pcall(fn, decorID)
-      if not ok then end
-    end
+    if fn then pcall(fn, id) end
   end
 end
 
@@ -30,22 +30,54 @@ function Collection:RegisterListener(fn)
   listeners[#listeners + 1] = fn
 end
 
-function Collection:ClearCache(decorID)
-  if decorID then
-    cache[decorID] = nil
-    Fire(decorID)
+local function wipeTable(t)
+  if wipe then
+    wipe(t)
+  else
+    for k in pairs(t) do t[k] = nil end
+  end
+end
+
+function Collection:ClearCache(id)
+  if id then
+    cacheDecor[id] = nil
+    cacheItem[id] = nil
+    Fire(id)
     return
   end
-  if wipe then
-    wipe(cache)
-  else
-    for k in pairs(cache) do cache[k] = nil end
-  end
+  wipeTable(cacheDecor)
+  wipeTable(cacheItem)
   Fire(-1)
 end
 
-local function ReadOwned(info)
-  if not info then return nil end
+local function TotalOwnedFromInfo(info)
+  if type(info) ~= "table" then return nil end
+  local qty = info.quantity
+  local redeem = info.remainingRedeemable
+  local placed = info.numPlaced
+  if type(qty) ~= "number" then qty = 0 end
+  if type(redeem) ~= "number" then redeem = 0 end
+  if type(placed) ~= "number" then placed = 0 end
+  return qty + redeem + placed
+end
+
+local function IsOwnedViaItem(itemID)
+  if not itemID then return nil end
+  if not (C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByItem) then return nil end
+  local ok, info = pcall(C_HousingCatalog.GetCatalogEntryInfoByItem, itemID, true)
+  if not ok or not info then return nil end
+  local total = TotalOwnedFromInfo(info)
+  if total == nil then return nil end
+  return total > 0
+end
+
+local function IsOwnedViaRecord(decorID)
+  if not decorID then return nil end
+  if not (C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByRecordID) then return nil end
+  local ok, info = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID, 1, decorID, true)
+  if not ok or not info then return nil end
+  local total = TotalOwnedFromInfo(info)
+  if total ~= nil then return total > 0 end
 
   if type(info.isOwned) == "boolean" then return info.isOwned end
   if type(info.isCollected) == "boolean" then return info.isCollected end
@@ -63,46 +95,49 @@ local function ReadOwned(info)
   if type(info.ownedCount) == "number" then return info.ownedCount > 0 end
   if type(info.countOwned) == "number" then return info.countOwned > 0 end
 
-  if type(info.firstAcquisitionBonus) == "number" and info.firstAcquisitionBonus >= 0 then
-    return info.firstAcquisitionBonus == 0
-  end
-
   return nil
 end
 
-local function IsOwnedViaCatalog(decorID)
-  if not decorID then return nil end
-  if not C_HousingCatalog or not C_HousingCatalog.GetCatalogEntryInfoByRecordID then return nil end
+function Collection:IsItemCollected(itemID)
+  if not itemID then return false end
 
-  local info = C_HousingCatalog.GetCatalogEntryInfoByRecordID(1, decorID, true)
-  return ReadOwned(info)
+  local v = cacheItem[itemID]
+  if v ~= nil then return v and true or false end
+
+  local owned = IsOwnedViaItem(itemID)
+  if owned == nil then return false end
+
+  cacheItem[itemID] = owned and true or false
+  return cacheItem[itemID]
 end
 
 function Collection:IsDecorCollected(decorID)
   if not decorID then return false end
 
-  local v = cache[decorID]
+  local v = cacheDecor[decorID]
   if v ~= nil then return v and true or false end
 
-  local owned = IsOwnedViaCatalog(decorID)
-  if owned ~= nil then
-    cache[decorID] = owned and true or false
-    return cache[decorID]
-  end
+  local owned = IsOwnedViaRecord(decorID)
+  if owned == nil then return false end
 
-  cache[decorID] = false
-  return false
+  cacheDecor[decorID] = owned and true or false
+  return cacheDecor[decorID]
 end
 
 function Collection:IsCollected(it)
   if not it then return false end
+
+  local src = it.source or {}
+  local itemID = src.itemID
+  if itemID then
+    return self:IsItemCollected(itemID)
+  end
 
   local decorID = it.decorID
   if decorID then
     return self:IsDecorCollected(decorID)
   end
 
-  local src = it.source or {}
   local st = src.type
 
   if st == "achievement" and src.id and GetAchievementInfo then
@@ -118,10 +153,7 @@ function Collection:IsCollected(it)
 end
 
 function Collection:GetState(it)
-  if self:IsCollected(it) then
-    return Collection.State.COLLECTED
-  end
-  return Collection.State.NOT_COLLECTED
+  return self:IsCollected(it) and Collection.State.COLLECTED or Collection.State.NOT_COLLECTED
 end
 
 local function EnsureEvents()
@@ -130,28 +162,28 @@ local function EnsureEvents()
   local f = CreateFrame("Frame")
   Collection._eventFrame = f
 
-  if f.RegisterEvent then
-    f:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")
-    f:RegisterEvent("PLAYER_ENTERING_WORLD")
-  end
+  f:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")
+  f:RegisterEvent("PLAYER_ENTERING_WORLD")
+  f:RegisterEvent("HOUSING_STORAGE_UPDATED")
+  f:RegisterEvent("HOUSING_STORAGE_ENTRY_UPDATED")
 
-  f:SetScript("OnEvent", function(_, event, decorID)
+  f:SetScript("OnEvent", function(_, event, id)
     if event == "HOUSE_DECOR_ADDED_TO_CHEST" then
-      if decorID then
-        cache[decorID] = nil
-        Fire(decorID)
+      if id then
+        cacheDecor[id] = nil
+        cacheItem[id] = nil
+        Fire(id)
       else
-        if wipe then wipe(cache) else for k in pairs(cache) do cache[k] = nil end end
+        wipeTable(cacheDecor)
+        wipeTable(cacheItem)
         Fire(-1)
       end
       return
     end
 
-    if event == "PLAYER_ENTERING_WORLD" then
-      if wipe then wipe(cache) else for k in pairs(cache) do cache[k] = nil end end
-      Fire(-1)
-      return
-    end
+    wipeTable(cacheDecor)
+    wipeTable(cacheItem)
+    Fire(-1)
   end)
 end
 

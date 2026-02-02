@@ -22,6 +22,8 @@ HomeDecor.xml
 
 Changelog.lua
 
+Systems\HousingBootstrap.lua
+Systems\DecorCounts.lua
 Systems\Collection.lua
 Systems\GlobalIndex.lua
 Systems\VendorChecks.lua

@@ -250,6 +250,19 @@ local function NewItemRow(parent)
   r.faction:SetAlpha(1)
   r.faction:Hide()
 
+  r.owned = r.media:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  r.owned:ClearAllPoints()
+  r.owned:SetPoint("TOPRIGHT", r.icon, "TOPRIGHT", 4, 4)
+  r.owned:SetJustifyH("RIGHT")
+  r.owned:SetTextColor(0.86, 0.84, 0.78, 1)
+  if r.owned.SetFontObject then
+    r.owned:SetFontObject(GameFontNormalSmall)
+  end
+  if r.owned.SetShadowOffset then
+    r.owned:SetShadowOffset(1, -1)
+  end
+  r.owned:Hide()
+
   r._texAlliance = "Interface\\FriendsFrame\\PlusManz-Alliance"
   r._texHorde = "Interface\\FriendsFrame\\PlusManz-Horde"
 

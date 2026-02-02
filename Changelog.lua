@@ -1,6 +1,11 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
+Feb 1, 2026
+Fixed a lot of the vendor issues with checkmarks
+added a counter onto the icon as well
+fixed how we track the vendors 
+
 Jan 31, 2026
 * Added a DecorTracker, this will automatically 
 detect the vendors in the area, it can be transparent
