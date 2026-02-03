@@ -1,81 +1,65 @@
-local _, NS = ...
+local ADDON, NS = ...
 NS.UI = NS.UI or {}
-
-local Tracker = NS.UI.Tracker or {}
-NS.UI.Tracker = Tracker
 
 local Events = NS.UI.TrackerEvents or {}
 NS.UI.TrackerEvents = Events
-Tracker.Events = Events
 
-local MT = NS.Systems and NS.Systems.MapTracker
+local MapTracker = NS.Systems and NS.Systems.MapTracker
 local U = NS.UI.TrackerUtil
+local Rows = NS.UI.TrackerRows
 
-local clamp = (U and U.Clamp) or function(v, a, b)
-  v = tonumber(v) or 0
-  if v < a then return a end
-  if v > b then return b end
-  return v
+local function Clamp(v, a, b)
+    if U and U.Clamp then return U.Clamp(v, a, b) end
+    if v < a then return a end
+    if v > b then return b end
+    return v
 end
 
-function Events:Attach(_, ctx)
-  local frame = ctx.frame
-  local trackCB = ctx.trackCB
-  local settings = ctx.settings
-  local GetDB = ctx.GetDB
+function Events:Attach(Tracker, ctx)
+    local f = ctx.frame
+    local cb = ctx.trackCB
+    local settings = ctx.settings
+    local GetDB = ctx.GetDB
 
-  if MT and MT.RegisterCallback then
-    frame._mtKey = frame._mtKey or "HomeDecorTrackerUI"
-    MT:RegisterCallback(frame._mtKey, function(_, name, mapID)
-      if not (frame and frame.IsShown and frame:IsShown() and trackCB and trackCB:GetChecked()) then return end
-      if (mapID and mapID == frame._lastZoneMapID) or ((not mapID) and name and name ~= "" and name == frame._lastZoneName) then
-        return
-      end
-      frame._lastZoneName, frame._lastZoneMapID = name, mapID
-      if not frame._collapsed then
-        frame:RequestRefresh("zone")
-      end
-    end)
-  end
 
-  frame:SetScript("OnShow", function()
-    local db = GetDB and GetDB() or nil
-
-    if trackCB and db then
-      trackCB:SetChecked(db.trackZone ~= false)
+    if MapTracker and MapTracker.RegisterCallback then
+        f._mtKey = "HomeDecorTrackerUI"
+        MapTracker:RegisterCallback(f._mtKey, function(_, name, mapID)
+            if not f or not f.IsShown or not f:IsShown() then return end
+            if not cb:GetChecked() then return end
+            if mapID and mapID == f._lastZoneMapID then return end
+            if (not mapID) and name and name ~= "" and name == f._lastZoneName then return end
+            f._lastZoneName, f._lastZoneMapID = name, mapID
+            if not f._collapsed then f:RequestRefresh("zone") end
+        end)
     end
 
-    local a = clamp(db and db.alpha or 1, 0, 1)
-    local hc = (db and db.hideCompleted) and true or false
-    frame._hideCompleted = hc
+    f:SetScript("OnShow", function()
+        local db = GetDB and GetDB()
+        if cb and db then cb:SetChecked(db.trackZone ~= false) end
+        local a = (db and db.alpha)
+        if a == nil then a = 1 end
+        local hc = (db and db.hideCompleted) and true or false
 
-    if settings and settings.hideCB then
-      settings.hideCB:SetChecked(hc)
-    end
+        f._hideCompleted = hc
+        settings.hideCB:SetChecked(hc)
 
-    if frame._ApplyPanelsAlpha then
-      frame:_ApplyPanelsAlpha(a, false)
-    end
+        if f._ApplyPanelsAlpha then f._ApplyPanelsAlpha(a, false) end
+        settings.slider:SetValue(Clamp(tonumber(a) or 1, 0, 1))
 
-    if settings and settings.slider then
-      settings.slider:SetValue(a)
-    end
-
-    if trackCB and trackCB:GetChecked() and MT and MT.Enable then
-      MT:Enable(true)
-      if MT.GetCurrentZone then
-        local name, mapID = MT:GetCurrentZone()
-        if (not name or name == "") and GetRealZoneText then
-          name = GetRealZoneText() or ""
+        if cb:GetChecked() and MapTracker and MapTracker.Enable then
+            MapTracker:Enable(true)
+            if MapTracker.GetCurrentZone then
+                local name, mapID = MapTracker:GetCurrentZone()
+                if (not name or name == "") and GetRealZoneText then name = GetRealZoneText() or "" end
+                f._lastZoneName, f._lastZoneMapID = name, mapID
+            end
         end
-        frame._lastZoneName, frame._lastZoneMapID = name, mapID
-      end
-    end
 
-    if not frame._collapsed and frame.RequestRefresh then
-      frame:RequestRefresh("show")
-    end
-  end)
+        if not f._collapsed then
+            f:RequestRefresh("show")
+        end
+    end)
 end
 
 return Events

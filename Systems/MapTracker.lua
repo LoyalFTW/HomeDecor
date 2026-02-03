@@ -1,8 +1,10 @@
 local ADDON, NS = ...
 
+
+
+local MT = {}
 NS.Systems = NS.Systems or {}
-NS.Systems.MapTracker = NS.Systems.MapTracker or {}
-local MapTracker = NS.Systems.MapTracker
+NS.Systems.MapTracker = MT
 
 local C_Map = _G.C_Map
 local Enum = _G.Enum
@@ -10,303 +12,353 @@ local GetRealZoneText = _G.GetRealZoneText
 local CreateFrame = _G.CreateFrame
 local C_Timer = _G.C_Timer
 local GetTime = _G.GetTime
-local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
-local tonumber, tostring, type, pairs, ipairs, pcall = tonumber, tostring, type, pairs, ipairs, pcall
 
-local indexBuilt = false
-local vendorsByMapID, vendorsByZoneName = {}, {}
-local continentChildren = {}
-local callbacks = {}
 
-local function parseMapID(worldmap)
-  if type(worldmap) ~= "string" then return nil end
-  local a = worldmap:match("^(%d+):")
-  return a and tonumber(a) or nil
+local builtIndex = false
+local vendorsByMapID = {}
+local vendorsByZoneName = {}
+
+
+local continentChildCache = {}
+
+
+local listeners = {}
+
+local function ParseMapIDFromWorldmap(worldmap)
+	if type(worldmap) ~= "string" then return nil end
+	local a = worldmap:match("^(%d+):")
+	return a and tonumber(a) or nil
 end
 
-local function vendorMapID(v)
-  if type(v) ~= "table" then return nil end
-  local s = v.source
-  return parseMapID(v.worldmap or (s and s.worldmap))
+local function VendorMapID(v)
+	if type(v) ~= "table" then return nil end
+	local wm = v.worldmap or (v.source and v.source.worldmap)
+	return ParseMapIDFromWorldmap(wm)
 end
 
-local function vendorZoneName(v)
-  if type(v) ~= "table" then return nil end
-  local s = v.source
-  return v.zone or (s and s.zone)
+local function VendorZoneName(v)
+	if type(v) ~= "table" then return nil end
+	return v.zone or (v.source and v.source.zone)
 end
 
-local function isVendorRecord(t)
-  if type(t) ~= "table" or type(t.items) ~= "table" then return false end
-  local s = t.source
-  local wm = t.worldmap or (s and s.worldmap)
-  local zn = t.zone or (s and s.zone)
-  return (wm and wm ~= "") or (zn and zn ~= "")
+local function EnsureIndex()
+	if builtIndex then return end
+
+	local vendorsRoot = NS.Data and NS.Data.Vendors
+	if type(vendorsRoot) ~= "table" then
+
+		return
+	end
+
+
+
+
+
+
+
+	local out = {}
+	local seen = {}
+
+	local function IsVendorRecord(t)
+		if type(t) ~= "table" then return false end
+
+		if type(t.items) ~= "table" then return false end
+		local s = t.source
+		local wm = t.worldmap or (s and s.worldmap)
+		local zn = t.zone or (s and s.zone)
+		if (wm and wm ~= "") or (zn and zn ~= "") then
+			return true
+		end
+		return false
+	end
+
+	local function Walk(node)
+		if type(node) ~= "table" then return end
+		if seen[node] then return end
+		seen[node] = true
+
+		if IsVendorRecord(node) then
+			out[#out + 1] = node
+			return
+		end
+
+		for _, v in pairs(node) do
+			if type(v) == "table" then
+				Walk(v)
+			end
+		end
+	end
+
+	Walk(vendorsRoot)
+
+
+	if #out == 0 then
+		return
+	end
+
+	builtIndex = true
+	wipe(vendorsByMapID)
+	wipe(vendorsByZoneName)
+
+	for i = 1, #out do
+		local vendor = out[i]
+		local mid = VendorMapID(vendor)
+		if mid then
+			local key = tostring(mid)
+			local t = vendorsByMapID[key]
+			if not t then t = {}; vendorsByMapID[key] = t end
+			t[#t + 1] = vendor
+		end
+
+		local zn = VendorZoneName(vendor)
+		if zn and zn ~= "" then
+			local t2 = vendorsByZoneName[zn]
+			if not t2 then t2 = {}; vendorsByZoneName[zn] = t2 end
+			t2[#t2 + 1] = vendor
+		end
+	end
 end
 
-local function buildIndex()
-  if indexBuilt then return end
-  local root = NS.Data and NS.Data.Vendors
-  if type(root) ~= "table" then return end
 
-  local out, seen = {}, {}
-  local function walk(node)
-    if type(node) ~= "table" or seen[node] then return end
-    seen[node] = true
-    if isVendorRecord(node) then
-      out[#out + 1] = node
-      return
-    end
-    for _, v in pairs(node) do
-      if type(v) == "table" then walk(v) end
-    end
-  end
+local function ResolveContinentChildByName(continentID, zoneName)
+	if not continentID or not zoneName or zoneName == "" then return nil end
 
-  walk(root)
-  if #out == 0 then return end
+	local byContinent = continentChildCache[continentID]
+	if not byContinent then
+		byContinent = {}
+		continentChildCache[continentID] = byContinent
+	end
 
-  indexBuilt = true
-  wipe(vendorsByMapID)
-  wipe(vendorsByZoneName)
+	local cached = byContinent[zoneName]
+	if cached ~= nil then
+		return cached or nil
+	end
 
-  for i = 1, #out do
-    local v = out[i]
+	local childMapID
+	if C_Map and C_Map.GetMapChildrenInfo then
+		local children = C_Map.GetMapChildrenInfo(continentID, nil, true)
+		if type(children) == "table" then
+			for i = 1, #children do
+				local c = children[i]
+				if c and c.name == zoneName and c.mapID then
+					childMapID = c.mapID
+					break
+				end
+			end
+		end
+	end
 
-    local mid = vendorMapID(v)
-    if mid then
-      local key = tostring(mid)
-      local t = vendorsByMapID[key]
-      if not t then t = {}; vendorsByMapID[key] = t end
-      t[#t + 1] = v
-    end
-
-    local zn = vendorZoneName(v)
-    if zn and zn ~= "" then
-      local t2 = vendorsByZoneName[zn]
-      if not t2 then t2 = {}; vendorsByZoneName[zn] = t2 end
-      t2[#t2 + 1] = v
-    end
-  end
+	byContinent[zoneName] = childMapID or false
+	return childMapID
 end
 
-local function getContinentChild(continentID, zoneName)
-  if not continentID or not zoneName or zoneName == "" then return nil end
+local function ResolveStableZoneMapID(mapID, zoneName)
+	if not mapID or not C_Map or not C_Map.GetMapInfo then return mapID end
 
-  local byContinent = continentChildren[continentID]
-  if not byContinent then
-    byContinent = {}
-    continentChildren[continentID] = byContinent
-  end
+	local uiType = Enum and Enum.UIMapType
+	local T_CONTINENT = uiType and uiType.Continent or 2
+	local T_ZONE      = uiType and uiType.Zone      or 3
+	local T_DUNGEON   = uiType and uiType.Dungeon   or 4
 
-  local cached = byContinent[zoneName]
-  if cached ~= nil then return cached or nil end
+	local cur = mapID
+	local guard = 0
+	local info = C_Map.GetMapInfo(cur)
 
-  local child
-  if C_Map and C_Map.GetMapChildrenInfo then
-    local children = C_Map.GetMapChildrenInfo(continentID, nil, true)
-    if type(children) == "table" then
-      for i = 1, #children do
-        local c = children[i]
-        if c and c.mapID and c.name == zoneName then
-          child = c.mapID
-          break
-        end
-      end
-    end
-  end
+	while info and info.parentMapID and info.parentMapID > 0 and guard < 25 do
+		guard = guard + 1
+		local mt = info.mapType
+		if mt == T_ZONE or mt == T_DUNGEON then
+			return cur
+		end
+		local parent = info.parentMapID
+		if not parent or parent == 0 or parent == cur then break end
+		cur = parent
+		info = C_Map.GetMapInfo(cur)
+	end
 
-  byContinent[zoneName] = child or false
-  return child
+	if info and info.mapType == T_CONTINENT then
+		local z = zoneName or (GetRealZoneText and GetRealZoneText())
+		local child = ResolveContinentChildByName(cur, z)
+		if child then
+			return child
+		end
+	end
+
+	return cur or mapID
 end
 
-local function resolveZoneMapID(mapID, zoneName)
-  if not mapID or not C_Map or not C_Map.GetMapInfo then return mapID end
+local function FireZoneChanged(zoneName, mapID)
+	for _, fn in pairs(listeners) do
+		local ok, err = pcall(fn, zoneName, mapID)
+		if not ok then
 
-  local ui = Enum and Enum.UIMapType
-  local T_CONTINENT = ui and ui.Continent or 2
-  local T_ZONE = ui and ui.Zone or 3
-  local T_DUNGEON = ui and ui.Dungeon or 4
-
-  local cur, guard = mapID, 0
-  local info = C_Map.GetMapInfo(cur)
-
-  while info and info.parentMapID and info.parentMapID > 0 and guard < 25 do
-    guard = guard + 1
-    local mt = info.mapType
-    if mt == T_ZONE or mt == T_DUNGEON then return cur end
-    local parent = info.parentMapID
-    if not parent or parent == 0 or parent == cur then break end
-    cur = parent
-    info = C_Map.GetMapInfo(cur)
-  end
-
-  if info and info.mapType == T_CONTINENT then
-    local z = zoneName or (GetRealZoneText and GetRealZoneText()) or ""
-    local child = getContinentChild(cur, z)
-    if child then return child end
-  end
-
-  return cur or mapID
+		end
+	end
 end
 
-local function fire(zoneName, mapID)
-  for _, fn in pairs(callbacks) do
-    pcall(fn, zoneName, mapID)
-  end
+function MT:RegisterCallback(key, fn)
+	if type(fn) ~= "function" then return end
+	key = key or tostring(fn)
+	listeners[key] = fn
+	return key
 end
 
-function MapTracker:RegisterCallback(key, fn)
-  if type(fn) ~= "function" then return end
-  key = key or tostring(fn)
-  callbacks[key] = fn
-  return key
+function MT:UnregisterCallback(key)
+	if key then listeners[key] = nil end
 end
 
-function MapTracker:UnregisterCallback(key)
-  if key then callbacks[key] = nil end
+
+MT.zoneName = nil
+MT.zoneMapID = nil
+
+MT._enabled = false
+MT._queued = false
+MT._lastRun = 0
+
+function MT:GetCurrentZone()
+	return self.zoneName or "", self.zoneMapID
 end
 
-MapTracker.zoneName = MapTracker.zoneName or nil
-MapTracker.zoneMapID = MapTracker.zoneMapID or nil
-MapTracker.enabled = MapTracker.enabled or false
-MapTracker.queued = MapTracker.queued or false
-MapTracker.lastRun = MapTracker.lastRun or 0
+function MT:_UpdateNow(force)
+	if not self._enabled then return end
 
-function MapTracker:GetCurrentZone()
-  return self.zoneName or "", self.zoneMapID
+
+	local now = (GetTime and GetTime()) or 0
+	if not force and (now - (self._lastRun or 0) < 0.25) then
+		return
+	end
+	self._lastRun = now
+
+	local zoneName = (GetRealZoneText and GetRealZoneText()) or ""
+	local mapID = C_Map and C_Map.GetBestMapForUnit and C_Map.GetBestMapForUnit("player") or nil
+	if mapID then
+		mapID = ResolveStableZoneMapID(mapID, zoneName)
+	end
+
+	local name = zoneName
+	if mapID and C_Map and C_Map.GetMapInfo then
+		local info = C_Map.GetMapInfo(mapID)
+		if info and info.name and info.name ~= "" then
+			name = info.name
+		end
+	end
+
+	local changed = false
+	if mapID ~= self.zoneMapID then
+		changed = true
+	elseif (not mapID) and name ~= self.zoneName then
+
+		changed = true
+	end
+
+	if changed then
+		self.zoneName = name
+		self.zoneMapID = mapID
+		FireZoneChanged(name, mapID)
+	end
 end
 
-function MapTracker:UpdateNow(force)
-  if not self.enabled then return end
+function MT:_QueueUpdate(delay, force)
+	if not self._enabled then return end
+	if self._queued then return end
+	self._queued = true
 
-  local now = (GetTime and GetTime()) or 0
-  if not force and (now - (self.lastRun or 0) < 0.25) then return end
-  self.lastRun = now
-
-  local zoneName = (GetRealZoneText and GetRealZoneText()) or ""
-  local mapID = (C_Map and C_Map.GetBestMapForUnit and C_Map.GetBestMapForUnit("player")) or nil
-  if mapID then mapID = resolveZoneMapID(mapID, zoneName) end
-
-  local name = zoneName
-  if mapID and C_Map and C_Map.GetMapInfo then
-    local info = C_Map.GetMapInfo(mapID)
-    if info and info.name and info.name ~= "" then name = info.name end
-  end
-
-  local changed = (mapID ~= self.zoneMapID) or ((not mapID) and name ~= self.zoneName)
-  if not changed then return end
-
-  self.zoneName = name
-  self.zoneMapID = mapID
-  fire(name, mapID)
+	C_Timer.After(delay or 0.35, function()
+		if not MT._enabled then
+			MT._queued = false
+			return
+		end
+		MT._queued = false
+		MT:_UpdateNow(force)
+	end)
 end
 
-function MapTracker:QueueUpdate(delay, force)
-  if not self.enabled or self.queued then return end
-  self.queued = true
+function MT:Enable(enabled)
+	enabled = enabled and true or false
+	if enabled == self._enabled then return end
+	self._enabled = enabled
 
-  C_Timer.After(delay or 0.35, function()
-    if not MapTracker.enabled then
-      MapTracker.queued = false
-      return
-    end
-    MapTracker.queued = false
-    MapTracker:UpdateNow(force)
-  end)
+	if enabled then
+		EnsureIndex()
+		self:_QueueUpdate(0, true)
+		if not self._frame then
+			local f = CreateFrame("Frame")
+			f:RegisterEvent("PLAYER_ENTERING_WORLD")
+			f:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+			f:RegisterEvent("ZONE_CHANGED")
+			f:RegisterEvent("ZONE_CHANGED_INDOORS")
+			f:RegisterEvent("ADDON_LOADED")
+			f:SetScript("OnEvent", function(_, event, arg1)
+				if event == "ADDON_LOADED" then
+
+
+					if type(arg1) == "string" and (arg1 == ADDON or arg1:match("^" .. ADDON)) then
+						MT:ClearCaches()
+						MT:_QueueUpdate(0.15, true)
+					end
+					return
+				end
+
+				MT:_QueueUpdate(0.35, false)
+			end)
+			self._frame = f
+		else
+			self._frame:Show()
+		end
+	else
+		if self._frame then
+			self._frame:Hide()
+		end
+	end
 end
 
-function MapTracker:Enable(enabled)
-  enabled = enabled and true or false
-  if enabled == self.enabled then return end
-  self.enabled = enabled
-
-  if not enabled then
-    if self.frame then self.frame:Hide() end
-    return
-  end
-
-  buildIndex()
-  self:QueueUpdate(0, true)
-
-  if not self.frame then
-    local f = CreateFrame("Frame")
-    f:RegisterEvent("PLAYER_ENTERING_WORLD")
-    f:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-    f:RegisterEvent("ZONE_CHANGED")
-    f:RegisterEvent("ZONE_CHANGED_INDOORS")
-    f:RegisterEvent("ADDON_LOADED")
-    f:SetScript("OnEvent", function(_, event, arg1)
-      if event == "ADDON_LOADED" then
-        if type(arg1) == "string" and (arg1 == ADDON or arg1:match("^" .. ADDON)) then
-          MapTracker:ClearCaches()
-          MapTracker:QueueUpdate(0.15, true)
-        end
-        return
-      end
-      MapTracker:QueueUpdate(0.35, false)
-    end)
-    self.frame = f
-  else
-    self.frame:Show()
-  end
+function MT:ClearCaches()
+	builtIndex = false
+	wipe(vendorsByMapID)
+	wipe(vendorsByZoneName)
+	wipe(continentChildCache)
 end
 
-function MapTracker:ClearCaches()
-  indexBuilt = false
-  wipe(vendorsByMapID)
-  wipe(vendorsByZoneName)
-  wipe(continentChildren)
+function MT:GetVendorsForCurrentZone()
+	EnsureIndex()
+	local name, mapID = self:GetCurrentZone()
+	if mapID then
+		local t = vendorsByMapID[tostring(mapID)]
+		if t then return t end
+	end
+	if name and name ~= "" then
+		local t2 = vendorsByZoneName[name]
+		if t2 then return t2 end
+	end
+	return {}
 end
 
-function MapTracker:GetVendorsForCurrentZone()
-  buildIndex()
-  local name, mapID = self:GetCurrentZone()
-  if mapID then
-    local t = vendorsByMapID[tostring(mapID)]
-    if t then return t end
-  end
-  if name and name ~= "" then
-    local t2 = vendorsByZoneName[name]
-    if t2 then return t2 end
-  end
-  return {}
+
+
+
+function MT:CountVendor(vendor)
+	local U = (NS.UI and NS.UI.TrackerUtil)
+	if U and U.CountVendor then
+		return U:CountVendor(vendor)
+	end
+	local total = 0
+	for _, it in ipairs(vendor and vendor.items or {}) do
+		if type(it) == "table" then total = total + 1 end
+	end
+	return 0, total
 end
 
-local Collection = NS.Systems and NS.Systems.Collection
-
-local function isCollected(it)
-  if not Collection or not Collection.IsCollected then return false end
-  local ok, res = pcall(Collection.IsCollected, Collection, it)
-  if ok and type(res) == "boolean" then return res end
-  local id = (it and it.source and it.source.itemID) or (it and it.itemID) or (it and it.id) or (it and it.decorID)
-  local ok2, res2 = pcall(Collection.IsCollected, Collection, id)
-  if ok2 and type(res2) == "boolean" then return res2 end
-  return false
+function MT:CountVendors(vendors)
+	local U = (NS.UI and NS.UI.TrackerUtil)
+	if U and U.CountVendors then
+		return U:CountVendors(vendors)
+	end
+	local total = 0
+	for _, v in ipairs(vendors or {}) do
+		local _, t = self:CountVendor(v)
+		total = total + t
+	end
+	return 0, total
 end
 
-function MapTracker:CountVendor(vendor)
-  local total, collected = 0, 0
-  local items = vendor and vendor.items
-  if type(items) ~= "table" then return 0, 0 end
-  for i = 1, #items do
-    local it = items[i]
-    if type(it) == "table" then
-      total = total + 1
-      if isCollected(it) then collected = collected + 1 end
-    end
-  end
-  return collected, total
-end
-
-function MapTracker:CountVendors(vendors)
-  local total, collected = 0, 0
-  if type(vendors) ~= "table" then return 0, 0 end
-  for i = 1, #vendors do
-    local c, t = self:CountVendor(vendors[i])
-    collected = collected + c
-    total = total + t
-  end
-  return collected, total
-end
-
-return MapTracker
+return MT
