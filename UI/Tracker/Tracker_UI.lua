@@ -637,14 +637,15 @@ function UI:CreateFrame()
   frame._ClampSize = ClampFrameSize
   frame._SetCollapsed = SetCollapsed
 
-  function frame:RequestRefresh()
+  function frame:RequestRefresh(reason)
     if self._collapsed or self._pendingRefresh then return end
     self._pendingRefresh = true
-    C_Timer.After(0.08, function()
+    local delay = (reason == "toggle" and 0) or 0.08
+    C_Timer.After(delay, function()
       if not frame then return end
       frame._pendingRefresh = false
       if not frame:IsShown() or frame._collapsed then return end
-      if frame.Refresh then frame:Refresh() end
+      if frame.Refresh then frame:Refresh(reason) end
       if frame._ApplyPanelsAlpha then frame._ApplyPanelsAlpha((GetTrackerDB() and GetTrackerDB().alpha) or frame._bgAlpha or 1, false) end
     end)
   end

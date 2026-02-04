@@ -388,11 +388,16 @@ end
 
 local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
-local GetTime = _G.GetTime
+local C_Timer = _G.C_Timer
 
 local VendorNameCache = {}
-local VendorFailUntil = {}
+local VendorFailCount = {}
 local VendorNameTip
+
+local VendorQueue = {}
+local VendorQueued = {}
+local VendorPumpRunning = false
+local VendorListeners = {}
 
 local function GetVendorTooltip()
   if VendorNameTip then return VendorNameTip end
@@ -428,6 +433,69 @@ local function TooltipNPCName(npcID)
   return nil
 end
 
+local function PumpVendorQueue()
+  if VendorPumpRunning then return end
+  VendorPumpRunning = true
+  if not C_Timer or not C_Timer.After then
+    VendorPumpRunning = false
+    return
+  end
+
+  local function step()
+    VendorPumpRunning = false
+    local budget = 5
+    local requeue = {}
+
+    while budget > 0 and #VendorQueue > 0 do
+      budget = budget - 1
+      local npcID = table.remove(VendorQueue, 1)
+      VendorQueued[npcID] = nil
+      
+      local name = TooltipNPCName(npcID)
+      if type(name) == "string" and name ~= "" then
+        VendorNameCache[npcID] = name
+        VendorFailCount[npcID] = nil
+        
+        for i = 1, #VendorListeners do
+          local fn = VendorListeners[i]
+          if fn then
+            pcall(fn, npcID, name)
+          end
+        end
+      else
+        VendorFailCount[npcID] = (VendorFailCount[npcID] or 0) + 1
+        local failCount = VendorFailCount[npcID]
+        if failCount < 10 then
+          requeue[#requeue + 1] = npcID
+        end
+      end
+    end
+
+    if #requeue > 0 then
+      C_Timer.After(0.5, function()
+        for i = 1, #requeue do
+          local npcID = requeue[i]
+          if not VendorQueued[npcID] then
+            VendorQueued[npcID] = true
+            VendorQueue[#VendorQueue + 1] = npcID
+          end
+        end
+        if #VendorQueue > 0 then
+          PumpVendorQueue()
+        end
+      end)
+    end
+
+    if #VendorQueue > 0 and #requeue == 0 then
+      C_Timer.After(0.1, function()
+        PumpVendorQueue()
+      end)
+    end
+  end
+
+  C_Timer.After(0, step)
+end
+
 function Data.GetVendorName(npcID)
   npcID = tonumber(npcID)
   if not npcID then return nil end
@@ -435,21 +503,35 @@ function Data.GetVendorName(npcID)
   local cached = VendorNameCache[npcID]
   if cached ~= nil then return cached end
 
-  local now = GetTime and GetTime() or 0
-  local untilT = VendorFailUntil[npcID]
-  if untilT and untilT > now then
-    return nil
-  end
-
   local name = TooltipNPCName(npcID)
   if type(name) == "string" and name ~= "" then
     VendorNameCache[npcID] = name
-    VendorFailUntil[npcID] = nil
+    VendorFailCount[npcID] = nil
+    
+    for i = 1, #VendorListeners do
+      local fn = VendorListeners[i]
+      if fn then
+        pcall(fn, npcID, name)
+      end
+    end
+    
     return name
   end
 
-  VendorFailUntil[npcID] = now + 2.0
+  VendorFailCount[npcID] = (VendorFailCount[npcID] or 0) + 1
+  
+  if not VendorQueued[npcID] then
+    VendorQueued[npcID] = true
+    VendorQueue[#VendorQueue + 1] = npcID
+    PumpVendorQueue()
+  end
+  
   return nil
+end
+
+function Data.RegisterVendorNameListener(fn)
+  if type(fn) ~= "function" then return end
+  VendorListeners[#VendorListeners + 1] = fn
 end
 
 function Data.ResolveVendorTitle(vendor)
@@ -756,26 +838,25 @@ function Data.ResolveAchievementDecor(it)
     return Data.HydrateFromDecorIndex(it)
   end
 
-  local resolved = _copyTableShallow(it)
-  resolved.source = _copyTableShallow(it.source)
+  it.source = it.source or {}
 
-  Data.HydrateFromDecorIndex(resolved)
+  Data.HydrateFromDecorIndex(it)
 
-  local desiredFaction = resolved.faction or (resolved.source and resolved.source.faction)
+  local desiredFaction = it.faction or (it.source and it.source.faction)
   if desiredFaction ~= "Alliance" and desiredFaction ~= "Horde" then
     local pf = UnitFactionGroup and UnitFactionGroup("player")
     if pf == "Alliance" or pf == "Horde" then desiredFaction = pf else desiredFaction = nil end
   end
 
   local picked, pickedItem
-  local expName = resolved._expansion
-  local zoneKey = resolved._navZoneKey
+  local expName = it._expansion
+  local zoneKey = it._navZoneKey
   if expName and zoneKey then
-    picked, pickedItem = PickVendorFromZoneData(resolved.decorID, expName, zoneKey, desiredFaction)
+    picked, pickedItem = PickVendorFromZoneData(it.decorID, expName, zoneKey, desiredFaction)
   end
 
   if DecorIndex then
-    local entry = DecorIndex[resolved.decorID]
+    local entry = DecorIndex[it.decorID]
     local vendors = entry and (entry.vendors or (entry.vendor and { entry.vendor })) or nil
 
     if not picked and desiredFaction and type(vendors) == "table" then
@@ -801,14 +882,14 @@ function Data.ResolveAchievementDecor(it)
 
     if picked then
       local slim = Data.SlimVendor(picked) or picked
-      Data.AttachVendorCtx(resolved, slim)
+      Data.AttachVendorCtx(it, slim)
 
-      if not resolved.vendor or not resolved.vendor.title or resolved.vendor.title == "" then
+      if not it.vendor or not it.vendor.title or it.vendor.title == "" then
         local t = Data.ResolveVendorTitle(slim)
         if t then
-          resolved.vendor = resolved.vendor or {}
-          resolved.vendor.title = t
-          if resolved._navVendor then resolved._navVendor.title = t end
+          it.vendor = it.vendor or {}
+          it.vendor.title = t
+          if it._navVendor then it._navVendor.title = t end
         end
       end
     end
@@ -823,7 +904,6 @@ function Data.ResolveAchievementDecor(it)
     itemID = tonumber(itemID)
     if itemID then
       it.itemID = it.itemID or itemID
-      it.source = it.source or {}
       it.source.itemID = it.source.itemID or itemID
     end
 
@@ -853,7 +933,7 @@ function Data.ResolveAchievementDecor(it)
     if t then it.vendor.title = t end
   end
 
-  return resolved
+  return it
 end
 
 function Data.GetActiveData(ui)

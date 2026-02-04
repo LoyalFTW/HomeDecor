@@ -84,7 +84,6 @@ local function countItems(items, vendorCtx)
     if not it then return end
     local rit = it
     if vctx and AttachVendorCtx then AttachVendorCtx(rit, vctx) end
-    rit = ResolveAchievementDecor(rit)
     if Passes and Passes(rit) then
       total = total + 1
       if IsCollectedSafe and IsCollectedSafe(rit) then collected = collected + 1 end
@@ -203,7 +202,7 @@ local function headerClick(self)
 
   if entry.payload.vendor then
     entry.payload.vendor._uiOpen = not entry.payload.vendor._uiOpen
-    if f.Render then f:Render() end
+    if f.Render then f:RequestRender(true) end
     return
   end
 
@@ -232,7 +231,7 @@ local function headerClick(self)
   end
 
   HeaderCtrl:Toggle(kind, entry.payload.key)
-  if f.Render then f:Render() end
+  if f.Render then f:RequestRender(true) end
 
   local newY = anchorY
   local map = f._headerYByKey
@@ -318,7 +317,7 @@ local tileW, tileH, tileGap, iconSize = 180, 156, 16, 64
   parent:HookScript("OnDragStart", function() f._suspendRender = true end)
   parent:HookScript("OnDragStop", function()
     f._suspendRender = false
-    if f.Render then f:Render() end
+    if f.Render then f:RequestRender(true) end
   end)
 
   local function QueueRender(delay)
@@ -331,7 +330,7 @@ local tileW, tileH, tileGap, iconSize = 180, 156, 16, 64
     f._renderTimer = C_Timer.NewTimer(d, function()
       f._renderTimer = nil
       if not f or not f.IsShown or not f:IsShown() then return end
-      if f.Render then f:Render() end
+      if f.Render then f:RequestRender(true) end
     end)
   end
 
@@ -398,7 +397,7 @@ local tileW, tileH, tileGap, iconSize = 180, 156, 16, 64
 
     C_Timer.After(0.12, function()
       if not f or tok ~= f._resizeToken then return end
-      if f.Render then f:Render() end
+      if f.Render then f:RequestRender(true) end
     end)
   end)
 
@@ -843,12 +842,11 @@ if it._uiOpen then
                     local vCols, vStartX = computeGrid(44)
                     local vCol = 0
                     for _, vit in ipairs(it.items) do
-                      local rit = copyShallow and copyShallow(vit) or vit
-                      rit.source = vit.source and (copyShallow and copyShallow(vit.source) or vit.source) or {}
+                      local rit = vit
+                      rit.source = rit.source or {}
                       rit._expansion = exp
                       rit._navZoneKey = zone
                       if AttachVendorCtx then AttachVendorCtx(rit, it) end
-                      rit = ResolveAchievementDecor(rit)
 
                       if Passes and Passes(rit) then
                         entries[#entries + 1] = {
@@ -880,11 +878,9 @@ if it._uiOpen then
                   local rit = it
                   local st = rit and rit.source and rit.source.type
                   if st == "achievement" or st == "quest" or st == "pvp" then
-                    rit = copyShallow and copyShallow(rit) or rit
-                    if it.source then rit.source = copyShallow and copyShallow(it.source) or it.source end
+                    rit.source = rit.source or it.source or {}
                     rit._expansion = exp
                     rit._navZoneKey = zone
-                    rit = ResolveAchievementDecor(rit)
                   end
                   if Passes and Passes(rit) then
                     addTile(44, rit, rit.vendor, col, startX)
@@ -913,12 +909,11 @@ addHeader(44, 30, "[Vendor] " .. vTitle, vCollected, vTotal, (it._uiOpen and tru
 
                   if it._uiOpen then
                     for _, vit in ipairs(it.items) do
-                      local rit = copyShallow and copyShallow(vit) or vit
-                      rit.source = vit.source and (copyShallow and copyShallow(vit.source) or vit.source) or {}
+                      local rit = vit
+                      rit.source = rit.source or {}
                       rit._expansion = exp
                       rit._navZoneKey = zone
                       if AttachVendorCtx then AttachVendorCtx(rit, it) end
-                      rit = ResolveAchievementDecor(rit)
                       if Passes and Passes(rit) then addListItem(44, rit, it) end
                     end
                   end
@@ -930,11 +925,9 @@ addHeader(44, 30, "[Vendor] " .. vTitle, vCollected, vTotal, (it._uiOpen and tru
                   local rit = it
                   local st = rit and rit.source and rit.source.type
                   if st == "achievement" or st == "quest" or st == "pvp" then
-                    rit = copyShallow and copyShallow(rit) or rit
-                    if it.source then rit.source = copyShallow and copyShallow(it.source) or it.source end
+                    rit.source = rit.source or it.source or {}
                     rit._expansion = exp
                     rit._navZoneKey = zone
-                    rit = ResolveAchievementDecor(rit)
                   end
                   if Passes and Passes(rit) then addListItem(28, rit, rit.vendor) end
                 end
@@ -1175,7 +1168,7 @@ addHeader(44, 30, "[Vendor] " .. vTitle, vCollected, vTotal, (it._uiOpen and tru
               fr._fav:SetItemID(id)
             else
               if fr._fav then fr._fav:Hide() end
-              fr._fav = Favorite:Attach(fr, id, function() f:Render() end)
+              fr._fav = Favorite:Attach(fr, id, function() f:RequestRender(false) end)
             end
 
             if fr._fav then
@@ -1311,7 +1304,7 @@ addHeader(44, 30, "[Vendor] " .. vTitle, vCollected, vTotal, (it._uiOpen and tru
               fr._fav:SetItemID(id)
             else
               if fr._fav then fr._fav:Hide() end
-              fr._fav = Favorite:Attach(fr, id, function() f:Render() end)
+              fr._fav = Favorite:Attach(fr, id, function() f:RequestRender(false) end)
             end
             if fr._fav and fr._fav.SetPoint then
               fr._fav:ClearAllPoints()
@@ -1343,12 +1336,41 @@ addHeader(44, 30, "[Vendor] " .. vTitle, vCollected, vTotal, (it._uiOpen and tru
     content:SetHeight(self.totalHeight or 0)
   end
 
-  function f:Render()
+  function f:RenderLayout()
     if self._suspendRender then return end
+    if not self.entries then return end
     self._lastScrollY, self._lastCount, self._lastViewMode = nil, nil, nil
-    self:RebuildEntries()
     content:SetHeight(self.totalHeight or 0)
     self:UpdateVisible()
+  end
+
+  function f:Render(full)
+    if self._suspendRender then return end
+    if full ~= false then
+      self:RebuildEntries()
+    end
+    self:RenderLayout()
+  end
+
+  function f:RequestRender(full)
+    if self._suspendRender then return end
+    if full ~= false then self._needsFullRebuild = true end
+    if self._renderQueued then return end
+    self._renderQueued = true
+    if C_Timer and C_Timer.After then
+      C_Timer.After(0, function()
+        if not f or f._destroyed then return end
+        f._renderQueued = false
+        local doFull = f._needsFullRebuild
+        f._needsFullRebuild = nil
+        f:Render(doFull and true or false)
+      end)
+    else
+      self._renderQueued = false
+      local doFull = self._needsFullRebuild
+      self._needsFullRebuild = nil
+      self:Render(doFull and true or false)
+    end
   end
 
   f.scrollFrame = sf
