@@ -11,13 +11,11 @@ Darkshore_Rares={
 [147970]={name="Mrggr'marr",worldmap="62:3540:8140"},
 [149654]={name="Glimmerspine",worldmap="62:4340:1980"},
 [149657]={name="Madfeather",worldmap="62:4400:4840"},
-[149665]={name="Scalefiend",worldmap="62:4740:4460"},
-},
-}
+[149665]={name="Scalefiend",worldmap="62:4740:4460"}}}
 
 NS.Data.Drops["Classic"]["Kalimdor"]={
-{decorID=840,title="Banshee Queen's Banner",decorType="Wall Hangings",source={type="drop",zone="Darkshore",itemID=245462,mobSet="Darkshore_Rares",_mobSets=MOBSETS}},
-{decorID=2000,title="Filigree Moon Sconce",decorType="Wall Lights",source={type="drop",zone="Darkshore",itemID=246110,mobSet="Darkshore_Rares",_mobSets=MOBSETS}},
-{decorID=1836,title="Elven Temple Brazier",decorType="Large Lights",source={type="drop",zone="Darkshore",itemID=245627,mobSet="Darkshore_Rares",_mobSets=MOBSETS}},
-{decorID=948,title="Forsaken Spiked Brazier",decorType="Large Lights",source={type="drop",zone="Darkshore",itemID=241066,mobSet="Darkshore_Rares",_mobSets=MOBSETS}},
+	{decorID=840, source={type="drop",zone="Darkshore",itemID=245462,mobSet="Darkshore_Rares",_mobSets=MOBSETS}},
+	{decorID=2000, source={type="drop",zone="Darkshore",itemID=246110,mobSet="Darkshore_Rares",_mobSets=MOBSETS}},
+	{decorID=1836, source={type="drop",zone="Darkshore",itemID=245627,mobSet="Darkshore_Rares",_mobSets=MOBSETS}},
+	{decorID=948, source={type="drop",zone="Darkshore",itemID=241066,mobSet="Darkshore_Rares",_mobSets=MOBSETS}}
 }

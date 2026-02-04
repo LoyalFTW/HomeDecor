@@ -8,162 +8,131 @@ NS.Data.Vendors["Pandaria"] = NS.Data.Vendors["Pandaria"] or {}
 NS.Data.Vendors["Pandaria"]["Pandaria"] = {
 
   {
-    title="Sergeant Crowler",
     source={
       id=78564,
       type="vendor",
       faction="Alliance",
       zone="Lunarfall",
-      worldmap="582:3850:3140",
-    },
+      worldmap="582:3850:3140"},
     items={
-      {decorID=4403, decorType="Seating", source={type="vendor", itemID=248334, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36404}}},
-      {decorID=4404, decorType="Seating", source={type="vendor", itemID=248335, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=36202}}},
-      {decorID=4485, decorType="Tables and Desks", source={type="vendor", itemID=248660, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=34192}}},
-      {decorID=4486, decorType="Tables and Desks", source={type="vendor", itemID=248661, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36592}}},
-      {decorID=4816, decorType="Storage", source={type="vendor", itemID=248799, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=34586}}},
-      {decorID=4818, decorType="Miscellaneous - All", source={type="vendor", itemID=248800, currency="1500", currencytype="Garrison Resources"}, requirements={quest={id=36615}}},
-      {decorID=4844, decorType="Seating", source={type="vendor", itemID=248810, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=35176}}},
-    }
+      {decorID=4403,  source={type="vendor", itemID=248334, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36404}}},
+      {decorID=4404,  source={type="vendor", itemID=248335, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=36202}}},
+      {decorID=4485,  source={type="vendor", itemID=248660, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=34192}}},
+      {decorID=4486,  source={type="vendor", itemID=248661, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36592}}},
+      {decorID=4816,  source={type="vendor", itemID=248799, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=34586}}},
+      {decorID=4818,  source={type="vendor", itemID=248800, currency="1500", currencytype="Garrison Resources"}, requirements={quest={id=36615}}},
+      {decorID=4844,  source={type="vendor", itemID=248810, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=35176}}}}
   },
   {
-    title="Tan Shin Tiao",
     source={
       id=64605,
       type="vendor",
       faction="Horde",
       zone="Vale of Eternal Blossoms",
-      worldmap="390:8223:2933",
-    },
+      worldmap="390:8223:2933"},
     items={
-      {decorID=1172, decorType="Seating", source={type="vendor", itemID=245512, currency="150", currencytype="War Resources"}, requirements={rep="true"}},
-      {decorID=3832, decorType="Tables and Desks", source={type="vendor", itemID=247662, currency="1000", currencytype="Resonance Crystals"}, requirements={rep="true"}},
-      {decorID=3833, decorType="Storage", source={type="vendor", itemID=247663, currency="500", currencytype="War Resources"}, requirements={rep="true"}},
-      {decorID=3993, decorType="Storage", source={type="vendor", itemID=247855, currency="150", currencytype="War Resources"}, requirements={rep="true"}},
-      {decorID=3995, decorType="Large Structures", source={type="vendor", itemID=247858, currency="1500", currencytype="Order Resources"}, requirements={quest={id=32816}}},
-      {decorID=11873, decorType="Storage", source={type="vendor", itemID=258147, currency="500", currencytype="War Resources"}, requirements={rep="true"}},
-    }
+      {decorID=1172,  source={type="vendor", itemID=245512, currency="150", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=3832,  source={type="vendor", itemID=247662, currency="1000", currencytype="Resonance Crystals"}, requirements={rep="true"}},
+      {decorID=3833,  source={type="vendor", itemID=247663, currency="500", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=3993,  source={type="vendor", itemID=247855, currency="150", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=3995,  source={type="vendor", itemID=247858, currency="1500", currencytype="Order Resources"}, requirements={quest={id=32816}}},
+      {decorID=11873,  source={type="vendor", itemID=258147, currency="500", currencytype="War Resources"}, requirements={rep="true"}}}
   },
   {
-    title="Ribchewer",
     source={
       id=86776,
       type="vendor",
       faction="Horde",
       zone="Frostwall",
-      worldmap="585:5140:6200",
-    },
+      worldmap="585:5140:6200"},
     items={
-      {decorID=1354, decorType="Food and Drink", source={type="vendor", itemID=245444, currency="250", currencytype="Garrison Resources"}},
-      {decorID=1355, decorType="Wall Hangings", source={type="vendor", itemID=245445, currency="150", currencytype="Garrison Resources"}},
-      {decorID=1413, decorType="Seating", source={type="vendor", itemID=244321, currency="100", currencytype="Garrison Resources"}},
-      {decorID=1414, decorType="Seating", source={type="vendor", itemID=244322, currency="100", currencytype="Garrison Resources"}},
-    }
+      {decorID=1354,  source={type="vendor", itemID=245444, currency="250", currencytype="Garrison Resources"}},
+      {decorID=1355,  source={type="vendor", itemID=245445, currency="150", currencytype="Garrison Resources"}},
+      {decorID=1413,  source={type="vendor", itemID=244321, currency="100", currencytype="Garrison Resources"}},
+      {decorID=1414,  source={type="vendor", itemID=244322, currency="100", currencytype="Garrison Resources"}}}
   },
   {
-    title="Sergeant Grimjaw",
     source={
       id=79774,
       type="vendor",
       faction="Horde",
       zone="Frostwall",
-      worldmap="590:4380:4740",
-    },
+      worldmap="590:4380:4740"},
     items={
-      {decorID=1318, decorType="Storage", source={type="vendor", itemID=245438, currency="500", currencytype="Garrison Resources"}, requirements={quest={id=93100}}},
-      {decorID=1353, decorType="Tables and Desks", source={type="vendor", itemID=245443, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=34586}}},
-      {decorID=1407, decorType="Tables and Desks", source={type="vendor", itemID=244315, currency="1500", currencytype="Garrison Resources"}, requirements={quest={id=36614}}},
-      {decorID=1408, decorType="Tables and Desks", source={type="vendor", itemID=244316, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=34192}}},
-      {decorID=1412, decorType="Misc Accents", source={type="vendor", itemID=244320, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=42622}}},
-      {decorID=1443, decorType="Tables and Desks", source={type="vendor", itemID=244653, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36592}}},
-    }
+      {decorID=1318,  source={type="vendor", itemID=245438, currency="500", currencytype="Garrison Resources"}, requirements={quest={id=93100}}},
+      {decorID=1353,  source={type="vendor", itemID=245443, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=34586}}},
+      {decorID=1407,  source={type="vendor", itemID=244315, currency="1500", currencytype="Garrison Resources"}, requirements={quest={id=36614}}},
+      {decorID=1408,  source={type="vendor", itemID=244316, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=34192}}},
+      {decorID=1412,  source={type="vendor", itemID=244320, currency="100", currencytype="Garrison Resources"}, requirements={quest={id=42622}}},
+      {decorID=1443,  source={type="vendor", itemID=244653, currency="300", currencytype="Garrison Resources"}, requirements={quest={id=36592}}}}
   },
   {
-    title="Sage Lotusbloom",
     source={
       id=64001,
       type="vendor",
       faction="Horde",
       zone="Shrine of Two Moons, Vale of Eternal Blossoms, Vale of Eternal Blossoms",
-      worldmap="390:6280:2320",
-    },
+      worldmap="390:6280:2320"},
     items={
-      {decorID=3869, decorType="Misc Structural", source={type="vendor", itemID=247729}, requirements={quest={id=31230}}},
-      {decorID=15605, decorType="Misc Furnishings", source={type="vendor", itemID=264362}, requirements={quest={id=30000}}},
-    }
+      {decorID=3869,  source={type="vendor", itemID=247729}, requirements={quest={id=31230}}},
+      {decorID=15605,  source={type="vendor", itemID=264362}, requirements={quest={id=30000}}}}
   },
     {
-    title="Sage Whiteheart",
     source={
       id=64032,
       type="vendor",
       faction="Alliance",
       zone="Shrine of Seven Stars, Vale of Eternal Blossoms, Vale of Eternal Blossoms",
-      worldmap="1530:8520:6160",
-    },
+      worldmap="1530:8520:6160"},
     items={
-      {decorID=3869, decorType="Misc Structural", source={type="vendor", itemID=247729}, requirements={quest={id=31230}}},
-      {decorID=15605, decorType="Misc Furnishings", source={type="vendor", itemID=264362}, requirements={quest={id=92980}}},
-    }
+      {decorID=3869,  source={type="vendor", itemID=247729}, requirements={quest={id=31230}}},
+      {decorID=15605,  source={type="vendor", itemID=264362}, requirements={quest={id=92980}}}}
   },
   {
-    title="Brother Furtrim",
     source={
       id=59698,
       type="vendor",
       faction="Horde",
       zone="Kun-Lai Summit",
-      worldmap="379:5724:6096",
-    },
+      worldmap="379:5724:6096"},
     items={
-      {decorID=15595, decorType="Miscellaneous - All", source={type="vendor", itemID=264349, currency="500", currencytype="War Resources"}, requirements={quest={id=30612}}},
-    }
+      {decorID=15595,  source={type="vendor", itemID=264349, currency="500", currencytype="War Resources"}, requirements={quest={id=30612}}}}
   },
   {
-    title="San Redscale",
     source={
       id=58414,
       type="vendor",
       faction="Neutral",
       zone="The Jade Forest",
-      worldmap="371:5670:4438",
-    },
+      worldmap="371:5670:4438"},
     items={
-      {decorID=3870, decorType="Ornamental", source={type="vendor", itemID=247730, currency="600", currencytype="War Resources"}, requirements={rep="true"}},
-      {decorID=3872, decorType="Ornamental", source={type="vendor", itemID=247732, currency="600", currencytype="War Resources"}, requirements={rep="true"}},
-    }
+      {decorID=3870,  source={type="vendor", itemID=247730, currency="600", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=3872,  source={type="vendor", itemID=247732, currency="600", currencytype="War Resources"}, requirements={rep="true"}}}
   },
   {
-    title="Gina Mudclaw",
     source={
       id=58706,
       type="vendor",
       faction="Horde",
       zone="Valley of the Four Winds",
-      worldmap="376:5320:5180",
-    },
+      worldmap="376:5320:5180"},
     items={
-      {decorID=1201, decorType="Tables and Desks", source={type="vendor", itemID=245508, currency="300", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
-      {decorID=3840, decorType="Storage", source={type="vendor", itemID=247670, currency="500", currencytype="War Resources"}, requirements={rep="true"}},
-      {decorID=3874, decorType="Misc Structural", source={type="vendor", itemID=247734}, requirements={rep="true"}},
-      {decorID=3877, decorType="Misc Accents", source={type="vendor", itemID=247737, currency="300", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
-      {decorID=4488, decorType="Miscellaneous - All", source={type="vendor", itemID=248663}, requirements={quest={id=30526}}},
-    }
+      {decorID=1201,  source={type="vendor", itemID=245508, currency="300", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=3840,  source={type="vendor", itemID=247670, currency="500", currencytype="War Resources"}, requirements={rep="true"}},
+      {decorID=3874,  source={type="vendor", itemID=247734}, requirements={rep="true"}},
+      {decorID=3877,  source={type="vendor", itemID=247737, currency="300", currencytype="Dragon Isles Supplies"}, requirements={rep="true"}},
+      {decorID=4488,  source={type="vendor", itemID=248663}, requirements={quest={id=30526}}}}
   },
   {
-    title="Lali the Assistant",
     source={
       id=62088,
       type="vendor",
       faction="Horde",
       zone="Vale of Eternal Blossoms",
-      worldmap="390:8280:3080",
-    },
+      worldmap="390:8280:3080"},
     items={
-      {decorID=767, decorType="Ornamental", source={type="vendor", itemID=245332, currency="750", currencytype="Resonance Crystals"}, requirements={achievement={id=61467}}},
-      {decorID=11453, decorType="Ornamental", source={type="vendor", itemID=257351, currency="3000", currencytype="Order Resources"}, requirements={achievement={id=42189}}},
-      {decorID=11456, decorType="Uncategorized", source={type="vendor", itemID=257354, currency="1000", currencytype="Resonance Crystals"}, requirements={achievement={id=42187}}},
-      {decorID=11457, decorType="Ornamental", source={type="vendor", itemID=257355, currency="1500", currencytype="Reservoir Anima"}, requirements={achievement={id=42188}}},
-    }
-  },
-}
+      {decorID=767,  source={type="vendor", itemID=245332, currency="750", currencytype="Resonance Crystals"}, requirements={achievement={id=61467}}},
+      {decorID=11453,  source={type="vendor", itemID=257351, currency="3000", currencytype="Order Resources"}, requirements={achievement={id=42189}}},
+      {decorID=11456,  source={type="vendor", itemID=257354, currency="1000", currencytype="Resonance Crystals"}, requirements={achievement={id=42187}}},
+      {decorID=11457,  source={type="vendor", itemID=257355, currency="1500", currencytype="Reservoir Anima"}, requirements={achievement={id=42188}}}}
+  }}

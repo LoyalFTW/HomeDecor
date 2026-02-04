@@ -1,5 +1,4 @@
 local ADDON, NS = ...
-
 NS.UI = NS.UI or {}
 
 local View = NS.UI.Viewer
@@ -42,6 +41,8 @@ local getActiveData = D and D.GetActiveData
 local keyExp = D and D.KeyExp
 local keyZone = D and D.KeyZone
 local keyVendor = D and D.KeyVendor
+local ResolveVendorTitle = D and D.ResolveVendorTitle
+
 
 local DB = U and U.DB
 local Passes = U and U.Passes
@@ -245,6 +246,71 @@ local function headerClick(self)
 end
 
 function Render:Create(parent)
+
+
+local NS = NS
+local View = NS.UI and NS.UI.Viewer
+local D = View and View.Data
+local U = View and View.Util
+local S = View and View.Search
+local R = View and View.Requirements
+
+local C_Timer = _G.C_Timer
+local CreateFrame = _G.CreateFrame
+local GetTime = _G.GetTime
+
+local TT = NS.UI and NS.UI.Tooltips
+local Favorite = NS.UI and NS.UI.FavoriteStar
+local StatusIcon = NS.UI and NS.UI.StatusIcon
+local ProgressBar = NS.UI and NS.UI.ProgressBar
+local DropPanel = NS.UI and NS.UI.DropPanel
+local HeaderCtrl = NS.UI and NS.UI.HeaderController
+local FiltersSys = NS.Systems and NS.Systems.Filters
+local Collection = NS.Systems and NS.Systems.Collection
+local RS = NS.UI and NS.UI.RowStyles
+local IA = NS.UI and NS.UI.ItemInteractions
+
+local TEX_ALLI = D and D.TEX_ALLI
+local TEX_HORDE = D and D.TEX_HORDE
+
+local ResolveAchievementDecor = (D and D.ResolveAchievementDecor) or function(x) return x end
+local AttachVendorCtx = (D and D.AttachVendorCtx) or (S and S.AttachVendorCtx)
+local GetDecorIcon = D and D.GetDecorIcon
+local GetDecorName = D and D.GetDecorName
+local NormalizeExpansionNode = D and D.NormalizeExpansionNode
+local GetExpansionOrder = D and D.GetExpansionOrder
+local getActiveData = D and D.GetActiveData
+local keyExp = D and D.KeyExp
+local keyZone = D and D.KeyZone
+local keyVendor = D and D.KeyVendor
+local ResolveVendorTitle = D and D.ResolveVendorTitle
+
+local DB = U and U.DB
+local Passes = U and U.Passes
+local IsCollectedSafe = U and U.IsCollectedSafe
+local GetStateSafe = U and U.GetStateSafe
+local GetItemID = U and U.GetItemID
+local trim = U and U.Trim
+local copyShallow = U and U.CopyShallow
+local clamp = U and U.Clamp
+local ClampScroll = U and U.ClampScroll
+
+local BuildGlobalSearchResults = S and S.BuildGlobalSearchResults
+local CollectAllFavorites = S and S.CollectAllFavorites
+
+local ShowWowheadLinks = R and R.ShowWowheadLinks
+local BuildWowheadQuestURL = R and R.BuildWowheadQuestURL
+local BuildWowheadAchievementURL = R and R.BuildWowheadAchievementURL
+local GetRequirementLink = R and R.GetRequirementLink
+local BuildReqDisplay = R and R.BuildReqDisplay
+local GetRepRequirement = R and R.GetRepRequirement
+local BuildRepDisplay = R and R.BuildRepDisplay
+
+local floor = math.floor
+local function Pixel(v) return v and floor(v + 0.5) or 0 end
+
+local ROW_GAP, LIST_H, LIST_GAP, PAD_TOP, PAD_BOTTOM = 8, 84, 6, 10, 12
+local tileW, tileH, tileGap, iconSize = 180, 156, 16, 64
   local f = CreateFrame("Frame", nil, parent)
   f:SetAllPoints()
   f._suspendRender = false
@@ -767,8 +833,13 @@ function Render:Create(parent)
                   local vendorKeyId = (it.source and it.source.id) or it.npcID or it.id or it.title or 0
                   local vKey = keyVendor and keyVendor(cat, exp, zone, vendorKeyId) or (tostring(vendorKeyId))
 
-                  addHeader(44, 30, "[Vendor] " .. (it.title or ""), vCollected, vTotal, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
-                  if it._uiOpen then
+                  local vTitle = (ResolveVendorTitle and ResolveVendorTitle(it)) or it.title
+if not vTitle or vTitle == "" then
+  local vid = (it.source and it.source.id) or it.npcID or it.id
+  vTitle = vid and ("Vendor #" .. tostring(vid)) or "Vendor"
+end
+addHeader(44, 30, "[Vendor] " .. vTitle, vCollected, vTotal, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
+if it._uiOpen then
                     local vCols, vStartX = computeGrid(44)
                     local vCol = 0
                     for _, vit in ipairs(it.items) do
@@ -833,7 +904,13 @@ function Render:Create(parent)
                   local vendorKeyId = (it.source and it.source.id) or it.npcID or it.id or it.title or 0
                   local vKey = keyVendor and keyVendor(cat, exp, zone, vendorKeyId) or (tostring(vendorKeyId))
 
-                  addHeader(44, 30, "[Vendor] " .. (it.title or ""), vCollected, vTotal, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
+                  local vTitle = (ResolveVendorTitle and ResolveVendorTitle(it)) or it.title
+if not vTitle or vTitle == "" then
+  local vid = (it.source and it.source.id) or it.npcID or it.id
+  vTitle = vid and ("Vendor #" .. tostring(vid)) or "Vendor"
+end
+addHeader(44, 30, "[Vendor] " .. vTitle, vCollected, vTotal, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
+
                   if it._uiOpen then
                     for _, vit in ipairs(it.items) do
                       local rit = copyShallow and copyShallow(vit) or vit
@@ -1028,7 +1105,11 @@ function Render:Create(parent)
               fr.textBg:Show()
             end
 
-            local metaText = it and (it.decorType or "") or ""
+            if it and (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") and D and D.ApplyDecorBreadcrumb then
+              D.ApplyDecorBreadcrumb(it)
+            end
+
+            local metaText = it and (it.decorTypeBreadcrumb or "Uncategorized") or "Uncategorized"
             if fr.meta then
               fr.meta:ClearAllPoints()
               if metaText ~= "" and fr.label then
@@ -1151,7 +1232,11 @@ function Render:Create(parent)
           local rep = GetRepRequirement and GetRepRequirement(it)
           local maxW = (e.w or 0) - 96
 
-          local metaText = it and (it.decorType or it.subcategory or "") or ""
+          if it and (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") and D and D.ApplyDecorBreadcrumb then
+            D.ApplyDecorBreadcrumb(it)
+          end
+
+          local metaText = it and (it.decorTypeBreadcrumb or it.decorType or it.subcategory or "Uncategorized") or "Uncategorized"
           if fr.meta then
             fr.meta:ClearAllPoints()
             if metaText ~= "" then

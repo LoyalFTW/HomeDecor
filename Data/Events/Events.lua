@@ -14,13 +14,11 @@ NS.Data.Events["Events"]["New Events"] = {
       type="vendor",
       faction="Neutral",
       zone="Twilight Highlands",
-      worldmap="241:4960:8120",
-    },
+      worldmap="241:4960:8120"},
     items={
-      {decorID=714,  decorType="Seating",      source={type="vendor",  itemID=245284, currency="2000", currencytype="Honor"}},
-      {decorID=1236, decorType="Large Lights", source={type="vendor",  itemID=245330, currency="2000", currencytype="Honor"}},
-      {decorID=1227, decorType="Seating",      source={type="vendor",  itemID=251997, currency="2000", currencytype="Honor"}},
-    }
+      {decorID=714,       source={type="vendor",  itemID=245284, currency="2000", currencytype="Honor"}},
+      {decorID=1236,  source={type="vendor",  itemID=245330, currency="2000", currencytype="Honor"}},
+      {decorID=1227,       source={type="vendor",  itemID=251997, currency="2000", currencytype="Honor"}}}
   },
  {
    title="Twitch Event!",
@@ -29,11 +27,9 @@ NS.Data.Events["Events"]["New Events"] = {
      type="external",
      platform="twitch",
      label="Claim via Twitch event", 
-     url="https://twitch.tv/",
-   },
+     url="https://twitch.tv/"},
    items={
-     {decorID=15151, decorType="Plants", source={type="external", itemID=245284}},
-	}
+     {decorID=15151,  source={type="external", itemID=245284}}}
   },
    {
    title="It's Nearly Midnight",
@@ -42,12 +38,6 @@ NS.Data.Events["Events"]["New Events"] = {
      type="external",
      platform="twitch",
      label="These can be bought in Stormwind and Org", 
-     url="https://twitch.tv/",
-   },
+     url="https://twitch.tv/"},
    items={
-     {decorID=14467, decorType="Plants", source={type="external", itemID=260785}},
-  },
-},
-
-
-}
+     {decorID=14467,  source={type="external", itemID=260785}}}}}

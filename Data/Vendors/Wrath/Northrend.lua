@@ -8,42 +8,32 @@ NS.Data.Vendors["Wrath"] = NS.Data.Vendors["Wrath"] or {}
 NS.Data.Vendors["Wrath"]["Northrend"] = {
 
   {
-    title="Ahlurglgr",
     source={
       id=25206,
       type="vendor",
       faction="Horde",
       zone="Borean Tundra",
-      worldmap="114:4304:1381",
-    },
+      worldmap="114:4304:1381"},
     items={
-      {decorID=11906, decorType="Large Structures", source={type="vendor", itemID=258220, currency="1000", currencytype="Order Resources"}, requirements={quest={id=11566}}}, 
-    }
+      {decorID=11906,  source={type="vendor", itemID=258220, currency="1000", currencytype="Order Resources"}, requirements={quest={id=11566}}}}
   },
   {
-    title="Purser Boulian",
     source={
       id=28038,
       type="vendor",
       faction="Neutral",
       zone="Sholazar Basin",
-      worldmap="119:2680:5920",
-    },
+      worldmap="119:2680:5920"},
     items={
-      {decorID=4839, decorType="Wall Hangings", source={type="vendor", itemID=248807, currency="1000", currencytype="Order Resources"}, requirements={achievement={id=938}}},
-    }
+      {decorID=4839,  source={type="vendor", itemID=248807, currency="1000", currencytype="Order Resources"}, requirements={achievement={id=938}}}}
   },
   {
-    title="Woodsman Drake",
     source={
       id=27391,
       type="vendor",
       faction="Alliance",
       zone="Grizzly Hills",
-      worldmap="116:3240:5980",
-    },
+      worldmap="116:3240:5980"},
     items={
-      {decorID=4448, decorType="Large Structures", source={type="vendor", itemID=248622, currency="1000", currencytype="Order Resources"}, requirements={quest={id=12227}}},
-    }
-  },
-}
+      {decorID=4448,  source={type="vendor", itemID=248622, currency="1000", currencytype="Order Resources"}, requirements={quest={id=12227}}}}
+  }}

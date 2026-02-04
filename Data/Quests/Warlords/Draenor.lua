@@ -15,10 +15,8 @@ NS.Data.Quests["Warlords"]["Draenor"] = {
   { decorID=8772, source={ type="quest" } },
   { decorID=8785, source={ type="quest" } },
   { decorID=8786, source={ type="quest" } },
-  { decorID=8238, title="Draenei Farmer's Trellis", decorType="Large Structures", source={type="quest", itemID=251547}, requirements={quest={id=36685, title="Assault on the Heart of Shattrath"}, rep="true"}},   -- No vendor
+  { decorID=8238, title="Draenei Farmer's Trellis",  source={type="quest", itemID=251547}, requirements={quest={id=36685, title="Assault on the Heart of Shattrath"}, rep="true"}},   -- No vendor
   { decorID=12201, source={ type="quest" } },
-  { decorID=12202, title="Scroll of the Adherent", decorType="Ornamental", source={type="quest", itemID=1263927}, requirements={quest={id=33582, title="Kura's Vengeance"}, rep="true"}},
+  { decorID=12202, title="Scroll of the Adherent",  source={type="quest", itemID=1263927}, requirements={quest={id=33582, title="Kura's Vengeance"}, rep="true"}},
   { decorID=12205, source={ type="quest" } },
-  { decorID=12209, source={ type="quest" } },
-
-}
+  { decorID=12209, source={ type="quest" } }}

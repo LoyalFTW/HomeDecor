@@ -19,6 +19,56 @@ local function Hydrate(it, ui, db)
   return Data.HydrateFromDecorIndex(it, ui, db)
 end
 
+
+local function AttachReqTitles(it)
+  if type(it) ~= "table" then return end
+
+  local req = it.requirements
+  if type(req) ~= "table" then req = {}; it.requirements = req end
+
+  local q = req.quest
+  if type(q) ~= "table" then q = {}; req.quest = q end
+
+  local a = req.achievement
+  if type(a) ~= "table" then a = {}; req.achievement = a end
+
+  
+  local qid = q.id or q.questID or q.questId or (it.source and (it.source.questID or it.source.questId)) or ((it.source and it.source.type == "quest") and it.source.id)
+  local aid = a.id or a.achievementID or a.achievementId or (it.source and (it.source.achievementID or it.source.achievementId)) or ((it.source and it.source.type == "achievement") and it.source.id)
+
+  if qid then
+    q.id = q.id or qid
+    it.quest = it.quest or { id = qid }
+    if Data and Data.GetQuestTitle then
+      local t = Data.GetQuestTitle(qid)
+      if t and t ~= "" then
+        it.quest.title = it.quest.title or t
+        q.title = q.title or t
+      end
+    end
+  end
+
+  if aid then
+    a.id = a.id or aid
+    it.achievement = it.achievement or { id = aid }
+    if Data and Data.GetAchievementTitle then
+      local t = Data.GetAchievementTitle(aid)
+      if t and t ~= "" then
+        it.achievement.title = it.achievement.title or t
+        a.title = a.title or t
+      end
+    end
+  end
+
+  
+  if it.source and it.source.type == "vendor" then
+    local v = it.vendor or it._navVendor
+    if v and (not v.title or v.title == "") and Data and Data.ResolveVendorTitle then
+      v.title = Data.ResolveVendorTitle(v) or v.title
+    end
+  end
+end
+
 local function BuildGlobalSearchResults(ui, db)
   local out = {}
   if not Filters or not Filters.Passes then return out end
@@ -78,6 +128,7 @@ local function BuildGlobalSearchResults(ui, db)
                     it._expansion = it._expansion or expName
                     it.zone = it.zone or (vSlim and vSlim.zone) or zoneName
 
+                    AttachReqTitles(it)
                     if Filters:Passes(it, uiSearch, db) then
                       Prefer(it)
                     end
@@ -105,6 +156,7 @@ local function BuildGlobalSearchResults(ui, db)
                 it._expansion = it._expansion or expName
                 it.zone = it.zone or zoneName
                 Hydrate(it, uiSearch, db)
+                AttachReqTitles(it)
 
                 if Filters:Passes(it, uiSearch, db) then
                   Prefer(it)
@@ -128,6 +180,7 @@ local function BuildGlobalSearchResults(ui, db)
       it.source = it.source or {}
       it.source.type = it.source.type or forcedType or "unknown"
       Hydrate(it, uiSearch, db)
+      AttachReqTitles(it)
       if Filters:Passes(it, uiSearch, db) then
         Prefer(it)
       end

@@ -311,29 +311,32 @@ function M:Build(popup, env)
         function()
             local f = F()
             local v = (f and f.category) or "ALL"
+            local FS = NS and NS.Systems and NS.Systems.Filters
+            if FS and FS.ResolveCategoryID then
+                local nv = FS:ResolveCategoryID(v)
+                if f and nv ~= v then f.category = nv end
+                v = nv
+            end
             if Filters then Filters.category = v end
             return v
         end,
         function(v)
             local f = F()
             if not f then return end
-            f.category = v or "ALL"
+            local FS = NS and NS.Systems and NS.Systems.Filters
+            local nv = v or "ALL"
+            if FS and FS.ResolveCategoryID then nv = FS:ResolveCategoryID(nv) end
+            f.category = nv
+            
             f.subcategory = "ALL"
             if Filters then Filters.category, Filters.subcategory = f.category, f.subcategory end
         end,
         function()
-            return {
-                { value = "ALL", text = "All Categories" },
-                { separator = true },
-                { value = "Accents",        text = "Accents" },
-                { value = "Functional",     text = "Functional" },
-                { value = "Furnishings",    text = "Furnishings" },
-                { value = "Lighting",       text = "Lighting" },
-                { value = "Miscellaneous",  text = "Miscellaneous" },
-                { value = "Nature",         text = "Nature" },
-                { value = "Structural",     text = "Structural" },
-                { value = "Uncategorized",  text = "Uncategorized" },
-            }
+            local FS = NS and NS.Systems and NS.Systems.Filters
+            if FS and FS.GetCategoryOptions then
+                return FS:GetCategoryOptions()
+            end
+            return { { value = "ALL", text = "All Categories" } }
         end
     )
 
@@ -341,49 +344,32 @@ function M:Build(popup, env)
         function()
             local f = F()
             local v = (f and f.subcategory) or "ALL"
+            local FS = NS and NS.Systems and NS.Systems.Filters
+            if FS and FS.ResolveSubcategoryID then
+                local nv = FS:ResolveSubcategoryID(v)
+                if f and nv ~= v then f.subcategory = nv end
+                v = nv
+            end
             if Filters then Filters.subcategory = v end
             return v
         end,
         function(v)
             local f = F()
             if not f then return end
-            f.subcategory = v or "ALL"
+            local FS = NS and NS.Systems and NS.Systems.Filters
+            local nv = v or "ALL"
+            if FS and FS.ResolveSubcategoryID then nv = FS:ResolveSubcategoryID(nv) end
+            f.subcategory = nv
             if Filters then Filters.subcategory = f.subcategory end
         end,
         function()
-            return {
-                { value = "ALL", text = "All Subcategories" },
-                { separator = true },
-                { value = "Floor",              text = "Floor" },
-                { value = "Food and Drink",     text = "Food and Drink" },
-                { value = "Misc Accents",       text = "Misc Accents" },
-                { value = "Ornamental",         text = "Ornamental" },
-                { value = "Wall Hangings",      text = "Wall Hangings" },
-                { value = "Misc Functional",    text = "Misc Functional" },
-                { value = "Utility",            text = "Utility" },
-                { value = "Beds",               text = "Beds" },
-                { value = "Misc Furnishings",   text = "Misc Furnishings" },
-                { value = "Seating",            text = "Seating" },
-                { value = "Storage",            text = "Storage" },
-                { value = "Tables and Desks",   text = "Tables and Desks" },
-                { value = "Ceiling Lights",     text = "Ceiling Lights" },
-                { value = "Large Lights",       text = "Large Lights" },
-                { value = "Misc Lighting",      text = "Misc Lighting" },
-                { value = "Small Lights",       text = "Small Lights" },
-                { value = "Wall Lights",        text = "Wall Lights" },
-                { value = "Miscellaneous - All",text = "Miscellaneous - All" },
-                { value = "Bushes",             text = "Bushes" },
-                { value = "Ground Cover",       text = "Ground Cover" },
-                { value = "Large Foliage",      text = "Large Foliage" },
-                { value = "Misc Nature",        text = "Misc Nature" },
-                { value = "Small Foliage",      text = "Small Foliage" },
-                { value = "Doors",              text = "Doors" },
-                { value = "Large Structures",   text = "Large Structures" },
-                { value = "Misc Structural",    text = "Misc Structural" },
-                { value = "Walls and Columns",  text = "Walls and Columns" },
-                { value = "Windows",            text = "Windows" },
-                { value = "Uncategorized",      text = "Uncategorized" },
-            }
+            local f = F()
+            local cat = (f and f.category) or "ALL"
+            local FS = NS and NS.Systems and NS.Systems.Filters
+            if FS and FS.GetSubcategoryOptions then
+                return FS:GetSubcategoryOptions(cat)
+            end
+            return { { value = "ALL", text = "All Subcategories" } }
         end
     )
 

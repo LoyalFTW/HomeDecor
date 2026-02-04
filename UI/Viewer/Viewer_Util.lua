@@ -37,8 +37,11 @@ end
 
 function Util.GetItemID(it)
     if not it then return nil end
-    if it.source and it.source.itemID then return it.source.itemID end
-    return it.id
+    local s = it.source
+    if s and s.itemID then return s.itemID end
+    if it.itemID then return it.itemID end
+    if it.vendorItemID then return it.vendorItemID end
+    return it.id or it.decorID
 end
 
 function Util.Passes(it)
