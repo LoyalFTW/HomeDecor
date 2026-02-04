@@ -749,142 +749,112 @@ function Data.HydrateFromDecorIndex(it, ui, db)
   return it
 end
 
-local function ResolveAchievementDecor(it)
-    if not it or not it.decorID or not DecorIndex then return it end
+function Data.ResolveAchievementDecor(it)
+  if not it or type(it) ~= "table" or not it.decorID then return it end
+  local st = it.source and it.source.type
+  if st ~= "achievement" and st ~= "quest" and st ~= "pvp" then
+    return Data.HydrateFromDecorIndex(it)
+  end
 
-    local st = it.source and it.source.type
-    if st ~= "achievement" and st ~= "quest" and st ~= "pvp" then return it end
+  local resolved = _copyTableShallow(it)
+  resolved.source = _copyTableShallow(it.source)
 
-    if it._navVendor or it.vendor then return it end
+  Data.HydrateFromDecorIndex(resolved)
 
-    local entry = DecorIndex[it.decorID]
-    if not entry then return it end
+  local desiredFaction = resolved.faction or (resolved.source and resolved.source.faction)
+  if desiredFaction ~= "Alliance" and desiredFaction ~= "Horde" then
+    local pf = UnitFactionGroup and UnitFactionGroup("player")
+    if pf == "Alliance" or pf == "Horde" then desiredFaction = pf else desiredFaction = nil end
+  end
 
-    local resolved = {}
-    for k, v in pairs(it) do
-        resolved[k] = v
-    end
+  local picked, pickedItem
+  local expName = resolved._expansion
+  local zoneKey = resolved._navZoneKey
+  if expName and zoneKey then
+    picked, pickedItem = PickVendorFromZoneData(resolved.decorID, expName, zoneKey, desiredFaction)
+  end
 
-    resolved.source = type(resolved.source) == "table" and resolved.source or {}
+  if DecorIndex then
+    local entry = DecorIndex[resolved.decorID]
+    local vendors = entry and (entry.vendors or (entry.vendor and { entry.vendor })) or nil
 
-    local function normFaction(f)
-        if f == "Alliance" or f == "Horde" then return f end
-        if f == "Neutral" then return "Neutral" end
-        return nil
-    end
-
-    local function vendorFaction(v)
-        if type(v) ~= "table" then return nil end
-        local src = v.source or {}
-        return normFaction(v.faction or src.faction)
-    end
-
-    local item = entry.item
-    if item then
-        if not resolved.title or resolved.title == "" then
-            resolved.title = item.title
+    if not picked and desiredFaction and type(vendors) == "table" then
+      for _, v in ipairs(vendors) do
+        if VendorFaction(v) == desiredFaction then
+          picked = v
+          break
         end
-        if not resolved.decorType or resolved.decorType == "" then
-            resolved.decorType = item.decorType
+      end
+      if not picked then
+        for _, v in ipairs(vendors) do
+          if VendorFaction(v) == "Neutral" then
+            picked = v
+            break
+          end
         end
-        if item.source and item.source.itemID then
-            resolved.itemID = resolved.itemID or item.source.itemID
-            resolved.source.itemID = resolved.source.itemID or item.source.itemID
-        end
+      end
     end
 
-    local bucketFaction = normFaction(resolved.faction) or normFaction(resolved.source.faction)
-
-    if st == "pvp" and (bucketFaction ~= "Alliance" and bucketFaction ~= "Horde") then
-        bucketFaction = nil
+    if not picked and not desiredFaction then
+      picked = picked or (entry and entry.vendor) or (vendors and vendors[1])
     end
-
-    local vendors = entry.vendors or (entry.vendor and { entry.vendor }) or {}
-    local picked, pickedNeutral
-
-    if type(vendors) == "table" then
-        if bucketFaction then
-            for _, v in ipairs(vendors) do
-                local vf = vendorFaction(v)
-                if vf == bucketFaction then
-                    picked = v
-                    break
-                elseif vf == "Neutral" and not pickedNeutral then
-                    pickedNeutral = v
-                end
-            end
-            picked = picked or pickedNeutral
-        else
-            for _, v in ipairs(vendors) do
-                if vendorFaction(v) == "Neutral" then
-                    picked = v
-                    break
-                end
-            end
-        end
-    end
-
-    picked = picked or entry.vendor or (type(vendors) == "table" and vendors[1]) or nil
 
     if picked then
-        local vsrc = picked.source or {}
+      local slim = Data.SlimVendor(picked) or picked
+      Data.AttachVendorCtx(resolved, slim)
 
-        if vsrc.id then
-            resolved.npcID = resolved.npcID or vsrc.id
-            resolved.source.npcID = resolved.source.npcID or vsrc.id
+      if not resolved.vendor or not resolved.vendor.title or resolved.vendor.title == "" then
+        local t = Data.ResolveVendorTitle(slim)
+        if t then
+          resolved.vendor = resolved.vendor or {}
+          resolved.vendor.title = t
+          if resolved._navVendor then resolved._navVendor.title = t end
         end
-
-        if vsrc.worldmap then
-            resolved.worldmap = resolved.worldmap or vsrc.worldmap
-            resolved.source.worldmap = resolved.source.worldmap or vsrc.worldmap
-        end
-
-        if vsrc.zone then
-            resolved.zone = resolved.zone or vsrc.zone
-            resolved.source.zone = resolved.source.zone or vsrc.zone
-        end
-
-        resolved.vendor     = picked
-        resolved._navVendor = picked
+      end
     end
 
-    local hasAF = (normFaction(resolved.faction) == "Alliance" or normFaction(resolved.faction) == "Horde")
-    local hasSF = (normFaction(resolved.source.faction) == "Alliance" or normFaction(resolved.source.faction) == "Horde")
-
-    if st == "pvp" and (not hasAF or not hasSF) then
-        local vf = (picked and vendorFaction(picked)) or nil
-        local pf = UnitFactionGroup and normFaction(UnitFactionGroup("player")) or nil
-        local fill = bucketFaction or vf or pf
-
-        if fill == "Alliance" or fill == "Horde" then
-            if not hasAF then resolved.faction = fill end
-            if not hasSF then resolved.source.faction = fill end
-        end
+    local itemID
+    if pickedItem and pickedItem.source and (pickedItem.source.itemID or pickedItem.source.itemId) then
+      itemID = pickedItem.source.itemID or pickedItem.source.itemId
+    elseif entry and entry.item then
+      local vi = entry.item
+      itemID = (vi.source and (vi.source.itemID or vi.source.itemId)) or vi.itemID or vi.itemId
+    end
+    itemID = tonumber(itemID)
+    if itemID then
+      it.itemID = it.itemID or itemID
+      it.source = it.source or {}
+      it.source.itemID = it.source.itemID or itemID
     end
 
-    if resolved.source.type == "achievement" then
-        local ach = item and item.requirements and item.requirements.achievement
-        if ach then
-            resolved.source.id   = resolved.source.id   or ach.id
-            resolved.source.name = resolved.source.name or ach.title
-        end
-    elseif resolved.source.type == "quest" then
-        local q = item and item.requirements and item.requirements.quest
-        if q then
-            resolved.source.id      = resolved.source.id      or q.id
-            resolved.source.questID = resolved.source.questID or q.id
-            resolved.source.name    = resolved.source.name    or q.title
-        end
+    if st == "achievement" then
+      local req = it.requirements or (entry and entry.item and entry.item.requirements)
+      local ach = req and req.achievement
+      if ach then
+        it.source.id = it.source.id or ach.id
+        it.source.name = it.source.name or Data.GetAchievementTitle(ach.id) or ach.title
+      end
+    elseif st == "quest" then
+      local req = it.requirements or (entry and entry.item and entry.item.requirements)
+      local q = (req and req.quest) or (pickedItem and pickedItem.requirements and pickedItem.requirements.quest)
+      if q then
+        it.source.id = it.source.id or q.id
+        it.source.questID = it.source.questID or q.id
+        it.source.name = it.source.name or Data.GetQuestTitle(q.id) or q.title
+      end
     end
+  end
 
-    return resolved
+  it._hdResolvedAQ = true
+  Data.ApplyDecorBreadcrumb(it)
+
+  if it.vendor and (not it.vendor.title or it.vendor.title == "" or it.vendor.title:match("^%d+$")) then
+    local t = Data.ResolveVendorTitle(it.vendor)
+    if t then it.vendor.title = t end
+  end
+
+  return resolved
 end
-
-local function _trim(s)
-    if type(s) ~= "string" then return "" end
-    return (s:gsub("^%s+",""):gsub("%s+$",""))
-end
-
 
 function Data.GetActiveData(ui)
   ui = ui or {}
