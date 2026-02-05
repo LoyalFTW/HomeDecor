@@ -596,6 +596,7 @@ function L:CreateShell()
 
   local UpdateTopTabs
   local SelectCategory
+  local setSearchUI
 
   UpdateTopTabs = function()
     C:SetSelected(savedBtn, UI.activeCategory == "Saved Items", T.panel, T.row)
@@ -632,18 +633,18 @@ function L:CreateShell()
   end
 
   SelectCategory = function(categoryName)
+
     UI.activeCategory = categoryName
     db.ui.activeCategory = categoryName
 
-    UI.search = ""
-    db.ui.search = ""
-
+    -- Keep current search text when switching categories
     if f.SearchBox then
-      f.SearchBox:SetText("")
-      f.SearchBox:ClearFocus()
-    end
-    if f.SearchPlaceholder then
-      f.SearchPlaceholder:Show()
+      local txt = UI.search or ""
+      f.SearchBox._squelchCmd = true
+      f.SearchBox:SetText(txt)
+      f.SearchBox:SetCursorPosition(#txt)
+      f.SearchBox._squelchCmd = false
+      if setSearchUI then setSearchUI(txt ~= "") end
     end
 
     for i = 1, #left.buttons do
@@ -734,7 +735,7 @@ function L:CreateShell()
   clearBtn:Hide()
   search._clearBtn = clearBtn
 
-  local function setSearchUI(hasText)
+  setSearchUI = function(hasText)
     clearBtn:SetShown(hasText)
     placeholder:SetShown((not hasText) and (not search:HasFocus()))
   end
@@ -750,11 +751,29 @@ function L:CreateShell()
   end
 
   clearBtn:SetScript("OnClick", function()
+    search._squelchCmd = true
     search:SetText("")
     search:ClearFocus()
+    search._squelchCmd = false
+
     UI.search = ""
     db.ui.search = ""
+    UI._searchNorm = ""
+    UI._searchLast = ""
+    UI._searchTokens = UI._searchTokens or {}
+    for i = #UI._searchTokens, 1, -1 do UI._searchTokens[i] = nil end
+
+    if FiltersSys and FiltersSys.PrepareSearch then
+      FiltersSys:PrepareSearch(UI)
+    end
+
     setSearchUI(false)
+
+    if UI.activeCategory == "Search" and UI._searchPrevCategory then
+      UI.activeCategory = UI._searchPrevCategory
+      UI._searchPrevCategory = nil
+    end
+
     rerender()
   end)
 
@@ -778,12 +797,16 @@ function L:CreateShell()
       return
     end
 
-    if q == "all" then
-      if not UI._prevCategory then UI._prevCategory = UI.activeCategory end
-      UI.activeCategory = "Search"
-    elseif UI._prevCategory then
-      UI.activeCategory = UI._prevCategory
-      UI._prevCategory = nil
+    if q ~= "" then
+      if UI.activeCategory ~= "Search" then
+        UI._searchPrevCategory = UI.activeCategory
+        UI.activeCategory = "Search"
+      end
+    else
+      if UI.activeCategory == "Search" and UI._searchPrevCategory then
+        UI.activeCategory = UI._searchPrevCategory
+        UI._searchPrevCategory = nil
+      end
     end
 
     setSearchUI(txt ~= "")

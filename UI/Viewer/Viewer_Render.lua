@@ -38,6 +38,88 @@ local GetDecorName = D and D.GetDecorName
 local NormalizeExpansionNode = D and D.NormalizeExpansionNode
 local GetExpansionOrder = D and D.GetExpansionOrder
 local getActiveData = D and D.GetActiveData
+
+local function _flatAdd(out, seen, it)
+  if type(it) ~= "table" then return end
+  local id = it.decorID or (it.source and it.source.id) or it.itemID or (it.source and (it.source.itemID or it.source.itemId))
+  if not id then return end
+  local st = (it.source and it.source.type) or ""
+  local k = st .. ":" .. tostring(id)
+  if seen[k] then return end
+  seen[k] = true
+  out[#out + 1] = it
+end
+
+local function BuildFlatResults(ui, db, scopeKey)
+  local out, seen = {}, {}
+  if not scopeKey or scopeKey == "" then return out end
+
+  local data = NS.Data or {}
+
+  local function scanNode(node, exp, zone, vendorCtx)
+    if type(node) ~= "table" then return end
+
+    if node.decorID then
+      local it = node
+      if vendorCtx and AttachVendorCtx then it = AttachVendorCtx(node, vendorCtx) or node end
+      if exp and not it._expansion then it._expansion = exp end
+      if zone and not it._navZoneKey then it._navZoneKey = zone end
+      if FiltersSys and FiltersSys.Passes and not FiltersSys:Passes(it, ui, db) then return end
+      _flatAdd(out, seen, it)
+      return
+    end
+
+    if node.items and type(node.items) == "table" then
+      local vCtx = node
+      for _, leaf in ipairs(node.items) do
+        scanNode(leaf, exp, zone, vCtx)
+      end
+      return
+    end
+
+    if node[1] ~= nil then
+      for _, child in ipairs(node) do
+        scanNode(child, exp, zone, vendorCtx)
+      end
+      return
+    end
+
+    for _, v in pairs(node) do
+      scanNode(v, exp, zone, vendorCtx)
+    end
+  end
+
+  local function scanCategory(catKey)
+    local catTbl = data[catKey]
+    if type(catTbl) ~= "table" then return end
+    for exp, expTbl in pairs(catTbl) do
+      if type(expTbl) == "table" then
+        for zone, items in pairs(expTbl) do
+          if type(items) == "table" then
+            scanNode(items, exp, zone, nil)
+          end
+        end
+      end
+    end
+  end
+
+  if scopeKey == "GLOBAL" then
+    for k, v in pairs(data) do
+      if type(k) == "string" and type(v) == "table" and k ~= "Events" then
+        scanCategory(k)
+      end
+    end
+  else
+    scanCategory(scopeKey)
+  end
+
+  table.sort(out, function(a, b)
+    return tostring(a.title or ""):lower() < tostring(b.title or ""):lower()
+  end)
+
+  return out
+end
+
 local keyExp = D and D.KeyExp
 local keyZone = D and D.KeyZone
 local keyVendor = D and D.KeyVendor
@@ -563,6 +645,15 @@ local tileW, tileH, tileGap, iconSize = 180, 156, 16, 64
     local ui = db.ui or {}
     if FiltersSys and FiltersSys.EnsureDefaults then FiltersSys:EnsureDefaults(db) end
 
+    local cat = ui.activeCategory or "Achievements"
+    
+    if self._lastCategory and self._lastCategory ~= cat then
+      if HeaderCtrl and HeaderCtrl.Reset then
+        HeaderCtrl:Reset()
+      end
+    end
+    self._lastCategory = cat
+
     local entries = self.entries or {}
     wipeTable(entries)
     self.entries = entries
@@ -572,7 +663,6 @@ local tileW, tileH, tileGap, iconSize = 180, 156, 16, 64
     self._headerYByKey = headerY
 
     local y = PAD_TOP
-    local cat = ui.activeCategory or "Achievements"
     local viewMode = ui.viewMode or "Icon"
 
     local function addHeader(indent, height, label, cur, max, expandedState, clickKind, payload)
@@ -633,7 +723,24 @@ local tileW, tileH, tileGap, iconSize = 180, 156, 16, 64
       (fdb and ((fdb.subcategory and fdb.subcategory ~= "ALL") or (fdb.category and fdb.category ~= "ALL")))
 
     if flatMode then
-      local results = BuildGlobalSearchResults and BuildGlobalSearchResults(ui, db) or {}
+      if HeaderCtrl and HeaderCtrl.Reset then
+        HeaderCtrl:Reset()
+      end
+      local scope
+      if cat == "Search" or cat == "ALL" or cat == "All" or cat == "Everything" then
+        scope = "GLOBAL"
+      else
+        scope = (D and D.CATEGORY_MAP and D.CATEGORY_MAP[cat]) or cat
+        if cat == "PvP" or cat == "PVP" then scope = "PvP" end
+      end
+
+      local results
+      if cat == "Search" and BuildGlobalSearchResults then
+        results = BuildGlobalSearchResults(ui, db)
+      else
+        results = BuildFlatResults(ui, db, scope)
+      end
+      results = results or {}
       if viewMode == "Icon" then
         local cols, startX = computeGrid(12)
         local col = 0
@@ -654,6 +761,9 @@ local tileW, tileH, tileGap, iconSize = 180, 156, 16, 64
     end
 
     if cat == "Saved Items" then
+      if HeaderCtrl and HeaderCtrl.Reset then
+        HeaderCtrl:Reset()
+      end
       local favs = CollectAllFavorites and CollectAllFavorites(db) or {}
       if viewMode == "Icon" then
         local cols, startX = computeGrid(12)
