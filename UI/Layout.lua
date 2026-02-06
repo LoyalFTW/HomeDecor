@@ -637,7 +637,6 @@ function L:CreateShell()
     UI.activeCategory = categoryName
     db.ui.activeCategory = categoryName
 
-    -- Keep current search text when switching categories
     if f.SearchBox then
       local txt = UI.search or ""
       f.SearchBox._squelchCmd = true

@@ -176,7 +176,6 @@ function UI:CreateFrame()
     end)
   end)
 
-
   local header = CreateFrame("Frame", nil, frame, "BackdropTemplate")
   header:SetPoint("TOPLEFT", 6, -6)
   header:SetPoint("TOPRIGHT", -6, -6)

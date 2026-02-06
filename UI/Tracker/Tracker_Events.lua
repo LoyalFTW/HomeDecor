@@ -21,7 +21,6 @@ function Events:Attach(Tracker, ctx)
     local settings = ctx.settings
     local GetDB = ctx.GetDB
 
-
     if MapTracker and MapTracker.RegisterCallback then
         f._mtKey = "HomeDecorTrackerUI"
         MapTracker:RegisterCallback(f._mtKey, function(_, name, mapID)

@@ -58,15 +58,16 @@ function NS.UI.StatusIcon:Attach(parent, state, it)
         return
     end
 
-    local check = parent._statusIcon
+    local check = parent.check or parent._statusIcon
     if not check then
         check = parent:CreateTexture(nil, "OVERLAY")
-        check:SetSize(16, 16)
         parent._statusIcon = check
     end
 
     check:ClearAllPoints()
-    check:SetPoint("TOP", parent, "TOP", 0, -6)
+    local anchor = parent.media or parent
+    check:SetPoint("TOP", anchor, "TOP", 0, -6)
+    check:SetSize(16, 16)
 
     if collected then
         check:SetTexture(TEX_CHECKBOX)
@@ -76,21 +77,6 @@ function NS.UI.StatusIcon:Attach(parent, state, it)
         check:Hide()
     end
 
-    local faction = it and (it.faction or (it.source and it.source.faction))
-    if faction ~= "Alliance" and faction ~= "Horde" then
-        if parent._factionIcon then parent._factionIcon:Hide() end
-        return
-    end
+    if parent._factionIcon then parent._factionIcon:Hide() end
 
-    local fic = parent._factionIcon
-    if not fic then
-        fic = parent:CreateTexture(nil, "OVERLAY")
-        fic:SetSize(24, 24)
-        parent._factionIcon = fic
-    end
-
-    fic:ClearAllPoints()
-    fic:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -6, -6)
-    fic:SetTexture(faction == "Alliance" and TEX_ALLI or TEX_HORDE)
-    fic:Show()
 end

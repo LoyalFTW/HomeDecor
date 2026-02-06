@@ -19,7 +19,6 @@ local function Hydrate(it, ui, db)
   return Data.HydrateFromDecorIndex(it, ui, db)
 end
 
-
 local function AttachReqTitles(it)
   if type(it) ~= "table" then return end
 
@@ -32,7 +31,6 @@ local function AttachReqTitles(it)
   local a = req.achievement
   if type(a) ~= "table" then a = {}; req.achievement = a end
 
-  
   local qid = q.id or q.questID or q.questId or (it.source and (it.source.questID or it.source.questId)) or ((it.source and it.source.type == "quest") and it.source.id)
   local aid = a.id or a.achievementID or a.achievementId or (it.source and (it.source.achievementID or it.source.achievementId)) or ((it.source and it.source.type == "achievement") and it.source.id)
 
@@ -60,13 +58,23 @@ local function AttachReqTitles(it)
     end
   end
 
-  
   if it.source and it.source.type == "vendor" then
     local v = it.vendor or it._navVendor
     if v and (not v.title or v.title == "") and Data and Data.ResolveVendorTitle then
       v.title = Data.ResolveVendorTitle(v) or v.title
     end
   end
+end
+
+local function SortKey(it)
+  local t = it and it.title
+  if type(t) ~= "string" then t = "" end
+  t = Trim(t)
+  if t == "" then
+    local id = (it and (it.decorID or Util.GetItemID(it))) or ""
+    t = tostring(id)
+  end
+  return t:lower()
 end
 
 local function BuildGlobalSearchResults(ui, db)
@@ -209,7 +217,11 @@ local function BuildGlobalSearchResults(ui, db)
   end
 
   table.sort(out, function(a, b)
-    return tostring(a.title or ""):lower() < tostring(b.title or ""):lower()
+    local ak, bk = SortKey(a), SortKey(b)
+    if ak == bk then
+      return tostring(a.decorID or Util.GetItemID(a) or "") < tostring(b.decorID or Util.GetItemID(b) or "")
+    end
+    return ak < bk
   end)
 
   return out
@@ -275,7 +287,11 @@ local function CollectAllFavorites(db)
   end
 
   table.sort(out, function(a, b)
-    return tostring(a.title or "") < tostring(b.title or "")
+    local ak, bk = SortKey(a), SortKey(b)
+    if ak == bk then
+      return tostring(a.decorID or Util.GetItemID(a) or "") < tostring(b.decorID or Util.GetItemID(b) or "")
+    end
+    return ak < bk
   end)
 
   return out

@@ -9,7 +9,6 @@ Collection.State = {
     NOT_COLLECTED = "NOT_COLLECTED",
 }
 
-
 local decorCache = {}
 local listeners = {}
 
@@ -37,24 +36,62 @@ function Collection:ClearCache(decorID)
     end
 end
 
+local _entryType
+local _entryTypeTried = {}
 
+local function TryRecord(entryType, decorID)
+    if not C_HousingCatalog or not C_HousingCatalog.GetCatalogEntryInfoByRecordID then return nil end
+    local ok, info = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID, entryType, decorID, true)
+    if ok and type(info) == "table" then return info end
+    ok, info = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID, entryType, decorID, false)
+    if ok and type(info) == "table" then return info end
+    return nil
+end
 
+local function DiscoverEntryType(sampleDecorID)
+    if _entryType then return _entryType end
+    if not sampleDecorID then return nil end
 
-local function IsOwnedViaCatalog(decorID)
-    if not decorID or not C_HousingCatalog or not C_HousingCatalog.GetCatalogEntryInfoByRecordID then
-        return nil
+    if Enum and Enum.HousingCatalogEntryType then
+        for _, v in pairs(Enum.HousingCatalogEntryType) do
+            if type(v) == "number" and not _entryTypeTried[v] then
+                _entryTypeTried[v] = true
+                if TryRecord(v, sampleDecorID) then
+                    _entryType = v
+                    return v
+                end
+            end
+        end
     end
 
+    for v = 0, 30 do
+        if not _entryTypeTried[v] then
+            _entryTypeTried[v] = true
+            if TryRecord(v, sampleDecorID) then
+                _entryType = v
+                return v
+            end
+        end
+    end
 
-    local info = C_HousingCatalog.GetCatalogEntryInfoByRecordID(1, decorID, true)
+    return nil
+end
+
+local function IsOwnedViaCatalog(decorID)
+    if not decorID then return nil end
+    if not C_HousingCatalog or not C_HousingCatalog.GetCatalogEntryInfoByRecordID then return nil end
+
+    local et = DiscoverEntryType(decorID) or 1
+    local info = TryRecord(et, decorID)
+    if not info then
+
+        info = TryRecord(1, decorID)
+    end
     if not info then return nil end
-
-
 
     if type(info.isOwned) == "boolean" then return info.isOwned end
     if type(info.isCollected) == "boolean" then return info.isCollected end
     if type(info.owned) == "boolean" then return info.owned end
-
 
     local ownedInfo = info.ownedInfo or info.ownedData or info.ownedStatus
     if type(ownedInfo) == "table" then
@@ -65,22 +102,21 @@ local function IsOwnedViaCatalog(decorID)
         if type(ownedInfo.ownedCount) == "number" then return ownedInfo.ownedCount > 0 end
     end
 
-
     if type(info.ownedCount) == "number" then return info.ownedCount > 0 end
     if type(info.countOwned) == "number" then return info.countOwned > 0 end
 
-
+    local q = tonumber(info.quantity) or 0
+    local r = tonumber(info.remainingRedeemable) or 0
+    local p = tonumber(info.numPlaced) or 0
+    if (q + r + p) > 0 then return true end
 
     if type(info.firstAcquisitionBonus) == "number" and info.firstAcquisitionBonus >= 0 then
-
-
 
         return info.firstAcquisitionBonus == 0
     end
 
     return nil
 end
-
 
 function Collection:IsDecorCollected(decorID)
     if not decorID then return false end
@@ -96,12 +132,9 @@ function Collection:IsDecorCollected(decorID)
         return decorCache[decorID]
     end
 
-
     decorCache[decorID] = false
     return false
 end
-
-
 
 function Collection:IsCollected(it)
     if not it then return false end
@@ -111,12 +144,10 @@ function Collection:IsCollected(it)
         return self:IsDecorCollected(decorID)
     end
 
-
     local src = it.source or {}
     local st = src.type
 
     if st == "achievement" and src.id then
-
 
         local ok = select(4, GetAchievementInfo(src.id))
         return ok and true or false
@@ -132,7 +163,6 @@ end
 function Collection:GetState(it)
     return self:IsCollected(it) and Collection.State.COLLECTED or Collection.State.NOT_COLLECTED
 end
-
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")

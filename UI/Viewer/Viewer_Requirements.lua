@@ -70,6 +70,31 @@ local function GetQuestTitleSafe(id)
   return nil
 end
 
+local function IsQuestComplete(questID)
+  questID = tonumber(questID)
+  if not questID then return false end
+
+  if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
+    return C_QuestLog.IsQuestFlaggedCompleted(questID)
+  end
+
+  if IsQuestFlaggedCompleted then
+    return IsQuestFlaggedCompleted(questID)
+  end
+
+  return false
+end
+
+local function IsAchievementComplete(achievementID)
+  achievementID = tonumber(achievementID)
+  if not achievementID then return false end
+
+  if not GetAchievementInfo then return false end
+
+  local _, _, _, completed = GetAchievementInfo(achievementID)
+  return completed == true
+end
+
 local function GetRequirementLink(it)
   if not it then return nil end
 
@@ -83,21 +108,44 @@ local function GetRequirementLink(it)
 
   if r.quest and r.quest.id then
     local id = r.quest.id
-    return { kind = "quest", id = id, text = r.quest.title or GetQuestTitleSafe(id) or ("Quest " .. tostring(id)) }
+    local completed = IsQuestComplete(id)
+    return {
+      kind = "quest",
+      id = id,
+      text = r.quest.title or GetQuestTitleSafe(id) or ("Quest " .. tostring(id)),
+      completed = completed
+    }
   end
   if r.achievement and r.achievement.id then
     local id = r.achievement.id
-    return { kind = "achievement", id = id, text = r.achievement.title or GetAchievementTitleSafe(id) or ("Achievement " .. tostring(id)) }
+    local completed = IsAchievementComplete(id)
+    return {
+      kind = "achievement",
+      id = id,
+      text = r.achievement.title or GetAchievementTitleSafe(id) or ("Achievement " .. tostring(id)),
+      completed = completed
+    }
   end
   return nil
 end
 
 local function BuildReqDisplay(req, hover)
   if not req then return "" end
-  local sym = (req.kind == "quest") and "!" or "*"
-  local symCol = "|cffffd100" .. sym .. "|r "
-  local txtCol = hover and "|cfffff2a0" or "|cffffffff"
-  return symCol .. txtCol .. (req.text or "") .. "|r"
+
+  local completed = req.completed == true
+
+  if completed then
+
+    local check = "|TInterface\\RaidFrame\\ReadyCheck-Ready:14:14:0:0:64:64:0:64:0:64|t "
+    local txtCol = "|cff40ff40"
+    return check .. txtCol .. (req.text or "") .. "|r"
+  else
+
+    local sym = (req.kind == "quest") and "!" or "*"
+    local symCol = "|cffffd100" .. sym .. "|r "
+    local txtCol = hover and "|cfffff2a0" or "|cffffffff"
+    return symCol .. txtCol .. (req.text or "") .. "|r"
+  end
 end
 
 local repScanCache = {}
@@ -267,9 +315,20 @@ end
 
 local function BuildRepDisplay(rep, hover)
   if not rep or not rep.text or rep.text == "" then return "" end
-  local icon = "|TInterface\\Icons\\Achievement_Reputation_01:14:14:0:0:64:64:4:60:4:60|t "
-  local txtCol = hover and "|cffff4040" or "|cffff2020"
-  return icon .. txtCol .. rep.text .. "|r"
+
+  local isMet = rep.met == true
+
+  if isMet then
+
+    local check = "|TInterface\\RaidFrame\\ReadyCheck-Ready:14:14:0:0:64:64:0:64:0:64|t "
+    local txtCol = "|cff40ff40"
+    return check .. txtCol .. rep.text .. "|r"
+  else
+
+    local icon = "|TInterface\\Icons\\Achievement_Reputation_01:14:14:0:0:64:64:4:60:4:60|t "
+    local txtCol = hover and "|cffff4040" or "|cffff2020"
+    return icon .. txtCol .. rep.text .. "|r"
+  end
 end
 
 local function EnsurePopup()

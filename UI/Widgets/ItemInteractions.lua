@@ -98,7 +98,6 @@ function IA:BuildWowheadLinks(it)
         AddUnique(links, seen, "Quest Link", R.BuildWowheadQuestURL(qid))
     end
 
-
     if R.GetRequirementLink then
         local req = R.GetRequirementLink(it)
         if req and req.kind == "quest" and R.BuildWowheadQuestURL then
@@ -139,14 +138,11 @@ function IA:Waypoint(it, context)
     nav:AddWaypoint(it, context)
 end
 
-
-
 function IA:HandleMouseUp(it, btn, context)
     if not it then return end
 
     local st = it.source and it.source.type
     if st == "event" then return end
-
 
     if IsControlKeyDown and IsControlKeyDown() then
         local R = ViewerReq()
@@ -158,26 +154,18 @@ function IA:HandleMouseUp(it, btn, context)
         end
         if aid and OpenAchievement(aid) then return end
 
-        local qid = GetQuestID(it)
-        if not qid and R and R.GetRequirementLink then
-            local req = R.GetRequirementLink(it)
-            if req and req.kind == "quest" then qid = tonumber(req.id) end
-        end
-        if qid and OpenQuest(qid) then return end
+        -- Ctrl+Click only works for achievements, do nothing for other types
+        return
     end
-
-
 
     if IsAltKeyDown and IsAltKeyDown() then
         if self:ShowWowheadPopup(it) then return end
     end
 
-
     if btn == "RightButton" then
         self:Waypoint(it, context)
         return
     end
-
 
     self:ViewItem(it)
 end
@@ -188,7 +176,6 @@ function IA:AttachTooltip(frame, data)
         tt:Attach(frame, data)
     end
 end
-
 
 function IA:Bind(frame, data, context)
     if not frame or not data then return end

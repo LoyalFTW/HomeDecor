@@ -266,7 +266,6 @@ function MapTracker:QueueUpdate(delay, force)
   end)
 end
 
-
 function MapTracker:Enable(enabled)
   enabled = enabled and true or false
   if enabled == self.enabled then return end

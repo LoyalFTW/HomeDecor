@@ -83,7 +83,7 @@ NS.Data.Quests["Classic"]["Kalimdor"] = {
   { decorID=8917, source={ type="quest" } },
   { decorID=9255, source={ type="quest" } },
   { decorID=10860, source={ type="quest" } },
-  { decorID=11301, title="Gilnean Banded Crate",  source={type="quest", itemID=1260897}, requirements={quest={id=28337, title="The Shredders of Irontree"}, rep="true"}},   
+  { decorID=11301, title="Gilnean Banded Crate",  source={type="quest", itemID=1260897}, requirements={quest={id=28337, title="The Shredders of Irontree"}, rep="true"}},
   { decorID=11719, source={ type="quest" } },
   { decorID=11720, source={ type="quest" } },
   { decorID=11721, source={ type="quest" } }}

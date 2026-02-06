@@ -12,6 +12,29 @@ local lower = string.lower
 local pairs, ipairs, pcall = pairs, ipairs, pcall
 local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
 
+local DyeableCache = {}
+
+local function IsItemDyeable(decorID)
+  if not decorID then return false end
+
+  if DyeableCache[decorID] ~= nil then
+    return DyeableCache[decorID]
+  end
+
+  local HC = _G.C_HousingCatalog
+  if HC and HC.GetCatalogEntryInfoByRecordID then
+    local ok, info = pcall(HC.GetCatalogEntryInfoByRecordID, 1, decorID, true)
+    if ok and info then
+      local isDyeable = info.canCustomize == true
+      DyeableCache[decorID] = isDyeable
+      return isDyeable
+    end
+  end
+
+  DyeableCache[decorID] = false
+  return false
+end
+
 local DEFAULTS = {
   hideCollected = false,
   onlyCollected = false,
@@ -22,10 +45,6 @@ local DEFAULTS = {
   subcategory   = "ALL",
 }
 
-
-
-
-
 local Tax = {
   built = false,
   cats = {},
@@ -34,7 +53,7 @@ local Tax = {
   subByCat = {},
   nameToCatID = {},
   nameToSubID = {},
-  itemCache = {}, 
+  itemCache = {},
 }
 
 local function _apiReady()
@@ -270,10 +289,6 @@ function Filters:ResolveItemTaxonomy(it)
   return catID, subID
 end
 
-
-
-
-
 local CATEGORY_MAP = {
   Achievements = "Achievements",
   Quests       = "Quests",
@@ -435,10 +450,6 @@ function Filters:GetSubcategories(f)
   return out
 end
 
-
-
-
-
 local function addText(parts, v)
   if type(v) == "string" then
     if v ~= "" then parts[#parts + 1] = lower(v) end
@@ -446,7 +457,6 @@ local function addText(parts, v)
     parts[#parts + 1] = lower(tostring(v))
   end
 end
-
 
 local SEARCH_CACHE_VER = 1
 
@@ -475,7 +485,7 @@ function Filters:PrepareSearch(ui)
 
   if q ~= "" then
     for token in q:gmatch("%S+") do
-      
+
       if #token >= 2 then
         tinsert(ui._searchTokens, token)
       end
@@ -484,7 +494,6 @@ function Filters:PrepareSearch(ui)
 
   ui._searchLast = ui.search
 end
-
 
 function Filters:DebouncedSetSearch(ui, newText, onApply, delay)
   ui = ui or {}
@@ -507,7 +516,6 @@ function Filters:DebouncedSetSearch(ui, newText, onApply, delay)
     if onApply then onApply() end
   end)
 end
-
 
 function Filters:WarmSearchCache(items, ui, msBudget)
   if type(items) ~= "table" then return end
@@ -611,6 +619,13 @@ function Filters:BuildSearchText(it, ui)
   local q = it.quest
   if q then addText(parts, q.title); addText(parts, q.name) end
 
+  if it.decorID and IsItemDyeable(it.decorID) then
+    addText(parts, "dyeable")
+    addText(parts, "dye")
+    addText(parts, "customizable")
+    addText(parts, "customize")
+  end
+
   return tconcat(parts, " ")
 end
 
@@ -695,7 +710,6 @@ function Filters:Passes(it, ui, db)
   if f.hideCollected and Collection and Collection.IsCollected and Collection:IsCollected(it) then return false end
   if f.onlyCollected and Collection and Collection.IsCollected and not Collection:IsCollected(it) then return false end
 
-  
   if ui.search ~= ui._searchLast then
     self:PrepareSearch(ui)
   end

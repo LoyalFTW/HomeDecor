@@ -85,4 +85,31 @@ function Util.GetStateSafe(it)
     return nil
 end
 
+function Util.IsDyeable(it)
+    if not it then return false end
+    Util._dyeableCache = Util._dyeableCache or {}
+    local id = it.decorID or it.id or (it.source and (it.source.id or it.source.decorID)) or it.itemID or (it.source and (it.source.itemID or it.source.itemId))
+    if not id then return false end
+    local cached = Util._dyeableCache[id]
+    if cached ~= nil then return cached end
+
+    local info
+    if _G.C_HousingCatalog and _G.C_HousingCatalog.GetCatalogEntryInfo then
+        local ok, res = pcall(_G.C_HousingCatalog.GetCatalogEntryInfo, id)
+        if ok then info = res end
+    end
+
+    local dyeable = false
+    if type(info) == "table" then
+        dyeable = (info.canCustomize == true) or (info.isCustomizable == true) or (info.customizable == true)
+    elseif it.canCustomize ~= nil then
+        dyeable = it.canCustomize == true
+    elseif it.dyeable ~= nil then
+        dyeable = it.dyeable == true
+    end
+
+    Util._dyeableCache[id] = dyeable
+    return dyeable
+end
+
 return Util

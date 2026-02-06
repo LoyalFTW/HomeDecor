@@ -22,15 +22,19 @@ HomeDecor.xml
 
 Changelog.lua
 
+Systems\NPCNames.lua
 Systems\HousingBootstrap.lua
-Systems\DecorCounts.lua
 Systems\Collection.lua
 Systems\GlobalIndex.lua
-Systems\VendorChecks.lua
 Systems\Changelog.lua
 Systems\MapTracker.lua
 Systems\Reputation.lua
 Systems\Events.lua
+
+Systems\Vendor\CheckMarks.lua
+Systems\Vendor\DecorCounts.lua
+Systems\Vendor\DecorCounts_System.lua
+Systems\Vendor\VendorChecks.lua
 
 UI\Theme.lua
 UI\Controls.lua

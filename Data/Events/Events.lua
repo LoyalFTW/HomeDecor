@@ -26,7 +26,7 @@ NS.Data.Events["Events"]["New Events"] = {
    source={
      type="external",
      platform="twitch",
-     label="Claim via Twitch event", 
+     label="Claim via Twitch event",
      url="https://twitch.tv/"},
    items={
      {decorID=15151,  source={type="external", itemID=245284}}}
@@ -37,7 +37,7 @@ NS.Data.Events["Events"]["New Events"] = {
    source={
      type="external",
      platform="twitch",
-     label="These can be bought in Stormwind and Org", 
+     label="These can be bought in Stormwind and Org",
      url="https://twitch.tv/"},
    items={
      {decorID=14467,  source={type="external", itemID=260785}}}}}

@@ -23,134 +23,43 @@ local UIParent = _G.UIParent
 local GetTime = _G.GetTime
 local pcall = _G.pcall
 
-local VendorNameCache = {}
-local VendorFailCount = {}
-local VendorNameTip
+local NPCNames = NS.Systems and NS.Systems.NPCNames
 
-local function GetVendorTooltip()
-  if VendorNameTip then return VendorNameTip end
-  VendorNameTip = CreateFrame("GameTooltip", "HomeDecorTrackerVendorNameTip", UIParent, "GameTooltipTemplate")
-  VendorNameTip:SetOwner(UIParent, "ANCHOR_NONE")
-  return VendorNameTip
+local function CleanVendorTitle(s)
+  if type(s) ~= "string" then return nil end
+  s = s:gsub("^%s+", ""):gsub("%s+$", "")
+  if s == "" then return nil end
+  if s:match("^%d+$") then return nil end
+  return s
 end
 
-local function TooltipNPCName(npcID)
-  npcID = tonumber(npcID)
-  if not npcID then return nil end
+local function ResolveVendorTitle(vendor, frame)
+  if type(vendor) ~= "table" then return nil end
 
-  local tip = GetVendorTooltip()
-  if not tip or not tip.SetHyperlink then return nil end
+  local t = CleanVendorTitle(vendor.title)
+  if t then return t end
 
-  local left1 = _G["HomeDecorTrackerVendorNameTipTextLeft1"]
-  local links = {
-    ("unit:Creature-0-0-0-0-%d-0000000000"):format(npcID),
-    ("unit:Creature-0-0-0-0-%d"):format(npcID),
-  }
+  local src = vendor.source or {}
+  local id = tonumber((src and src.id) or vendor.npcID or vendor.id)
+  if not id then return nil end
 
-  for i = 1, #links do
-    tip:ClearLines()
-    local ok = pcall(tip.SetHyperlink, tip, links[i])
-    if ok and left1 and left1.GetText then
-      local name = left1:GetText()
-      if type(name) == "string" and name ~= "" then
-        return name
+  local Data = Viewer and Viewer.Data
+  if Data and Data.ResolveVendorTitle then
+    t = CleanVendorTitle(Data.ResolveVendorTitle(vendor))
+    if t then return t end
+  end
+
+  if NPCNames and NPCNames.Get then
+    local name = NPCNames.Get(id, function()
+      if frame and frame.RequestRefresh and frame.IsShown and frame:IsShown() and not frame._collapsed then
+        frame:RequestRefresh("vendorname")
       end
-    end
+    end)
+    name = CleanVendorTitle(name)
+    if name then return name end
   end
 
   return nil
-end
-
-local function GetVendorName(npcID)
-  npcID = tonumber(npcID)
-  if not npcID then return nil end
-
-  local cached = VendorNameCache[npcID]
-  if cached ~= nil then return cached end
-
-  local name = TooltipNPCName(npcID)
-  if type(name) == "string" and name ~= "" then
-    VendorNameCache[npcID] = name
-    VendorFailCount[npcID] = nil
-    return name
-  end
-
-  VendorFailCount[npcID] = (VendorFailCount[npcID] or 0) + 1
-  return nil
-end
-
-local VendorQueue = {}
-local VendorQueued = {}
-local VendorPumpRunning = false
-
-local function QueueVendorName(npcID)
-  npcID = tonumber(npcID)
-  if not npcID then return end
-  if VendorNameCache[npcID] ~= nil then return end
-  if VendorQueued[npcID] then return end
-  VendorQueued[npcID] = true
-  VendorQueue[#VendorQueue + 1] = npcID
-
-  PumpVendorQueue()
-end
-
-local function PumpVendorQueue()
-  if VendorPumpRunning then return end
-  VendorPumpRunning = true
-  if not C_Timer or not C_Timer.After then
-    VendorPumpRunning = false
-    return
-  end
-
-  local function step()
-    VendorPumpRunning = false
-    local budget = 5
-    local changed = false
-    local requeue = {}
-
-    while budget > 0 and #VendorQueue > 0 do
-      budget = budget - 1
-      local npcID = table.remove(VendorQueue, 1)
-      VendorQueued[npcID] = nil
-      
-      local n = GetVendorName(npcID)
-      if n then
-        changed = true
-      else
-        local failCount = VendorFailCount[npcID] or 0
-        if failCount < 10 then
-          requeue[#requeue + 1] = npcID
-        end
-      end
-    end
-
-    if #requeue > 0 then
-      C_Timer.After(0.5, function()
-        for i = 1, #requeue do
-          local npcID = requeue[i]
-          if not VendorQueued[npcID] then
-            VendorQueued[npcID] = true
-            VendorQueue[#VendorQueue + 1] = npcID
-          end
-        end
-        if #VendorQueue > 0 then
-          PumpVendorQueue()
-        end
-      end)
-    end
-
-    if changed and Render and Render.RequestRender then
-      Render:RequestRender()
-    end
-
-    if #VendorQueue > 0 and #requeue == 0 then
-      C_Timer.After(0.1, function()
-        PumpVendorQueue()
-      end)
-    end
-  end
-
-  C_Timer.After(0, step)
 end
 
 local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
@@ -253,6 +162,16 @@ function Render:Attach(_, ctx)
 
   Rows:InitPools(frame, content)
 
+  if NPCNames and NPCNames.RegisterListener and not frame._npcNamesListenerInstalled then
+    frame._npcNamesListenerInstalled = true
+    NPCNames.RegisterListener(function(_, name)
+      if not name or name == "" then return end
+      if frame and frame.RequestRefresh and frame.IsShown and frame:IsShown() and not frame._collapsed then
+        frame:RequestRefresh("vendorname")
+      end
+    end)
+  end
+
   local GetDecorIcon = U and U.GetDecorIcon
   local GetDecorName = U and U.GetDecorName
   local IsCollected = U and U.IsCollectedSafe
@@ -273,16 +192,12 @@ function Render:Attach(_, ctx)
           queued = false
           if frame and frame.RequestRefresh then
             frame:RequestRefresh(reason or "collection")
-          elseif Render and Render.RequestRender then
-            Render:RequestRender(reason or "collection")
           end
         end)
       else
         queued = false
         if frame and frame.RequestRefresh then
           frame:RequestRefresh(reason or "collection")
-        elseif Render and Render.RequestRender then
-          Render:RequestRender(reason or "collection")
         end
       end
     end
@@ -385,25 +300,12 @@ function Render:Attach(_, ctx)
           vr:SetPoint("TOPLEFT", 0, -y)
           vr:SetPoint("TOPRIGHT", 0, -y)
           do
-            local title = _trimTitle(v.title)
+            local title = ResolveVendorTitle(v, frame)
             if not title then
               local src = v.source or {}
               local id = tonumber(src.id or v.npcID or v.id)
-              
-              local Data = (NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data)
-              if Data and GetVendorName and id then
-                title = _trimTitle(GetVendorName(id))
-              end
-
-              if not title and id then
-                QueueVendorName(id)
-                title = "Loading..."
-              end
-              
-              if not title then
-                title = (id and ("Vendor " .. tostring(id))) or "Vendor"
-              end
-              
+              title = (id and ("Vendor " .. tostring(id))) or "Vendor"
+            else
               v.title = title
             end
             vr.label:SetText(title)
@@ -539,21 +441,6 @@ function Render:Attach(_, ctx)
     end
     frame:RequestRefresh("trackzone")
   end)
-end
-
-function Render:RequestRender(reason)
-  if self._queued then return end
-  self._queued = true
-  if C_Timer and C_Timer.After then
-    C_Timer.After(0, function()
-      if not Render then return end
-      Render._queued = false
-      Render:RequestRender()
-    end)
-  else
-    self._queued = false
-    self:Render()
-  end
 end
 
 return Render

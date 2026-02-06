@@ -11,6 +11,6 @@ local MOBS = {
 
 NS.Data.Drops["Dragonflight"]["DragonIsles"] = {
     {decorID=11137,  source={ type="drop", zone="DragonIsles", itemID=256354, npcID=189901, npc="Warlord Sargha", worldmap="2081:5000:5000" }},
-    {decorID=14330,  source={ type="drop", zone="DragonIsles", itemID=260359, npcID=190609, npc="Echo of Doragosa", worldmap="2099:5000:5000" }}, 
+    {decorID=14330,  source={ type="drop", zone="DragonIsles", itemID=260359, npcID=190609, npc="Echo of Doragosa", worldmap="2099:5000:5000" }},
 	{decorID=11163,  source={ type="drop", zone="DragonIsles", itemID=256428,mobs=MOBS}}
 }

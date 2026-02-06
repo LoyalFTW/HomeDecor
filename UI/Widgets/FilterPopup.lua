@@ -112,6 +112,17 @@ function M:Build(popup, env)
         end
     end
 
+    local function resetCategoryScope()
+        local f = F()
+        if not f then return end
+        f.category = "ALL"
+        f.subcategory = "ALL"
+        if Filters then
+            Filters.category = "ALL"
+            Filters.subcategory = "ALL"
+        end
+    end
+
     local function button(text, onClick)
         local b = CreateFrame("Button", nil, popup, "BackdropTemplate")
         b:SetHeight(24)
@@ -139,7 +150,7 @@ function M:Build(popup, env)
         return r
     end
 
-    local function checkRow(titleText, get, set)
+    local function checkRow(titleText, get, set, resetsCategory)
         local r = headerRow(titleText)
         r.isCheck, r._get = true, get
 
@@ -159,6 +170,7 @@ function M:Build(popup, env)
 
         b:SetScript("OnClick", function()
             set(not get())
+            if resetsCategory then resetCategoryScope() end
             if b.check and b.check.SetShown then b.check:SetShown(get() == true) end
             rebuild()
         end)
@@ -168,7 +180,7 @@ function M:Build(popup, env)
         if b.check and b.check.SetShown then b.check:SetShown(get() == true) end
     end
 
-    local function ddRow(titleText, get, set, valuesFn)
+    local function ddRow(titleText, get, set, valuesFn, resetsCategory)
         local r = headerRow(titleText)
         r._get = get
 
@@ -177,6 +189,7 @@ function M:Build(popup, env)
             get,
             function(v)
                 set(v)
+                if resetsCategory then resetCategoryScope() end
                 setDDText(dd, get())
                 rebuild()
             end,
@@ -200,8 +213,8 @@ function M:Build(popup, env)
         f.hideCollected, f.onlyCollected = false, false
 
         if Filters then
-            Filters.expansion, Filters.zone, Filters.category, Filters.subcategory =
-                f.expansion, f.zone, f.category, f.subcategory
+            Filters.expansion, Filters.zone, Filters.category, Filters.subcategory, Filters.faction =
+                f.expansion, f.zone, f.category, f.subcategory, f.faction
         end
 
         syncAll()
@@ -210,8 +223,8 @@ function M:Build(popup, env)
 
     checkRow("Hide Completed",
         function() local f = F(); return (f and f.hideCollected) == true end,
-        function(v) local f = F(); if f then f.hideCollected = (v == true) end end
-    )
+        function(v) local f = F(); if f then f.hideCollected = (v == true) end end,
+    true)
 
     ddRow("Faction",
         function() local f = F(); return (f and f.faction) or "ALL" end,
@@ -222,8 +235,8 @@ function M:Build(popup, env)
                 { value = "Alliance", text = "Alliance" },
                 { value = "Horde",    text = "Horde" },
             }
-        end
-    )
+        end,
+    true)
 
     ddRow("Expansion",
         function()
@@ -252,8 +265,8 @@ function M:Build(popup, env)
             end
             table.sort(out, function(a, b) return a.text < b.text end)
             return insertAllSeparator(out)
-        end
-    )
+        end,
+    true)
 
     ddRow("Zone",
         function()
@@ -304,8 +317,8 @@ function M:Build(popup, env)
 
             table.sort(out, function(a, b) return a.text < b.text end)
             return insertAllSeparator(out)
-        end
-    )
+        end,
+    true)
 
     ddRow("Category",
         function()
@@ -327,7 +340,6 @@ function M:Build(popup, env)
             local nv = v or "ALL"
             if FS and FS.ResolveCategoryID then nv = FS:ResolveCategoryID(nv) end
             f.category = nv
-            
             f.subcategory = "ALL"
             if Filters then Filters.category, Filters.subcategory = f.category, f.subcategory end
         end,
@@ -387,19 +399,19 @@ function M:Build(popup, env)
                 y = y - 34
             else
                 r.title:ClearAllPoints()
-                r.title:SetPoint("TOPLEFT", left, y)
+                r.title:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
                 y = y - 20
 
                 r.line:ClearAllPoints()
-                r.line:SetPoint("TOPLEFT", left, y)
-                r.line:SetPoint("TOPRIGHT", -right, y)
+                r.line:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
+                r.line:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
                 y = y - 10
 
                 r.dd:ClearAllPoints()
                 r.dd:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
                 r.dd:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
                 r.dd:SetHeight((r.isCheck and 24) or 26)
-                y = y - (r.isCheck and 30 or 30)
+                y = y - 30
             end
         end
         self:SetHeight(-y + 12)

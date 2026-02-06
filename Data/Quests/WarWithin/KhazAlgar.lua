@@ -27,5 +27,5 @@ NS.Data.Quests["WarWithin"]["KhazAlgar"] = {
   {decorID=11932, source={ type="quest" } },
   {decorID=11933, source={ type="quest" } },
   {decorID=14381, source={ type="quest" } },
-  
+
 }

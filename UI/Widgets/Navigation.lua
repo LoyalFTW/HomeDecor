@@ -117,7 +117,6 @@ local function AddBlizzardWaypoint(fromMapID, x, y)
     C_SuperTrack.SetSuperTrackedUserWaypoint(true)
 end
 
-
 local function PrintCoords(src)
     if not src or not src.mapID or not src.x or not src.y then return end
 
@@ -149,7 +148,6 @@ function Nav:AddWaypoint(item, context)
             WorldMapFrame:SetMapID(src.mapID)
         end
     end
-
 
     if C_Timer and C_Timer.After then
         C_Timer.After(0, function()
