@@ -352,11 +352,18 @@ function Render:Attach(_, ctx)
               if ir.icon then
                 ir.icon:SetTexture((GetDecorIcon and GetDecorIcon(it.decorID)) or "Interface\\Icons\\INV_Misc_QuestionMark")
               end
+
+              if collected then
+                ir.check:Show()
+              else
+                ir.check:Hide()
+              end
+
               if ir.owned and DecorCounts then
                 local itemID = tonumber((it.source and it.source.itemID) or it.itemID or it.id)
                 local totalOwned = 0
                 if itemID and itemID > 0 then
-                  totalOwned = (DecorCounts.GetByItem and select(1, DecorCounts:GetByItem(itemID))) or 0
+                  totalOwned = (DecorCounts.GetBreakdownByItem and select(1, DecorCounts:GetBreakdownByItem(itemID))) or 0
                 end
                 if totalOwned and totalOwned > 0 then
                   ir.owned:SetText(tostring(totalOwned))
@@ -383,12 +390,6 @@ function Render:Attach(_, ctx)
                 ir.reqRep:Show()
               else
                 ir.reqRep:Hide()
-              end
-
-              if collected then
-                ir.check:Show()
-              else
-                ir.check:Hide()
               end
 
               local fac = ItemFaction(it)

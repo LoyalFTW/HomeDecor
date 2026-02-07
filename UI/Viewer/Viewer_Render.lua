@@ -21,7 +21,7 @@ local LAYOUT = {
         GAP = 10,
         ASPECT = 1.10,
         ICON_RATIO = 0.36,
-        FIXED_HEIGHT = 300  -- NEW: All tiles use same height
+        FIXED_HEIGHT = 300
     },
     ICON = {
         MIN = 66,
@@ -86,21 +86,17 @@ end
 local function GetDecorCategoryBreadcrumb(decorID)
     if not decorID then return "" end
     
-    -- Check cache first
     if CategoryBreadcrumbCache[decorID] then 
         return CategoryBreadcrumbCache[decorID] 
     end
-    
-    -- Try to get from housing API
+
     if C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByRecordID then
         local ok, info = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID, 1, decorID, true)
         if ok and info then
             local breadcrumb = ""
-            
-            -- Get category name
+
             local categoryName = info.categoryName
             if not categoryName or categoryName == "" then
-                -- Try to get from categoryID
                 if info.categoryID and C_HousingCatalog.GetCatalogCategoryInfo then
                     local catOk, catInfo = pcall(C_HousingCatalog.GetCatalogCategoryInfo, info.categoryID)
                     if catOk and catInfo and catInfo.name then
@@ -108,11 +104,8 @@ local function GetDecorCategoryBreadcrumb(decorID)
                     end
                 end
             end
-            
-            -- Get subcategory name
             local subcategoryName = info.subcategoryName
             if not subcategoryName or subcategoryName == "" then
-                -- Try to get from subcategoryID
                 if info.subcategoryID and C_HousingCatalog.GetCatalogSubcategoryInfo then
                     local subOk, subInfo = pcall(C_HousingCatalog.GetCatalogSubcategoryInfo, info.subcategoryID)
                     if subOk and subInfo and subInfo.name then
@@ -120,8 +113,7 @@ local function GetDecorCategoryBreadcrumb(decorID)
                     end
                 end
             end
-            
-            -- Build breadcrumb
+
             if categoryName and categoryName ~= "" then
                 breadcrumb = categoryName
                 if subcategoryName and subcategoryName ~= "" then
@@ -131,13 +123,11 @@ local function GetDecorCategoryBreadcrumb(decorID)
                 breadcrumb = subcategoryName
             end
             
-            -- Cache and return (empty string if nothing found)
             CategoryBreadcrumbCache[decorID] = breadcrumb
             return breadcrumb
         end
     end
-    
-    -- Cache empty result to avoid repeated API calls
+
     CategoryBreadcrumbCache[decorID] = ""
     return ""
 end
@@ -171,7 +161,6 @@ local function GetCurrencyInfo(it)
 end
 
 local function CalculateTileHeight(it, baseHeight)
-    -- FIXED: All tiles now use the same fixed height for uniform grid appearance
     return LAYOUT.TILE.FIXED_HEIGHT
 end
 
@@ -408,6 +397,11 @@ local function HeaderClick(self)
 
     if entry.payload.event then
         entry.payload.event._uiOpen = not entry.payload.event._uiOpen
+        local db = U and U.DB and U.DB()
+        if db then
+            if not db.eventHeaderStates then db.eventHeaderStates = {} end
+            db.eventHeaderStates[entry.payload.key] = entry.payload.event._uiOpen
+        end
         if f.Render then f:Render(true) end
         return
     end
@@ -659,7 +653,20 @@ local function RebuildEntries(f, content)
         for _, ev in ipairs(list) do
             local eTitle = ev.title or ev.name or "Event"
             local evKey = "event:" .. tostring(ev.id or ev.key or eTitle)
-            local open = (ev._uiOpen ~= nil) and ev._uiOpen or true
+            
+            if not db.eventHeaderStates then db.eventHeaderStates = {} end
+            local savedOpen = db.eventHeaderStates[evKey]
+            
+            local open
+            if savedOpen ~= nil then
+                open = savedOpen
+            elseif ev._uiOpen ~= nil then
+                open = ev._uiOpen
+            else
+                open = false  
+            end
+
+            ev._uiOpen = open
 
             local group = {}
             local cEv, tEv = 0, 0
@@ -684,7 +691,12 @@ local function RebuildEntries(f, content)
                 end
             end
 
-            addHeader(12, 44, eTitle, cEv, tEv, open, "event", { key = evKey, event = ev })
+            local timerText = nil
+            if Ev and Ev.GetEventTimeText then
+                timerText = Ev:GetEventTimeText(ev, _G.time and _G.time() or 0)
+            end
+
+            addHeader(12, 44, eTitle, cEv, tEv, open, "event", { key = evKey, event = ev, timerText = timerText })
 
             if open and #group > 0 then
                 if viewMode == "Icon" then
@@ -915,6 +927,33 @@ function Render:Create(parent)
         end)
     end
 
+    if C_Timer and C_Timer.NewTicker then
+        f._eventTimerTicker = C_Timer.NewTicker(60, function()
+            if not f or not f:IsShown() then return end
+            local db = U and U.DB and U.DB()
+            if not db then return end
+            local ui = db.ui or {}
+            if ui.activeCategory ~= "Events" then return end
+
+            for i = 1, #f._active do
+                local fr = f._active[i]
+                local e = fr and fr._entry
+                if e and e.kind == "header" and e.payload and e.payload.event and e.timerText then
+                    local Ev = Systems.Events
+                    if Ev and Ev.GetEventTimeText then
+                        local newTimerText = Ev:GetEventTimeText(e.payload.event, _G.time and _G.time() or 0)
+                        if newTimerText and newTimerText ~= e.timerText then
+                            if f.RequestRender then
+                                f:RequestRender(true)
+                            end
+                            break
+                        end
+                    end
+                end
+            end
+        end)
+    end
+
     f._poolHeader, f._poolList, f._poolTile, f._active = {}, {}, {}, {}
 
     local Frames = View.Frames
@@ -989,11 +1028,24 @@ function Render:Create(parent)
 
                 if e.kind == "header" then
                     if fr.text then fr.text:SetText(e.label or "") end
-                    
-                    -- Display timer text or collection count
+
+                    if fr.chevron then
+                        if e.expanded then
+                            fr.chevron:SetTexture("Interface\\Buttons\\UI-MinusButton-UP")
+                        else
+                            fr.chevron:SetTexture("Interface\\Buttons\\UI-PlusButton-UP")
+                        end
+                        fr.chevron:Show()
+                    elseif fr.icon then
+                        if e.expanded then
+                            fr.icon:SetRotation(math.pi / 2) 
+                        else
+                            fr.icon:SetRotation(0)
+                        end
+                    end
+
                     if fr.count then
                         if e.timerText and e.timerText ~= "" then
-                            -- Display timer in gold/yellow color, larger font
                             fr.count:SetText("|cffFFD100" .. e.timerText .. "|r")
                             if fr.count.SetFont then
                                 fr.count:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
@@ -1099,11 +1151,9 @@ function Render:Create(parent)
 
                     if fr.meta then
                         if it and (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") then
-                            -- Try D.ApplyDecorBreadcrumb first (if it exists)
                             if D and D.ApplyDecorBreadcrumb then
                                 D.ApplyDecorBreadcrumb(it)
                             end
-                            -- If still empty, query housing API directly
                             if (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") and it.decorID then
                                 local breadcrumb = GetDecorCategoryBreadcrumb(it.decorID)
                                 if breadcrumb and breadcrumb ~= "" then
@@ -1270,11 +1320,11 @@ function Render:Create(parent)
 
                     if fr.meta then
                         if it and (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") then
-                            -- Try D.ApplyDecorBreadcrumb first (if it exists)
+
                             if D and D.ApplyDecorBreadcrumb then
                                 D.ApplyDecorBreadcrumb(it)
                             end
-                            -- If still empty, query housing API directly
+
                             if (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") and it.decorID then
                                 local breadcrumb = GetDecorCategoryBreadcrumb(it.decorID)
                                 if breadcrumb and breadcrumb ~= "" then

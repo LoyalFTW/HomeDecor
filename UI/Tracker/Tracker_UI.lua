@@ -210,8 +210,16 @@ function UI:CreateFrame()
     end
   end)
 
+  header.collapse = Rows and Rows.MakeSmallIconButton and Rows:MakeSmallIconButton(header, "Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
+  if header.collapse then
+    header.collapse:SetPoint("LEFT", header, "LEFT", 10, 0)
+    if header.collapse.icon and header.collapse.icon.SetRotation then
+      header.collapse.icon:SetRotation(-1.5708)
+    end
+  end
+
   header.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-  header.title:SetPoint("LEFT", 10, 0)
+  header.title:SetPoint("CENTER", header, "CENTER", 0, 0)
   header.title:SetText("DecorTracker")
   header.title:SetTextColor(unpack(T.accent))
 
@@ -240,27 +248,15 @@ function UI:CreateFrame()
     frame:Hide()
   end)
 
-  header.tools = CreateFrame("Frame", nil, header)
-  header.tools:SetPoint("RIGHT", header.closeBtn, "LEFT", -6, 0)
-  header.tools:SetSize(56, 22)
-
-  header.collapse = Rows and Rows.MakeSmallIconButton and Rows:MakeSmallIconButton(header.tools, "Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
-  if header.collapse then
-    header.collapse:SetPoint("RIGHT", -28, 0)
-    if header.collapse.icon and header.collapse.icon.SetRotation then
-      header.collapse.icon:SetRotation(-1.5708)
-    end
-  end
-
-  header.settings = Rows and Rows.MakeSmallIconButton and Rows:MakeSmallIconButton(header.tools, "Interface\\Buttons\\UI-OptionsButton")
+  header.settings = Rows and Rows.MakeSmallIconButton and Rows:MakeSmallIconButton(header, "Interface\\Buttons\\UI-OptionsButton")
   if header.settings then
-    header.settings:SetPoint("RIGHT", 0, 0)
+    header.settings:SetPoint("RIGHT", header.closeBtn, "LEFT", -6, 0)
   end
 
   local settings = CreateFrame("Frame", nil, frame, "BackdropTemplate")
   settings:SetFrameStrata("DIALOG")
   settings:SetFrameLevel(frame:GetFrameLevel() + 12)
-  settings:SetSize(260, 140)
+  settings:SetSize(240, 120)
   settings:Hide()
 
   if Controls and Controls.Backdrop then
@@ -268,7 +264,7 @@ function UI:CreateFrame()
   end
 
   settings.title = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  settings.title:SetPoint("TOPLEFT", 12, -10)
+  settings.title:SetPoint("TOP", 0, -12)
   settings.title:SetText("Settings")
   settings.title:SetTextColor(unpack(T.accent))
   if RowStyles and RowStyles.StrongText then
@@ -276,35 +272,39 @@ function UI:CreateFrame()
   end
 
   settings.hideLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  settings.hideLabel:SetPoint("TOPLEFT", 12, -44)
+  settings.hideLabel:SetPoint("TOPLEFT", 16, -38)
   settings.hideLabel:SetText("Hide Completed:")
   if RowStyles and RowStyles.NormalText then
     RowStyles:NormalText(settings.hideLabel)
   end
 
   settings.hideCB = CreateFrame("CheckButton", nil, settings, "UICheckButtonTemplate")
-  settings.hideCB:SetPoint("LEFT", settings.hideLabel, "RIGHT", 6, 0)
+  settings.hideCB:SetPoint("LEFT", settings.hideLabel, "RIGHT", 8, 0)
+  settings.hideCB:SetSize(24, 24)
   if settings.hideCB.text then
     settings.hideCB.text:SetText("")
   end
 
   settings.alphaLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  settings.alphaLabel:SetPoint("TOPLEFT", 12, -60)
-  settings.alphaLabel:SetText("Transparency Setting")
+  settings.alphaLabel:SetPoint("TOPLEFT", 16, -68)
+  settings.alphaLabel:SetText("Transparency")
   if RowStyles and RowStyles.NormalText then
     RowStyles:NormalText(settings.alphaLabel)
   end
 
-  settings.alphaValue = settings:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-  settings.alphaValue:SetPoint("TOPRIGHT", -12, -78)
+  settings.alphaValue = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+  settings.alphaValue:SetPoint("TOPRIGHT", -16, -68)
+  settings.alphaValue:SetJustifyH("RIGHT")
   if RowStyles and RowStyles.NormalText then
     RowStyles:NormalText(settings.alphaValue)
   end
 
   local sliderName = NextGlobalName("HomeDecorTrackerAlphaSlider")
   settings.slider = CreateFrame("Slider", sliderName, settings, "OptionsSliderTemplate")
-  settings.slider:SetPoint("BOTTOMLEFT", 12, 18)
-  settings.slider:SetPoint("BOTTOMRIGHT", -12, 18)
+  settings.slider:SetPoint("LEFT", 16, -40)
+  settings.slider:SetPoint("RIGHT", -16, -40)
+  settings.slider:SetPoint("BOTTOM", 0, 14)
+  settings.slider:SetHeight(18)
   settings.slider:SetMinMaxValues(0.00, 1.00)
   settings.slider:SetValueStep(0.01)
   settings.slider:SetObeyStepOnDrag(true)
@@ -327,7 +327,7 @@ function UI:CreateFrame()
       return
     end
     settings:ClearAllPoints()
-    settings:SetPoint("TOPRIGHT", header.settings, "BOTTOMRIGHT", 0, -6)
+    settings:SetPoint("TOP", header, "BOTTOM", 0, -6)
     settings:Show()
     settings:Raise()
   end

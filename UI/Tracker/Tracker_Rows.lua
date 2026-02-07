@@ -16,6 +16,9 @@ local ITEM_H = 54
 local MEDIA_SZ = 40
 local ICON_SZ = 34
 
+local CHECK_ATLAS = "common-icon-checkmark"
+local CHECK_FALLBACK = "Interface\\RaidFrame\\ReadyCheck-Ready"
+
 local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
 
 local function MakeArrow(parent)
@@ -237,11 +240,15 @@ local function NewItemRow(parent)
   r.icon:SetPoint("CENTER", 0, 0)
   r.icon:SetSize(ICON_SZ, ICON_SZ)
 
-  r.check = r.media:CreateTexture(nil, "OVERLAY")
-  r.check:SetPoint("TOPLEFT", -2, 2)
-  r.check:SetSize(18, 18)
-  r.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
-  r.check:SetAlpha(1)
+  r.check = r.media:CreateTexture(nil, "OVERLAY", nil, 7)
+  r.check:SetSize(13, 13)
+  r.check:SetPoint("BOTTOMLEFT", r.media, "BOTTOMLEFT", 1, 1)
+  if r.check.SetAtlas then
+    r.check:SetAtlas(CHECK_ATLAS, true)
+  else
+    r.check:SetTexture(CHECK_FALLBACK)
+  end
+  r.check:SetVertexColor(0.75, 0.95, 0.75, 0.95)
   r.check:Hide()
 
   r.faction = r.media:CreateTexture(nil, "OVERLAY")
@@ -252,7 +259,7 @@ local function NewItemRow(parent)
 
   r.owned = r.media:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   r.owned:ClearAllPoints()
-  r.owned:SetPoint("TOPRIGHT", r.icon, "TOPRIGHT", 4, 4)
+  r.owned:SetPoint("BOTTOMRIGHT", r.media, "BOTTOMRIGHT", -1, 1)
   r.owned:SetJustifyH("RIGHT")
   r.owned:SetTextColor(0.86, 0.84, 0.78, 1)
   if r.owned.SetFontObject then

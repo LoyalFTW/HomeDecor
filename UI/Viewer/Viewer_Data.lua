@@ -204,7 +204,6 @@ function Data.GetDecorName(decorID)
   DecorNameCache[decorID] = false
 end
 
--- Category Breadcrumb Cache
 local CategoryBreadcrumbCache = {}
 
 local function _trim(s)
@@ -243,7 +242,6 @@ end
 function Data.GetDecorBreadcrumbFromCatalog(decorID)
   if not decorID then return nil, nil, nil, nil, nil end
   
-  -- Check cache first
   if CategoryBreadcrumbCache[decorID] then
     local cached = CategoryBreadcrumbCache[decorID]
     return cached.catID, cached.subID, cached.breadcrumb, cached.catName, cached.subName
@@ -263,7 +261,6 @@ function Data.GetDecorBreadcrumbFromCatalog(decorID)
   local catID, subID = _extractIDs(info)
   local catName, subName
 
-  -- Get subcategory name
   if subID and C_HousingCatalog.GetCatalogSubcategoryInfo then
     local subInfo = C_HousingCatalog.GetCatalogSubcategoryInfo(subID)
     if type(subInfo) == "table" then
@@ -277,7 +274,6 @@ function Data.GetDecorBreadcrumbFromCatalog(decorID)
     end
   end
 
-  -- Get category name
   if catID and C_HousingCatalog.GetCatalogCategoryInfo then
     local catInfo = C_HousingCatalog.GetCatalogCategoryInfo(catID)
     if type(catInfo) == "table" then
@@ -285,7 +281,6 @@ function Data.GetDecorBreadcrumbFromCatalog(decorID)
     end
   end
 
-  -- Build breadcrumb
   local breadcrumb
   if catName and subName then
     breadcrumb = catName .. " > " .. subName
@@ -295,7 +290,6 @@ function Data.GetDecorBreadcrumbFromCatalog(decorID)
     breadcrumb = subName
   end
 
-  -- Cache the result
   CategoryBreadcrumbCache[decorID] = {
     catID = catID,
     subID = subID,
@@ -310,13 +304,11 @@ end
 function Data.DecorBreadcrumbFrom(it)
   if type(it) ~= "table" then return nil, nil, nil, nil, nil end
 
-  -- Try to get from housing catalog API first
   if it.decorID then
     local catID, subID, crumb, catName, subName = Data.GetDecorBreadcrumbFromCatalog(it.decorID)
     if crumb then return catID, subID, crumb, catName, subName end
   end
 
-  -- Fallback to decorType field
   local raw = _trim(it.decorType)
   if raw then
     return nil, nil, raw, nil, nil
@@ -446,7 +438,6 @@ function Data.HydrateFromDecorIndex(it, ui, db)
     it._navVendor = it._navVendor or slim
   end
 
-  -- Apply category breadcrumb from housing API
   Data.ApplyDecorBreadcrumb(it)
 
   return it
@@ -592,7 +583,6 @@ function Data.ResolveAchievementDecor(it)
   resolved.vendor = slim
   resolved._navVendor = slim
 
-  -- Apply category breadcrumb from housing API
   Data.ApplyDecorBreadcrumb(resolved)
 
   return resolved
