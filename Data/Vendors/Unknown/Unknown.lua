@@ -16,7 +16,7 @@ NS.Data.Vendors["Unknown"]["Unknown"] = {
       worldmap=""
     },
     items={
-
+--       {decorID=14641, source={type="vendor", itemID=262616, currency="100", currencytype=3379}} -- EA_NOTE,
     }
   },
 
@@ -29,7 +29,7 @@ NS.Data.Vendors["Unknown"]["Unknown"] = {
       worldmap=""
     },
     items={
-
+--       {decorID=5564, source={type="vendor", itemID=249559, currency="100", currencytype=3379}} -- EA_NOTE,
     }
   },
 

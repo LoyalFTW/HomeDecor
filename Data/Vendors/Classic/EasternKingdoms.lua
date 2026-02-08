@@ -184,11 +184,8 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="23:7564:4909"
     },
     items={
-      {decorID=7571, source={type="vendor", itemID=250230, currency="5000", currencytype=1220}, requirements={achievement={id=42293}}},
       {decorID=7572, source={type="vendor", itemID=250231, currency="500", currencytype=1220}},
       {decorID=7573, source={type="vendor", itemID=250232, currency="500", currencytype=1220}},
-      {decorID=7574, source={type="vendor", itemID=250233, currency="3000", currencytype=1220}, requirements={achievement={id=60968}}},
-      {decorID=7575, source={type="vendor", itemID=250234, currency="1500", currencytype=1220}, requirements={achievement={id=42276}}},
       {decorID=7576, source={type="vendor", itemID=250235, currency="1000", currencytype=1220}},
       {decorID=7577, source={type="vendor", itemID=250236, currency="2000", currencytype=1220}, requirements={achievement={id=60987}}},
     }
@@ -366,7 +363,7 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=536, source={type="vendor", itemID=245395, currency="75", currencytype="gold"}},
       {decorID=726, source={type="vendor", itemID=239075, currency="50", currencytype="gold"}, requirements={quest={id=92986}}},
       {decorID=1044, source={type="vendor", itemID=242255, currency="75", currencytype="gold"}},
-      {decorID=1083, source={type="vendor", itemID=245370, currency="125", currencytype="gold"}},
+      {decorID=1083, source={type="vendor", itemID=245370, currency="125", currencytype="gold"}, requirements={quest={id=93119}}},
       {decorID=1123, source={type="vendor", itemID=245334, currency="10", currencytype="gold"}, requirements={quest={id=92979}}},
       {decorID=1244, source={type="vendor", itemID=245335, currency="10", currencytype="gold"}},
       {decorID=1434, source={type="vendor", itemID=244530, currency="75", currencytype="gold"}},
@@ -514,7 +511,7 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=986, source={type="vendor", itemID=253437, currency="75", currencytype="gold"}},
       {decorID=990, source={type="vendor", itemID=241623, currency="10", currencytype="gold"}},
       {decorID=991, source={type="vendor", itemID=253439, currency="75", currencytype="gold"}},
-
+--       {decorID=992, source={type="vendor", itemID=241625, currency="25", currencytype="gold"}} -- EA_NOTE,
       {decorID=1155, source={type="vendor", itemID=243088, currency="100", currencytype="gold"}},
       {decorID=1165, source={type="vendor", itemID=253495, currency="125", currencytype="gold"}},
       {decorID=1350, source={type="vendor", itemID=244118, currency="100", currencytype="gold"}},

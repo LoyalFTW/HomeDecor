@@ -81,6 +81,11 @@ local defaults = {
 
     minimap = { hide = false },
 
+    mapPins = {
+      worldmap = true,
+      minimap = true,
+    },
+
     changelog = {
       autoOpen = true,
       lastSeenVersion = "",
@@ -93,13 +98,24 @@ local minimapObject = LDB:NewDataObject("HomeDecor", {
   text = "HomeDecor",
   icon = "Interface/AddOns/HomeDecor/Media/Icon.tga",
   OnClick = function(_, button)
-    if button == "LeftButton" and NS.UI and NS.UI.ToggleMainFrame then
-      NS.UI:ToggleMainFrame()
+    if button == "LeftButton" then
+      if NS.UI and NS.UI.ToggleMainFrame then
+        NS.UI:ToggleMainFrame()
+      end
+      return
+    end
+
+    if button == "RightButton" then
+      if NS.UI and NS.UI.Options and NS.UI.Options.Open then
+        NS.UI.Options:Open()
+      end
+      return
     end
   end,
   OnTooltipShow = function(tt)
     tt:AddLine("HomeDecor")
     tt:AddLine("Left Click: Open", 1, 1, 1)
+    tt:AddLine("Right Click: Options", 1, 1, 1)
   end,
 })
 
@@ -110,6 +126,8 @@ local function SetMinimapHidden(db, hide)
     if hide then LDBIcon:Hide(ADDON) else LDBIcon:Show(ADDON) end
   end
 end
+
+NS.UI.SetMinimapHidden = SetMinimapHidden
 
 local function HandleSlash(msg)
   msg = tostring(msg or ""):lower():trim()
@@ -136,6 +154,36 @@ local function HandleSlash(msg)
     return
   end
 
+  if cmd == "pins" or cmd == "mappins" then
+    local prof = NS.db and NS.db.profile
+    if not prof then return end
+    prof.mapPins = prof.mapPins or {}
+    local key = rest and rest:lower() or ""
+    local which = "minimap"
+    if key == "world" or key == "worldmap" then which = "worldmap" end
+    if key == "mini" or key == "minimap" or key == "" then which = "minimap" end
+
+    prof.mapPins[which] = not (prof.mapPins[which] and true or false)
+
+    if NS.Systems and NS.Systems.MapPins then
+      if which == "worldmap" and NS.Systems.MapPins.RefreshWorldMap then
+        pcall(function() NS.Systems.MapPins:RefreshWorldMap() end)
+      else
+        if NS.Systems.MapPins.RefreshCurrentZone then
+          pcall(function() NS.Systems.MapPins:RefreshCurrentZone() end)
+        end
+      end
+    end
+    return
+  end
+
+  if cmd == "options" or cmd == "opt" or cmd == "config" then
+    if NS.UI and NS.UI.Options and NS.UI.Options.Open then
+      NS.UI.Options:Open()
+    end
+    return
+  end
+
   if cmd == "changelog" or cmd == "changes" then
     if NS.UI and NS.UI.ShowChangelogPopup then
       NS.UI:ShowChangelogPopup(true)
@@ -146,6 +194,8 @@ local function HandleSlash(msg)
   print("|cffFFD200HomeDecor Commands:|r")
   print("/hd                 - Toggle HomeDecor")
   print("/hd minimap [show|hide]")
+  print("/hd pins [minimap|worldmap]  - Toggle vendor pins")
+  print("/hd options          - Open options")
   print("/hd changelog       - Show What's New")
 end
 
@@ -171,6 +221,14 @@ end
 function Addon:OnEnable()
   if NS.Systems.DecorIndex then
     NS.Systems.DecorIndex:Build()
+  end
+
+  if NS.Systems.MapTracker and NS.Systems.MapTracker.Enable then
+    pcall(function() NS.Systems.MapTracker:Enable(true) end)
+  end
+
+  if NS.Systems.MapPins and NS.Systems.MapPins.Enable then
+    pcall(function() NS.Systems.MapPins:Enable() end)
   end
 
   do

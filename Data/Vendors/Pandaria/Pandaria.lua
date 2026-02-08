@@ -53,19 +53,6 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
 
   {
     source={
-      id=59908,
-      type="vendor",
-      faction="Horde",
-      zone="Either Shrine in Vale of Eternal Blossoms",
-      worldmap="390:6320:2210"
-    },
-    items={
-      {decorID=3879, source={type="vendor", itemID=247739, currency="1600", currencytype="gold"}, requirements={quest={id=30612}}},
-    }
-  },
-
-  {
-    source={
       id=62088,
       type="vendor",
       faction="Horde",

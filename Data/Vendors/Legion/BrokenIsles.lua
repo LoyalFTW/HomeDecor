@@ -64,11 +64,8 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     },
     items={
       {decorID=1740, source={type="vendor", itemID=245549, currency="500", currencytype=1220}},
-      {decorID=4042, source={type="vendor", itemID=248011, currency="1500", currencytype=1220}},
       {decorID=5877, source={type="vendor", itemID=250110, currency="500", currencytype=1220}},
-      {decorID=5890, source={type="vendor", itemID=250125, currency="5000", currencytype=1220}, requirements={achievement={id=42290}}},
       {decorID=5891, source={type="vendor", itemID=250126, currency="2000", currencytype=1220}, requirements={achievement={id=60984}}},
-      {decorID=5892, source={type="vendor", itemID=250127, currency="3000", currencytype=1220}, requirements={achievement={id=60965}}},
       {decorID=5893, source={type="vendor", itemID=250128, currency="1000", currencytype=1220}},
     }
   },
@@ -115,10 +112,6 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       {decorID=7816, source={type="vendor", itemID=250784, currency="500", currencytype=1220}},
       {decorID=7817, source={type="vendor", itemID=250785, currency="1000", currencytype=1220}},
       {decorID=7818, source={type="vendor", itemID=250786, currency="2000", currencytype=1220}, requirements={achievement={id=60989}}},
-      {decorID=7819, source={type="vendor", itemID=250787, currency="5000", currencytype=1220}, requirements={achievement={id=42295}}},
-      {decorID=7820, source={type="vendor", itemID=250788, currency="3000", currencytype=1220}, requirements={achievement={id=60970}}},
-      {decorID=11493, source={type="vendor", itemID=257403}, requirements={achievement={id=42280}}},
-      {decorID=14461, source={type="vendor", itemID=260776, currency="1500", currencytype=1220}, requirements={achievement={id=42279}}},
     }
   },
 
@@ -133,7 +126,6 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     items={
       {decorID=675, source={type="vendor", itemID=238859, costs={{currency="800", currencytype="gold"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}},
       {decorID=677, source={type="vendor", itemID=238861, costs={{currency="400", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=678, source={type="vendor", itemID=238862}},
       {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="500", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}},
       {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, requirements={rep="true"}},
       {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="400", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
@@ -226,13 +218,10 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="726:3032:6069"
     },
     items={
-      {decorID=7837, source={type="vendor", itemID=250914, currency="5000", currencytype=1220}, requirements={achievement={id=42296}}},
-      {decorID=7838, source={type="vendor", itemID=250915, currency="3000", currencytype=1220}, requirements={achievement={id=60971}}},
       {decorID=7839, source={type="vendor", itemID=250916, currency="500", currencytype=1220}},
       {decorID=7841, source={type="vendor", itemID=250918, currency="1000", currencytype=1220}},
       {decorID=7874, source={type="vendor", itemID=251014, currency="2000", currencytype=1220}, requirements={achievement={id=60990}}},
       {decorID=7875, source={type="vendor", itemID=251015, currency="500", currencytype=1220}},
-      {decorID=11493, source={type="vendor", itemID=257403, currency="1500", currencytype=1220}, requirements={achievement={id=42280}}},
     }
   },
 
@@ -247,11 +236,8 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     items={
       {decorID=1741, source={type="vendor", itemID=245550, currency="500", currencytype=1220}},
       {decorID=2086, source={type="vendor", itemID=246216, currency="500", currencytype=1220}},
-      {decorID=5878, source={type="vendor", itemID=250111, currency="3000", currencytype=1220}, requirements={achievement={id=60964}}},
       {decorID=5897, source={type="vendor", itemID=250133, currency="1000", currencytype=1220}},
-      {decorID=5898, source={type="vendor", itemID=250134, currency="5000", currencytype=1220}, requirements={achievement={id=42289}}},
       {decorID=7873, source={type="vendor", itemID=251013, currency="2000", currencytype=1220}, requirements={achievement={id=60983}}},
-      {decorID=14358, source={type="vendor", itemID=260581, currency="1500", currencytype=1220}, requirements={achievement={id=42272}}},
     }
   },
 
@@ -267,9 +253,6 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       {decorID=5112, source={type="vendor", itemID=248935, currency="500", currencytype=1220}},
       {decorID=5113, source={type="vendor", itemID=248936, currency="500", currencytype=1220}},
       {decorID=5119, source={type="vendor", itemID=248942, currency="2000", currencytype=1220}, requirements={achievement={id=60986}}},
-      {decorID=5126, source={type="vendor", itemID=248958, currency="1500", currencytype=1220}, requirements={achievement={id=42275}}},
-      {decorID=11280, source={type="vendor", itemID=256679, currency="3000", currencytype=1220}, requirements={achievement={id=60967}}},
-      {decorID=14644, source={type="vendor", itemID=262619}, requirements={achievement={id=42292}}},
     }
   },
 
@@ -282,13 +265,10 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="695:5549:2591"
     },
     items={
-      {decorID=5526, source={type="vendor", itemID=249458, currency="5000", currencytype=1220}, requirements={achievement={id=42298}}},
       {decorID=5528, source={type="vendor", itemID=249460, currency="500", currencytype=1220}},
       {decorID=5529, source={type="vendor", itemID=249461, currency="2000", currencytype=1220}, requirements={achievement={id=60992}}},
       {decorID=5532, source={type="vendor", itemID=249464, currency="1000", currencytype=1220}},
-      {decorID=5534, source={type="vendor", itemID=249466, currency="1500", currencytype=1220}, requirements={achievement={id=42282}}},
       {decorID=5562, source={type="vendor", itemID=249551, currency="500", currencytype=1220}},
-      {decorID=11486, source={type="vendor", itemID=257396, currency="3000", currencytype=1220}, requirements={achievement={id=60973}}},
     }
   },
 
@@ -305,9 +285,6 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       {decorID=7607, source={type="vendor", itemID=250303, currency="500", currencytype=1220}},
       {decorID=7608, source={type="vendor", itemID=250304, currency="500", currencytype=1220}},
       {decorID=7821, source={type="vendor", itemID=250789, currency="1000", currencytype=1220}},
-      {decorID=7822, source={type="vendor", itemID=250790, currency="5000", currencytype=1220}, requirements={achievement={id=42294}}},
-      {decorID=7823, source={type="vendor", itemID=250791, currency="3000", currencytype=1220}, requirements={achievement={id=60969}}},
-      {decorID=7824, source={type="vendor", itemID=250792, currency="1500", currencytype=1220}, requirements={achievement={id=42277}}},
       {decorID=8768, source={type="vendor", itemID=251636, currency="2000", currencytype=1220}, requirements={achievement={id=60988}}},
     }
   },
@@ -321,12 +298,9 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="720:6100:5673"
     },
     items={
-      {decorID=5525, source={type="vendor", itemID=249457, currency="5000", currencytype=1220}, requirements={achievement={id=42288}}},
-      {decorID=5527, source={type="vendor", itemID=249459, currency="1500", currencytype=1220}, requirements={achievement={id=42271}}},
       {decorID=5530, source={type="vendor", itemID=249462, currency="1000", currencytype=1220}},
       {decorID=5531, source={type="vendor", itemID=249463, currency="500", currencytype=1220}},
       {decorID=5555, source={type="vendor", itemID=249518, currency="2000", currencytype=1220}, requirements={achievement={id=60982}}},
-      {decorID=5575, source={type="vendor", itemID=249690, currency="3000", currencytype=1220}, requirements={achievement={id=60963}}},
       {decorID=11276, source={type="vendor", itemID=256675, currency="500", currencytype=1220}},
     }
   },
@@ -340,13 +314,9 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="717:5876:3269"
     },
     items={
-      {decorID=5117, source={type="vendor", itemID=248940, currency="5000", currencytype=1220}, requirements={achievement={id=42297}}},
-      {decorID=5118, source={type="vendor", itemID=248941}},
       {decorID=5120, source={type="vendor", itemID=248943, currency="1000", currencytype=1220}},
       {decorID=5127, source={type="vendor", itemID=248959, currency="500", currencytype=1220}},
-      {decorID=5128, source={type="vendor", itemID=248960, currency="1500", currencytype=1220}, requirements={achievement={id=42281}}},
       {decorID=5292, source={type="vendor", itemID=249004, currency="500", currencytype=1220}},
-      {decorID=11307, source={type="vendor", itemID=256907}, requirements={achievement={id=60972}}},
       {decorID=15477, source={type="vendor", itemID=264242, currency="2000", currencytype=1220}, requirements={achievement={id=60991}}},
     }
   },
@@ -360,13 +330,10 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="735:4475:5787"
     },
     items={
-      {decorID=750, source={type="vendor", itemID=245429, currency="1500", currencytype=1220}, requirements={achievement={id=42274}}},
       {decorID=5894, source={type="vendor", itemID=250130, currency="500", currencytype=1220}},
       {decorID=5895, source={type="vendor", itemID=250131, currency="1500", currencytype=1220}, requirements={achievement={id=60985}}},
       {decorID=5896, source={type="vendor", itemID=250132, currency="500", currencytype=1220}},
       {decorID=7579, source={type="vendor", itemID=250239, currency="1000", currencytype=1220}},
-      {decorID=7609, source={type="vendor", itemID=250306, currency="5000", currencytype=1220}, requirements={achievement={id=42291}}},
-      {decorID=11275, source={type="vendor", itemID=256674, currency="3000", currencytype=1220}, requirements={achievement={id=60966}}},
     }
   },
 
@@ -524,7 +491,6 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       {decorID=675, source={type="vendor", itemID=238859, costs={{currency="1000", currencytype="gold"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}},
       {decorID=676, source={type="vendor", itemID=238860, currency="700", currencytype=1220}},
       {decorID=677, source={type="vendor", itemID=238861, costs={{currency="500", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=678, source={type="vendor", itemID=238862}},
       {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="700", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}},
       {decorID=1881, source={type="vendor", itemID=245697, currency="600", currencytype=1220}, requirements={achievement={id=10698}}},
       {decorID=1884, source={type="vendor", itemID=245700, currency="250", currencytype=1220}, requirements={quest={id=38663}}},

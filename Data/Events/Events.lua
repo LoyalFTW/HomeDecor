@@ -29,7 +29,7 @@ NS.Data.Events["Events"]["New Events"] = {
      label="Claim via Twitch event",
      url="https://twitch.tv/"},
    items={
-     {decorID=15151,  source={type="external", itemID=245284}}}
+     {decorID=15151,  source={type="external", itemID=263301}}}
   },
    {
    title="It's Nearly Midnight",

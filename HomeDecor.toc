@@ -16,6 +16,8 @@ Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\AceDB-3.0\AceDB-3.0.lua
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+Libs\HereBeDragons\HereBeDragons-2.0.lua
+Libs\HereBeDragons\HereBeDragons-Pins-2.0.lua
 
 Core\Init.lua
 HomeDecor.xml
@@ -28,6 +30,7 @@ Systems\Collection.lua
 Systems\GlobalIndex.lua
 Systems\Changelog.lua
 Systems\MapTracker.lua
+Systems\MapPins.lua
 Systems\Reputation.lua
 Systems\Events.lua
 
@@ -38,6 +41,7 @@ Systems\Vendor\VendorChecks.lua
 
 UI\Theme.lua
 UI\Controls.lua
+UI\Options.lua
 UI\Widgets\RowStyles.lua
 UI\ChangelogPopup.lua
 UI\Widgets\FilterPopup.lua

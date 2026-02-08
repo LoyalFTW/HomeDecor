@@ -1,30 +1,23 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Feb 6, 2026
+Feb 7, 2026
 
-* Items that are dyable now say Dyable on them
-you can also type Dye or Dyable in search
+* Minimap and Map Icons
 
-* reputations have been added, all reps are there
-the ones that say reputation required are actually 
-renown required, just haven't found a good fix for them yet
-sorry... 
+You can click on them to mark
+when getting to the npc after opening the 
+mark will go away. 
+Using shift ontop of the icon will show you information
+Right Clicking the icon will bring open the tracker so you can
+see whats inside of the vendor
 
-Currency is added just doesn't show at the moment
-some things require more then 1 currency and makes the UI
-look bad, I will continue to work on this.
+This can be turned off in options or by
+right clicking the minimap icon and going through the settings.
 
-* New UI for Icons has been added, this will let you know if
-a quest or ach or rep is required, it will go green with a check
-if you have already done it. (At the moment this is character specific)
-I will make it for alts soon just been busy!
+* Updated the vendors names again so they instant fix themselves. 
 
-Let me know how you guys like it
-ypu can comment on curse or on my Discord
-
-* New Database has been added to save lag
-things should run more smooth!
-
+* Again any issues or ideas you may have stop by the discord, I'm always
+happy to help or fix something right away!
 
 ]]

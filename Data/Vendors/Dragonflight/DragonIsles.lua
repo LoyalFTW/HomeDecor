@@ -80,7 +80,6 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
     items={
       {decorID=4159, source={type="vendor", itemID=248103, currency="300", currencytype=2003}, requirements={rep="true"}},
       {decorID=4168, source={type="vendor", itemID=248112, currency="400", currencytype=2003}, requirements={rep="true"}},
-      {decorID=4171, source={type="vendor", itemID=248115, currency="10", currencytype="gold"}, requirements={rep="true"}},
       {decorID=4478, source={type="vendor", itemID=248652, currency="250", currencytype=2003}, requirements={rep="true"}},
       {decorID=10962, source={type="vendor", itemID=256168, currency="10", currencytype=2003}},
       {decorID=10963, source={type="vendor", itemID=256169, currency="500", currencytype=2003}, requirements={rep="true"}},
