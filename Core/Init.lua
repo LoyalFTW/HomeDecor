@@ -8,6 +8,7 @@ NS.Data.Achievements  = NS.Data.Achievements  or {}
 NS.Data.Quests        = NS.Data.Quests        or {}
 NS.Data.Drops         = NS.Data.Drops         or {}
 NS.Data.Professions   = NS.Data.Professions   or {}
+NS.Data.Prof_Reagents = NS.Data.Prof_Reagents or {}
 NS.Data.PVP           = NS.Data.PVP           or {}
 
 NS.Systems.DecorIndex   = NS.Systems.DecorIndex   or {}
@@ -76,6 +77,23 @@ local defaults = {
       y = -80,
     },
 
+    
+    profTracker = {
+      open = false,
+      collapsed = false,
+      hideZero = false,
+      showIcons = true,
+      alpha = 0.7,
+      goal = 1000,
+      search = "",
+      width = 320,
+      height = 540,
+      point = "TOPRIGHT",
+      relPoint = "TOPRIGHT",
+      x = -360,
+      y = -80,
+    },
+
     favorites = {},
     collection = { completedItems = {} },
 
@@ -118,6 +136,30 @@ local minimapObject = LDB:NewDataObject("HomeDecor", {
     tt:AddLine("Right Click: Options", 1, 1, 1)
   end,
 })
+
+local function RegisterAddonCompartment()
+  if not AddonCompartmentFrame then return end
+  
+  AddonCompartmentFrame:RegisterAddon({
+    text = "HomeDecor",
+    icon = "Interface/AddOns/HomeDecor/Media/Icon.tga",
+    notCheckable = true,
+    func = function(button, menuInputData, menu)
+      if NS.UI and NS.UI.ToggleMainFrame then
+        NS.UI:ToggleMainFrame()
+      end
+    end,
+    funcOnEnter = function(button)
+      GameTooltip:SetOwner(button, "ANCHOR_LEFT")
+      GameTooltip:SetText("HomeDecor")
+      GameTooltip:AddLine("Click to toggle HomeDecor", 1, 1, 1)
+      GameTooltip:Show()
+    end,
+    funcOnLeave = function()
+      GameTooltip:Hide()
+    end,
+  })
+end
 
 local function SetMinimapHidden(db, hide)
   if not db or not db.profile then return end
@@ -219,6 +261,8 @@ function Addon:OnInitialize()
 end
 
 function Addon:OnEnable()
+  RegisterAddonCompartment()
+
   if NS.Systems.DecorIndex then
     NS.Systems.DecorIndex:Build()
   end
