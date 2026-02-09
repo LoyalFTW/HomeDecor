@@ -20,9 +20,9 @@ local NPCNames = NS.Systems and NS.Systems.NPCNames
 local TooltipSys = NS.UI and NS.UI.Tooltips
 
 local ICON_TEX = "Interface\\AddOns\\HomeDecor\\Media\\Icon"
-local PIN_SIZE_WORLD = 18
+local PIN_SIZE_WORLD = 16
 local PIN_SIZE_MINI = 14
-
+local PIN_SIZE_BADGE = 22
 
 local C_Map = _G.C_Map
 local C_SuperTrack = _G.C_SuperTrack
@@ -65,10 +65,15 @@ local function isActiveWaypoint(mapID, x, y, npcID)
   end
   return false
 end
+
 local mapIndex = {}
 local pooled = {}
+local badgePooled = {}
 local usedWorld = {}
+local usedBadges = {}
 local usedMini = {}
+
+local zoneToContinent = {} 
 
 local function parseWorldmap(worldmap)
   if type(worldmap) ~= "string" then return end
@@ -86,65 +91,73 @@ end
 
 local function ensurePool()
   if #pooled > 0 then
-    local f = pooled[#pooled]
+    local frame = pooled[#pooled]
     pooled[#pooled] = nil
-    return f
+    return frame
   end
 
-  local b = CreateFrame("Button", nil, UIParent)
-  b.__hdMapPin = true
-  b:SetSize(PIN_SIZE_WORLD, PIN_SIZE_WORLD)
-  b.tex = b:CreateTexture(nil, "ARTWORK")
-  b.tex:SetAllPoints()
-  b.tex:SetTexture(ICON_TEX)
-  b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+  local button = CreateFrame("Button", nil, UIParent)
+  button.__hdMapPin = true
+  button:SetSize(PIN_SIZE_WORLD, PIN_SIZE_WORLD)
+  
+  button.bg = button:CreateTexture(nil, "BACKGROUND")
+  button.bg:SetAllPoints()
+  button.bg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+  button.bg:SetVertexColor(0.1, 0.1, 0.1, 0.8)
 
-  b:SetScript("OnEnter", function(self)
+  button.tex = button:CreateTexture(nil, "ARTWORK")
+  button.tex:SetAllPoints()
+  button.tex:SetTexture(ICON_TEX)
+  button.tex:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+  
+  button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+
+  button:SetScript("OnEnter", function(self)
     if not self.vendor then return end
-    local v = self.vendor
-    local id = v.id
-    local zone = v.zone
-    local name = v.name
-    local shift = _G.IsShiftKeyDown and _G.IsShiftKeyDown()
+    local vendor = self.vendor
+    local npcID = vendor.id
+    local zoneName = vendor.zone
+    local vendorName = vendor.name
+    local shiftKeyDown = _G.IsShiftKeyDown and _G.IsShiftKeyDown()
 
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetText(name or "Vendor", 1, 1, 1)
-    if zone then GameTooltip:AddLine(zone, 0.8, 0.8, 0.8) end
+    GameTooltip:SetText(vendorName or "Vendor", 1, 1, 1)
+    if zoneName then GameTooltip:AddLine(zoneName, 0.8, 0.8, 0.8) end
 
     GameTooltip:AddLine(" ", 0, 0, 0)
-    local wp = (v.mapID and isActiveWaypoint(v.mapID, v.x, v.y, id)) and true or false
-    GameTooltip:AddLine(wp and "Left-click: Clear waypoint" or "Left-click: Set waypoint", 1, 0.82, 0)
+    local hasWaypoint = (vendor.mapID and isActiveWaypoint(vendor.mapID, vendor.x, vendor.y, npcID)) and true or false
+    GameTooltip:AddLine(hasWaypoint and "Left-click: Clear waypoint" or "Left-click: Set waypoint", 1, 0.82, 0)
     GameTooltip:AddLine("Right-click: Open Tracker", 1, 0.82, 0)
 
-    if shift and id then GameTooltip:AddLine("NPC ID: "..id, 0.8, 0.8, 0.8) end
+    if shiftKeyDown and npcID then GameTooltip:AddLine("NPC ID: "..npcID, 0.8, 0.8, 0.8) end
 
-    if id and TooltipSys and type(TooltipSys.AppendNpcMouseover) == "function" then
-      pcall(TooltipSys.AppendNpcMouseover, GameTooltip, id)
+    if npcID and TooltipSys and type(TooltipSys.AppendNpcMouseover) == "function" then
+      pcall(TooltipSys.AppendNpcMouseover, GameTooltip, npcID)
     end
 
     GameTooltip:Show()
   end)
 
-  b:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
+  button:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
 
-  b:SetScript("OnClick", function(self, button)
-    local v = self.vendor
-    if not v then return end
+  button:SetScript("OnClick", function(self, mouseButton)
+    local vendor = self.vendor
+    if not vendor then return end
 
-    if button == "LeftButton" then
-      local mapID, x, y = v.mapID, v.x, v.y
+    if mouseButton == "LeftButton" then
+      local mapID, x, y = vendor.mapID, vendor.x, vendor.y
       if mapID and x and y then
-        if isActiveWaypoint(mapID, x, y, v.id) then
+        if isActiveWaypoint(mapID, x, y, vendor.id) then
           clearUserWaypoint()
         else
-          setUserWaypoint(mapID, x, y, v.id)
+          setUserWaypoint(mapID, x, y, vendor.id)
         end
         MapPins.RefreshTooltip()
       end
       return
     end
 
-    if button == "RightButton" then
+    if mouseButton == "RightButton" then
       local Tracker = NS.UI and NS.UI.Tracker
       if Tracker and Tracker.Create then
         pcall(function()
@@ -157,13 +170,71 @@ local function ensurePool()
       end
     end
   end)
-  return b
+  return button
+end
+
+local function ensureBadgePool()
+  if #badgePooled > 0 then
+    local f = badgePooled[#badgePooled]
+    badgePooled[#badgePooled] = nil
+    return f
+  end
+
+  local frame = CreateFrame("Button", nil, UIParent)
+  frame.__hdMapBadge = true
+  frame:SetSize(PIN_SIZE_BADGE, PIN_SIZE_BADGE)
+  frame:RegisterForClicks("LeftButtonUp")
+
+  frame.bg = frame:CreateTexture(nil, "BACKGROUND")
+  frame.bg:SetAllPoints()
+  frame.bg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+  frame.bg:SetVertexColor(0.1, 0.1, 0.1, 0.9)
+
+  frame.icon = frame:CreateTexture(nil, "ARTWORK")
+  frame.icon:SetAllPoints()
+  frame.icon:SetTexture(ICON_TEX)
+  frame.icon:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+
+  frame.countBg = frame:CreateTexture(nil, "OVERLAY", nil, 1)
+  frame.countBg:SetColorTexture(0, 0, 0, 0.8)
+  frame.countBg:SetSize(18, 14)
+  frame.countBg:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 4, -4)
+
+  frame.count = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal", 2)
+  frame.count:SetPoint("CENTER", frame.countBg, "CENTER", 0, 0)
+  local fontPath, _, fontFlags = frame.count:GetFont()
+  frame.count:SetFont(fontPath, 11, "OUTLINE")
+  frame.count:SetTextColor(1, 0.82, 0)
+
+  frame:SetScript("OnEnter", function(self)
+    if not self.badgeData then return end
+    local bd = self.badgeData
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetText(bd.zoneName or "Zone", 1, 1, 1)
+    GameTooltip:AddLine("Decor Vendors: " .. (bd.vendorCount or 0), 1, 0.82, 0)
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine("Left-click to view zone map", 0.5, 0.5, 0.5)
+    GameTooltip:Show()
+  end)
+
+  frame:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
+
+  frame:SetScript("OnClick", function(self, button)
+    if button == "LeftButton" and self.badgeData and self.badgeData.mapID then
+      local WM = _G.WorldMapFrame
+      if WM and type(WM.SetMapID) == "function" then
+        WM:SetMapID(self.badgeData.mapID)
+      end
+    end
+  end)
+
+  return frame
 end
 
 function MapPins.RefreshTooltip()
   if not GameTooltip or not GameTooltip.IsShown or not GameTooltip:IsShown() then return end
   local owner = GameTooltip.GetOwner and GameTooltip:GetOwner()
-  if not owner or not owner.__hdMapPin then return end
+  if not owner or not (owner.__hdMapPin or owner.__hdMapBadge) then return end
   if owner.IsMouseOver and not owner:IsMouseOver() then return end
   local onEnter = owner.GetScript and owner:GetScript("OnEnter")
   if type(onEnter) ~= "function" then return end
@@ -176,16 +247,22 @@ mod:SetScript("OnEvent", function()
   MapPins.RefreshTooltip()
 end)
 
-local function recycleFrame(f)
-  if not f then return end
-  f.vendor = nil
-  f:Hide()
-  f:SetParent(UIParent)
-  pooled[#pooled + 1] = f
+local function recycleFrame(frame)
+  if not frame then return end
+  frame.vendor = nil
+  frame.badgeData = nil
+  frame:Hide()
+  frame:SetParent(UIParent)
+  if frame.__hdMapBadge then
+    badgePooled[#badgePooled + 1] = frame
+  else
+    pooled[#pooled + 1] = frame
+  end
 end
 
 local function buildIndex()
   wipe(mapIndex)
+  wipe(zoneToContinent)
 
   local Vendors = NS.Data and NS.Data.Vendors
   if type(Vendors) ~= "table" then return end
@@ -211,17 +288,29 @@ local function buildIndex()
       end
     end
   end
+
+  if C_Map and C_Map.GetMapInfo then
+    for mapID in pairs(mapIndex) do
+      local info = C_Map.GetMapInfo(mapID)
+      if info and info.parentMapID then
+        local parentInfo = C_Map.GetMapInfo(info.parentMapID)
+        if parentInfo and parentInfo.mapType == _G.Enum.UIMapType.Continent then
+          zoneToContinent[mapID] = info.parentMapID
+        end
+      end
+    end
+  end
 end
 
-local function resolveNamesFor(list)
+local function resolveNamesFor(vendorList)
   if not NPCNames or type(NPCNames.Get) ~= "function" then return end
-  for i = 1, #list do
-    local v = list[i]
-    if v and v.id and not v.name then
-      local got = NPCNames.Get(v.id, function(_, name)
-        if name then v.name = name end
+  for i = 1, #vendorList do
+    local vendor = vendorList[i]
+    if vendor and vendor.id and not vendor.name then
+      local cachedName = NPCNames.Get(vendor.id, function(_, name)
+        if name then vendor.name = name end
       end)
-      if got then v.name = got end
+      if cachedName then vendor.name = cachedName end
     end
   end
 end
@@ -235,6 +324,15 @@ local function clearWorldPins()
   wipe(usedWorld)
 end
 
+local function clearBadges()
+  if not HBDPins then return end
+  for icon in pairs(usedBadges) do
+    HBDPins:RemoveWorldMapIcon(ADDON, icon)
+    recycleFrame(icon)
+  end
+  wipe(usedBadges)
+end
+
 local function clearMiniPins()
   if not HBDPins then return end
   for icon in pairs(usedMini) do
@@ -244,24 +342,115 @@ local function clearMiniPins()
   wipe(usedMini)
 end
 
+local function getZoneCenterOnMap(zoneMapID, parentMapID)
+  if not C_Map or not C_Map.GetMapRectOnMap then return nil end
+  local minX, maxX, minY, maxY = C_Map.GetMapRectOnMap(zoneMapID, parentMapID)
+  if minX and maxX and minY and maxY then
+    return { x = (minX + maxX) / 2, y = (minY + maxY) / 2 }
+  end
+  return nil
+end
+
+local function countVendorsInZone(zoneMapID)
+  local list = mapIndex[zoneMapID]
+  return list and #list or 0
+end
+
+local function showZoneBadges(continentMapID)
+  clearBadges()
+
+  local zoneCounts = {}
+  for zoneMapID, continentID in pairs(zoneToContinent) do
+    if continentID == continentMapID then
+      local count = countVendorsInZone(zoneMapID)
+      if count > 0 then
+        zoneCounts[zoneMapID] = count
+      end
+    end
+  end
+
+  for zoneMapID, vendorCount in pairs(zoneCounts) do
+    local zoneCenter = getZoneCenterOnMap(zoneMapID, continentMapID)
+    if zoneCenter then
+      local zoneName = "Zone"
+      if C_Map and C_Map.GetMapInfo then
+        local info = C_Map.GetMapInfo(zoneMapID)
+        if info then zoneName = info.name end
+      end
+
+      local frame = ensureBadgePool()
+      frame.badgeData = {
+        mapID = zoneMapID,
+        zoneName = zoneName,
+        vendorCount = vendorCount,
+      }
+      frame.count:SetText(tostring(vendorCount))
+      frame:Show()
+      usedBadges[frame] = true
+
+      pcall(function()
+        HBDPins:AddWorldMapIconMap(ADDON, frame, continentMapID,
+          zoneCenter.x, zoneCenter.y,
+          HBD_PINS_WORLDMAP_SHOW_CONTINENT)
+      end)
+    end
+  end
+end
+
+local function showContinentBadges()
+  clearBadges()
+  
+  local continentCounts = {}
+  for zoneMapID, continentID in pairs(zoneToContinent) do
+    local count = countVendorsInZone(zoneMapID)
+    if count > 0 then
+      continentCounts[continentID] = (continentCounts[continentID] or 0) + count
+    end
+  end
+
+  for continentID, vendorCount in pairs(continentCounts) do
+    local continentName = "Continent"
+    if C_Map and C_Map.GetMapInfo then
+      local info = C_Map.GetMapInfo(continentID)
+      if info then continentName = info.name end
+    end
+
+    local frame = ensureBadgePool()
+    frame.badgeData = {
+      mapID = continentID,
+      zoneName = continentName,
+      vendorCount = vendorCount,
+    }
+    frame.count:SetText(tostring(vendorCount))
+    frame:Show()
+    usedBadges[frame] = true
+
+    pcall(function()
+      HBDPins:AddWorldMapIconMap(ADDON, frame, continentID,
+        0.5, 0.5,
+        HBD_PINS_WORLDMAP_SHOW_WORLD)
+    end)
+  end
+end
+
 local function addWorldPinsForMap(mapID)
   if not HBDPins then return end
   clearWorldPins()
-  local list = mapIndex[mapID]
-  if type(list) ~= "table" or #list == 0 then return end
+  local vendorList = mapIndex[mapID]
+  if type(vendorList) ~= "table" or #vendorList == 0 then return end
 
-  resolveNamesFor(list)
+  resolveNamesFor(vendorList)
 
-  for i = 1, #list do
-    local v = list[i]
-    local icon = ensurePool()
-    icon.vendor = v
-    icon:SetSize(PIN_SIZE_WORLD, PIN_SIZE_WORLD)
-    icon.tex:SetTexture(ICON_TEX)
-    icon:Show()
-    usedWorld[icon] = true
+  for i = 1, #vendorList do
+    local vendor = vendorList[i]
+    local pinFrame = ensurePool()
+    pinFrame.vendor = vendor
+    pinFrame:SetSize(PIN_SIZE_WORLD, PIN_SIZE_WORLD)
+    pinFrame.tex:SetTexture(ICON_TEX)
+    pinFrame:Show()
+    usedWorld[pinFrame] = true
     pcall(function()
-      HBDPins:AddWorldMapIconMap(ADDON, icon, mapID, v.x, v.y)
+      HBDPins:AddWorldMapIconMap(ADDON, pinFrame, mapID, vendor.x, vendor.y, HBD_PINS_WORLDMAP_SHOW_PARENT)
     end)
   end
 end
@@ -269,21 +458,21 @@ end
 local function addMiniPinsForMap(mapID)
   if not HBDPins then return end
   clearMiniPins()
-  local list = mapIndex[mapID]
-  if type(list) ~= "table" or #list == 0 then return end
+  local vendorList = mapIndex[mapID]
+  if type(vendorList) ~= "table" or #vendorList == 0 then return end
 
-  resolveNamesFor(list)
+  resolveNamesFor(vendorList)
 
-  for i = 1, #list do
-    local v = list[i]
-    local icon = ensurePool()
-    icon.vendor = v
-    icon:SetSize(PIN_SIZE_MINI, PIN_SIZE_MINI)
-    icon.tex:SetTexture(ICON_TEX)
-    icon:Show()
-    usedMini[icon] = true
+  for i = 1, #vendorList do
+    local vendor = vendorList[i]
+    local pinFrame = ensurePool()
+    pinFrame.vendor = vendor
+    pinFrame:SetSize(PIN_SIZE_MINI, PIN_SIZE_MINI)
+    pinFrame.tex:SetTexture(ICON_TEX)
+    pinFrame:Show()
+    usedMini[pinFrame] = true
     pcall(function()
-      HBDPins:AddMinimapIconMap(ADDON, icon, mapID, v.x, v.y, true)
+      HBDPins:AddMinimapIconMap(ADDON, pinFrame, mapID, vendor.x, vendor.y, true)
     end)
   end
 end
@@ -297,33 +486,34 @@ local function isEnabled(profile, key, default)
 end
 
 function MapPins:RefreshCurrentZone()
-  if not self._enabled then return end
-  local prof = NS.db and NS.db.profile
-  if not prof then return end
+  if not self.enabled then return end
+  local profile = NS.db and NS.db.profile
+  if not profile then return end
 
-  local mapID
-  local MT = NS.Systems and NS.Systems.MapTracker
-  if MT and type(MT.GetCurrentZone) == "function" then
-    local _, mid = MT:GetCurrentZone()
-    mapID = mid
+  local currentMapID
+  local mapTracker = NS.Systems and NS.Systems.MapTracker
+  if mapTracker and type(mapTracker.GetCurrentZone) == "function" then
+    local _, mapID = mapTracker:GetCurrentZone()
+    currentMapID = mapID
   end
-  mapID = tonumber(mapID)
-  if not mapID then return end
+  currentMapID = tonumber(currentMapID)
+  if not currentMapID then return end
 
-  if isEnabled(prof, "minimap", true) then
-    addMiniPinsForMap(mapID)
+  if isEnabled(profile, "minimap", true) then
+    addMiniPinsForMap(currentMapID)
   else
     clearMiniPins()
   end
 end
 
 function MapPins:RefreshWorldMap()
-  if not self._enabled then return end
+  if not self.enabled then return end
   local prof = NS.db and NS.db.profile
   if not prof then return end
 
   if not isEnabled(prof, "worldmap", true) then
     clearWorldPins()
+    clearBadges()
     return
   end
 
@@ -332,112 +522,113 @@ function MapPins:RefreshWorldMap()
   local mapID = tonumber(WM:GetMapID())
   if not mapID then return end
 
-  addWorldPinsForMap(mapID)
+  local mapInfo = C_Map and C_Map.GetMapInfo and C_Map.GetMapInfo(mapID)
+  if not mapInfo then
+    addWorldPinsForMap(mapID)
+    return
+  end
+
+  if mapInfo.mapType == _G.Enum.UIMapType.World or mapInfo.mapType == _G.Enum.UIMapType.Cosmic then
+    clearWorldPins()
+    showContinentBadges()
+  elseif mapInfo.mapType == _G.Enum.UIMapType.Continent then
+    clearWorldPins()
+    showZoneBadges(mapID)
+  else
+    clearBadges()
+    addWorldPinsForMap(mapID)
+  end
 end
 
 function MapPins:Enable()
-  if self._enabled then return end
+  if self.enabled then return end
   if not HBDPins or not HBD then return end
 
   buildIndex()
 
-  self._enabled = true
+  self.enabled = true
 
-  local WM = _G.WorldMapFrame
-  if WM and not self._hookedWorldMap then
-    self._hookedWorldMap = true
-    WM:HookScript("OnShow", function() MapPins:RefreshWorldMap() end)
-    if type(WM.GetMapID) == "function" then
+  local worldMap = _G.WorldMapFrame
+  if worldMap and not self.hookedWorldMap then
+    self.hookedWorldMap = true
+    worldMap:HookScript("OnShow", function() MapPins:RefreshWorldMap() end)
+    if type(worldMap.GetMapID) == "function" then
       pcall(function()
-        hooksecurefunc(WM, "SetMapID", function() MapPins:RefreshWorldMap() end)
+        hooksecurefunc(worldMap, "SetMapID", function() MapPins:RefreshWorldMap() end)
       end)
     end
   end
 
-  local MT = NS.Systems and NS.Systems.MapTracker
-  if MT and type(MT.RegisterCallback) == "function" then
+  local mapTracker = NS.Systems and NS.Systems.MapTracker
+  if mapTracker and type(mapTracker.RegisterCallback) == "function" then
     pcall(function()
-      MT:RegisterCallback("MapPins", function() MapPins:RefreshCurrentZone() end)
+      mapTracker:RegisterCallback("MapPins", function() MapPins:RefreshCurrentZone() end)
     end)
-  else
-    local f = CreateFrame("Frame")
-    f.t = 0
-    f:SetScript("OnUpdate", function(self, e)
-      self.t = self.t + e
-      if self.t < 2 then return end
-      self.t = 0
-      MapPins:RefreshCurrentZone()
-    end)
-    self._fallbackTicker = f
   end
 
 
-  if not self._waypointTicker then
-    local wf = CreateFrame("Frame")
-    wf.t = 0
-    wf:SetScript("OnUpdate", function(self, e)
-      self.t = self.t + e
-      if self.t < 0.35 then return end
-      self.t = 0
+  if not self.waypointFrame then
+    local waypointFrame = CreateFrame("Frame")
+    waypointFrame.elapsed = 0
+    waypointFrame:SetScript("OnUpdate", function(self, delta)
+      self.elapsed = self.elapsed + delta
+      if self.elapsed < 0.35 then return end
+      self.elapsed = 0
 
-      local w = activeWaypoint
-      if not w or not w.mapID then return end
+      local waypoint = activeWaypoint
+      if not waypoint or not waypoint.mapID then return end
 
       if HBD and type(HBD.GetPlayerZonePosition) == "function" then
-        local px, py, pMap = HBD:GetPlayerZonePosition(true)
-        if pMap == w.mapID and px and py then
-          local dist
+        local playerX, playerY, playerMap = HBD:GetPlayerZonePosition(true)
+        if playerMap == waypoint.mapID and playerX and playerY then
+          local distance
           if type(HBD.GetZoneDistance) == "function" then
-            dist = select(1, HBD:GetZoneDistance(w.mapID, px, py, w.mapID, w.x, w.y))
+            distance = select(1, HBD:GetZoneDistance(waypoint.mapID, playerX, playerY, waypoint.mapID, waypoint.x, waypoint.y))
           end
-          if not dist then
-            local dx, dy = (w.x - px), (w.y - py)
-            dist = ((dx*dx + dy*dy)^0.5) * 10000
+          if not distance then
+            local dx, dy = (waypoint.x - playerX), (waypoint.y - playerY)
+            distance = ((dx*dx + dy*dy)^0.5) * 10000
           end
-          if dist and dist <= WAYPOINT_CLEAR_YARDS then
+          if distance and distance <= WAYPOINT_CLEAR_YARDS then
             clearUserWaypoint()
             MapPins.RefreshTooltip()
           end
         end
       end
     end)
-    self._waypointTicker = wf
+    self.waypointFrame = waypointFrame
   end
 
-  if not self._merchantHook then
-    local mf = CreateFrame("Frame")
-    mf:RegisterEvent("MERCHANT_SHOW")
-    mf:SetScript("OnEvent", function()
+  if not self.merchantFrame then
+    local merchantFrame = CreateFrame("Frame")
+    merchantFrame:RegisterEvent("MERCHANT_SHOW")
+    merchantFrame:SetScript("OnEvent", function()
       if activeWaypoint then
         clearUserWaypoint()
         MapPins.RefreshTooltip()
       end
     end)
-    self._merchantHook = mf
+    self.merchantFrame = merchantFrame
   end
 
   self:RefreshCurrentZone()
 end
 
 function MapPins:Disable()
-  if not self._enabled then return end
-  self._enabled = false
+  if not self.enabled then return end
+  self.enabled = false
   clearWorldPins()
+  clearBadges()
   clearMiniPins()
   clearUserWaypoint()
-  if self._waypointTicker then
-    self._waypointTicker:SetScript("OnUpdate", nil)
-    self._waypointTicker = nil
+  if self.waypointFrame then
+    self.waypointFrame:SetScript("OnUpdate", nil)
+    self.waypointFrame = nil
   end
-  if self._merchantHook then
-    self._merchantHook:SetScript("OnEvent", nil)
-    self._merchantHook:UnregisterAllEvents()
-    self._merchantHook = nil
-  end
-
-  if self._fallbackTicker then
-    self._fallbackTicker:SetScript("OnUpdate", nil)
-    self._fallbackTicker = nil
+  if self.merchantFrame then
+    self.merchantFrame:SetScript("OnEvent", nil)
+    self.merchantFrame:UnregisterAllEvents()
+    self.merchantFrame = nil
   end
 end
 

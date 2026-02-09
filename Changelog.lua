@@ -1,23 +1,19 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Feb 7, 2026
+Feb 8, 2026
 
-* Minimap and Map Icons
+* For the map icons or npcs I'm looking for help
+since there is so many, if you find ones that are 
+locked behind something or cant be seen in certain areas
+or are underground or above, please join the discord 
+post the npc name and coords and I'll add tooltips!
 
-You can click on them to mark
-when getting to the npc after opening the 
-mark will go away. 
-Using shift ontop of the icon will show you information
-Right Clicking the icon will bring open the tracker so you can
-see whats inside of the vendor
+Thank you for any help that I get!
 
-This can be turned off in options or by
-right clicking the minimap icon and going through the settings.
-
-* Updated the vendors names again so they instant fix themselves. 
-
-* Again any issues or ideas you may have stop by the discord, I'm always
-happy to help or fix something right away!
+* Updated the Map and Icons some more
+To turn them off if you don't like them
+right click minimap icon and it'll be in 
+the settings.
 
 ]]
