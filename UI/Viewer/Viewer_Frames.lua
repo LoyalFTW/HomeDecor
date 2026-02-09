@@ -158,7 +158,7 @@ function Frames.CreateTile(content)
 
   r.dyePaletteFrame.text = r.dyePaletteFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   r.dyePaletteFrame.text:SetPoint("CENTER", 0, 0)
-  r.dyePaletteFrame.text:SetText("Dyeable")
+  r.dyePaletteFrame.text:SetText("")
   r.dyePaletteFrame.text:SetTextColor(0.4, 0.9, 1.0, 1)
 
   r.div = r:CreateTexture(nil, "BORDER")

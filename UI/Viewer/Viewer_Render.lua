@@ -82,6 +82,38 @@ local function IsItemDyeable(decorID)
     DyeableCache[decorID] = false
     return false
 end
+local VENDOR_CLASS_LABEL = {
+    [103693] = "Hunter",
+    [105986] = "Rogue",
+    [112318] = "Shaman",
+    [112323] = "Druid",
+	[93550] = "Death Knight", 
+	[100196] = "Paladin", 
+    [112338] = "Monk",
+    [112392] = "Warrior",
+    [112401] = "Priest",
+    [112407] = "Demon Hunter",
+    [112434] = "Warlock",
+    [112440] = "Mage",
+}
+
+local function GetClassLabelForVendor(it)
+    if not it then return nil end
+    local vid = it.npcID
+    if not vid and it.source then vid = it.source.npcID or it.source.id end
+    if not vid and it.vendor and it.vendor.source then vid = it.vendor.source.id end
+    vid = tonumber(vid)
+    return vid and VENDOR_CLASS_LABEL[vid] or nil
+end
+
+local function GetDyeableOrClassLabel(it)
+    local classLabel = GetClassLabelForVendor(it)
+    local isDyeable = IsItemDyeable(it and it.decorID)
+    if isDyeable and classLabel then return "Dyeable - " .. classLabel end
+    if isDyeable then return "Dyeable" end
+    return classLabel
+end
+
 
 local function GetDecorCategoryBreadcrumb(decorID)
     if not decorID then return "" end
@@ -1249,9 +1281,14 @@ function Render:Create(parent)
                     end
 
                     if fr.dyePaletteFrame then
-                        local isDyeable = IsItemDyeable(it and it.decorID)
-                        if isDyeable then fr.dyePaletteFrame:Show() else fr.dyePaletteFrame:Hide() end
-                    end
+    local label = GetDyeableOrClassLabel(it)
+    if label and label ~= "" then
+        if fr.dyePaletteFrame.text then fr.dyePaletteFrame.text:SetText(label) end
+        fr.dyePaletteFrame:Show()
+    else
+        fr.dyePaletteFrame:Hide()
+    end
+end
 
                     if StatusIcon and StatusIcon.Attach then StatusIcon:Attach(fr, state, it) end
                     ApplyFactionBadge(fr, it, 24)
@@ -1397,9 +1434,14 @@ function Render:Create(parent)
                     end
 
                     if fr.dyePaletteFrame then
-                        local isDyeable = IsItemDyeable(it and it.decorID)
-                        if isDyeable then fr.dyePaletteFrame:Show() else fr.dyePaletteFrame:Hide() end
-                    end
+    local label = GetDyeableOrClassLabel(it)
+    if label and label ~= "" then
+        if fr.dyePaletteFrame.text then fr.dyePaletteFrame.text:SetText(label) end
+        fr.dyePaletteFrame:Show()
+    else
+        fr.dyePaletteFrame:Hide()
+    end
+end
 
                     if StatusIcon and StatusIcon.Attach then StatusIcon:Attach(fr, state, it) end
                     ApplyFactionBadge(fr, it, 16)

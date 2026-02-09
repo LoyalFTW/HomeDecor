@@ -211,7 +211,7 @@ local function BuildGlobalSearchResults(ui, db)
   Scan(data.Professions, "profession")
   Scan(data.PvP or data.PVP, "pvp")
   Scan(data.SavedItems or data["Saved Items"], "saved")
-
+  
   for _, it in pairs(bestByDecor) do
     out[#out + 1] = it
   end
@@ -257,27 +257,45 @@ local function CollectAllFavorites(db)
 
   local out, seen = {}, {}
 
-  for _, category in pairs(NS.Data or {}) do
-    for _, expansions in pairs(category or {}) do
-      for _, entries in pairs(expansions or {}) do
-        if type(entries) == "table" then
-          for _, it in ipairs(entries) do
-            if type(it) == "table" and it.source and it.source.type == "vendor" and type(it.items) == "table" then
-              local vSlim = SlimVendor(it)
-              for _, vit in ipairs(it.items) do
-                local id = Util.GetItemID(vit)
-                if id and db.favorites[id] and not seen[id] then
-                  seen[id] = true
-                  local leaf = Copy(vit)
-                  AttachVendorCtx(leaf, vSlim or it)
-                  out[#out + 1] = leaf
+  local function IsNestedCategory(tbl)
+    if type(tbl) ~= "table" then return false end
+    for k, v in pairs(tbl) do
+      if type(v) == "table" and type(k) == "string" then
+        for _, innerV in pairs(v) do
+          if type(innerV) == "table" then
+            return true
+          end
+        end
+      end
+    end
+    return false
+  end
+
+  for categoryName, category in pairs(NS.Data or {}) do
+    if categoryName ~= "Prof_Reagents" and categoryName ~= "DropSources" and IsNestedCategory(category) then
+      for _, expansions in pairs(category or {}) do
+        if type(expansions) == "table" then
+          for _, entries in pairs(expansions or {}) do
+            if type(entries) == "table" then
+              for _, it in ipairs(entries) do
+                if type(it) == "table" and it.source and it.source.type == "vendor" and type(it.items) == "table" then
+                  local vSlim = SlimVendor(it)
+                  for _, vit in ipairs(it.items) do
+                    local id = Util.GetItemID(vit)
+                    if id and db.favorites[id] and not seen[id] then
+                      seen[id] = true
+                      local leaf = Copy(vit)
+                      AttachVendorCtx(leaf, vSlim or it)
+                      out[#out + 1] = leaf
+                    end
+                  end
+                else
+                  local id = Util.GetItemID(it)
+                  if id and db.favorites[id] and not seen[id] then
+                    seen[id] = true
+                    out[#out + 1] = Copy(it)
+                  end
                 end
-              end
-            else
-              local id = Util.GetItemID(it)
-              if id and db.favorites[id] and not seen[id] then
-                seen[id] = true
-                out[#out + 1] = Copy(it)
               end
             end
           end
