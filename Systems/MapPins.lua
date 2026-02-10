@@ -15,7 +15,6 @@ local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
 
 local HBD = LibStub and LibStub("HereBeDragons-2.0", true)
 local HBDPins = LibStub and LibStub("HereBeDragons-Pins-2.0", true)
-
 local NPCNames = NS.Systems and NS.Systems.NPCNames
 local TooltipSys = NS.UI and NS.UI.Tooltips
 
@@ -28,7 +27,9 @@ local C_Map = _G.C_Map
 local C_SuperTrack = _G.C_SuperTrack
 local UiMapPoint = _G.UiMapPoint
 local IsShiftKeyDown = _G.IsShiftKeyDown
+
 local WAYPOINT_CLEAR_YARDS = 25
+
 local activeWaypoint = nil 
 
 local function clearUserWaypoint()
@@ -90,30 +91,32 @@ end
 local function getPinSettings()
   local prof = NS.db and NS.db.profile
   if not prof or not prof.mapPins then 
-    return "house", { r = 1, g = 1, b = 1 }
+    return "house", { r = 1, g = 1, b = 1 }, 1.0
   end
   local style = prof.mapPins.pinStyle or "house"
   local color = prof.mapPins.pinColor or { r = 1, g = 1, b = 1 }
-  return style, color
+  local size = prof.mapPins.pinSize or 1.0
+  return style, color, size
 end
 
-local function applyPinStyle(button, style, color)
+local function applyPinStyle(button, style, color, size)
+  size = size or 1.0
   if style == "dot" then
     button.bg:Hide()
     
     button.tex:ClearAllPoints()
     button.tex:SetPoint("CENTER")
-    button.tex:SetSize(14, 14)
+    button.tex:SetSize(14 * size, 14 * size)
     button.tex:SetTexture("Interface\\Common\\Indicator-Yellow")
     button.tex:SetTexCoord(0, 1, 0, 1)
     button.tex:SetVertexColor(0, 0, 0, 0.9)
-    
+
     if not button.innerCircle then
       button.innerCircle = button:CreateTexture(nil, "OVERLAY")
     end
     button.innerCircle:ClearAllPoints()
     button.innerCircle:SetPoint("CENTER")
-    button.innerCircle:SetSize(10, 10)
+    button.innerCircle:SetSize(10 * size, 10 * size)
     button.innerCircle:SetTexture("Interface\\Common\\Indicator-Yellow")
     button.innerCircle:SetTexCoord(0, 1, 0, 1)
     button.innerCircle:SetVertexColor(color.r, color.g, color.b, 1)
@@ -137,13 +140,14 @@ local function applyPinStyle(button, style, color)
   end
 end
 
-local function applyBadgeStyle(frame, style, color)
+local function applyBadgeStyle(frame, style, color, size)
+  size = size or 1.0
   if style == "dot" then
     frame.bg:Hide()
 
     frame.icon:ClearAllPoints()
     frame.icon:SetPoint("CENTER")
-    frame.icon:SetSize(20, 20)
+    frame.icon:SetSize(20 * size, 20 * size)
     frame.icon:SetTexture("Interface\\Common\\Indicator-Yellow")
     frame.icon:SetTexCoord(0, 1, 0, 1)
     frame.icon:SetVertexColor(0, 0, 0, 0.9)
@@ -153,7 +157,7 @@ local function applyBadgeStyle(frame, style, color)
     end
     frame.innerCircle:ClearAllPoints()
     frame.innerCircle:SetPoint("CENTER")
-    frame.innerCircle:SetSize(16, 16)
+    frame.innerCircle:SetSize(16 * size, 16 * size)
     frame.innerCircle:SetTexture("Interface\\Common\\Indicator-Yellow")
     frame.innerCircle:SetTexCoord(0, 1, 0, 1)
     frame.innerCircle:SetVertexColor(color.r, color.g, color.b, 1)
@@ -447,7 +451,7 @@ end
 local function showZoneBadges(continentMapID)
   clearBadges()
 
-  local style, color = getPinSettings()
+  local style, color, size = getPinSettings()
 
   local zoneCounts = {}
   for zoneMapID, continentID in pairs(zoneToContinent) do
@@ -474,7 +478,8 @@ local function showZoneBadges(continentMapID)
         zoneName = zoneName,
         vendorCount = vendorCount,
       }
-      applyBadgeStyle(frame, style, color)
+      frame:SetSize(PIN_SIZE_BADGE * size, PIN_SIZE_BADGE * size)
+      applyBadgeStyle(frame, style, color, size)
       frame.count:SetText(tostring(vendorCount))
       frame:Show()
       usedBadges[frame] = true
@@ -491,7 +496,7 @@ end
 local function showContinentBadges()
   clearBadges()
   
-  local style, color = getPinSettings()
+  local style, color, size = getPinSettings()
   
   local continentCounts = {}
   for zoneMapID, continentID in pairs(zoneToContinent) do
@@ -514,7 +519,8 @@ local function showContinentBadges()
       zoneName = continentName,
       vendorCount = vendorCount,
     }
-    applyBadgeStyle(frame, style, color)
+    frame:SetSize(PIN_SIZE_BADGE * size, PIN_SIZE_BADGE * size)
+    applyBadgeStyle(frame, style, color, size)
     frame.count:SetText(tostring(vendorCount))
     frame:Show()
     usedBadges[frame] = true
@@ -535,14 +541,14 @@ local function addWorldPinsForMap(mapID)
 
   resolveNamesFor(vendorList)
 
-  local style, color = getPinSettings()
+  local style, color, size = getPinSettings()
   
   for i = 1, #vendorList do
     local vendor = vendorList[i]
     local pinFrame = ensurePool()
     pinFrame.vendor = vendor
-    pinFrame:SetSize(PIN_SIZE_WORLD, PIN_SIZE_WORLD)
-    applyPinStyle(pinFrame, style, color)
+    pinFrame:SetSize(PIN_SIZE_WORLD * size, PIN_SIZE_WORLD * size)
+    applyPinStyle(pinFrame, style, color, size)
     pinFrame:Show()
     usedWorld[pinFrame] = true
     pcall(function()
@@ -559,14 +565,14 @@ local function addMiniPinsForMap(mapID)
 
   resolveNamesFor(vendorList)
 
-  local style, color = getPinSettings()
+  local style, color, size = getPinSettings()
 
   for i = 1, #vendorList do
     local vendor = vendorList[i]
     local pinFrame = ensurePool()
     pinFrame.vendor = vendor
-    pinFrame:SetSize(PIN_SIZE_MINI, PIN_SIZE_MINI)
-    applyPinStyle(pinFrame, style, color)
+    pinFrame:SetSize(PIN_SIZE_MINI * size, PIN_SIZE_MINI * size)
+    applyPinStyle(pinFrame, style, color, size)
     pinFrame:Show()
     usedMini[pinFrame] = true
     pcall(function()

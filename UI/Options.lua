@@ -20,6 +20,7 @@ local function ensureProfile()
   if prof.mapPins.minimap == nil then prof.mapPins.minimap = true end
   if prof.mapPins.worldmap == nil then prof.mapPins.worldmap = true end
   if prof.mapPins.pinStyle == nil then prof.mapPins.pinStyle = "house" end
+  if prof.mapPins.pinSize == nil then prof.mapPins.pinSize = 1.0 end
   if prof.mapPins.pinColor == nil or type(prof.mapPins.pinColor) ~= "table" then 
     prof.mapPins.pinColor = { r = 1.0, g = 1.0, b = 1.0 }
   else
@@ -135,6 +136,25 @@ local function mkColorPicker(parent, label)
   return button
 end
 
+local function mkSlider(parent, label, minVal, maxVal, step)
+  local slider = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
+  slider:SetMinMaxValues(minVal, maxVal)
+  slider:SetValueStep(step)
+  slider:SetObeyStepOnDrag(true)
+
+  slider.label = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  slider.label:SetPoint("BOTTOMLEFT", slider, "TOPLEFT", 0, 2)
+  slider.label:SetText(label)
+
+  slider.valueText = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  slider.valueText:SetPoint("BOTTOMRIGHT", slider, "TOPRIGHT", 0, 2)
+
+  slider.Low:SetText(string.format("%.1f", minVal))
+  slider.High:SetText(string.format("%.1f", maxVal))
+  
+  return slider
+end
+
 function Options:Ensure()
   if self.panel then return end
 
@@ -150,6 +170,7 @@ function Options:Ensure()
   sub:SetText("Quality-of-life settings for the addon.")
 
   local y = -60
+
   local cbMinimapButton = mkCheckbox(panel, "Show minimap button")
   cbMinimapButton:SetPoint("TOPLEFT", 16, y)
   y = y - 34
@@ -210,11 +231,12 @@ function Options:Ensure()
     end
     _G.UIDropDownMenu_AddButton(info)
   end)
+  
   y = y - 34
 
   local colorPicker = mkColorPicker(panel, "Pin Color")
   colorPicker:SetPoint("TOPLEFT", 32, y)
-  
+
   local btnResetColor = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
   btnResetColor:SetSize(100, 22)
   btnResetColor:SetPoint("LEFT", colorPicker.label, "RIGHT", 10, 0)
@@ -229,13 +251,29 @@ function Options:Ensure()
     refreshPins()
   end)
 
+  y = y - 40
+
+  local sizeSlider = mkSlider(panel, "Pin Size", 0.5, 2.0, 0.1)
+  sizeSlider:SetSize(200, 16)
+  sizeSlider:SetPoint("TOPLEFT", 32, y)
+  sizeSlider:SetScript("OnValueChanged", function(self, value)
+    local prof = ensureProfile()
+    if not prof then return end
+    value = math.floor(value * 10 + 0.5) / 10 
+    prof.mapPins.pinSize = value
+    self.valueText:SetText(string.format("%.1fx", value))
+    refreshPins()
+  end)
+  
+  y = y - 40
+
   local function syncFromDB()
     local prof = ensureProfile()
     if not prof then return end
     cbMinimapButton:SetChecked(not bool(prof.minimap.hide))
     cbMiniPins:SetChecked(bool(prof.mapPins.minimap))
     cbWorldPins:SetChecked(bool(prof.mapPins.worldmap))
-    
+
     if prof.mapPins.pinStyle == "dot" then
       _G.UIDropDownMenu_SetText(ddPinStyle, "Dot")
     else
@@ -244,6 +282,10 @@ function Options:Ensure()
 
     local c = prof.mapPins.pinColor
     colorPicker.color:SetColorTexture(c.r, c.g, c.b)
+
+    local size = prof.mapPins.pinSize or 1.0
+    sizeSlider:SetValue(size)
+    sizeSlider.valueText:SetText(string.format("%.1fx", size))
   end
 
   cbMinimapButton:SetScript("OnClick", function(self)

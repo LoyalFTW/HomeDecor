@@ -103,6 +103,7 @@ local defaults = {
       worldmap = true,
       minimap = true,
       pinStyle = "house",
+      pinSize = 1.0,
       pinColor = {
         r = 1.0,
         g = 1.0,
@@ -286,6 +287,17 @@ function Addon:OnEnable()
     local tdb = prof and prof.tracker
     if tdb and tdb.open and NS.UI and NS.UI.Tracker and NS.UI.Tracker.Create then
       NS.UI.Tracker:Create()
+    end
+  end
+
+  do
+    local prof = self.db and self.db.profile
+    local ptdb = prof and prof.profTracker
+    if NS.UI and NS.UI.ProfTracker and NS.UI.ProfTracker.Create then
+      NS.UI.ProfTracker:Create()
+      if ptdb and ptdb.open and NS.UI.ProfTracker.Show then
+        NS.UI.ProfTracker:Show()
+      end
     end
   end
 end
