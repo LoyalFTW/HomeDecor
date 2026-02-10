@@ -28,9 +28,7 @@ local C_Map = _G.C_Map
 local C_SuperTrack = _G.C_SuperTrack
 local UiMapPoint = _G.UiMapPoint
 local IsShiftKeyDown = _G.IsShiftKeyDown
-
 local WAYPOINT_CLEAR_YARDS = 25
-
 local activeWaypoint = nil 
 
 local function clearUserWaypoint()
@@ -87,6 +85,96 @@ local function parseWorldmap(worldmap)
   y = y / 10000
   if x <= 0 or y <= 0 or x >= 1 or y >= 1 then return end
   return mapID, x, y
+end
+
+local function getPinSettings()
+  local prof = NS.db and NS.db.profile
+  if not prof or not prof.mapPins then 
+    return "house", { r = 1, g = 1, b = 1 }
+  end
+  local style = prof.mapPins.pinStyle or "house"
+  local color = prof.mapPins.pinColor or { r = 1, g = 1, b = 1 }
+  return style, color
+end
+
+local function applyPinStyle(button, style, color)
+  if style == "dot" then
+    button.bg:Hide()
+    
+    button.tex:ClearAllPoints()
+    button.tex:SetPoint("CENTER")
+    button.tex:SetSize(14, 14)
+    button.tex:SetTexture("Interface\\Common\\Indicator-Yellow")
+    button.tex:SetTexCoord(0, 1, 0, 1)
+    button.tex:SetVertexColor(0, 0, 0, 0.9)
+    
+    if not button.innerCircle then
+      button.innerCircle = button:CreateTexture(nil, "OVERLAY")
+    end
+    button.innerCircle:ClearAllPoints()
+    button.innerCircle:SetPoint("CENTER")
+    button.innerCircle:SetSize(10, 10)
+    button.innerCircle:SetTexture("Interface\\Common\\Indicator-Yellow")
+    button.innerCircle:SetTexCoord(0, 1, 0, 1)
+    button.innerCircle:SetVertexColor(color.r, color.g, color.b, 1)
+    button.innerCircle:Show()
+  else
+    if button.innerCircle then
+      button.innerCircle:Hide()
+    end
+    
+    button.bg:ClearAllPoints()
+    button.bg:SetAllPoints()
+    button.bg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+    button.bg:SetVertexColor(0.1, 0.1, 0.1, 0.8)
+    button.bg:Show()
+    
+    button.tex:ClearAllPoints()
+    button.tex:SetAllPoints()
+    button.tex:SetTexture(ICON_TEX)
+    button.tex:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+    button.tex:SetVertexColor(color.r, color.g, color.b, 1)
+  end
+end
+
+local function applyBadgeStyle(frame, style, color)
+  if style == "dot" then
+    frame.bg:Hide()
+
+    frame.icon:ClearAllPoints()
+    frame.icon:SetPoint("CENTER")
+    frame.icon:SetSize(20, 20)
+    frame.icon:SetTexture("Interface\\Common\\Indicator-Yellow")
+    frame.icon:SetTexCoord(0, 1, 0, 1)
+    frame.icon:SetVertexColor(0, 0, 0, 0.9)
+
+    if not frame.innerCircle then
+      frame.innerCircle = frame:CreateTexture(nil, "OVERLAY")
+    end
+    frame.innerCircle:ClearAllPoints()
+    frame.innerCircle:SetPoint("CENTER")
+    frame.innerCircle:SetSize(16, 16)
+    frame.innerCircle:SetTexture("Interface\\Common\\Indicator-Yellow")
+    frame.innerCircle:SetTexCoord(0, 1, 0, 1)
+    frame.innerCircle:SetVertexColor(color.r, color.g, color.b, 1)
+    frame.innerCircle:Show()
+  else
+    if frame.innerCircle then
+      frame.innerCircle:Hide()
+    end
+    
+    frame.bg:ClearAllPoints()
+    frame.bg:SetAllPoints()
+    frame.bg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+    frame.bg:SetVertexColor(0.1, 0.1, 0.1, 0.9)
+    frame.bg:Show()
+    
+    frame.icon:ClearAllPoints()
+    frame.icon:SetAllPoints()
+    frame.icon:SetTexture(ICON_TEX)
+    frame.icon:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+    frame.icon:SetVertexColor(color.r, color.g, color.b, 1)
+  end
 end
 
 local function ensurePool()
@@ -359,6 +447,8 @@ end
 local function showZoneBadges(continentMapID)
   clearBadges()
 
+  local style, color = getPinSettings()
+
   local zoneCounts = {}
   for zoneMapID, continentID in pairs(zoneToContinent) do
     if continentID == continentMapID then
@@ -384,6 +474,7 @@ local function showZoneBadges(continentMapID)
         zoneName = zoneName,
         vendorCount = vendorCount,
       }
+      applyBadgeStyle(frame, style, color)
       frame.count:SetText(tostring(vendorCount))
       frame:Show()
       usedBadges[frame] = true
@@ -399,6 +490,8 @@ end
 
 local function showContinentBadges()
   clearBadges()
+  
+  local style, color = getPinSettings()
   
   local continentCounts = {}
   for zoneMapID, continentID in pairs(zoneToContinent) do
@@ -421,6 +514,7 @@ local function showContinentBadges()
       zoneName = continentName,
       vendorCount = vendorCount,
     }
+    applyBadgeStyle(frame, style, color)
     frame.count:SetText(tostring(vendorCount))
     frame:Show()
     usedBadges[frame] = true
@@ -441,12 +535,14 @@ local function addWorldPinsForMap(mapID)
 
   resolveNamesFor(vendorList)
 
+  local style, color = getPinSettings()
+  
   for i = 1, #vendorList do
     local vendor = vendorList[i]
     local pinFrame = ensurePool()
     pinFrame.vendor = vendor
     pinFrame:SetSize(PIN_SIZE_WORLD, PIN_SIZE_WORLD)
-    pinFrame.tex:SetTexture(ICON_TEX)
+    applyPinStyle(pinFrame, style, color)
     pinFrame:Show()
     usedWorld[pinFrame] = true
     pcall(function()
@@ -463,12 +559,14 @@ local function addMiniPinsForMap(mapID)
 
   resolveNamesFor(vendorList)
 
+  local style, color = getPinSettings()
+
   for i = 1, #vendorList do
     local vendor = vendorList[i]
     local pinFrame = ensurePool()
     pinFrame.vendor = vendor
     pinFrame:SetSize(PIN_SIZE_MINI, PIN_SIZE_MINI)
-    pinFrame.tex:SetTexture(ICON_TEX)
+    applyPinStyle(pinFrame, style, color)
     pinFrame:Show()
     usedMini[pinFrame] = true
     pcall(function()
