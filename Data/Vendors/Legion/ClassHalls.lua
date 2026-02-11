@@ -16,7 +16,6 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       worldmap="647:4390:3717"
     },
     items={
-      {decorID=5575, source={type="vendor", itemID=249690}, requirements={achievement={id=60963}}},
       {decorID=5879, source={type="vendor", itemID=250112, currency="2000", currencytype=1220}, requirements={achievement={id=60981}}},
       {decorID=5880, source={type="vendor", itemID=250113, currency="500", currencytype=1220}},
       {decorID=5881, source={type="vendor", itemID=250114, currency="500", currencytype=1220}},
@@ -159,8 +158,8 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     items={
       {decorID=5525, source={type="vendor", itemID=249457, currency="5000", currencytype=1220}, requirements={achievement={id=42288}}},
       {decorID=5527, source={type="vendor", itemID=249459, currency="1500", currencytype=1220}, requirements={achievement={id=42271}}},
-      {decorID=5575, source={type="vendor", itemID=249690, currency="3000", currencytype=1220}, requirements={achievement={id=60963}}},
-    }
+	  {decorID=5575, source={type="vendor", itemID=249690}, requirements={achievement={id=60963}}},
+	}
   },
 
   {

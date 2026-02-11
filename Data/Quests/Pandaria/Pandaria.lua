@@ -13,7 +13,7 @@ NS.Data.Quests["Pandaria"]["Pandaria"] = {
   { decorID=1412, source={ type="quest" } },
   { decorID=1443, source={ type="quest" } },
   { decorID=3869, source={ type="quest" } },
-  { decorID=3879, source={ type="quest" } },
+ -- DNT { decorID=3879, source={ type="quest" } },
   { decorID=3995, source={ type="quest" } },
   { decorID=4403, source={ type="quest" } },
   { decorID=4404, source={ type="quest" } },
