@@ -3,6 +3,9 @@ HomeDecor_Changelog = [[
 
 Feb 11, 2026
 
+* Added a new logo at the top tried to keep it simple
+and still look good with the UI. Hopefully you all like it.
+
 * Looking for feed back, would you guys rather
 the colors of class specific items be of the players
 class or just blue or white? Im adding them into the tooltips

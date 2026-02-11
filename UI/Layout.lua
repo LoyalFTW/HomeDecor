@@ -355,18 +355,20 @@ function L:CreateShell()
   header.controls:SetHeight(22)
   header.controls:EnableMouse(false)
 
-  local titleText = NewFS(header, "GameFontNormalLarge")
-  header.titleText = titleText
-  titleText:SetPoint("TOP", header, "TOP", 0, -10)
-  titleText:SetText("Home Decor")
-  titleText:SetJustifyH("CENTER")
-  titleText:SetJustifyV("MIDDLE")
+  local logo = header:CreateTexture(nil, "ARTWORK")
+  header.logo = logo
 
-  local fontPath = STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF"
-  titleText:SetFont(fontPath, 26, "OUTLINE")
-  titleText:SetTextColor(1, 0.82, 0.2, 1)
-  titleText:SetShadowColor(0, 0, 0, 0)
-  titleText:SetShadowOffset(0, 0)
+  if Textures and Textures.Logo then
+    logo:SetTexture(Textures.Logo)
+  else
+    logo:SetColorTexture(1, 0.82, 0.2, 1)
+  end
+
+  logo:SetSize(506, 50) 
+  logo:SetPoint("CENTER", header, "TOP", 0, -26)
+  logo:SetTexCoord(0, 1, 0, 1)
+  logo:SetAlpha(1)
+
 
   local closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
   header.closeBtn = closeBtn
@@ -409,6 +411,29 @@ function L:CreateShell()
   trackerBtn:SetScript("OnClick", function()
     local Tr = (NS.UI and NS.UI.Tracker) or (NS.UI and NS.UI.DecorTracker) or NS.Tracker
     if Tr and Tr.Toggle then Tr:Toggle() end
+  end)
+
+  local profBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  header.profBtn = profBtn
+  Backdrop(profBtn, T.panel, T.border)
+  profBtn:SetSize(72, 20)
+  profBtn:SetPoint("RIGHT", trackerBtn, "LEFT", -8, 0)
+  Hover(profBtn, T.panel, T.hover)
+
+  local profText = NewFS(profBtn, "GameFontNormal")
+  profBtn.text = profText
+  profText:SetPoint("CENTER", 0, 0)
+  profText:SetText("Profs")
+  profText:SetTextColor(unpack(ACCENT))
+  profBtn:SetFrameLevel(header:GetFrameLevel() + 6)
+  profText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
+  profText:SetShadowColor(0, 0, 0, 0)
+  profText:SetShadowOffset(0, 0)
+  profText:SetDrawLayer("OVERLAY", 7)
+
+  profBtn:SetScript("OnClick", function()
+    local PT = (NS.UI and NS.UI.ProfTracker) or NS.ProfTracker
+    if PT and PT.Toggle then PT:Toggle() end
   end)
 
   header.viewToggle = C:Segmented(
