@@ -1,15 +1,15 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Feb 9, 2026
+Feb 11, 2026
 
-* Added new options to the minimap, right click
-the minimap it will give you options to show the house
-or a dot the color changer will change the house color
-or the dot. 
+* Looking for feed back, would you guys rather
+the colors of class specific items be of the players
+class or just blue or white? Im adding them into the tooltips
 
-* Added Classes onto items for now its 
-blue will add options for class colors
+* Also looking for more feed back on if locations are incorrect
+or need update. please message on discord or curse im always updating
+thanks!
 
 
 ]]
