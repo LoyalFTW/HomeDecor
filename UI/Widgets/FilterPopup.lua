@@ -242,6 +242,22 @@ function M:Build(popup, env)
             end
         end,
     true)
+    
+    do
+        local availRepRow = popup._rows[#popup._rows]
+        if availRepRow and availRepRow.dd then
+            availRepRow.dd:SetScript("OnEnter", function(self)
+                self:SetBackdropBorderColor(unpack(T.accent))
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                GameTooltip:SetText("Login to Alts once to update", nil, nil, nil, nil, true)
+                GameTooltip:Show()
+            end)
+            availRepRow.dd:SetScript("OnLeave", function(self)
+                self:SetBackdropBorderColor(unpack(T.border))
+                GameTooltip:Hide()
+            end)
+        end
+    end
 
     ddRow("Faction",
         function() local f = F(); return (f and f.faction) or "ALL" end,

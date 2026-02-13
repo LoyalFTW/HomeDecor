@@ -1,454 +1,570 @@
-local _, NS = ...
+local ADDON, NS = ...
+
 NS.UI = NS.UI or {}
-NS.UI.Util = NS.UI.Util or {}
-local U = NS.UI.Util
+NS.UI.Tooltips = NS.UI.Tooltips or {}
+local TT = NS.UI.Tooltips
 
-local unpack = unpack
-local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
+local tonumber, tostring, type, pairs, ipairs = tonumber, tostring, type, pairs, ipairs
+local pcall = pcall
 
-if not U.Backdrop then
-    function U.Backdrop(frame, controls, bg, border)
-        if not frame then return end
-        if controls and controls.Backdrop then return controls:Backdrop(frame, bg, border) end
-        frame:SetBackdrop({
-            bgFile = "Interface/Buttons/WHITE8x8",
-            edgeFile = "Interface/Buttons/WHITE8x8",
-            edgeSize = 1,
-        })
-        frame:SetBackdropColor(unpack(bg))
-        frame:SetBackdropBorderColor(unpack(border))
-    end
+local function canAccess(v)
+  if v == nil then return false end
+  if issecretvalue and issecretvalue(v) then return false end
+  if canaccessvalue and not canaccessvalue(v) then return false end
+  return true
 end
 
-if not U.SetFont then
-    function U.SetFont(fs, size)
-        if fs then fs:SetFont(STANDARD_TEXT_FONT, size, "") end
-    end
+local function own(frame)
+  GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
+  GameTooltip:ClearLines()
 end
 
-if not U.SafeBorder then
-    function U.SafeBorder(frame, col)
-        if frame and frame.SetBackdropBorderColor and col then
-            frame:SetBackdropBorderColor(col[1], col[2], col[3], col[4] or 1)
-        end
-    end
+local function hide()
+  GameTooltip:Hide()
 end
 
-if not U.BindBorderHover then
-    function U.BindBorderHover(frame, accent, border)
-        if not (frame and frame.SetScript and frame.SetBackdropBorderColor) then return end
-        frame:SetScript("OnEnter", function() frame:SetBackdropBorderColor(unpack(accent)) end)
-        frame:SetScript("OnLeave", function() frame:SetBackdropBorderColor(unpack(border)) end)
-    end
+local function label(text)
+  if text then GameTooltip:AddLine(text, 0.6, 0.8, 1) end
 end
 
-local function insertAllSeparator(values)
-    if type(values) ~= "table" or values.__hasAllSeparator then return values end
-    local first = values[1]
-    if first and first.value == "ALL" then
-        table.insert(values, 2, { separator = true })
-        values.__hasAllSeparator = true
-    end
-    return values
+local function kv(k, v)
+  if v and v ~= "" then
+    GameTooltip:AddDoubleLine(k, tostring(v), 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
+  end
 end
 
-local M = {}
-NS.UI.FilterPopup = M
-
-function M:Build(popup, env)
-    local C, T, Dropdown, Filters, FiltersSys = env.C, env.T, env.Dropdown, env.Filters, env.FiltersSys
-    local HeaderCtrl = NS.UI and NS.UI.HeaderController
-    local rerender = env.rerender
-
-    popup._rows = popup._rows or {}
-    wipe(popup._rows)
-
-    local function ensureDB()
-        local db = NS.db and NS.db.profile
-        if db and FiltersSys and FiltersSys.EnsureDefaults then
-            pcall(FiltersSys.EnsureDefaults, FiltersSys, db)
-        end
-        if db then db.filters = db.filters or {} end
-        return db
-    end
-
-    local function F()
-        local db = ensureDB()
-        return db and db.filters
-    end
-
-    local function rebuild()
-        if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
-        if rerender then rerender() end
-    end
-
-    local function setDDText(dd, value)
-        local fs = dd and dd.text
-        if not fs then return end
-
-        local opts = dd._valuesFn and dd._valuesFn() or nil
-        if type(opts) == "table" then
-            for i = 1, #opts do
-                local o = opts[i]
-                if o and not o.separator and o.value == value then
-                    fs:SetText(o.text or tostring(value))
-                    return
-                end
-            end
-        end
-        fs:SetText(tostring(value or ""))
-    end
-
-    local function syncAll()
-        for i = 1, #popup._rows do
-            local r = popup._rows[i]
-            if r and r._get and r.dd then
-                if r.isCheck then
-                    if r.dd.check and r.dd.check.SetShown then r.dd.check:SetShown(r._get() == true) end
-                else
-                    setDDText(r.dd, r._get())
-                end
-            end
-        end
-    end
-
-    local function resetCategoryScope()
-        local f = F()
-        if not f then return end
-        f.category = "ALL"
-        f.subcategory = "ALL"
-        if Filters then
-            Filters.category = "ALL"
-            Filters.subcategory = "ALL"
-        end
-    end
-
-    local function button(text, onClick)
-        local b = CreateFrame("Button", nil, popup, "BackdropTemplate")
-        b:SetHeight(24)
-        U.Backdrop(b, C, T.panel, T.border)
-        U.BindBorderHover(b, T.accent, T.border)
-
-        b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        b.text:SetPoint("CENTER")
-        b.text:SetText(text)
-
-        b:SetScript("OnClick", function() if onClick then onClick() end end)
-        popup._rows[#popup._rows + 1] = { isButton = true, dd = b }
-        return b
-    end
-
-    local function headerRow(titleText)
-        local r = {}
-        r.title = popup:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        r.title:SetText(titleText)
-        r.title:SetTextColor(unpack(T.accent))
-
-        r.line = popup:CreateTexture(nil, "ARTWORK")
-        r.line:SetHeight(2)
-        r.line:SetColorTexture(unpack(T.accent))
-        return r
-    end
-
-    local function checkRow(titleText, get, set, resetsCategory)
-        local r = headerRow(titleText)
-        r.isCheck, r._get = true, get
-
-        local b = CreateFrame("Button", nil, popup, "BackdropTemplate")
-        b:SetHeight(24)
-        U.Backdrop(b, C, T.panel, T.border)
-        U.BindBorderHover(b, T.accent, T.border)
-
-        b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        b.text:SetPoint("LEFT", 10, 0)
-        b.text:SetText(titleText)
-
-        b.check = b:CreateTexture(nil, "OVERLAY")
-        b.check:SetSize(14, 14)
-        b.check:SetPoint("RIGHT", -10, 0)
-        b.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
-
-        b:SetScript("OnClick", function()
-            set(not get())
-            if resetsCategory then resetCategoryScope() end
-            if b.check and b.check.SetShown then b.check:SetShown(get() == true) end
-            rebuild()
-        end)
-
-        r.dd = b
-        popup._rows[#popup._rows + 1] = r
-        if b.check and b.check.SetShown then b.check:SetShown(get() == true) end
-    end
-
-    local function ddRow(titleText, get, set, valuesFn, resetsCategory)
-        local r = headerRow(titleText)
-        r._get = get
-
-        local dd = Dropdown.Create(
-            popup, nil, nil, 1,
-            get,
-            function(v)
-                set(v)
-                if resetsCategory then resetCategoryScope() end
-                setDDText(dd, get())
-                rebuild()
-            end,
-            valuesFn,
-            function() return true end,
-            C, T
-        )
-        dd._valuesFn = valuesFn
-        r.dd = dd
-
-        popup._rows[#popup._rows + 1] = r
-        setDDText(dd, get())
-    end
-
-    local function hardReset()
-        local db = ensureDB()
-        local f = db and db.filters
-        if not f then return end
-
-        f.expansion, f.zone, f.category, f.subcategory, f.faction = "ALL", "ALL", "ALL", "ALL", "ALL"
-        f.hideCollected, f.onlyCollected = false, false
-
-        if Filters then
-            Filters.expansion, Filters.zone, Filters.category, Filters.subcategory, Filters.faction =
-                f.expansion, f.zone, f.category, f.subcategory, f.faction
-        end
-
-        syncAll()
-        rebuild()
-    end
-
-    checkRow("Hide Completed",
-        function() local f = F(); return (f and f.hideCollected) == true end,
-        function(v) local f = F(); if f then f.hideCollected = (v == true) end end,
-    true)
-
-    checkRow("Available Rep",
-        function() local f = F(); return (f and f.availableRepOnly) == true end,
-        function(v)
-            local f = F()
-            if not f then return end
-            f.availableRepOnly = (v == true)
-            local db = ensureDB()
-            local ui = db and db.ui
-            if ui then
-                ui.activeCategory = "Vendors"
-            end
-            if NS.UI and NS.UI.Layout and NS.UI.Layout.Render then
-                NS.UI.Layout:Render()
-            end
-        end,
-    true)
-    
-    do
-        local availRepRow = popup._rows[#popup._rows]
-        if availRepRow and availRepRow.dd then
-            availRepRow.dd:SetScript("OnEnter", function(self)
-                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                GameTooltip:SetText("Login to Alts once to update", nil, nil, nil, nil, true)
-                GameTooltip:Show()
-            end)
-            availRepRow.dd:SetScript("OnLeave", function()
-                GameTooltip:Hide()
-            end)
-        end
-    end
-
-    ddRow("Faction",
-        function() local f = F(); return (f and f.faction) or "ALL" end,
-        function(v) local f = F(); if f then f.faction = v or "ALL" end end,
-        function()
-            return {
-                { value = "ALL",      text = "All Factions" },
-                { value = "Alliance", text = "Alliance" },
-                { value = "Horde",    text = "Horde" },
-            }
-        end,
-    true)
-
-    ddRow("Expansion",
-        function()
-            local f = F()
-            local v = (f and f.expansion) or "ALL"
-            if Filters then Filters.expansion = v end
-            return v
-        end,
-        function(v)
-            local f = F()
-            if not f then return end
-            f.expansion = v or "ALL"
-            f.zone = "ALL"
-            if Filters then Filters.expansion, Filters.zone = f.expansion, f.zone end
-        end,
-        function()
-            local out, seen = { { value = "ALL", text = "All Expansions" } }, {}
-            local vendors = NS.Data and NS.Data.Vendors
-            if type(vendors) == "table" then
-                for exp in pairs(vendors) do
-                    if not seen[exp] then
-                        seen[exp] = true
-                        out[#out + 1] = { value = exp, text = exp }
-                    end
-                end
-            end
-            table.sort(out, function(a, b) return a.text < b.text end)
-            return insertAllSeparator(out)
-        end,
-    true)
-
-    ddRow("Zone",
-        function()
-            local f = F()
-            local v = (f and f.zone) or "ALL"
-            if Filters then Filters.zone = v end
-            return v
-        end,
-        function(v)
-            local f = F()
-            if not f then return end
-            f.zone = v or "ALL"
-            if Filters then Filters.zone = f.zone end
-        end,
-        function()
-            local out, seen = { { value = "ALL", text = "All Zones" } }, {}
-            local f = F()
-            local exp = (f and f.expansion) or "ALL"
-            local vendors = NS.Data and NS.Data.Vendors
-
-            local function add(z)
-                if type(z) == "string" and z ~= "" and not seen[z] then
-                    seen[z] = true
-                    out[#out + 1] = { value = z, text = z }
-                end
-            end
-
-            local function scan(expTbl)
-                for _, zoneTbl in pairs(expTbl or {}) do
-                    if type(zoneTbl) == "table" then
-                        for _, vendor in ipairs(zoneTbl) do
-                            local src = vendor and vendor.source
-                            if src then add(src.zone) end
-                        end
-                    end
-                end
-            end
-
-            if type(vendors) == "table" then
-                if exp ~= "ALL" and type(vendors[exp]) == "table" then
-                    scan(vendors[exp])
-                else
-                    for _, expTbl in pairs(vendors) do
-                        if type(expTbl) == "table" then scan(expTbl) end
-                    end
-                end
-            end
-
-            table.sort(out, function(a, b) return a.text < b.text end)
-            return insertAllSeparator(out)
-        end,
-    true)
-
-    ddRow("Category",
-        function()
-            local f = F()
-            local v = (f and f.category) or "ALL"
-            local FS = NS and NS.Systems and NS.Systems.Filters
-            if FS and FS.ResolveCategoryID then
-                local nv = FS:ResolveCategoryID(v)
-                if f and nv ~= v then f.category = nv end
-                v = nv
-            end
-            if Filters then Filters.category = v end
-            return v
-        end,
-        function(v)
-            local f = F()
-            if not f then return end
-            local FS = NS and NS.Systems and NS.Systems.Filters
-            local nv = v or "ALL"
-            if FS and FS.ResolveCategoryID then nv = FS:ResolveCategoryID(nv) end
-            f.category = nv
-            f.subcategory = "ALL"
-            if Filters then Filters.category, Filters.subcategory = f.category, f.subcategory end
-        end,
-        function()
-            local FS = NS and NS.Systems and NS.Systems.Filters
-            if FS and FS.GetCategoryOptions then
-                return FS:GetCategoryOptions()
-            end
-            return { { value = "ALL", text = "All Categories" } }
-        end
-    )
-
-    ddRow("Subcategory",
-        function()
-            local f = F()
-            local v = (f and f.subcategory) or "ALL"
-            local FS = NS and NS.Systems and NS.Systems.Filters
-            if FS and FS.ResolveSubcategoryID then
-                local nv = FS:ResolveSubcategoryID(v)
-                if f and nv ~= v then f.subcategory = nv end
-                v = nv
-            end
-            if Filters then Filters.subcategory = v end
-            return v
-        end,
-        function(v)
-            local f = F()
-            if not f then return end
-            local FS = NS and NS.Systems and NS.Systems.Filters
-            local nv = v or "ALL"
-            if FS and FS.ResolveSubcategoryID then nv = FS:ResolveSubcategoryID(nv) end
-            f.subcategory = nv
-            if Filters then Filters.subcategory = f.subcategory end
-        end,
-        function()
-            local f = F()
-            local cat = (f and f.category) or "ALL"
-            local FS = NS and NS.Systems and NS.Systems.Filters
-            if FS and FS.GetSubcategoryOptions then
-                return FS:GetSubcategoryOptions(cat)
-            end
-            return { { value = "ALL", text = "All Subcategories" } }
-        end
-    )
-
-    button("Reset All Filters", hardReset)
-
-    function popup:Refresh()
-        local y, left, right = -18, 6, 6
-        for i = 1, #self._rows do
-            local r = self._rows[i]
-            if r.isButton then
-                r.dd:ClearAllPoints()
-                r.dd:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
-                r.dd:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
-                r.dd:SetHeight(24)
-                y = y - 34
-            else
-                r.title:ClearAllPoints()
-                r.title:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
-                y = y - 20
-
-                r.line:ClearAllPoints()
-                r.line:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
-                r.line:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
-                y = y - 10
-
-                r.dd:ClearAllPoints()
-                r.dd:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
-                r.dd:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
-                r.dd:SetHeight((r.isCheck and 24) or 26)
-                y = y - 30
-            end
-        end
-        self:SetHeight(-y + 12)
-    end
-
-    popup:Refresh()
+local function actionLine(text)
+  if text then GameTooltip:AddLine(text, 0.8, 0.8, 0.8) end
 end
 
-return M
+local function showItem(itemID)
+  itemID = tonumber(itemID)
+  if not itemID then return false end
+  GameTooltip:SetHyperlink("item:" .. itemID)
+  return true
+end
+
+local function showAchievement(id)
+  id = tonumber(id)
+  if not id or not GetAchievementLink then return false end
+  local link = GetAchievementLink(id)
+  if not link then return false end
+  GameTooltip:SetHyperlink(link)
+  return true
+end
+
+local function showQuest(id)
+  id = tonumber(id)
+  if not id then return false end
+  GameTooltip:SetHyperlink("quest:" .. id)
+  return true
+end
+
+local function showSpell(spellID)
+  spellID = tonumber(spellID)
+  if not spellID then return false end
+  GameTooltip:SetSpellByID(spellID)
+  return true
+end
+
+local function factionFor(data)
+  local f = (data.source and data.source.faction) or data.faction
+  if not f then return nil end
+  if type(f) == "table" then
+    local a, h = false, false
+    for _, v in pairs(f) do
+      if v == "Alliance" then a = true elseif v == "Horde" then h = true end
+    end
+    if a and h then return "Both" end
+    if a then return "Alliance" end
+    if h then return "Horde" end
+    return nil
+  end
+  if f == "Alliance" or f == "Horde" or f == "Neutral" or f == "Both" then return f end
+  return tostring(f)
+end
+
+local function vendorNameZone(data)
+  if data._navVendor then
+    return data._navVendor.title, data._navVendor.zone
+  end
+  local s = data.source or {}
+  return s.vendor or s.vendorName or s.npc, s.zone or data.zone
+end
+
+local function dropNPCs(data)
+  local out, seen = {}, {}
+  local s = data.source or {}
+
+  local ds = data._dropSources
+  if type(ds) == "table" then
+    for _, src in ipairs(ds) do
+      local name = src and (src.npc or src.name)
+      if name and not seen[name] then
+        seen[name] = true
+        out[#out + 1] = name
+      end
+    end
+  end
+
+  local mobSet = s.mobSet
+  local mobSets = s._mobSets
+  if mobSet and type(mobSets) == "table" and type(mobSets[mobSet]) == "table" then
+    for _, mob in pairs(mobSets[mobSet]) do
+      local name = mob and mob.name
+      if name and not seen[name] then
+        seen[name] = true
+        out[#out + 1] = name
+      end
+    end
+  end
+
+  if type(s.mobs) == "table" then
+    for _, mob in pairs(s.mobs) do
+      local name = mob and mob.name
+      if name and not seen[name] then
+        seen[name] = true
+        out[#out + 1] = name
+      end
+    end
+  end
+
+  if #out == 0 and s.npc then
+    out[1] = s.npc
+  end
+
+  if #out == 0 then return nil end
+  table.sort(out)
+  return out
+end
+
+local function professionSpellID(data)
+  local s = data.source or {}
+  return tonumber(s.spellID) or tonumber(s.skillID) or tonumber(s.recipeID) or tonumber(s.id)
+      or tonumber(data.spellID) or tonumber(data.skillID) or tonumber(data.recipeID) or tonumber(data.id)
+end
+
+local VENDOR_CLASS_LABEL = {
+  [103693] = "Hunter",
+  [105986] = "Rogue",
+  [112318] = "Shaman",
+  [112323] = "Druid",
+  [93550] = "Death Knight",
+  [100196] = "Paladin",
+  [112338] = "Monk",
+  [112392] = "Warrior",
+  [112401] = "Priest",
+  [112407] = "Demon Hunter",
+  [112434] = "Warlock",
+  [112440] = "Mage",
+}
+
+local CLASS_COLORS = {
+  ["Death Knight"] = { r = 0.77, g = 0.12, b = 0.23 },
+  ["Demon Hunter"] = { r = 0.64, g = 0.19, b = 0.79 },
+  ["Druid"] = { r = 1.00, g = 0.49, b = 0.04 },
+  ["Hunter"] = { r = 0.67, g = 0.83, b = 0.45 },
+  ["Mage"] = { r = 0.25, g = 0.78, b = 0.92 },
+  ["Monk"] = { r = 0.00, g = 1.00, b = 0.59 },
+  ["Paladin"] = { r = 0.96, g = 0.55, b = 0.73 },
+  ["Priest"] = { r = 1.00, g = 1.00, b = 1.00 },
+  ["Rogue"] = { r = 1.00, g = 0.96, b = 0.41 },
+  ["Shaman"] = { r = 0.00, g = 0.44, b = 0.87 },
+  ["Warlock"] = { r = 0.53, g = 0.53, b = 0.93 },
+  ["Warrior"] = { r = 0.78, g = 0.61, b = 0.43 },
+}
+
+local function GetClassLabel(data)
+  if not data then return nil end
+  local vid = data.npcID
+  if not vid and data.source then vid = data.source.npcID or data.source.id end
+  if not vid and data.vendor and data.vendor.source then vid = data.vendor.source.id end
+  if not vid and data._navVendor and data._navVendor.source then vid = data._navVendor.source.id end
+  vid = tonumber(vid)
+  return vid and VENDOR_CLASS_LABEL[vid] or nil
+end
+
+local function IsDyeable(data)
+  if not data then return false end
+  
+  local Util = NS.UI and NS.UI.Util
+  if Util and Util.IsDyeable then
+    return Util.IsDyeable(data)
+  end
+  
+  local decorID = data.decorID or data.id or (data.source and (data.source.id or data.source.decorID))
+  if not decorID then return false end
+  
+  local info
+  if _G.C_HousingCatalog and _G.C_HousingCatalog.GetCatalogEntryInfo then
+    local ok, res = pcall(_G.C_HousingCatalog.GetCatalogEntryInfo, decorID)
+    if ok then info = res end
+  end
+  
+  if type(info) == "table" then
+    return (info.canCustomize == true) or (info.isCustomizable == true) or (info.customizable == true)
+  elseif data.canCustomize ~= nil then
+    return data.canCustomize == true
+  elseif data.dyeable ~= nil then
+    return data.dyeable == true
+  end
+  
+  return false
+end
+
+local function addCommonKeys(data, includeVendor)
+  local s = data.source or {}
+  if includeVendor then
+    local n, z = vendorNameZone(data)
+    kv("Vendor", n)
+    kv("Zone", z)
+  else
+    kv("Zone", s.zone or data.zone)
+  end
+
+  local faction = factionFor(data)
+  if faction then
+    local factionText = faction
+    if faction == "Alliance" then
+      factionText = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:16|t " .. faction
+    elseif faction == "Horde" then
+      factionText = "|TInterface\\FriendsFrame\\PlusManz-Horde:16:16|t " .. faction
+    elseif faction == "Both" then
+      factionText = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:16|t |TInterface\\FriendsFrame\\PlusManz-Horde:16:16|t Both"
+    end
+    kv("Faction", factionText)
+  end
+
+  do
+    local RepAlts = NS.Systems and NS.Systems.ReputationAlts
+    local View = NS.UI and NS.UI.Viewer
+    local Req = View and View.Requirements
+    if RepAlts and RepAlts.GetAnyOtherCharacter and RepAlts.CurrentCharacterHas and Req and Req.GetRepRequirement then
+      local repReq = Req.GetRepRequirement(data)
+      if repReq and repReq.text then
+        local hasOnCurrent = RepAlts:CurrentCharacterHas(repReq.text)
+        if not hasOnCurrent then
+          local who = RepAlts:GetAnyOtherCharacter(repReq.text)
+          if who then
+            GameTooltip:AddLine("|TInterface\\Icons\\Achievement_Reputation_01:16:16:0:0:64:64:4:60:4:60|t |cffffe000Rep alt:|r |cffffff80" .. tostring(who) .. "|r")
+          end
+        end
+      end
+    end
+  end
+  
+  local classLabel = GetClassLabel(data)
+  if classLabel then
+    local classColor = CLASS_COLORS[classLabel]
+    if classColor then
+      GameTooltip:AddDoubleLine("Requires", classLabel, 0.8, 0.8, 0.8, classColor.r, classColor.g, classColor.b)
+    else
+      kv("Requires", classLabel)
+    end
+  end
+  
+  if IsDyeable(data) then
+    GameTooltip:AddLine("Dyeable", 0.4, 0.8, 1)
+  end
+end
+
+local function questTitleWarn()
+  local titleObj = _G.GameTooltipTextLeft1
+  local qt = titleObj and titleObj.GetText and titleObj:GetText()
+  if qt and qt:lower():find("decor treasure hunt", 1, true) then
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine("There are many versions of the Decor Treasure Hunt quest.", 1, 0.2, 0.2, true)
+    GameTooltip:AddLine("Use Ctrl+Click to open the correct WoWHead link.", 1, 0.2, 0.2, true)
+  end
+end
+
+function TT:Attach(frame, data)
+  if not frame or not data then return end
+  frame:EnableMouse(true)
+  frame._hdTTData = data
+
+  if frame.__hdTTScripts then return end
+  frame.__hdTTScripts = true
+
+  frame:SetScript("OnEnter", function()
+    local d = frame._hdTTData
+    if not d then return end
+    own(frame)
+
+    local s = d.source or {}
+    local t = s.type
+
+    if d.type == "vendor" and d.items then
+      GameTooltip:AddLine(d.title or "Vendor", 1, 1, 1)
+      GameTooltip:AddLine(" ")
+      actionLine("Left Click: Expand/Collapse")
+      actionLine("Right Click: Vendor Location")
+      actionLine("Alt + Click: Wowhead Link")
+      kv("Zone", d.zone)
+      kv("Faction", factionFor(d))
+      GameTooltip:Show()
+      return
+    end
+
+    if t == "vendor" then
+      if showItem(d.id or s.itemID) then
+        label("[Vendor Item]")
+        GameTooltip:AddLine(" ")
+        actionLine("Left Click: View Item")
+        actionLine("Right Click: Vendor Location")
+        
+        local hasAchReq = false
+        if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
+          hasAchReq = true
+          actionLine("Ctrl + Click: View Achievement")
+        end
+        
+        actionLine("Alt + Click: Wowhead Link")
+        addCommonKeys(d, true)
+        GameTooltip:Show()
+        return
+      end
+    elseif t == "drop" then
+      showItem(s.itemID or d.id)
+      label("[Drop]")
+      GameTooltip:AddLine(" ")
+      actionLine("Left Click: View Item")
+
+      if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
+        actionLine("Ctrl + Click: View Achievement")
+      end
+      
+      actionLine("Alt + Click: Wowhead Link")
+
+      local list = dropNPCs(d)
+      if list then
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine("Drops From:", 0.9, 0.9, 0.9)
+        for _, n in ipairs(list) do
+          GameTooltip:AddLine("* " .. n, 1, 0.82, 0)
+        end
+      end
+
+      addCommonKeys(d, false)
+      GameTooltip:Show()
+      return
+    elseif t == "pvp" then
+      showItem(s.itemID or d.id)
+      label("[PvP]")
+      GameTooltip:AddLine(" ")
+      actionLine("Left Click: View Item")
+      actionLine("Right Click: Vendor Location")
+
+      if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
+        actionLine("Ctrl + Click: View Achievement")
+      end
+      
+      actionLine("Alt + Click: Wowhead Link")
+      addCommonKeys(d, true)
+      GameTooltip:Show()
+      return
+    elseif t == "profession" then
+      local sid = professionSpellID(d)
+      if showSpell(sid) then
+        label("[Profession]")
+        GameTooltip:AddLine(" ")
+        actionLine("Left Click: View Item")
+
+        if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
+          actionLine("Ctrl + Click: View Achievement")
+        end
+        
+        actionLine("Alt + Click: Wowhead Link")
+        kv("Faction", factionFor(d))
+        GameTooltip:Show()
+        return
+      end
+      if showItem(s.itemID or d.id or s.id) then
+        label("[Profession]")
+        GameTooltip:AddLine(" ")
+        actionLine("Left Click: View Item")
+
+        if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
+          actionLine("Ctrl + Click: View Achievement")
+        end
+        
+        actionLine("Alt + Click: Wowhead Link")
+        kv("Faction", factionFor(d))
+        GameTooltip:Show()
+        return
+      end
+    elseif t == "achievement" and s.id then
+      if showAchievement(s.id) then
+        label("[Achievement]")
+        GameTooltip:AddLine(" ")
+        actionLine("Left Click: View Item")
+        actionLine("Right Click: Vendor Location")
+        actionLine("Ctrl + Click: View Achievement")
+        actionLine("Alt + Click: Wowhead Link")
+        addCommonKeys(d, true)
+        GameTooltip:Show()
+        return
+      end
+    elseif t == "quest" and s.id then
+      if showQuest(s.id) then
+        label("[Quest]")
+        GameTooltip:AddLine(" ")
+        actionLine("Left Click: View Item")
+        actionLine("Right Click: Vendor Location")
+        actionLine("Alt + Click: Wowhead Link")
+        questTitleWarn()
+        addCommonKeys(d, true)
+        GameTooltip:Show()
+        return
+      end
+    end
+
+    if d.title then GameTooltip:AddLine(d.title, 1, 1, 1) end
+    addCommonKeys(d, false)
+    GameTooltip:Show()
+  end)
+
+  frame:SetScript("OnLeave", hide)
+end
+
+function TT:ShowRequirement(owner, req)
+  if not owner or not req then return end
+  GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
+  GameTooltip:ClearLines()
+
+  if req.kind == "achievement" and req.id and showAchievement(req.id) then
+    label("[Achievement]")
+    GameTooltip:AddLine(" ")
+    actionLine("Click: Wowhead Link")
+    GameTooltip:Show()
+    return
+  end
+
+  if req.kind == "quest" and req.id and showQuest(req.id) then
+    label("[Quest]")
+    GameTooltip:AddLine(" ")
+    actionLine("Click: Wowhead Link")
+    GameTooltip:Show()
+  end
+end
+
+local function hasDecor(decorID)
+  local C = NS.Systems and NS.Systems.Collection
+  decorID = tonumber(decorID)
+  if not C or not decorID then return false end
+
+  local f = C.IsDecorCollected
+  if type(f) == "function" then
+    local ok, res = pcall(f, C, decorID)
+    if ok then return res and true or false end
+    ok, res = pcall(f, decorID)
+    if ok then return res and true or false end
+  end
+
+  local g = C.IsCollected
+  if type(g) == "function" then
+    local ok, res = pcall(g, C, { decorID = decorID })
+    if ok then return res and true or false end
+    ok, res = pcall(g, { decorID = decorID })
+    if ok then return res and true or false end
+  end
+
+  return false
+end
+
+local DecorNameCache = {}
+local function decorName(decorID)
+  decorID = tonumber(decorID)
+  if not decorID then return nil end
+  local cached = DecorNameCache[decorID]
+  if cached ~= nil then return cached or nil end
+
+  local HC = C_HousingCatalog
+  if HC and HC.GetCatalogEntryInfoByRecordID then
+    local ok, info = pcall(HC.GetCatalogEntryInfoByRecordID, 1, decorID, true)
+    local n = ok and info and info.name
+    if type(n) == "string" and n ~= "" then
+      DecorNameCache[decorID] = n
+      return n
+    end
+  end
+
+  DecorNameCache[decorID] = false
+  return nil
+end
+
+function TT.AppendNpcMouseover(tooltip, npcID)
+  local DI = NS.Systems and NS.Systems.DecorIndex
+  npcID = tonumber(npcID)
+  if not DI or not npcID then return end
+  local byNPC = DI.byNPC
+  if type(byNPC) ~= "table" then return end
+  local list = byNPC[npcID]
+  if type(list) ~= "table" or #list == 0 then return end
+
+  local owned, total = 0, #list
+  for i = 1, total do
+    if hasDecor(list[i]) then owned = owned + 1 end
+  end
+
+  local missing = total - owned
+  tooltip:AddLine(" ")
+  tooltip:AddLine("HomeDecor", 1, 0.82, 0)
+  tooltip:AddDoubleLine("Collected", owned .. " / " .. total, 1, 1, 1, 1, 1, 1)
+
+  if not IsShiftKeyDown() then
+    if missing > 0 then
+      tooltip:AddLine("Hold Shift: show missing", 0.8, 0.8, 0.8)
+    else
+      tooltip:AddLine("All collected", 0.3, 1, 0.3)
+    end
+    return
+  end
+
+  local shown = 0
+  for i = 1, total do
+    local decorID = list[i]
+    if not hasDecor(decorID) then
+      tooltip:AddLine(decorName(decorID) or ("Decor " .. tostring(decorID)), 1, 0.2, 0.2)
+      shown = shown + 1
+      if shown >= 25 then
+        local left = missing - shown
+        if left > 0 then tooltip:AddLine("+" .. left .. " more...", 0.8, 0.8, 0.8) end
+        break
+      end
+    end
+  end
+end
+
+local function handleNpcTooltip(tooltip)
+  if not tooltip or tooltip:IsForbidden() then return end
+  local _, unit = tooltip:GetUnit()
+  if not canAccess(unit) then return end
+  local ok, exists = pcall(UnitExists, unit)
+  if not ok or not exists then return end
+  local ok2, guid = pcall(UnitGUID, unit)
+  if not ok2 or not canAccess(guid) then return end
+  local ok3, npcID = pcall(function() return tonumber((select(6, strsplit("-", guid)))) end)
+  if not ok3 or not npcID then return end
+  TT.AppendNpcMouseover(tooltip, npcID)
+end
+
+if TooltipDataProcessor and Enum and Enum.TooltipDataType and TooltipDataProcessor.AddTooltipPostCall then
+  TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, handleNpcTooltip)
+elseif GameTooltip then
+  GameTooltip:HookScript("OnShow", handleNpcTooltip)
+end
+
+local mod = CreateFrame("Frame")
+mod:RegisterEvent("MODIFIER_STATE_CHANGED")
+mod:SetScript("OnEvent", function()
+  if not GameTooltip or not GameTooltip.IsShown or not GameTooltip:IsShown() then return end
+  local _, unit = GameTooltip.GetUnit and GameTooltip:GetUnit()
+  if unit then
+    pcall(GameTooltip.SetUnit, GameTooltip, unit)
+  elseif UnitExists and UnitExists("mouseover") then
+    pcall(GameTooltip.SetUnit, GameTooltip, "mouseover")
+  end
+end)
+
+return TT
