@@ -21,6 +21,7 @@ local unpack = unpack
 local ipairs = ipairs
 local strlower = string.lower
 local format = string.format
+local GetMouseFocus = GetMouseFocus
 
 local ACCENT = T.accent or { 1, 0.82, 0.2, 1 }
 local BORDER = T.border or { 0.20, 0.20, 0.20, 1 }
@@ -249,7 +250,7 @@ local function dockScale(frame, header)
     value:SetPoint("LEFT", (slider or label), "RIGHT", 8, 0)
   end
 
-  local rightEdge = header.trackerBtn or header.closeBtn or header
+  local rightEdge = header.trackersBtn or header.closeBtn or header
   group:ClearAllPoints()
   group:SetPoint("LEFT", header.controls, "LEFT", 10, 0)
   group:SetPoint("RIGHT", rightEdge, "LEFT", -12, 0)
@@ -390,50 +391,106 @@ function L:CreateShell()
     if f and f.Hide then f:Hide() end
   end)
 
-  local trackerBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
-  header.trackerBtn = trackerBtn
-  Backdrop(trackerBtn, T.panel, T.border)
-  trackerBtn:SetSize(72, 20)
-  trackerBtn:SetPoint("RIGHT", closeBtn, "LEFT", -12, 0)
-  Hover(trackerBtn, T.panel, T.hover)
+  local trackersBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  header.trackersBtn = trackersBtn
+  Backdrop(trackersBtn, T.panel, T.border)
+  trackersBtn:SetSize(88, 20)
+  trackersBtn:SetPoint("RIGHT", closeBtn, "LEFT", -12, 0)
+  Hover(trackersBtn, T.panel, T.hover)
 
-  local trackerText = NewFS(trackerBtn, "GameFontNormal")
-  trackerBtn.text = trackerText
-  trackerText:SetPoint("CENTER", 0, 0)
-  trackerText:SetText("Tracker")
-  trackerText:SetTextColor(unpack(ACCENT))
-  trackerBtn:SetFrameLevel(header:GetFrameLevel() + 6)
-  trackerText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
-  trackerText:SetShadowColor(0, 0, 0, 0)
-  trackerText:SetShadowOffset(0, 0)
-  trackerText:SetDrawLayer("OVERLAY", 7)
+  local trackersText = NewFS(trackersBtn, "GameFontNormal")
+  trackersBtn.text = trackersText
+  trackersText:SetPoint("CENTER", -6, 0)
+  trackersText:SetText("Trackers")
+  trackersText:SetTextColor(unpack(ACCENT))
+  trackersBtn:SetFrameLevel(header:GetFrameLevel() + 6)
+  trackersText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
+  trackersText:SetShadowColor(0, 0, 0, 0)
+  trackersText:SetShadowOffset(0, 0)
+  trackersText:SetDrawLayer("OVERLAY", 7)
 
-  trackerBtn:SetScript("OnClick", function()
+  local arrow = trackersBtn:CreateTexture(nil, "OVERLAY")
+  arrow:SetSize(8, 8)
+  arrow:SetPoint("RIGHT", trackersBtn, "RIGHT", -6, 0)
+  arrow:SetTexture("Interface\\ChatFrame\\ChatFrameExpandArrow")
+  arrow:SetVertexColor(unpack(ACCENT))
+
+  local trackersMenu = CreateFrame("Frame", nil, trackersBtn, "BackdropTemplate")
+  trackersMenu:SetFrameStrata("FULLSCREEN_DIALOG")
+  trackersMenu:SetFrameLevel(trackersBtn:GetFrameLevel() + 10)
+  trackersMenu:Hide()
+  Backdrop(trackersMenu, T.panel, T.border)
+  trackersMenu:SetSize(140, 60)
+  trackersMenu:SetPoint("TOP", trackersBtn, "BOTTOM", 0, -2)
+
+  local decorOption = CreateFrame("Button", nil, trackersMenu, "BackdropTemplate")
+  Backdrop(decorOption, T.panel, T.border)
+  decorOption:SetPoint("TOPLEFT", 4, -4)
+  decorOption:SetPoint("TOPRIGHT", -4, -4)
+  decorOption:SetHeight(24)
+  Hover(decorOption, T.panel, T.hover)
+
+  local decorText = NewFS(decorOption, "GameFontNormal")
+  decorText:SetPoint("CENTER", 0, 0)
+  decorText:SetText("Decor Tracker")
+  decorText:SetTextColor(unpack(ACCENT))
+
+  decorOption:SetScript("OnClick", function()
     local Tr = (NS.UI and NS.UI.Tracker) or (NS.UI and NS.UI.DecorTracker) or NS.Tracker
     if Tr and Tr.Toggle then Tr:Toggle() end
+    trackersMenu:Hide()
   end)
 
-  local profBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
-  header.profBtn = profBtn
-  Backdrop(profBtn, T.panel, T.border)
-  profBtn:SetSize(72, 20)
-  profBtn:SetPoint("RIGHT", trackerBtn, "LEFT", -8, 0)
-  Hover(profBtn, T.panel, T.hover)
+  local lumberOption = CreateFrame("Button", nil, trackersMenu, "BackdropTemplate")
+  Backdrop(lumberOption, T.panel, T.border)
+  lumberOption:SetPoint("TOPLEFT", decorOption, "BOTTOMLEFT", 0, -4)
+  lumberOption:SetPoint("TOPRIGHT", decorOption, "BOTTOMRIGHT", 0, -4)
+  lumberOption:SetHeight(24)
+  Hover(lumberOption, T.panel, T.hover)
 
-  local profText = NewFS(profBtn, "GameFontNormal")
-  profBtn.text = profText
-  profText:SetPoint("CENTER", 0, 0)
-  profText:SetText("Profs")
-  profText:SetTextColor(unpack(ACCENT))
-  profBtn:SetFrameLevel(header:GetFrameLevel() + 6)
-  profText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
-  profText:SetShadowColor(0, 0, 0, 0)
-  profText:SetShadowOffset(0, 0)
-  profText:SetDrawLayer("OVERLAY", 7)
+  local lumberText = NewFS(lumberOption, "GameFontNormal")
+  lumberText:SetPoint("CENTER", 0, 0)
+  lumberText:SetText("Lumber Tracker")
+  lumberText:SetTextColor(unpack(ACCENT))
 
-  profBtn:SetScript("OnClick", function()
-    local PT = (NS.UI and NS.UI.ProfTracker) or NS.ProfTracker
-    if PT and PT.Toggle then PT:Toggle() end
+  lumberOption:SetScript("OnClick", function()
+    local LT = (NS.UI and NS.UI.LumberTrack) or NS.LumberTrack
+    if LT and LT.Toggle then LT:Toggle() end
+    trackersMenu:Hide()
+  end)
+
+  trackersBtn:SetScript("OnClick", function()
+    if trackersMenu:IsShown() then
+      trackersMenu:Hide()
+    else
+      trackersMenu:Show()
+    end
+  end)
+
+  trackersMenu:SetScript("OnShow", function(self)
+    self._hideTimer = nil
+    self:SetScript("OnUpdate", function(self, elapsed)
+      local mouseOver = MouseIsOver(self) or MouseIsOver(trackersBtn) or 
+                        MouseIsOver(decorOption) or MouseIsOver(lumberOption)
+      
+      if not mouseOver then
+        if not self._hideTimer then
+          self._hideTimer = 0
+        end
+        self._hideTimer = self._hideTimer + elapsed
+        
+        if self._hideTimer >= 0.3 then
+          self:Hide()
+        end
+      else
+        self._hideTimer = nil
+      end
+    end)
+  end)
+
+  trackersMenu:SetScript("OnHide", function(self)
+    self:SetScript("OnUpdate", nil)
+    self._hideTimer = nil
   end)
 
   header.viewToggle = C:Segmented(

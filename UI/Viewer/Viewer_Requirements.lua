@@ -53,12 +53,16 @@ end
 local function GetQuestTitleSafe(id)
   id = tonumber(id)
   if not id then return nil end
+
+  local D = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
+  if D and D.GetQuestTitle then
+    return D.GetQuestTitle(id)
+  end
+
   if questNameCache[id] ~= nil then
     return questNameCache[id] or nil
   end
-  if C_QuestLog and C_QuestLog.RequestLoadQuestByID then
-    C_QuestLog.RequestLoadQuestByID(id)
-  end
+  
   if C_QuestLog and C_QuestLog.GetTitleForQuestID then
     local title = C_QuestLog.GetTitleForQuestID(id)
     if title and title ~= "" then
@@ -66,6 +70,26 @@ local function GetQuestTitleSafe(id)
       return title
     end
   end
+  
+  if C_QuestLog and C_QuestLog.RequestLoadQuestByID then
+    C_QuestLog.RequestLoadQuestByID(id)
+    C_Timer.After(0.1, function()
+      if C_QuestLog and C_QuestLog.GetTitleForQuestID then
+        local title = C_QuestLog.GetTitleForQuestID(id)
+        if title and title ~= "" then
+          questNameCache[id] = title
+          if View and View.instance and View.instance.Render then
+            View.instance:Render()
+          elseif NS.UI and NS.UI.Layout and NS.UI.Layout.Render then
+            NS.UI.Layout:Render()
+          end
+        else
+          questNameCache[id] = false
+        end
+      end
+    end)
+  end
+  
   questNameCache[id] = false
   return nil
 end

@@ -1,4 +1,4 @@
-local _, NS = ...
+local ADDON, NS = ...
 NS.UI = NS.UI or {}
 
 local Tracker = NS.UI.Tracker or {}
@@ -16,12 +16,12 @@ local DecorCounts = NS.Systems and NS.Systems.DecorCounts
 local Collection = NS.Systems and NS.Systems.Collection
 local HousingBootstrap = NS.Systems and NS.Systems.HousingBootstrap
 local Viewer = NS.UI and NS.UI.Viewer
-local C_Timer = _G.C_Timer
+local C_Timer = C_Timer
 
-local CreateFrame = _G.CreateFrame
-local UIParent = _G.UIParent
-local GetTime = _G.GetTime
-local pcall = _G.pcall
+local CreateFrame = CreateFrame
+local UIParent = UIParent
+local GetTime = GetTime
+local pcall = pcall
 
 local NPCNames = NS.Systems and NS.Systems.NPCNames
 
@@ -117,9 +117,9 @@ local function FetchZoneVendors()
 
   if type(vendors) == "table" and #vendors == 0 then
     local flat
-    for _, set in pairs(vendors) do
+    for key, set in pairs(vendors) do
       if type(set) == "table" then
-        for _, v in ipairs(set) do
+        for idx, v in ipairs(set) do
           flat = flat or {}
           flat[#flat + 1] = v
         end
@@ -265,13 +265,13 @@ function Render:Attach(_, ctx)
     local visible = frame._scratchVisible
     local y = 0
 
-    for _, v in ipairs(vendors) do
+    for vi, v in ipairs(vendors) do
       local items = (type(v) == "table" and type(v.items) == "table") and v.items or nil
       if items then
         wipe(visible)
         local cV, tV = 0, 0
 
-        for _, it in ipairs(items) do
+        for ii, it in ipairs(items) do
           if IsValid(it) then
             local did = it.decorID or it.id or tostring(it)
             local collected = collectedCache[did]

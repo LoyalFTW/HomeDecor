@@ -77,21 +77,48 @@ local defaults = {
       y = -80,
     },
 
-    
-    profTracker = {
-      open = false,
-      collapsed = false,
+    lumberTrack = {
       hideZero = false,
       showIcons = true,
       alpha = 0.7,
       goal = 1000,
       search = "",
-      width = 320,
-      height = 540,
-      point = "TOPRIGHT",
-      relPoint = "TOPRIGHT",
-      x = -360,
-      y = -80,
+      autoGoal = false,
+      accountWide = false,  
+      
+      lumberListOpen = false,
+      lumberListCollapsed = false,
+      lumberListWidth = 380,
+      lumberListHeight = 520,
+      lumberListPoint = "TOPRIGHT",
+      lumberListRelPoint = "TOPRIGHT",
+      lumberListX = -360,
+      lumberListY = -80,
+
+      farmingStatsOpen = false,
+      farmingStatsCollapsed = false,
+      farmingStatsAlpha = 0.7,
+      farmingStatsWidth = 300,
+      farmingStatsHeight = 300,
+      farmingStatsWidthCollapsed = 300,
+      farmingStatsHeightCollapsed = 166,
+      farmingStatsPoint = "TOPLEFT",
+      farmingStatsRelPoint = "TOPLEFT",
+      farmingStatsX = 250,
+      farmingStatsY = -80,
+      
+      autoStartFarming = false,
+    },
+
+    minimapVendor = {
+      pos = {},
+      width = 280,
+      height = 420,
+      alpha = 0.85,
+      point = "RIGHT",
+      relPoint = "RIGHT",
+      x = -280,
+      y = 0,
     },
 
     favorites = {},
@@ -274,6 +301,12 @@ function Addon:OnEnable()
     NS.Systems.DecorIndex:Build()
   end
 
+  if NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data and NS.UI.Viewer.Data.PrefetchQuestAndAchievementNames then
+    pcall(function() 
+      NS.UI.Viewer.Data.PrefetchQuestAndAchievementNames()
+    end)
+  end
+
   if NS.Systems.MapTracker and NS.Systems.MapTracker.Enable then
     pcall(function() NS.Systems.MapTracker:Enable(true) end)
   end
@@ -292,12 +325,15 @@ function Addon:OnEnable()
 
   do
     local prof = self.db and self.db.profile
-    local ptdb = prof and prof.profTracker
-    if NS.UI and NS.UI.ProfTracker and NS.UI.ProfTracker.Create then
-      NS.UI.ProfTracker:Create()
-      if ptdb and ptdb.open and NS.UI.ProfTracker.Show then
-        NS.UI.ProfTracker:Show()
-      end
+    local ltdb = prof and prof.lumberTrack
+    if NS.UI and NS.UI.LumberTrack and NS.UI.LumberTrack.Create then
+      NS.UI.LumberTrack:Create()
     end
+  end
+
+  if NS.UI and NS.UI.MinimapVendor then
+    pcall(function()
+      NS.UI.MinimapVendor:Create()
+    end)
   end
 end

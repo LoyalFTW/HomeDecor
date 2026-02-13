@@ -12,7 +12,7 @@ local Controls = NS.UI.Controls
 local ProgressBar = NS.UI.ProgressBar
 local Rows = NS.UI.TrackerRows
 local RowStyles = NS.UI.RowStyles
-local Util = NS.UI.TrackerUtil
+local U = NS.UI.TrackerUtil
 
 local floor = math.floor
 local max = math.max
@@ -25,12 +25,7 @@ local function GetThemeColors()
 end
 
 local function Clamp(v, a, b)
-  if Util and Util.Clamp then
-    return Util.Clamp(v, a, b)
-  end
-  if v < a then return a end
-  if v > b then return b end
-  return v
+  return (U and U.Clamp and U.Clamp(v, a, b)) or (v < a and a or (v > b and b or v))
 end
 
 local function ApplyRegionAlpha(root, a)
@@ -66,24 +61,7 @@ local function NextGlobalName(prefix)
 end
 
 local function GetTrackerDB()
-  local addon = NS.Addon
-  local db = addon and addon.db
-  local profile = db and db.profile
-  if not profile then return end
-
-  local t = profile.tracker
-  if type(t) ~= "table" then
-    t = {}
-    profile.tracker = t
-  end
-
-  local p = t.pos
-  if type(p) ~= "table" then
-    p = {}
-    t.pos = p
-  end
-
-  return t
+  return U and U.GetTrackerDB and U.GetTrackerDB()
 end
 
 local function ReadSizeFromDB(db, defaultW, defaultH)
@@ -160,7 +138,7 @@ function UI:CreateFrame()
   local function SaveFramePosition()
     local d = GetTrackerDB()
     if not d then return end
-    local point, _, relPoint, x, y = frame:GetPoint(1)
+    local point, relTo, relPoint, x, y = frame:GetPoint(1)
     if not point then return end
     WritePositionToDB(d, point, relPoint, x, y)
   end
@@ -460,7 +438,7 @@ function UI:CreateFrame()
   end
 
   frame._lastSizeW, frame._lastSizeH = frame:GetSize()
-  frame:HookScript("OnSizeChanged", function(_, ww, hh)
+  frame:HookScript("OnSizeChanged", function(f, ww, hh)
     if frame._collapsed then return end
     if ww == frame._lastSizeW and hh == frame._lastSizeH then return end
     frame._lastSizeW, frame._lastSizeH = ww, hh
@@ -489,7 +467,7 @@ function UI:CreateFrame()
     end)
   end)
 
-  resizeGrip:SetScript("OnMouseDown", function(_, btn)
+  resizeGrip:SetScript("OnMouseDown", function(grip, btn)
     if btn ~= "LeftButton" then return end
     frame._isSizing = true
     frame:StartSizing("BOTTOMRIGHT")
@@ -656,7 +634,7 @@ function UI:CreateFrame()
     frame:RequestRefresh("hidecompleted")
   end)
 
-  settings.slider:SetScript("OnValueChanged", function(_, v)
+  settings.slider:SetScript("OnValueChanged", function(slider, v)
     ApplyPanelsAlpha(v, not frame._initing)
     local d = GetTrackerDB()
     if d then d.alpha = Clamp(v, 0, 1) end

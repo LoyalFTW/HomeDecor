@@ -1,18 +1,16 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Feb 11, 2026
+Feb 12, 2026
 
-* Added a new logo at the top tried to keep it simple
-and still look good with the UI. Hopefully you all like it.
+* Added New Lumber Tracker + Farming Addition
+This will allow you to track your lumber
+it has an option to auto start and also away to track across
+your alts just log into each alt to have it track what they have
 
-* Looking for feed back, would you guys rather
-the colors of class specific items be of the players
-class or just blue or white? Im adding them into the tooltips
-
-* Also looking for more feed back on if locations are incorrect
-or need update. please message on discord or curse im always updating
-thanks!
-
+* NEW MAPS now on any map you can click it and see the vendor
+check vendors any wheres in the world using your map you can view the item
+set a check point see anything you want on them. If anything is not correct
+please let me know on Discord or Curse! 
 
 ]]

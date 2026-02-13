@@ -19,7 +19,7 @@ local ICON_SZ = 34
 local CHECK_ATLAS = "common-icon-checkmark"
 local CHECK_FALLBACK = "Interface\\RaidFrame\\ReadyCheck-Ready"
 
-local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
+local wipe = wipe or function(t) for k in pairs(t) do t[k] = nil end end
 
 local function MakeArrow(parent)
   local t = parent:CreateTexture(nil, "OVERLAY")

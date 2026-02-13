@@ -30,7 +30,11 @@ Systems\Collection.lua
 Systems\GlobalIndex.lua
 Systems\Changelog.lua
 Systems\MapTracker.lua
-Systems\MapPins.lua
+Systems\MapPins\MapPins_Util.lua
+Systems\MapPins\MapPins_Data.lua
+Systems\MapPins\MapPins_Pools.lua
+Systems\MapPins\MapPins_Refresh.lua
+Systems\MapPins\MapPins.lua
 Systems\Reputation.lua
 Systems\Events.lua
 
@@ -60,6 +64,12 @@ UI\Widgets\ProgressBar.lua
 UI\Widgets\StatusIcon.lua
 UI\Widgets\ItemInteractions.lua
 
+UI\MapPopup\MapPopup_Util.lua
+UI\MapPopup\MapPopup_Rows.lua 
+UI\MapPopup\MapPopup_UI.lua
+UI\MapPopup\MapPopup_Render.lua 
+UI\MapPopup\MapPopup.lua
+
 UI\Tracker\Tracker_Util.lua
 UI\Tracker\Tracker_Rows.lua
 UI\Tracker\Tracker_UI.lua
@@ -67,6 +77,19 @@ UI\Tracker\Tracker_Render.lua
 UI\Tracker\Tracker_Events.lua
 UI\Tracker\Tracker.lua
 UI\Tracker\TrackerButton.lua
+
+UI\LumberTrack\LumberTrack_Util.lua
+UI\LumberTrack\LumberTrack_AccountWide.lua
+UI\LumberTrack\LumberTrack_Settings.lua
+UI\LumberTrack\LumberTrack_Goals.lua
+UI\LumberTrack\LumberTrack_Rate.lua
+UI\LumberTrack\LumberTrack_Farming.lua
+UI\LumberTrack\LumberTrack_Rows.lua
+UI\LumberTrack\LumberTrack_LumberList.lua
+UI\LumberTrack\LumberTrack_FarmingStats.lua
+UI\LumberTrack\LumberTrack_Render.lua
+UI\LumberTrack\LumberTrack_Events.lua
+UI\LumberTrack\LumberTrack.lua
 
 UI\Viewer\Viewer.lua
 UI\Viewer\Viewer_Util.lua

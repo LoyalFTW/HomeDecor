@@ -6,13 +6,9 @@ NS.UI.TrackerEvents = Events
 
 local MapTracker = NS.Systems and NS.Systems.MapTracker
 local U = NS.UI.TrackerUtil
-local Rows = NS.UI.TrackerRows
 
 local function Clamp(v, a, b)
-    if U and U.Clamp then return U.Clamp(v, a, b) end
-    if v < a then return a end
-    if v > b then return b end
-    return v
+  return (U and U.Clamp and U.Clamp(v, a, b)) or (v < a and a or (v > b and b or v))
 end
 
 function Events:Attach(Tracker, ctx)
@@ -23,7 +19,7 @@ function Events:Attach(Tracker, ctx)
 
     if MapTracker and MapTracker.RegisterCallback then
         f._mtKey = "HomeDecorTrackerUI"
-        MapTracker:RegisterCallback(f._mtKey, function(_, name, mapID)
+        MapTracker:RegisterCallback(f._mtKey, function(sender, name, mapID)
             if not f or not f.IsShown or not f:IsShown() then return end
             if not cb:GetChecked() then return end
             if mapID and mapID == f._lastZoneMapID then return end
