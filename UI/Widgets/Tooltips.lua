@@ -253,6 +253,24 @@ local function addCommonKeys(data, includeVendor)
     end
   end
   
+  do
+    local QuestsAlts = NS.Systems and NS.Systems.QuestsAlts
+    local View = NS.UI and NS.UI.Viewer
+    local Req = View and View.Requirements
+    if QuestsAlts and QuestsAlts.GetAnyOtherCharacter and QuestsAlts.CurrentCharacterHas and Req and Req.GetQuestRequirement then
+      local questReq = Req.GetQuestRequirement(data)
+      if questReq and questReq.questID then
+        local hasOnCurrent = QuestsAlts:CurrentCharacterHas(questReq.questID)
+        if not hasOnCurrent then
+          local who = QuestsAlts:GetAnyOtherCharacter(questReq.questID)
+          if who then
+            GameTooltip:AddLine("|TInterface\\Icons\\INV_Misc_Book_11:16:16:0:0:64:64:4:60:4:60|t |cffffe000Quest alt:|r |cffffff80" .. tostring(who) .. "|r")
+          end
+        end
+      end
+    end
+  end
+  
   local classLabel = GetClassLabel(data)
   if classLabel then
     local classColor = CLASS_COLORS[classLabel]

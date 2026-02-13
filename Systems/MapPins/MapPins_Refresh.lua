@@ -124,6 +124,71 @@ function R.AddMiniPinsForMap(mapID)
     pinFrame.vendor = vendor
     pinFrame:SetSize(PIN_SIZE * size, PIN_SIZE * size)
     P.ApplyPinStyle(pinFrame, style, color, size)
+
+    pinFrame:SetScript("OnEnter", function(self)
+      if not self.vendor then return end
+      local v = self.vendor
+      local npcID = v.id
+      local zoneName = v.zone
+      local vendorName = v.name
+      local shiftKeyDown = IsShiftKeyDown and IsShiftKeyDown()
+      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      GameTooltip:SetText(vendorName or "Vendor", 1, 1, 1)
+      if zoneName then GameTooltip:AddLine(zoneName, 0.8, 0.8, 0.8) end
+      local faction = U.GetFactionForVendor(v)
+      if faction then
+        local factionText = faction
+        if faction == "Alliance" then factionText = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:16|t " .. faction
+        elseif faction == "Horde" then factionText = "|TInterface\\FriendsFrame\\PlusManz-Horde:16:16|t " .. faction
+        elseif faction == "Both" then factionText = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:16|t |TInterface\\FriendsFrame\\PlusManz-Horde:16:16|t Both"
+        end
+        GameTooltip:AddDoubleLine("Faction", factionText, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
+      end
+      local classLabel = U.GetClassLabelForVendor(npcID)
+      if classLabel then
+        local classColor = U.CLASS_COLORS and U.CLASS_COLORS[classLabel]
+        if classColor then
+          GameTooltip:AddDoubleLine("Requires", classLabel, 0.8, 0.8, 0.8, classColor.r, classColor.g, classColor.b)
+        else
+          GameTooltip:AddDoubleLine("Requires", classLabel, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
+        end
+      end
+      GameTooltip:AddLine(" ", 0, 0, 0)
+      local hasWaypoint = MapPins.IsActiveWaypoint and MapPins:IsActiveWaypoint(v.mapID, v.x, v.y, npcID)
+      GameTooltip:AddLine(hasWaypoint and "Left-click: Clear waypoint" or "Left-click: Set waypoint", 1, 0.82, 0)
+      GameTooltip:AddLine("Right-click: Show vendor items", 1, 0.82, 0)
+      if shiftKeyDown and npcID then GameTooltip:AddLine("NPC ID: " .. npcID, 0.8, 0.8, 0.8) end
+      if npcID and TooltipSys and type(TooltipSys.AppendNpcMouseover) == "function" then
+        pcall(TooltipSys.AppendNpcMouseover, GameTooltip, npcID)
+      end
+      GameTooltip:Show()
+    end)
+
+    pinFrame:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
+
+    pinFrame:SetScript("OnClick", function(self, mouseButton)
+      local vendor = self.vendor
+      if not vendor then return end
+      if mouseButton == "LeftButton" then
+        local mapID, x, y = vendor.mapID, vendor.x, vendor.y
+        if mapID and x and y then
+          if MapPins.IsActiveWaypoint and MapPins:IsActiveWaypoint(mapID, x, y, vendor.id) then
+            MapPins:ClearUserWaypoint()
+          else
+            MapPins:SetUserWaypoint(mapID, x, y, vendor.id)
+          end
+          if MapPins.RefreshTooltip then MapPins.RefreshTooltip() end
+        end
+        return
+      end
+      if mouseButton == "RightButton" then
+        local MapPopup = NS.UI and NS.UI.MapPopup
+        if MapPopup and MapPopup.Show then
+          MapPopup:Show(vendor.id, vendor)
+        end
+      end
+    end)
+
     pinFrame:Show()
     P.usedMini[pinFrame] = true
     pcall(function()

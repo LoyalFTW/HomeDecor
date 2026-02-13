@@ -287,15 +287,67 @@ function Render:RefreshContent(popup, frame, vendors)
                 aqLine, repLine = TrackerUtil.GetAQAndRepLines(item)
               end
               
-              if not aqLine and not repLine and item.requirements then
+              if not aqLine and item.requirements then
                 local req = item.requirements
+                
                 if req.achievement and req.achievement.id then
-                  aqLine = "|cffffd100*|r |cffd8d8d8Achievement required|r"
+                  local achID = tonumber(req.achievement.id)
+                  local achName = req.achievement.title or req.achievement.name
+                  
+                  if not achName and achID and _G.GetAchievementInfo then
+                    local ok, id, name = pcall(_G.GetAchievementInfo, achID)
+                    if ok then achName = name end
+                  end
+                  
+                  achName = achName or ("Achievement #" .. tostring(achID))
+                  aqLine = "|cffffd100*|r |cffd8d8d8Achievement: " .. tostring(achName) .. "|r"
+                  
                 elseif req.quest and req.quest.id then
-                  aqLine = "|cffffd100!|r |cffd8d8d8Quest required|r"
+                  local questID = tonumber(req.quest.id)
+                  local questName = req.quest.title or req.quest.name
+                  
+                  if not questName and questID and _G.C_QuestLog and _G.C_QuestLog.GetTitleForQuestID then
+                    local ok, name = pcall(_G.C_QuestLog.GetTitleForQuestID, questID)
+                    if ok and type(name) == "string" and name ~= "" then
+                      questName = name
+                    end
+                  end
+                  
+                  questName = questName or ("Quest #" .. tostring(questID))
+                  aqLine = "|cffffd100!|r |cffd8d8d8Quest: " .. tostring(questName) .. "|r"
                 end
-                if req.rep or req.reputation then
-                  repLine = "|cffb0b0b0Reputation required|r"
+              end
+              
+              if not repLine then
+                local Viewer = NS.UI and NS.UI.Viewer
+                local Requirements = Viewer and Viewer.Requirements
+                
+                if Requirements and Requirements.GetRepRequirement and Requirements.BuildRepDisplay then
+                  local repReq = Requirements.GetRepRequirement(item)
+                  if repReq then
+                    local repText = Requirements.BuildRepDisplay(repReq, false)
+                    if repText and repText ~= "" then
+                      repLine = repText
+                      
+                      local RepAlts = NS.Systems and NS.Systems.ReputationAlts
+                      if RepAlts and RepAlts.GetAnyOtherCharacter and RepAlts.CurrentCharacterHas and repReq.text then
+                        local hasOnCurrent = RepAlts:CurrentCharacterHas(repReq.text)
+                        if not hasOnCurrent then
+                          local who = RepAlts:GetAnyOtherCharacter(repReq.text)
+                          if who then
+                            repLine = repLine .. " |cffc0ffc0(" .. tostring(who) .. ")|r"
+                          end
+                        end
+                      end
+                    end
+                  end
+                elseif item.requirements and (item.requirements.rep or item.requirements.reputation) then
+                  local rep = item.requirements.rep or item.requirements.reputation
+                  if type(rep) == "string" and rep ~= "" and rep:lower() ~= "true" then
+                    repLine = "|cffb0b0b0Reputation: " .. rep .. "|r"
+                  else
+                    repLine = "|cffb0b0b0Reputation required|r"
+                  end
                 end
               end
               

@@ -3,9 +3,19 @@ HomeDecor_Changelog = [[
 
 Feb 13, 2026
 
+* Added Quest Button and Ach Button
+this will allow you to see across characters
+same thing as New Rep must login to your alts first
+to see all
+
 * Added New Rep Button and Tooltip
 If you login to your alts you can see on 
 your main which alt has the rep you need for the decor
+
+* Fixed map badges to have proper ach / quest / rep names
+
+* Added minimap right-click so you can see vendors
+while not standing beside them
 
 Feb 12, 2026
 

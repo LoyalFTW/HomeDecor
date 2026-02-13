@@ -284,6 +284,20 @@ function Addon:OnInitialize()
       NS.Systems.Filters:EnsureDefaults(self.db.profile)
     end)
   end
+  
+  if self.db.profile and self.db.profile.filters then
+    local f = self.db.profile.filters
+    f.expansion = "ALL"
+    f.zone = "ALL"
+    f.category = "ALL"
+    f.subcategory = "ALL"
+    f.faction = "ALL"
+    f.hideCollected = false
+    f.onlyCollected = false
+    f.availableRepOnly = false
+    f.questsCompleted = false
+    f.achievementCompleted = false
+  end
 
   if not LDBIcon:IsRegistered(ADDON) then
     LDBIcon:Register(ADDON, minimapObject, self.db.profile.minimap)

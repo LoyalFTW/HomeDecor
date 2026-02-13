@@ -563,7 +563,7 @@ function L:CreateShell()
 
   local filterScroll = CreateFrame("ScrollFrame", nil, left, "ScrollFrameTemplate")
   filterScroll:SetPoint("TOPLEFT", 8, y)
-  filterScroll:SetPoint("BOTTOMRIGHT", -28, 86)
+  filterScroll:SetPoint("BOTTOMRIGHT", -28, 122)  
 
   local filterContent = CreateFrame("Frame", nil, filterScroll)
   filterContent:SetPoint("TOPLEFT", 0, 0)
@@ -571,6 +571,8 @@ function L:CreateShell()
   filterScroll:SetScript("OnSizeChanged", function(self, w)
     filterContent:SetWidth((w or 0) - 2)
   end)
+  
+  left.filterContent = filterContent
 
   if C and C.SkinScrollFrame then
     C:SkinScrollFrame(filterScroll)
@@ -718,6 +720,28 @@ function L:CreateShell()
 
     UI.activeCategory = categoryName
     db.ui.activeCategory = categoryName
+
+    if categoryName ~= "Vendors" then
+      local f = db.filters
+      if f then
+        if f.availableRepOnly or f.questsCompleted or f.achievementCompleted then
+          f.availableRepOnly = false
+          f.questsCompleted = false
+          f.achievementCompleted = false
+          
+          if Filters then
+            Filters.availableRepOnly = false
+            Filters.questsCompleted = false
+            Filters.achievementCompleted = false
+          end
+          
+          local filterContent = left.filterContent
+          if filterContent and filterContent.SyncVisuals then
+            filterContent:SyncVisuals()
+          end
+        end
+      end
+    end
 
     if f.SearchBox then
       local txt = UI.search or ""
@@ -940,8 +964,62 @@ function L:CreateShell()
   local divider = left:CreateTexture(nil, "ARTWORK")
   divider:SetColorTexture(1, 1, 1, 0.15)
   divider:SetHeight(1)
-  divider:SetPoint("BOTTOMLEFT", 12, 44)
-  divider:SetPoint("BOTTOMRIGHT", -12, 44)
+  divider:SetPoint("BOTTOMLEFT", 12, 80)
+  divider:SetPoint("BOTTOMRIGHT", -12, 80)
+
+  local resetFiltersBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
+  Backdrop(resetFiltersBtn, T.panel, T.border)
+  resetFiltersBtn:SetPoint("BOTTOMLEFT", 10, 86)
+  resetFiltersBtn:SetPoint("BOTTOMRIGHT", -10, 86)
+  resetFiltersBtn:SetHeight(26)
+  Hover(resetFiltersBtn, T.panel, T.hover)
+
+  local resetIcon = resetFiltersBtn:CreateTexture(nil, "OVERLAY")
+  resetIcon:SetSize(14, 14)
+  resetIcon:SetPoint("LEFT", 10, 0)
+  resetIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
+  resetIcon:SetVertexColor(1, 0.82, 0, 1)
+
+  local resetText = NewFS(resetFiltersBtn, "GameFontNormal")
+  resetText:SetPoint("LEFT", resetIcon, "RIGHT", 6, 0)
+  resetText:SetText("Reset All Filters")
+  resetText:SetTextColor(1, 0.82, 0)
+
+  resetFiltersBtn:SetScript("OnClick", function()
+    local filterContent = left.filterContent or filterScroll:GetScrollChild()
+    if filterContent and filterContent.ResetAllFilters then
+      filterContent:ResetAllFilters()
+    else
+      local db = NS.db and NS.db.profile
+      if not db then return end
+      
+      local f = db.filters or {}
+      
+      f.expansion, f.zone, f.category, f.subcategory, f.faction = "ALL", "ALL", "ALL", "ALL", "ALL"
+      f.hideCollected, f.onlyCollected = false, false
+      f.availableRepOnly = false
+      f.questsCompleted = false
+      f.achievementCompleted = false
+
+      if Filters then
+        Filters.expansion, Filters.zone, Filters.category, Filters.subcategory, Filters.faction =
+          f.expansion, f.zone, f.category, f.subcategory, f.faction
+        Filters.availableRepOnly = false
+        Filters.questsCompleted = false
+        Filters.achievementCompleted = false
+      end
+
+      local HeaderCtrl = NS.UI and NS.UI.HeaderController
+      if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
+      if rerender then rerender() end
+    end
+  end)
+
+  local divider2 = left:CreateTexture(nil, "ARTWORK")
+  divider2:SetColorTexture(1, 1, 1, 0.15)
+  divider2:SetHeight(1)
+  divider2:SetPoint("BOTTOMLEFT", 12, 44)
+  divider2:SetPoint("BOTTOMRIGHT", -12, 44)
 
   local communityBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
   Backdrop(communityBtn, T.header, T.border)

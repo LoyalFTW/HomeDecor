@@ -37,6 +37,8 @@ Systems\MapPins\MapPins_Refresh.lua
 Systems\MapPins\MapPins.lua
 Systems\Reputation.lua
 Systems\ReputationAlts.lua
+Systems\QuestsAlts.lua
+Systems\Quests.lua
 Systems\Events.lua
 
 Systems\Vendor\CheckMarks.lua
