@@ -226,6 +226,23 @@ function M:Build(popup, env)
         function(v) local f = F(); if f then f.hideCollected = (v == true) end end,
     true)
 
+    checkRow("Available Rep",
+        function() local f = F(); return (f and f.availableRepOnly) == true end,
+        function(v)
+            local f = F()
+            if not f then return end
+            f.availableRepOnly = (v == true)
+            local db = ensureDB()
+            local ui = db and db.ui
+            if ui then
+                ui.activeCategory = "Vendors"
+            end
+            if NS.UI and NS.UI.Layout and NS.UI.Layout.Render then
+                NS.UI.Layout:Render()
+            end
+        end,
+    true)
+
     ddRow("Faction",
         function() local f = F(); return (f and f.faction) or "ALL" end,
         function(v) local f = F(); if f then f.faction = v or "ALL" end end,

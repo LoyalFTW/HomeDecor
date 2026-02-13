@@ -36,6 +36,7 @@ Systems\MapPins\MapPins_Pools.lua
 Systems\MapPins\MapPins_Refresh.lua
 Systems\MapPins\MapPins.lua
 Systems\Reputation.lua
+Systems\ReputationAlts.lua
 Systems\Events.lua
 
 Systems\Vendor\CheckMarks.lua

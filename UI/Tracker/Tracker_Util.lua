@@ -8,6 +8,8 @@ local U = NS.UI.TrackerUtil or {}
 NS.UI.TrackerUtil = U
 Tracker.Util = U
 
+local RepAlts = NS.Systems and NS.Systems.ReputationAlts
+
 local DecorIconCache = {}
 local DecorNameCache = {}
 local QuestTitleCache = {}
@@ -288,6 +290,15 @@ function U.GetAQAndRepLines(it)
     local s = Req.BuildRepDisplay(repReq, false)
     if s and s ~= "" then
       repLine = s
+      if RepAlts and RepAlts.GetAnyOtherCharacter and RepAlts.CurrentCharacterHas and repReq and repReq.text then
+        local hasOnCurrent = RepAlts:CurrentCharacterHas(repReq.text)
+        if not hasOnCurrent then
+          local who = RepAlts:GetAnyOtherCharacter(repReq.text)
+          if who then
+            repLine = repLine .. " |cffc0ffc0(" .. tostring(who) .. ")|r"
+          end
+        end
+      end
     end
   end
 

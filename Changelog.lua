@@ -1,6 +1,12 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
+Feb 13, 2026
+
+* Added New Rep Button and Tooltip
+If you login to your alts you can see on 
+your main which alt has the rep you need for the decor
+
 Feb 12, 2026
 
 * Added New Lumber Tracker + Farming Addition

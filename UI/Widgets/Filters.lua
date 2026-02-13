@@ -43,6 +43,7 @@ local DEFAULTS = {
   faction       = "ALL",
   category      = "ALL",
   subcategory   = "ALL",
+  availableRepOnly = false,
 }
 
 local Tax = {
@@ -709,6 +710,23 @@ function Filters:Passes(it, ui, db)
 
   if f.hideCollected and Collection and Collection.IsCollected and Collection:IsCollected(it) then return false end
   if f.onlyCollected and Collection and Collection.IsCollected and not Collection:IsCollected(it) then return false end
+
+  if f.availableRepOnly then
+    local RepAlts = NS.Systems and NS.Systems.ReputationAlts
+    local View = NS.UI and NS.UI.Viewer
+    local Req = View and View.Requirements
+    if not (RepAlts and Req and Req.GetRepRequirement and RepAlts.GetPreferredCharacter) then
+      return false
+    end
+    local repReq = Req.GetRepRequirement(it)
+    if not (repReq and repReq.text) then
+      return false
+    end
+    local who = RepAlts:GetPreferredCharacter(repReq.text)
+    if not who then
+      return false
+    end
+  end
 
   if ui.search ~= ui._searchLast then
     self:PrepareSearch(ui)
