@@ -311,6 +311,10 @@ end
 function Addon:OnEnable()
   RegisterAddonCompartment()
 
+  if NS.UI and NS.UI.Options and NS.UI.Options.Ensure then
+    pcall(function() NS.UI.Options:Ensure() end)
+  end
+
   if NS.Systems.DecorIndex then
     NS.Systems.DecorIndex:Build()
   end
