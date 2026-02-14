@@ -3,7 +3,7 @@
 ## Author: Jay
 ## Version: @project-version@
 ## X-Website: https://www.curseforge.com/wow/addons/homedecor
-## Notes: Housing & Decor Browser
+## Notes: All in one housing addon
 ## SavedVariables: HomeDecorDB
 ## IconTexture: Interface\AddOns\HomeDecor\Media\Icon
 ## X-Curse-Project-ID: 1402921
