@@ -267,12 +267,25 @@ function Options:Ensure()
   
   y = y - 40
 
+  local trackerHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  trackerHeader:SetPoint("TOPLEFT", 16, y)
+  trackerHeader:SetText("Tracker")
+  y = y - 24
+
+  local cbShowFavoritesOnZone = mkCheckbox(panel, "Highlight saved items when entering zone", 
+    "When enabled, saved items will be highlighted when you enter a new zone")
+  cbShowFavoritesOnZone:SetPoint("TOPLEFT", 32, y)
+  y = y - 34
+
   local function syncFromDB()
     local prof = ensureProfile()
     if not prof then return end
     cbMinimapButton:SetChecked(not bool(prof.minimap.hide))
     cbMiniPins:SetChecked(bool(prof.mapPins.minimap))
     cbWorldPins:SetChecked(bool(prof.mapPins.worldmap))
+
+    local tracker = prof.tracker or {}
+    cbShowFavoritesOnZone:SetChecked(tracker.showFavoritesOnZoneEnter ~= false)
 
     if prof.mapPins.pinStyle == "dot" then
       _G.UIDropDownMenu_SetText(ddPinStyle, "Dot")
@@ -315,6 +328,13 @@ function Options:Ensure()
     if not prof then return end
     prof.mapPins.worldmap = self:GetChecked() and true or false
     refreshPins()
+  end)
+
+  cbShowFavoritesOnZone:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    prof.tracker = prof.tracker or {}
+    prof.tracker.showFavoritesOnZoneEnter = self:GetChecked() and true or false
   end)
 
   panel:SetScript("OnShow", syncFromDB)

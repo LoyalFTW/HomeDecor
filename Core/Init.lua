@@ -68,6 +68,7 @@ local defaults = {
       collapsed = false,
       trackZone = true,
       hideCompleted = false,
+      showFavoritesOnZoneEnter = true,
       alpha = 0.7,
       width = 310,
       height = 520,
@@ -278,6 +279,21 @@ end
 function Addon:OnInitialize()
   self.db = AceDB:New("HomeDecorDB", defaults)
   NS.db = self.db
+
+  -- Clean up favorites table - remove any false entries
+  if self.db.profile and self.db.profile.favorites then
+    local favs = self.db.profile.favorites
+    local removed = 0
+    for id, val in pairs(favs) do
+      if val == false then
+        favs[id] = nil
+        removed = removed + 1
+      end
+    end
+    if removed > 0 then
+      print("|cffFFD200[HomeDecor]|r Cleaned up " .. removed .. " unfavorited items from saved data.")
+    end
+  end
 
   if NS.Systems.Filters and NS.Systems.Filters.EnsureDefaults then
     pcall(function()

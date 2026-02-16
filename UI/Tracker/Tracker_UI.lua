@@ -234,7 +234,7 @@ function UI:CreateFrame()
   local settings = CreateFrame("Frame", nil, frame, "BackdropTemplate")
   settings:SetFrameStrata("DIALOG")
   settings:SetFrameLevel(frame:GetFrameLevel() + 12)
-  settings:SetSize(240, 120)
+  settings:SetSize(240, 155)
   settings:Hide()
 
   if Controls and Controls.Backdrop then
@@ -263,15 +263,29 @@ function UI:CreateFrame()
     settings.hideCB.text:SetText("")
   end
 
+  settings.highlightLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+  settings.highlightLabel:SetPoint("TOPLEFT", 16, -68)
+  settings.highlightLabel:SetText("Highlight Saved Items:")
+  if RowStyles and RowStyles.NormalText then
+    RowStyles:NormalText(settings.highlightLabel)
+  end
+
+  settings.highlightCB = CreateFrame("CheckButton", nil, settings, "UICheckButtonTemplate")
+  settings.highlightCB:SetPoint("LEFT", settings.highlightLabel, "RIGHT", 8, 0)
+  settings.highlightCB:SetSize(24, 24)
+  if settings.highlightCB.text then
+    settings.highlightCB.text:SetText("")
+  end
+
   settings.alphaLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  settings.alphaLabel:SetPoint("TOPLEFT", 16, -68)
+  settings.alphaLabel:SetPoint("TOPLEFT", 16, -98)
   settings.alphaLabel:SetText("Transparency")
   if RowStyles and RowStyles.NormalText then
     RowStyles:NormalText(settings.alphaLabel)
   end
 
   settings.alphaValue = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  settings.alphaValue:SetPoint("TOPRIGHT", -16, -68)
+  settings.alphaValue:SetPoint("TOPRIGHT", -16, -98)
   settings.alphaValue:SetJustifyH("RIGHT")
   if RowStyles and RowStyles.NormalText then
     RowStyles:NormalText(settings.alphaValue)
@@ -279,8 +293,8 @@ function UI:CreateFrame()
 
   local sliderName = NextGlobalName("HomeDecorTrackerAlphaSlider")
   settings.slider = CreateFrame("Slider", sliderName, settings, "OptionsSliderTemplate")
-  settings.slider:SetPoint("LEFT", 16, -40)
-  settings.slider:SetPoint("RIGHT", -16, -40)
+  settings.slider:SetPoint("LEFT", 16, -70)
+  settings.slider:SetPoint("RIGHT", -16, -70)
   settings.slider:SetPoint("BOTTOM", 0, 14)
   settings.slider:SetHeight(18)
   settings.slider:SetMinMaxValues(0.00, 1.00)
@@ -634,6 +648,12 @@ function UI:CreateFrame()
     frame:RequestRefresh("hidecompleted")
   end)
 
+  settings.highlightCB:SetScript("OnClick", function()
+    local d = GetTrackerDB()
+    if not d then return end
+    d.showFavoritesOnZoneEnter = settings.highlightCB:GetChecked() and true or false
+  end)
+
   settings.slider:SetScript("OnValueChanged", function(slider, v)
     ApplyPanelsAlpha(v, not frame._initing)
     local d = GetTrackerDB()
@@ -645,6 +665,10 @@ function UI:CreateFrame()
     if d then
       frame._hideCompleted = d.hideCompleted and true or false
       settings.hideCB:SetChecked(frame._hideCompleted)
+      
+      local showFavs = d.showFavoritesOnZoneEnter
+      if showFavs == nil then showFavs = true end
+      settings.highlightCB:SetChecked(showFavs)
 
       local a = Clamp(tonumber(d.alpha) or frame._bgAlpha or 1, 0, 1)
       frame._ApplyPanelsAlpha(a, false)
@@ -660,6 +684,7 @@ function UI:CreateFrame()
       frame._initing = true
       settings.slider:SetValue(Clamp(frame._bgAlpha or 1, 0, 1))
       frame._initing = nil
+      settings.highlightCB:SetChecked(true)
     end
   end
 
@@ -670,6 +695,7 @@ function UI:CreateFrame()
     d.collapsed = frame._collapsed and true or false
     d.trackZone = trackZoneCB:GetChecked() and true or false
     d.hideCompleted = frame._hideCompleted and true or false
+    d.showFavoritesOnZoneEnter = settings.highlightCB:GetChecked() and true or false
   end)
 
   return frame, {

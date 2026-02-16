@@ -1,32 +1,15 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Feb 13, 2026
+Feb 16, 2026
 
-* Added Quest Button and Ach Button
-this will allow you to see across characters
-same thing as New Rep must login to your alts first
-to see all
+* Added so you can have your favorites / Wish list 
+blink when you enter a area when using the tracker
+this is in the options menu or the tracker settings
 
-* Added New Rep Button and Tooltip
-If you login to your alts you can see on 
-your main which alt has the rep you need for the decor
+Sorry about the delay in updates guys I'm working on
+something bigger and just cant release it yet. 
 
-* Fixed map badges to have proper ach / quest / rep names
 
-* Added minimap right-click so you can see vendors
-while not standing beside them
-
-Feb 12, 2026
-
-* Added New Lumber Tracker + Farming Addition
-This will allow you to track your lumber
-it has an option to auto start and also away to track across
-your alts just log into each alt to have it track what they have
-
-* NEW MAPS now on any map you can click it and see the vendor
-check vendors any wheres in the world using your map you can view the item
-set a check point see anything you want on them. If anything is not correct
-please let me know on Discord or Curse! 
 
 ]]

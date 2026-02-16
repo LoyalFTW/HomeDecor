@@ -24,7 +24,10 @@ function Events:Attach(Tracker, ctx)
             if not cb:GetChecked() then return end
             if mapID and mapID == f._lastZoneMapID then return end
             if (not mapID) and name and name ~= "" and name == f._lastZoneName then return end
+            
+            f._zoneJustChanged = true
             f._lastZoneName, f._lastZoneMapID = name, mapID
+            
             if not f._collapsed then f:RequestRefresh("zone") end
         end)
     end
@@ -47,6 +50,11 @@ function Events:Attach(Tracker, ctx)
             if MapTracker.GetCurrentZone then
                 local name, mapID = MapTracker:GetCurrentZone()
                 if (not name or name == "") and GetRealZoneText then name = GetRealZoneText() or "" end
+                
+                if name ~= f._lastZoneName then
+                    f._zoneJustChanged = true
+                end
+                
                 f._lastZoneName, f._lastZoneMapID = name, mapID
             end
         end
