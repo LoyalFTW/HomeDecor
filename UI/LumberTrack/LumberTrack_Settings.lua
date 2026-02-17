@@ -44,7 +44,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   local settings = CreateFrame("Frame", nil, parent, "BackdropTemplate")
   settings:SetFrameStrata("DIALOG")
   settings:SetFrameLevel(parent:GetFrameLevel() + 20)
-  settings:SetSize(280, 420)
+  settings:SetSize(280, 455)
   settings:SetPoint("CENTER", parent, "CENTER", 0, 0)
   settings:Hide()
   Utils.CreateBackdrop(settings, T.panel, T.border)
@@ -82,6 +82,38 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
       if Render and Render.Refresh then Render:Refresh(sharedCtx) end
     end
   end)
+  yOffset = yOffset - 35
+
+  local compactCB = CreateCheckbox(settings, 20, yOffset, "Compact Mode",
+    "Shows a condensed single-line list — fits more items with less screen space")
+  compactCB:SetChecked(sharedCtx and sharedCtx.compactMode and true or false)
+  compactCB:SetScript("OnClick", function(self)
+    if sharedCtx then
+      local newVal = self:GetChecked() and true or false
+      sharedCtx.compactMode = newVal
+      if db then db.compactMode = newVal end
+      if sharedCtx.rows then
+        for i, row in pairs(sharedCtx.rows) do
+          if row then row:Hide(); row:SetParent(nil) end
+          sharedCtx.rows[i] = nil
+        end
+      end
+      local LumberList = NS.UI.LumberTrackLumberList
+      if LumberList and LumberList.compactBtn then
+        local Tx = Utils.GetTheme()
+        if newVal then
+          LumberList.compactBtn:SetBackdropBorderColor(unpack(Tx.accentBright or Tx.accent))
+          LumberList.compactBtn.icon:SetVertexColor(unpack(Tx.accent))
+        else
+          LumberList.compactBtn:SetBackdropBorderColor(unpack(Tx.border))
+          LumberList.compactBtn.icon:SetVertexColor(0.6, 0.6, 0.6, 1)
+        end
+      end
+      local Render = NS.UI.LumberTrackRender
+      if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+    end
+  end)
+  settings.compactCB = compactCB
   yOffset = yOffset - 35
 
   local autoFarmCB = CreateCheckbox(settings, 20, yOffset, "Auto Farm Mode",
@@ -220,6 +252,10 @@ function Settings:RefreshPanel(settingsPanel, sharedCtx)
 
   if settingsPanel.hideCB then
     settingsPanel.hideCB:SetChecked(sharedCtx and sharedCtx.hideZero and true or false)
+  end
+
+  if settingsPanel.compactCB then
+    settingsPanel.compactCB:SetChecked(sharedCtx and sharedCtx.compactMode and true or false)
   end
 
   if settingsPanel.autoFarmCB then

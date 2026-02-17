@@ -105,6 +105,56 @@ function LumberList:Create(sharedCtx)
     self:SetBackdropBorderColor(unpack(T.border))
   end)
   self.settingsBtn = settingsBtn
+
+  local compactBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  compactBtn:SetSize(26, 26)
+  compactBtn:SetPoint("LEFT", collapseBtn, "RIGHT", 4, 0)
+  Utils.CreateBackdrop(compactBtn, T.row, T.border)
+  compactBtn.icon = compactBtn:CreateTexture(nil, "OVERLAY")
+  compactBtn.icon:SetSize(14, 14)
+  compactBtn.icon:SetPoint("CENTER")
+  compactBtn.icon:SetTexture("Interface\\Buttons\\UI-GuildButton-OfficerNote-Up")
+  compactBtn:SetScript("OnEnter", function(self)
+    self:SetBackdropBorderColor(unpack(T.accentBright or T.accent))
+    if GameTooltip then
+      GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+      GameTooltip:AddLine("Compact Mode", 1, 1, 1)
+      GameTooltip:AddLine("Toggle compact single-line view", 0.7, 0.7, 0.7)
+      GameTooltip:Show()
+    end
+  end)
+  compactBtn:SetScript("OnLeave", function(self)
+    self:SetBackdropBorderColor(unpack(T.border))
+    if GameTooltip then GameTooltip:Hide() end
+  end)
+  local function UpdateCompactBtnAppearance()
+    local Tx = Utils.GetTheme()
+    if sharedCtx and sharedCtx.compactMode then
+      compactBtn:SetBackdropBorderColor(unpack(Tx.accentBright or Tx.accent))
+      compactBtn.icon:SetVertexColor(unpack(Tx.accent))
+    else
+      compactBtn:SetBackdropBorderColor(unpack(Tx.border))
+      compactBtn.icon:SetVertexColor(0.6, 0.6, 0.6, 1)
+    end
+  end
+  compactBtn:SetScript("OnClick", function()
+    if not sharedCtx then return end
+    local newVal = not (sharedCtx.compactMode and true or false)
+    sharedCtx.compactMode = newVal
+    local d = Utils.GetDB()
+    if d then d.compactMode = newVal end
+    if sharedCtx.rows then
+      for i, row in pairs(sharedCtx.rows) do
+        if row then row:Hide(); row:SetParent(nil) end
+        sharedCtx.rows[i] = nil
+      end
+    end
+    UpdateCompactBtnAppearance()
+    local Render = NS.UI.LumberTrackRender
+    if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+  end)
+  self.compactBtn = compactBtn
+  UpdateCompactBtnAppearance()
   local closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
   closeBtn:SetSize(26, 26)
   closeBtn:SetPoint("RIGHT", -10, 0)

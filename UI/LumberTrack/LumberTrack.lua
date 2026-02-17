@@ -27,6 +27,7 @@ local function InitializeDefaults(db)
   if db.showIcons == nil then db.showIcons = true end
   if db.goal == nil then db.goal = 1000 end
   if db.alpha == nil then db.alpha = 0.7 end
+  if db.compactMode == nil then db.compactMode = false end
 end
 
 function LumberTrack:Create()
@@ -38,10 +39,12 @@ function LumberTrack:Create()
   local Render = NS.UI.LumberTrackRender
   sharedCtx = Render:Init({ 
     GetDB = GetDB,
-    lumberIDs = db.lumberIDs or {}
+    lumberIDs = db.lumberIDs or {},
+    compactMode = db.compactMode and true or false
   }) or { 
     GetDB = GetDB,
-    lumberIDs = db.lumberIDs or {}
+    lumberIDs = db.lumberIDs or {},
+    compactMode = db.compactMode and true or false
   }
 
   local LumberList = NS.UI.LumberTrackLumberList

@@ -9,6 +9,8 @@ local Utils = NS.LT.Utils
 local ROW_HEIGHT = 68
 local ROW_HEIGHT_NO_ICON = 50
 local ICON_SIZE = 36
+local ROW_HEIGHT_COMPACT = 22
+local ICON_SIZE_COMPACT = 16
 
 local CreateFrame = CreateFrame
 local GameTooltip = GameTooltip
@@ -208,6 +210,198 @@ local function NewLumberRow(parent)
   end)
   
   return r
+end
+
+local function NewCompactRow(parent)
+  local T = Utils.GetTheme()
+
+  local r = CreateFrame("Button", nil, parent, "BackdropTemplate")
+  r._kind = "compact"
+  r:SetHeight(ROW_HEIGHT_COMPACT)
+  r:EnableMouse(true)
+  r:RegisterForClicks("AnyUp")
+
+  Utils.CreateBackdrop(r, {0.08, 0.08, 0.10, 0.0}, {0.90, 0.72, 0.18, 0.0})
+
+  r.iconFrame = CreateFrame("Frame", nil, r, "BackdropTemplate")
+  r.iconFrame:SetSize(ICON_SIZE_COMPACT, ICON_SIZE_COMPACT)
+  r.iconFrame:SetPoint("LEFT", 4, 0)
+  Utils.CreateBackdrop(r.iconFrame, {0.08, 0.08, 0.10, 0.7}, {0.90, 0.72, 0.18, 0.3})
+
+  r.icon = r.iconFrame:CreateTexture(nil, "ARTWORK")
+  r.icon:SetSize(ICON_SIZE_COMPACT - 2, ICON_SIZE_COMPACT - 2)
+  r.icon:SetPoint("CENTER")
+  r.icon:SetTexture("Interface/Icons/INV_Misc_QuestionMark")
+  r.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
+  r.name = r:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  r.name:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
+  r.name:SetPoint("LEFT", r.iconFrame, "RIGHT", 5, 0)
+  r.name:SetWidth(130)
+  r.name:SetJustifyH("LEFT")
+  r.name:SetWordWrap(false)
+  r.name:SetShadowColor(0, 0, 0, 1)
+  r.name:SetShadowOffset(1, -1)
+  r.name:SetTextColor(unpack(T.text))
+
+  r.progressBar = r:CreateTexture(nil, "ARTWORK")
+  r.progressBar:SetHeight(3)
+  r.progressBar:SetPoint("BOTTOMLEFT", r.iconFrame, "BOTTOMRIGHT", 5, 2)
+  r.progressBar:SetWidth(1)
+  r.progressBar:SetTexture("Interface/Buttons/WHITE8x8")
+  r.progressBar:SetGradient("HORIZONTAL",
+    CreateColor(0.28, 0.24, 0.10, 1),
+    CreateColor(0.90, 0.72, 0.18, 1))
+
+  r.progressBg = r:CreateTexture(nil, "BACKGROUND")
+  r.progressBg:SetHeight(3)
+  r.progressBg:SetPoint("BOTTOMLEFT", r.iconFrame, "BOTTOMRIGHT", 5, 2)
+  r.progressBg:SetPoint("RIGHT", r.name, "RIGHT", 0, 0)
+  r.progressBg:SetTexture("Interface/Buttons/WHITE8x8")
+  r.progressBg:SetVertexColor(0.12, 0.12, 0.14, 0.8)
+
+  r.countNumber = r:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  r.countNumber:SetFont("Fonts\\FRIZQT__.TTF", 11, "THICKOUTLINE")
+  r.countNumber:SetPoint("RIGHT", r, "RIGHT", -6, 0)
+  r.countNumber:SetTextColor(unpack(T.accent))
+  r.countNumber:SetJustifyH("RIGHT")
+  r.countNumber:SetShadowColor(0, 0, 0, 1)
+  r.countNumber:SetShadowOffset(1, -1)
+
+  r.sep = r:CreateTexture(nil, "BACKGROUND")
+  r.sep:SetHeight(1)
+  r.sep:SetPoint("BOTTOMLEFT", 4, 0)
+  r.sep:SetPoint("BOTTOMRIGHT", -4, 0)
+  r.sep:SetTexture("Interface/Buttons/WHITE8x8")
+  r.sep:SetVertexColor(0.90, 0.72, 0.18, 0.08)
+
+  r:SetScript("OnEnter", function(self)
+    local T2 = Utils.GetTheme()
+    if self.sep then self.sep:SetVertexColor(0.90, 0.72, 0.18, 0.35) end
+    if self.name then self.name:SetTextColor(unpack(T2.accent)) end
+    if self.itemID and GameTooltip then
+      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      GameTooltip:SetItemByID(self.itemID)
+      local AccountWide = NS.UI.LumberTrackAccountWide
+      if AccountWide and AccountWide.IsEnabled and AccountWide:IsEnabled() then
+        local breakdown = AccountWide:GetCharacterBreakdown(self.itemID)
+        if breakdown and #breakdown > 0 then
+          GameTooltip:AddLine(" ")
+          GameTooltip:AddLine("Character Breakdown:", 0.9, 0.72, 0.18)
+          for bi, data in ipairs(breakdown) do
+            local countStr = Rows:FormatNumber(data.count)
+            GameTooltip:AddDoubleLine(data.character, countStr, 0.8, 0.8, 0.8, 0.9, 0.72, 0.18)
+          end
+        end
+      end
+      GameTooltip:Show()
+    end
+  end)
+
+  r:SetScript("OnLeave", function(self)
+    local T2 = Utils.GetTheme()
+    if self.sep then self.sep:SetVertexColor(0.90, 0.72, 0.18, 0.08) end
+    if self.name then self.name:SetTextColor(unpack(T2.text)) end
+    if GameTooltip then GameTooltip:Hide() end
+  end)
+
+  return r
+end
+
+function Rows:CreateCompactRow(parent)
+  return NewCompactRow(parent)
+end
+
+function Rows:SetCompactRowData(row, ctx, itemID, currentCount, itemName, iconTexture)
+  if not row then return end
+
+  local T = Utils.GetTheme()
+  row.itemID = itemID
+  row._ctx = ctx
+
+  if row.icon and iconTexture then
+    row.icon:SetTexture(iconTexture)
+  end
+
+  if row.name then
+    row.name:SetText(itemName or ("Item " .. tostring(itemID)))
+  end
+
+  local v = tonumber(currentCount) or 0
+  local Goals = NS.UI.LumberTrackGoals
+  local goalVal = 1000
+  if Goals and Goals.GetGoal then
+    goalVal = Goals:GetGoal(itemID, ctx)
+  else
+    goalVal = (ctx and tonumber(ctx.goal)) or 1000
+  end
+  if goalVal < 1 then goalVal = 1 end
+
+  if row.countNumber then
+    row.countNumber:SetText(tostring(v))
+    if v >= goalVal then
+      row.countNumber:SetTextColor(unpack(T.success))
+    elseif v >= goalVal * 0.5 then
+      row.countNumber:SetTextColor(unpack(T.accent))
+    else
+      row.countNumber:SetTextColor(unpack(T.text))
+    end
+  end
+
+  if row.progressBar and row.progressBg and row.name then
+    local pct = goalVal > 0 and (v / goalVal) or 0
+    if pct > 1 then pct = 1 end
+    row._lastPct = pct
+
+    local barMaxWidth = (row.name:GetWidth() or 130)
+    local fillWidth = math.max(2, barMaxWidth * pct)
+    row.progressBar:SetWidth(fillWidth)
+
+    if pct >= 1 then
+      row.progressBar:SetGradient("HORIZONTAL",
+        CreateColor(0.18, 0.50, 0.24, 1),
+        CreateColor(0.30, 0.80, 0.40, 1))
+    elseif pct >= 0.5 then
+      row.progressBar:SetGradient("HORIZONTAL",
+        CreateColor(0.28, 0.24, 0.10, 1),
+        CreateColor(0.90, 0.72, 0.18, 1))
+    else
+      row.progressBar:SetGradient("HORIZONTAL",
+        CreateColor(0.18, 0.18, 0.20, 1),
+        CreateColor(0.35, 0.35, 0.38, 1))
+    end
+  end
+
+  local showIcons = ctx and ctx.showIcons ~= false
+  if row.iconFrame then
+    row.iconFrame:SetShown(showIcons)
+    if row.name then
+      row.name:ClearAllPoints()
+      if showIcons then
+        row.name:SetPoint("LEFT", row.iconFrame, "RIGHT", 5, 1)
+      else
+        row.name:SetPoint("LEFT", row, "LEFT", 6, 1)
+      end
+      row.name:SetPoint("RIGHT", row.countNumber, "LEFT", -4, 0)
+    end
+    if row.progressBar then
+      row.progressBar:ClearAllPoints()
+      if showIcons then
+        row.progressBar:SetPoint("BOTTOMLEFT", row.iconFrame, "BOTTOMRIGHT", 5, 2)
+      else
+        row.progressBar:SetPoint("BOTTOMLEFT", row, "BOTTOMLEFT", 6, 2)
+      end
+    end
+    if row.progressBg then
+      row.progressBg:ClearAllPoints()
+      if showIcons then
+        row.progressBg:SetPoint("BOTTOMLEFT", row.iconFrame, "BOTTOMRIGHT", 5, 2)
+      else
+        row.progressBg:SetPoint("BOTTOMLEFT", row, "BOTTOMLEFT", 6, 2)
+      end
+      row.progressBg:SetPoint("RIGHT", row.name, "RIGHT", 0, 0)
+    end
+  end
 end
 
 function Rows:InitPools(frame, content)

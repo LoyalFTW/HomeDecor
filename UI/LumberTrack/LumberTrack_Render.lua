@@ -190,8 +190,22 @@ end
 
 function R:EnsureRow(ctx, index)
   local row = ctx.rows[index]
+  if row then
+    local needsCompact = ctx.compactMode and true or false
+    local isCompact = (row._kind == "compact")
+    if needsCompact ~= isCompact then
+      row:Hide()
+      row:SetParent(nil)
+      ctx.rows[index] = nil
+      row = nil
+    end
+  end
   if row then return row end
-  row = Rows:CreateRow(ctx.content)
+  if ctx.compactMode then
+    row = Rows:CreateCompactRow(ctx.content)
+  else
+    row = Rows:CreateRow(ctx.content)
+  end
   ctx.rows[index] = row
   return row
 end
@@ -202,8 +216,14 @@ function R:LayoutRows(ctx)
 
   local y = -4
   local showIcons = ctx.showIcons ~= false
-  local rowH = showIcons and 68 or 50
-  local gap = ctx.rowGap or 3
+  local compactMode = ctx.compactMode and true or false
+  local rowH
+  if compactMode then
+    rowH = 22
+  else
+    rowH = showIcons and 68 or 50
+  end
+  local gap = compactMode and 0 or (ctx.rowGap or 3)
 
   local n = #ctx.list
   for i = 1, n do
@@ -216,7 +236,11 @@ function R:LayoutRows(ctx)
     row:SetPoint("TOPLEFT", 0, y)
     row:SetPoint("TOPRIGHT", 0, y)
     row:Show()
-    Rows:SetRowData(row, ctx, itemID, count, name, icon)
+    if compactMode then
+      Rows:SetCompactRowData(row, ctx, itemID, count, name, icon)
+    else
+      Rows:SetRowData(row, ctx, itemID, count, name, icon)
+    end
     y = y - (rowH + gap)
   end
 
