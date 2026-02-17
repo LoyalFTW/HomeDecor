@@ -56,80 +56,59 @@ function Events:Attach(LumberTrack, ctx)
 
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")
   frame:RegisterEvent("BAG_UPDATE")
-  frame:RegisterEvent("BAG_UPDATE_DELAYED")
   frame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-  if C_EventUtils and C_EventUtils.IsEventValid then
-    if C_EventUtils.IsEventValid("REAGENTBANK_UPDATE") then
-      frame:RegisterEvent("REAGENTBANK_UPDATE")
+
+  local safeEvents = {
+    "BAG_UPDATE_DELAYED",
+    "PLAYERBANKSLOTS_CHANGED",
+    "PLAYERREAGENTBANKSLOTS_CHANGED",
+    "REAGENTBANK_UPDATE",
+    "MAIL_SEND_SUCCESS",
+    "ITEM_REMOVED",
+  }
+  for _, evt in ipairs(safeEvents) do
+    if C_EventUtils and C_EventUtils.IsEventValid and C_EventUtils.IsEventValid(evt) then
+      frame:RegisterEvent(evt)
+    else
+      pcall(function() frame:RegisterEvent(evt) end)
     end
-    if C_EventUtils.IsEventValid("PLAYERREAGENTBANKSLOTS_CHANGED") then
-      frame:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
-    end
-    if C_EventUtils.IsEventValid("PLAYERBANKSLOTS_CHANGED") then
-      frame:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
-    end
-    if C_EventUtils.IsEventValid("MAIL_SEND_SUCCESS") then
-      frame:RegisterEvent("MAIL_SEND_SUCCESS")
-    end
-    if C_EventUtils.IsEventValid("ITEM_REMOVED") then
-      frame:RegisterEvent("ITEM_REMOVED")
-    end
-  else
-    pcall(function() frame:RegisterEvent("REAGENTBANK_UPDATE") end)
-    pcall(function() frame:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED") end)
-    pcall(function() frame:RegisterEvent("PLAYERBANKSLOTS_CHANGED") end)
-    pcall(function() frame:RegisterEvent("MAIL_SEND_SUCCESS") end)
-    pcall(function() frame:RegisterEvent("ITEM_REMOVED") end)
+  end
+
+  local pending = false
+  local function QueueRefresh(delay)
+    if pending then return end
+    pending = true
+    _G.C_Timer.After(delay or 0.05, function()
+      pending = false
+      if Render and Render.Refresh then
+        Render:Refresh(ctx)
+      end
+    end)
   end
 
   local pendingRecount = false
-  local pendingRender = false
-
-  local function QueueRecount()
+  local function QueueRecount(delay)
     if pendingRecount then return end
     pendingRecount = true
-    _G.C_Timer.After(0.3, function()
+    _G.C_Timer.After(delay or 0.4, function()
       pendingRecount = false
-      if Render and Render.Recount then
-        Render:Recount(ctx)
-      end
-      QueueRender()
-    end)
-  end
-
-  function QueueRender(delay)
-    if pendingRender then return end
-    pendingRender = true
-    _G.C_Timer.After(delay or 0.05, function()
-      pendingRender = false
-      if Render and Render.BuildList then Render:BuildList(ctx) end
-      if Render and Render.LayoutRows then Render:LayoutRows(ctx) end
-      if ctx.totalText then
-        ctx.totalText:SetText("Lumber Total: " .. tostring(ctx.total or 0))
+      if Render and Render.Refresh then
+        Render:Refresh(ctx)
       end
     end)
-  end
-
-  local function QueueRefresh(delay)
-    QueueRecount()
   end
 
   frame:SetScript("OnEvent", function(_, event, a1)
     if event == "PLAYER_ENTERING_WORLD" then
       ResetFarmingSession(ctx)
-      QueueRecount()
+      QueueRefresh(0.25)
 
-    elseif event == "MAIL_SEND_SUCCESS"
-        or event == "ITEM_REMOVED"
-        or event == "REAGENTBANK_UPDATE"
+    elseif event == "BAG_UPDATE_DELAYED"
+        or event == "PLAYERBANKSLOTS_CHANGED"
         or event == "PLAYERREAGENTBANKSLOTS_CHANGED"
-        or event == "PLAYERBANKSLOTS_CHANGED" then
-      _G.C_Timer.After(0.4, function()
-        if Render and Render.Recount then Render:Recount(ctx) end
-        QueueRender()
-      end)
-
-    elseif event == "BAG_UPDATE_DELAYED" then
+        or event == "REAGENTBANK_UPDATE"
+        or event == "MAIL_SEND_SUCCESS"
+        or event == "ITEM_REMOVED" then
       QueueRecount()
 
     elseif event == "BAG_UPDATE" then
@@ -147,20 +126,8 @@ function Events:Attach(LumberTrack, ctx)
         end
       end
 
-      local freshCounts = {}
-      local freshTotal = 0
-      if _G.C_Container and _G.C_Container.GetContainerNumSlots then
-        for bag = 0, 5 do
-          local slots = _G.C_Container.GetContainerNumSlots(bag) or 0
-          for slot = 1, slots do
-            local info = _G.C_Container.GetContainerItemInfo(bag, slot)
-            if info and info.itemID and ctx.lumberIDs and ctx.lumberIDs[info.itemID] then
-              local c = tonumber(info.stackCount) or 1
-              freshCounts[info.itemID] = (freshCounts[info.itemID] or 0) + c
-              freshTotal = freshTotal + c
-            end
-          end
-        end
+      if Render and Render.Recount then
+        Render:Recount(ctx)
       end
 
       if Rate and ctx.counts then
@@ -173,11 +140,11 @@ function Events:Attach(LumberTrack, ctx)
       end
 
       local hasGain, gainItemID, gainAmount = false, nil, 0
-      if Rate and Rate.data then
-        for itemID, newCount in pairs(freshCounts) do
-          local oldCount = oldCountsCache[itemID] or 0
-          if newCount > oldCount then
-            local gained = newCount - oldCount
+      if Rate and Rate.data and ctx.counts then
+        for itemID, newCount in pairs(ctx.counts) do
+          local data = Rate.data[itemID]
+          if data and data.lastCount and newCount > data.lastCount then
+            local gained = newCount - data.lastCount
             if gained > gainAmount then
               hasGain = true
               gainItemID = itemID
@@ -249,8 +216,8 @@ function Events:Attach(LumberTrack, ctx)
         if ctx.farmingStatsUpdate then
           ctx.farmingStatsUpdate()
         end
-      elseif Rate and Rate.data then
-        for itemID, newCount in pairs(freshCounts) do
+      elseif Rate and Rate.data and ctx.counts then
+        for itemID, newCount in pairs(ctx.counts) do
           if not Rate.data[itemID] then
             Rate:InitItem(itemID)
           end
@@ -258,10 +225,32 @@ function Events:Attach(LumberTrack, ctx)
         end
       end
 
+      if Render then
+        if Render.BuildList then
+          Render:BuildList(ctx)
+        end
+        if Render.LayoutRows then
+          Render:LayoutRows(ctx)
+        end
+      end
+
+      if ctx.totalText then
+        ctx.totalText:SetText("Lumber Total: " .. tostring(ctx.total or 0))
+      end
+
+      if ctx.bagCounter then
+        local Counter = NS.UI.LumberTrackCounter
+        if Counter and Counter.SetCount then
+          Counter:SetCount(ctx.bagCounter, ctx.total or 0)
+        end
+      end
+
       local now = Utils.GetTime()
       if now - lastCleanupTime > CLEANUP_INTERVAL then
         lastCleanupTime = now
-        if Rate and Rate.PeriodicCleanup then Rate:PeriodicCleanup() end
+        if Rate and Rate.PeriodicCleanup then
+          Rate:PeriodicCleanup()
+        end
         if ctx.meta and ctx.counts then
           local metaToRemove = {}
           for itemID in pairs(ctx.meta) do
@@ -272,10 +261,13 @@ function Events:Attach(LumberTrack, ctx)
             end
           end
           if #metaToRemove > 50 then
-            for i = 1, math.min(#metaToRemove, 20) do ctx.meta[metaToRemove[i]] = nil end
+            for i = 1, math.min(#metaToRemove, 20) do
+              ctx.meta[metaToRemove[i]] = nil
+            end
           end
         end
       end
+      QueueRefresh(0.05)
 
     elseif event == "GET_ITEM_INFO_RECEIVED" then
       if Render and Render.OnItemInfo then
