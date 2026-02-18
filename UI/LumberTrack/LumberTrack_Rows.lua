@@ -65,6 +65,8 @@ local function NewLumberRow(parent)
   r.rate:SetShadowOffset(1, -1)
   r.rate:SetText("")
 
+
+
   r.progressContainer = CreateFrame("Frame", nil, r, "BackdropTemplate")
   r.progressContainer:SetHeight(20)
   r.progressContainer:SetPoint("BOTTOMLEFT", r.iconFrame, "BOTTOMRIGHT", 10, 8)
@@ -171,18 +173,22 @@ local function NewLumberRow(parent)
       GameTooltip:SetItemByID(self.itemID)
       
       local AccountWide = NS.UI.LumberTrackAccountWide
-      if AccountWide and AccountWide.IsEnabled and AccountWide:IsEnabled() then
+      if AccountWide then
         local breakdown = AccountWide:GetCharacterBreakdown(self.itemID)
         if breakdown and #breakdown > 0 then
           GameTooltip:AddLine(" ")
           GameTooltip:AddLine("Character Breakdown:", 0.9, 0.72, 0.18)
-          for bi, data in ipairs(breakdown) do
+          for _, data in ipairs(breakdown) do
             local countStr = Rows:FormatNumber(data.count)
-            GameTooltip:AddDoubleLine(data.character, countStr, 0.8, 0.8, 0.8, 0.9, 0.72, 0.18)
+            if data.warband then
+              GameTooltip:AddDoubleLine(data.label, countStr, 0.50, 0.78, 1.0, 0.50, 0.78, 1.0)
+            else
+              GameTooltip:AddDoubleLine(data.label, countStr, 0.8, 0.8, 0.8, 0.9, 0.72, 0.18)
+            end
           end
         end
       end
-      
+
       local Goals = NS.UI.LumberTrackGoals
       if Goals and Goals.GetGoalTooltip and self._ctx then
         local goalInfo = Goals:GetGoalTooltip(self.itemID, self._ctx)
@@ -268,6 +274,8 @@ local function NewCompactRow(parent)
   r.countNumber:SetShadowColor(0, 0, 0, 1)
   r.countNumber:SetShadowOffset(1, -1)
 
+
+
   r.sep = r:CreateTexture(nil, "BACKGROUND")
   r.sep:SetHeight(1)
   r.sep:SetPoint("BOTTOMLEFT", 4, 0)
@@ -283,14 +291,18 @@ local function NewCompactRow(parent)
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
       GameTooltip:SetItemByID(self.itemID)
       local AccountWide = NS.UI.LumberTrackAccountWide
-      if AccountWide and AccountWide.IsEnabled and AccountWide:IsEnabled() then
+      if AccountWide then
         local breakdown = AccountWide:GetCharacterBreakdown(self.itemID)
         if breakdown and #breakdown > 0 then
           GameTooltip:AddLine(" ")
           GameTooltip:AddLine("Character Breakdown:", 0.9, 0.72, 0.18)
-          for bi, data in ipairs(breakdown) do
+          for _, data in ipairs(breakdown) do
             local countStr = Rows:FormatNumber(data.count)
-            GameTooltip:AddDoubleLine(data.character, countStr, 0.8, 0.8, 0.8, 0.9, 0.72, 0.18)
+            if data.warband then
+              GameTooltip:AddDoubleLine(data.label, countStr, 0.50, 0.78, 1.0, 0.50, 0.78, 1.0)
+            else
+              GameTooltip:AddDoubleLine(data.label, countStr, 0.8, 0.8, 0.8, 0.9, 0.72, 0.18)
+            end
           end
         end
       end

@@ -65,6 +65,7 @@ function Events:Attach(LumberTrack, ctx)
     "REAGENTBANK_UPDATE",
     "MAIL_SEND_SUCCESS",
     "ITEM_REMOVED",
+    "ACCOUNT_BANK_SLOTS_CHANGED",
   }
   for _, evt in ipairs(safeEvents) do
     if C_EventUtils and C_EventUtils.IsEventValid and C_EventUtils.IsEventValid(evt) then
@@ -98,17 +99,62 @@ function Events:Attach(LumberTrack, ctx)
     end)
   end
 
+  local suppressFarming = false
+  local suppressUntil = 0
+  local function SetSuppressed(duration)
+    suppressFarming = true
+    suppressUntil = GetTime() + (duration or 5)
+  end
+  local function IsSuppressed()
+    if suppressFarming then
+      if GetTime() < suppressUntil then
+        return true
+      end
+      suppressFarming = false
+    end
+    return false
+  end
+
+  frame:RegisterEvent("BANKFRAME_OPENED")
+  frame:RegisterEvent("BANKFRAME_CLOSED")
+  frame:RegisterEvent("MAIL_SHOW")
+  frame:RegisterEvent("MAIL_CLOSED")
+
   frame:SetScript("OnEvent", function(_, event, a1)
     if event == "PLAYER_ENTERING_WORLD" then
       ResetFarmingSession(ctx)
       QueueRefresh(0.25)
+
+    elseif event == "BANKFRAME_OPENED" then
+      local AccountWide = NS.UI.LumberTrackAccountWide
+      if AccountWide and AccountWide.SetWarbandDataLoaded then
+        AccountWide:SetWarbandDataLoaded()
+      end
+      SetSuppressed(60)
+
+    elseif event == "BANKFRAME_CLOSED" then
+      SetSuppressed(5)
+
+    elseif event == "MAIL_SHOW" then
+      SetSuppressed(60)
+
+    elseif event == "MAIL_CLOSED" then
+      SetSuppressed(5)
 
     elseif event == "BAG_UPDATE_DELAYED"
         or event == "PLAYERBANKSLOTS_CHANGED"
         or event == "PLAYERREAGENTBANKSLOTS_CHANGED"
         or event == "REAGENTBANK_UPDATE"
         or event == "MAIL_SEND_SUCCESS"
-        or event == "ITEM_REMOVED" then
+        or event == "ITEM_REMOVED"
+        or event == "ACCOUNT_BANK_SLOTS_CHANGED" then
+      if event == "ACCOUNT_BANK_SLOTS_CHANGED" then
+        SetSuppressed(5)
+        local AccountWide = NS.UI.LumberTrackAccountWide
+        if AccountWide and AccountWide.SetWarbandDataLoaded then
+          AccountWide:SetWarbandDataLoaded()
+        end
+      end
       QueueRecount()
 
     elseif event == "BAG_UPDATE" then
@@ -177,7 +223,7 @@ function Events:Attach(LumberTrack, ctx)
       end
 
       local db = ctx.GetDB and ctx.GetDB()
-      if db and db.autoStartFarming and hasGain then
+      if db and db.autoStartFarming and hasGain and not IsSuppressed() then
         local FarmingStats = NS.UI.LumberTrackFarmingStats
         if FarmingStats and FarmingStats.Show and not db.userClosedFarmingStats then
           FarmingStats:Show()

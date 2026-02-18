@@ -114,20 +114,46 @@ end
 
 function R:Recount(ctx)
   local counts, total = GetBagLumberCounts(ctx.meta, ctx.lumberIDs)
-  ctx.counts = counts or {}
-  
+  local bagCounts = counts or {}
+
   local AccountWide = NS.UI.LumberTrackAccountWide
-  if AccountWide and AccountWide.SaveCharacterLumber then
-    AccountWide:SaveCharacterLumber(ctx.counts)
+
+  if AccountWide and AccountWide.ScanWarbandBank then
+    local warbandCounts = AccountWide:ScanWarbandBank(ctx.lumberIDs)
+    if AccountWide.SaveWarbandCounts then
+      AccountWide:SaveWarbandCounts(warbandCounts)
+    end
+    ctx.warbandCounts = warbandCounts
   end
-  
+
+  if AccountWide and AccountWide.SaveCharacterBankLumber then
+    AccountWide:SaveCharacterBankLumber(ctx.lumberIDs)
+  end
+
   if AccountWide and AccountWide.IsEnabled and AccountWide:IsEnabled() then
+    if AccountWide.SaveCharacterLumber then
+      local db = NS.Addon and NS.Addon.db and NS.Addon.db.global
+      local accountDB = db and db.lumberTrackAccount
+      local charKey = AccountWide:GetCharacterKey()
+      if accountDB and accountDB.characterData and accountDB.characterData[charKey] then
+        for itemID in pairs(accountDB.characterData[charKey]) do
+          if not bagCounts[itemID] then
+            bagCounts[itemID] = 0
+          end
+        end
+      end
+      AccountWide:SaveCharacterLumber(bagCounts)
+    end
+
     local aggregated = AccountWide:GetAggregatedCounts()
     if aggregated then
       ctx.counts = aggregated
+    else
+      ctx.counts = bagCounts
     end
     ctx.total = AccountWide:GetTotalCount(counts) or 0
   else
+    ctx.counts = bagCounts
     ctx.total = total or 0
   end
 
