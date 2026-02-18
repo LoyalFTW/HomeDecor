@@ -127,6 +127,12 @@ local defaults = {
 
     minimap = { hide = false },
 
+    vendor = {
+      showCollectedCheckmark = true,
+      showOwnedCount = false,
+      showVendorNPCTooltip = false,
+    },
+
     mapPins = {
       worldmap = true,
       minimap = true,
@@ -280,7 +286,6 @@ function Addon:OnInitialize()
   self.db = AceDB:New("HomeDecorDB", defaults)
   NS.db = self.db
 
-  -- Clean up favorites table - remove any false entries
   if self.db.profile and self.db.profile.favorites then
     local favs = self.db.profile.favorites
     local removed = 0

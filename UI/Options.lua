@@ -21,7 +21,7 @@ local function ensureProfile()
   if prof.mapPins.worldmap == nil then prof.mapPins.worldmap = true end
   if prof.mapPins.pinStyle == nil then prof.mapPins.pinStyle = "house" end
   if prof.mapPins.pinSize == nil then prof.mapPins.pinSize = 1.0 end
-  if prof.mapPins.pinColor == nil or type(prof.mapPins.pinColor) ~= "table" then 
+  if prof.mapPins.pinColor == nil or type(prof.mapPins.pinColor) ~= "table" then
     prof.mapPins.pinColor = { r = 1.0, g = 1.0, b = 1.0 }
   else
     prof.mapPins.pinColor.r = prof.mapPins.pinColor.r or 1.0
@@ -29,6 +29,10 @@ local function ensureProfile()
     prof.mapPins.pinColor.b = prof.mapPins.pinColor.b or 1.0
   end
   prof.minimap = prof.minimap or { hide = false }
+  prof.vendor = prof.vendor or {}
+  if prof.vendor.showCollectedCheckmark == nil then prof.vendor.showCollectedCheckmark = true end
+  if prof.vendor.showOwnedCount == nil then prof.vendor.showOwnedCount = false end
+  if prof.vendor.showVendorNPCTooltip == nil then prof.vendor.showVendorNPCTooltip = false end
   return prof
 end
 
@@ -90,25 +94,25 @@ end
 local function mkColorPicker(parent, label)
   local button = CreateFrame("Button", nil, parent)
   button:SetSize(20, 20)
-  
+
   button.bg = button:CreateTexture(nil, "BACKGROUND")
   button.bg:SetAllPoints()
   button.bg:SetColorTexture(0, 0, 0, 0.5)
-  
+
   button.color = button:CreateTexture(nil, "ARTWORK")
   button.color:SetPoint("TOPLEFT", 2, -2)
   button.color:SetPoint("BOTTOMRIGHT", -2, 2)
   button.color:SetColorTexture(1, 1, 1)
-  
+
   button.label = button:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
   button.label:SetPoint("LEFT", button, "RIGHT", 5, 0)
   button.label:SetText(label)
-  
+
   button:SetScript("OnClick", function(self)
     if not _G.ColorPickerFrame then return end
     local prof = ensureProfile()
     if not prof then return end
-    
+
     local info = {}
     info.r = prof.mapPins.pinColor.r
     info.g = prof.mapPins.pinColor.g
@@ -129,10 +133,10 @@ local function mkColorPicker(parent, label)
       self.color:SetColorTexture(restore.r, restore.g, restore.b)
       refreshPins()
     end
-    
+
     _G.ColorPickerFrame:SetupColorPickerAndShow(info)
   end)
-  
+
   return button
 end
 
@@ -151,7 +155,7 @@ local function mkSlider(parent, label, minVal, maxVal, step)
 
   slider.Low:SetText(string.format("%.1f", minVal))
   slider.High:SetText(string.format("%.1f", maxVal))
-  
+
   return slider
 end
 
@@ -204,13 +208,13 @@ function Options:Ensure()
 
   local ddPinStyle = mkDropdown(panel, 120)
   ddPinStyle:SetPoint("LEFT", styleLabel, "RIGHT", 0, -3)
-  
+
   _G.UIDropDownMenu_Initialize(ddPinStyle, function(self)
     local prof = ensureProfile()
     if not prof then return end
-    
+
     local info = _G.UIDropDownMenu_CreateInfo()
-    
+
     info.text = "House Icon"
     info.value = "house"
     info.checked = (prof.mapPins.pinStyle == "house")
@@ -220,7 +224,7 @@ function Options:Ensure()
       refreshPins()
     end
     _G.UIDropDownMenu_AddButton(info)
-    
+
     info.text = "Dot"
     info.value = "dot"
     info.checked = (prof.mapPins.pinStyle == "dot")
@@ -231,7 +235,7 @@ function Options:Ensure()
     end
     _G.UIDropDownMenu_AddButton(info)
   end)
-  
+
   y = y - 34
 
   local colorPicker = mkColorPicker(panel, "Pin Color")
@@ -259,12 +263,12 @@ function Options:Ensure()
   sizeSlider:SetScript("OnValueChanged", function(self, value)
     local prof = ensureProfile()
     if not prof then return end
-    value = math.floor(value * 10 + 0.5) / 10 
+    value = math.floor(value * 10 + 0.5) / 10
     prof.mapPins.pinSize = value
     self.valueText:SetText(string.format("%.1fx", value))
     refreshPins()
   end)
-  
+
   y = y - 40
 
   local trackerHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -272,10 +276,9 @@ function Options:Ensure()
   trackerHeader:SetText("Tracker")
   y = y - 24
 
-  local cbShowFavoritesOnZone = mkCheckbox(panel, "Highlight saved items when entering zone", 
+  local cbShowFavoritesOnZone = mkCheckbox(panel, "Highlight saved items when entering zone",
     "When enabled, saved items will be highlighted when you enter a new zone")
   cbShowFavoritesOnZone:SetPoint("TOPLEFT", 32, y)
-  y = y - 34
 
   local function syncFromDB()
     local prof = ensureProfile()
@@ -349,6 +352,114 @@ function Options:Ensure()
   end
 
   self.panel = panel
+
+  local vendorPanel = CreateFrame("Frame")
+  vendorPanel.name = "Vendor Options"
+
+  local vendorTitle = vendorPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+  vendorTitle:SetPoint("TOPLEFT", 16, -16)
+  vendorTitle:SetText("Vendor Options")
+
+  local vendorSub = vendorPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  vendorSub:SetPoint("TOPLEFT", vendorTitle, "BOTTOMLEFT", 0, -6)
+  vendorSub:SetText("Control what HomeDecor overlays on the vendor window.")
+
+  local vy = -60
+
+  local cbCollectedCheckmark = mkCheckbox(vendorPanel, "Show collected checkmark",
+    "Show a checkmark on vendor items you already own in your housing storage")
+  cbCollectedCheckmark:SetPoint("TOPLEFT", 16, vy)
+  vy = vy - 34
+
+  local cbOwnedCount = mkCheckbox(vendorPanel, "Show owned count",
+    "Show a number on vendor items indicating how many you own in your housing storage")
+  cbOwnedCount:SetPoint("TOPLEFT", 16, vy)
+  vy = vy - 34
+
+  local cbVendorNPCTooltip = mkCheckbox(vendorPanel, "Show vendor NPC tooltip info",
+    "Show HomeDecor info in the tooltip when hovering over a vendor NPC")
+  cbVendorNPCTooltip:SetPoint("TOPLEFT", 16, vy)
+
+  local function syncVendorFromDB()
+    local prof = ensureProfile()
+    if not prof then return end
+    local v1 = bool(prof.vendor.showCollectedCheckmark)
+    local v2 = bool(prof.vendor.showOwnedCount)
+    local v3 = bool(prof.vendor.showVendorNPCTooltip)
+    cbCollectedCheckmark:SetChecked(v1)
+    cbCollectedCheckmark.value = v1
+    cbOwnedCount:SetChecked(v2)
+    cbOwnedCount.value = v2
+    cbVendorNPCTooltip:SetChecked(v3)
+    cbVendorNPCTooltip.value = v3
+  end
+
+  vendorPanel:SetScript("OnShow", syncVendorFromDB)
+
+  local settingsFrame = _G.SettingsPanel or _G.InterfaceOptionsFrame
+  if settingsFrame and settingsFrame.HookScript then
+    settingsFrame:HookScript("OnShow", syncVendorFromDB)
+  end
+
+  if Settings and Settings.OpenToCategory then
+    hooksecurefunc(Settings, "OpenToCategory", function()
+      C_Timer.After(0, syncVendorFromDB)
+    end)
+  end
+
+  cbCollectedCheckmark:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.vendor.showCollectedCheckmark = val
+    self.value = val
+    local CM = NS.UI and NS.UI.VendorCheckMarks
+    if CM then
+      if val then
+        if CM.Refresh then pcall(CM.Refresh, CM) end
+      else
+        if CM.HideAll then pcall(CM.HideAll, CM) end
+      end
+    end
+  end)
+
+  cbOwnedCount:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.vendor.showOwnedCount = val
+    self.value = val
+    local DC = NS.UI and NS.UI.VendorDecorCounters
+    if DC then
+      if val then
+        if DC.Refresh then pcall(DC.Refresh, DC) end
+      else
+        if DC.HideAll then pcall(DC.HideAll, DC) end
+      end
+    end
+  end)
+
+  cbVendorNPCTooltip:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.vendor.showVendorNPCTooltip = val
+    self.value = val
+  end)
+
+  if Settings and Settings.RegisterCanvasLayoutSubcategory then
+    local vendorCategory = Settings.RegisterCanvasLayoutSubcategory(panel.category, vendorPanel, vendorPanel.name)
+    vendorPanel.category = vendorCategory
+    if panel.category then
+      panel.category.collapsed = true
+    end
+  else
+    vendorPanel.parent = panel
+    local add = _G.InterfaceOptions_AddCategory
+    if add then add(vendorPanel) end
+  end
+
+  self.vendorPanel = vendorPanel
 end
 
 function Options:Open()
