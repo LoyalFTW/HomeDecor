@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local AW = {}
@@ -11,8 +12,8 @@ function AW:SetWarbandDataLoaded()
 end
 
 local function GetCharacterKey()
-  local name = UnitName("player") or "Unknown"
-  local realm = GetRealmName() or "Unknown"
+  local name = UnitName("player") or L["UNKNOWN"]
+  local realm = GetRealmName() or L["UNKNOWN"]
   return name .. " - " .. realm
 end
 
@@ -245,7 +246,7 @@ function AW:GetCharacterBreakdown(itemID)
   local warbandAmt = self:GetWarbandCountForItem(itemID)
   if warbandAmt > 0 then
     breakdown[#breakdown + 1] = {
-      label    = "Warband Bank",
+      label    = L["LUMBER_WARBAND_BANK"],
       count    = warbandAmt,
       sort     = 3,
       warband  = true,

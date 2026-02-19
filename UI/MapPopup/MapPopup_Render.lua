@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local MapPopup = NS.UI.MapPopup or {}
@@ -87,7 +88,7 @@ end
 
 function Render:SetMultipleTitle(frame, vendors)
   if not frame then return end
-  frame.header.title:SetText(#vendors .. " Vendors")
+  frame.header.title:SetText(#vendors .. " " .. L["VENDORS"])
 end
 
 function Render:ScheduleRefresh(popup, frame)
@@ -121,7 +122,7 @@ function Render:RefreshContent(popup, frame, vendors)
   vendors = vendors or {}
   
   if #vendors == 0 then
-    frame.noItems:SetText("No vendors")
+    frame.noItems:SetText(L["NO_VENDORS"])
     frame.noItems:Show()
     frame.isRefreshing = false
     return
@@ -141,7 +142,7 @@ function Render:RefreshContent(popup, frame, vendors)
   vendors = uniqueVendors
   
   if frame.header and frame.header.title and #vendors > 1 then
-    frame.header.title:SetText(#vendors .. " Vendors")
+    frame.header.title:SetText(#vendors .. " " .. L["VENDORS"])
   end
 
   local classHall = {} 
@@ -446,7 +447,7 @@ function Render:RefreshContent(popup, frame, vendors)
   end
 
   if next(classHall) then
-    RenderSectionHeader("Class Hall", 1, 0.82, 0)
+    RenderSectionHeader(L["CLASS_HALL"], 1, 0.82, 0)
 
     local classNames = {}
     for className in pairs(classHall) do
@@ -497,7 +498,7 @@ function Render:RefreshContent(popup, frame, vendors)
   end
 
   if not hasItems then
-    frame.noItems:SetText("No items found")
+    frame.noItems:SetText(L["NO_ITEMS_FOUND"])
     frame.noItems:Show()
   end
 

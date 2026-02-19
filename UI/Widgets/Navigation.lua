@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 
 local Nav = {}
 NS.UI = NS.UI or {}
@@ -169,7 +170,7 @@ function Nav:AddWaypoint(item, context)
             src.x,
             src.y,
             {
-                title      = src.title or (item and item.title) or "Waypoint",
+                title      = src.title or (item and item.title) or L["WAYPOINT"],
                 persistent = false,
                 minimap    = true,
                 world      = true,
@@ -180,7 +181,7 @@ function Nav:AddWaypoint(item, context)
             TomTom:SetCrazyArrow(
                 uid,
                 TomTom.profile.arrow.arrival,
-                src.title or (item and item.title) or "Waypoint"
+                src.title or (item and item.title) or L["WAYPOINT"]
             )
         end
     end

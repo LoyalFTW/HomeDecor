@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local function GetColors()
@@ -51,7 +52,7 @@ local function hideDropPanel()
 end
 
 local PIN_STYLES = {
-    { value = "house", label = "House Icon" },
+    { value = "house", label = L["OPT_PIN_HOUSE"] },
     { value = "dot",   label = "Dot"        },
 }
 
@@ -156,28 +157,28 @@ local function buildDropPanel()
         return row
     end
 
-    addSection("Map Pins")
-    local cbWorld = addCheck("Show on world map",
+    addSection(L["MAP_PINS_HEADER"])
+    local cbWorld = addCheck(L["MAP_SHOW_WORLDMAP"],
         function() local p = ensureProfile(); return p and p.mapPins.worldmap ~= false end,
         function(v) local p = ensureProfile(); if p then p.mapPins.worldmap = v; refreshPins() end end)
-    local cbMini  = addCheck("Show on minimap",
+    local cbMini  = addCheck(L["MAP_SHOW_MINIMAP"],
         function() local p = ensureProfile(); return p and p.mapPins.minimap ~= false end,
         function(v) local p = ensureProfile(); if p then p.mapPins.minimap = v; refreshPins() end end)
     y = y + 2
 
-    addSection("Vendor Tracker")
-    local cbHideColl = addCheck("Hide collected items",
+    addSection(L["VENDOR_TRACKER"])
+    local cbHideColl = addCheck(L["MAP_HIDE_COLLECTED"],
         function() local p = ensureProfile(); return p and p.tracker.hideCompleted == true end,
         function(v) applyTrackerFlag("_hideCompleted", v) end)
-    local cbHideVend = addCheck("Hide completed vendors",
+    local cbHideVend = addCheck(L["MAP_HIDE_COMPLETED_VENDORS"],
         function() local p = ensureProfile(); return p and p.tracker.hideCompletedVendors == true end,
         function(v) applyTrackerFlag("_hideCompletedVendors", v) end)
     y = y + 2
 
-    addSection("Pin Appearance")
+    addSection(L["MAP_PIN_STYLE_HEADER"])
 
     local styleControl
-    addRow("Style", function(row, lbl)
+    addRow(L["MAP_STYLE"], function(row, lbl)
         local styleValues = {}
         for _, e in ipairs(PIN_STYLES) do styleValues[#styleValues+1] = e.label end
 
@@ -248,7 +249,7 @@ local function buildDropPanel()
     end)
 
     local swatch
-    addRow("Color", function(row, lbl)
+    addRow(L["MAP_COLOR"], function(row, lbl)
         local swatchBtn = CreateFrame("Button", nil, row, "BackdropTemplate")
         swatchBtn:SetSize(18, 18)
         swatchBtn:SetPoint("RIGHT", row, "RIGHT", -40, 0)
@@ -270,7 +271,7 @@ local function buildDropPanel()
         local rTxt = resetBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         rTxt:SetAllPoints(); rTxt:SetJustifyH("CENTER")
         rTxt:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
-        rTxt:SetText("Reset")
+        rTxt:SetText(L["RESET"])
 
         resetBtn:SetScript("OnClick", function()
             local p = ensureProfile(); if not p then return end
@@ -309,7 +310,7 @@ local function buildDropPanel()
         local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         lbl:SetPoint("LEFT", row, "LEFT", 10, 4)
         lbl:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
-        lbl:SetText("Size")
+        lbl:SetText(L["SIZE"])
 
         sizeVal = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         sizeVal:SetPoint("LEFT", lbl, "RIGHT", 6, 0)
@@ -384,7 +385,7 @@ end
 function HomeDecorWorldMapButtonMixin:OnEnter()
     GameTooltip:SetOwner(self, "ANCHOR_LEFT")
     GameTooltip:AddLine("Home|cffff7d0aDecor|r")
-    GameTooltip:AddLine("Map & tracker settings", 1, 1, 1)
+    GameTooltip:AddLine(L["MAP_TRACKER_SETTINGS"], 1, 1, 1)
     GameTooltip:Show()
 end
 

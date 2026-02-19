@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local Settings = {}
@@ -51,12 +52,12 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
 
   local title = settings:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   title:SetPoint("TOP", 0, -16)
-  title:SetText("Settings")
+  title:SetText(L["SETTINGS"])
   title:SetTextColor(unpack(T.accent or {1, 0.82, 0.2, 1}))
 
   local yOffset = -50
 
-  local iconsCB = CreateCheckbox(settings, 20, yOffset, "Show Icons")
+  local iconsCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_SHOW_ICONS"])
   iconsCB:SetChecked(sharedCtx and sharedCtx.showIcons ~= false or true)
   iconsCB:SetScript("OnClick", function(self)
     if sharedCtx then
@@ -72,7 +73,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   end)
   yOffset = yOffset - 35
 
-  local hideCB = CreateCheckbox(settings, 20, yOffset, "Hide Items with 0")
+  local hideCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_HIDE_ZERO"])
   hideCB:SetChecked(sharedCtx and sharedCtx.hideZero and true or false)
   hideCB:SetScript("OnClick", function(self)
     if sharedCtx then
@@ -84,7 +85,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   end)
   yOffset = yOffset - 35
 
-  local compactCB = CreateCheckbox(settings, 20, yOffset, "Compact Mode",
+  local compactCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_COMPACT_MODE"],
     "Shows a condensed single-line list — fits more items with less screen space")
   compactCB:SetChecked(sharedCtx and sharedCtx.compactMode and true or false)
   compactCB:SetScript("OnClick", function(self)
@@ -141,7 +142,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
 
   local goalLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   goalLabel:SetPoint("TOPLEFT", 20, yOffset)
-  goalLabel:SetText("Goal Amount:")
+  goalLabel:SetText(L["LUMBER_GOAL_AMOUNT"])
 
   local goalInput = CreateFrame("EditBox", nil, settings, "BackdropTemplate")
   goalInput:SetPoint("LEFT", goalLabel, "RIGHT", 8, 0)
@@ -196,7 +197,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
 
   local alphaLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   alphaLabel:SetPoint("TOPLEFT", 20, yOffset)
-  alphaLabel:SetText("Transparency:")
+  alphaLabel:SetText(L["TRANSPARENCY_COLON"])
   yOffset = yOffset - 30
 
   local slider = CreateFrame("Slider", nil, settings, "OptionsSliderTemplate")

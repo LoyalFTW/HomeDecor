@@ -1,4 +1,5 @@
 local _, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 NS.UI.Util = NS.UI.Util or {}
 local U = NS.UI.Util
@@ -394,26 +395,26 @@ function M:Build(popup, env)
         wipe(popup._allElements)
 
         if self._activeTab == "filters" then
-            checkRow("Hide Completed",
+            checkRow(L["FILTER_HIDE_COMPLETED"],
                 function() local f = F(); return (f and f.hideCollected) == true end,
                 function(v) local f = F(); if f then f.hideCollected = (v == true) end end,
                 true)
 
             spacer(8)
 
-            ddRow("Faction",
+            ddRow(L["FACTION"],
                 function() local f = F(); return (f and f.faction) or "ALL" end,
                 function(v) local f = F(); if f then f.faction = v or "ALL" end end,
                 function()
                     return {
-                        { value = "ALL",      text = "All Factions" },
+                        { value = "ALL",      text = L["ALL_FACTIONS"] },
                         { value = "Alliance", text = "Alliance" },
                         { value = "Horde",    text = "Horde" },
                     }
                 end,
                 true)
 
-            ddRow("Expansion",
+            ddRow(L["EXPANSION"],
                 function()
                     local f = F()
                     local v = (f and f.expansion) or "ALL"
@@ -428,7 +429,7 @@ function M:Build(popup, env)
                     if Filters then Filters.expansion, Filters.zone = f.expansion, f.zone end
                 end,
                 function()
-                    local out, seen = { { value = "ALL", text = "All Expansions" } }, {}
+                    local out, seen = { { value = "ALL", text = L["ALL_EXPANSIONS"] } }, {}
                     local vendors = NS.Data and NS.Data.Vendors
                     if type(vendors) == "table" then
                         for exp in pairs(vendors) do
@@ -443,7 +444,7 @@ function M:Build(popup, env)
                 end,
                 true)
 
-            ddRow("Zone",
+            ddRow(L["ZONE"],
                 function()
                     local f = F()
                     local v = (f and f.zone) or "ALL"
@@ -457,7 +458,7 @@ function M:Build(popup, env)
                     if Filters then Filters.zone = f.zone end
                 end,
                 function()
-                    local out, seen = { { value = "ALL", text = "All Zones" } }, {}
+                    local out, seen = { { value = "ALL", text = L["ALL_ZONES"] } }, {}
                     local f = F()
                     local exp = (f and f.expansion) or "ALL"
                     local vendors = NS.Data and NS.Data.Vendors
@@ -495,7 +496,7 @@ function M:Build(popup, env)
                 end,
                 true)
 
-            ddRow("Category",
+            ddRow(L["CATEGORY"],
                 function()
                     local f = F()
                     local v = (f and f.category) or "ALL"
@@ -523,11 +524,11 @@ function M:Build(popup, env)
                     if FS and FS.GetCategoryOptions then
                         return FS:GetCategoryOptions()
                     end
-                    return { { value = "ALL", text = "All Categories" } }
+                    return { { value = "ALL", text = L["ALL_CATEGORIES"] } }
                 end
             )
 
-            ddRow("Subcategory",
+            ddRow(L["SUBCATEGORY"],
                 function()
                     local f = F()
                     local v = (f and f.subcategory) or "ALL"
@@ -556,12 +557,12 @@ function M:Build(popup, env)
                     if FS and FS.GetSubcategoryOptions then
                         return FS:GetSubcategoryOptions(cat)
                     end
-                    return { { value = "ALL", text = "All Subcategories" } }
+                    return { { value = "ALL", text = L["ALL_SUBCATEGORIES"] } }
                 end
             )
 
         elseif self._activeTab == "completion" then
-            checkRow("Reputation",
+            checkRow(L["REPUTATION"],
                 function() local f = F(); return (f and f.availableRepOnly) == true end,
                 function(v)
                     local f = F()
@@ -577,9 +578,9 @@ function M:Build(popup, env)
                     end
                 end,
                 true,
-                "Login to Alts once to update Reputations you have completed")
+                L["FILTER_ALTS_REP_HINT"])
 
-            checkRow("Quests",
+            checkRow(L["QUESTS"],
                 function() local f = F(); return (f and f.questsCompleted) == true end,
                 function(v) 
                     local f = F()
@@ -590,9 +591,9 @@ function M:Build(popup, env)
                     end
                 end,
                 true,
-                "Login to Alts once to update quests you've completed on any character")
+                L["FILTER_ALTS_QUEST_HINT"])
 
-            checkRow("Achievement",
+            checkRow(L["ACHIEVEMENTS"],
                 function() local f = F(); return (f and f.achievementCompleted) == true end,
                 function(v) 
                     local f = F()
@@ -603,7 +604,7 @@ function M:Build(popup, env)
                     end
                 end,
                 true,
-                "Show only items from achievements you've completed")
+                L["FILTER_ACH_COMPLETED_HINT"])
         end
     end
 

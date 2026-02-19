@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 
 NS.UI = NS.UI or {}
 
@@ -155,7 +156,7 @@ function UI:CreateHeader(frame)
 
   header.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   header.title:SetPoint("CENTER", header, "CENTER", 0, 0)
-  header.title:SetText("Vendors")
+  header.title:SetText(L["VENDORS"])
   header.title:SetTextColor(theme.accent[1] or 1, theme.accent[2] or 0.82, theme.accent[3] or 0)
 
   if RowStyles and RowStyles.StrongText then
@@ -205,7 +206,7 @@ function UI:CreateSettings(frame)
 
   settings.label = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   settings.label:SetPoint("TOPLEFT", 16, -16)
-  settings.label:SetText("Panel Transparency")
+  settings.label:SetText(L["PANEL_TRANSPARENCY"])
 
   settings.alphaValue = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   settings.alphaValue:SetPoint("TOPRIGHT", -16, -38)

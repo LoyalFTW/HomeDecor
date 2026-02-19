@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local LumberList = NS.UI.LumberTrackLumberList or {}
@@ -88,7 +89,7 @@ function LumberList:Create(sharedCtx)
   self.collapseBtn = collapseBtn
   local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   title:SetPoint("CENTER", 0, 0)
-  title:SetText("Lumber Tracker")
+  title:SetText(L["LUMBER_TRACKER"])
   title:SetTextColor(unpack(T.accent))
   local settingsBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
   settingsBtn:SetSize(26, 26)
@@ -118,8 +119,8 @@ function LumberList:Create(sharedCtx)
     self:SetBackdropBorderColor(unpack(T.accentBright or T.accent))
     if GameTooltip then
       GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
-      GameTooltip:AddLine("Compact Mode", 1, 1, 1)
-      GameTooltip:AddLine("Toggle compact single-line view", 0.7, 0.7, 0.7)
+      GameTooltip:AddLine(L["LUMBER_COMPACT_MODE"], 1, 1, 1)
+      GameTooltip:AddLine(L["LUMBER_TOGGLE_COMPACT"], 0.7, 0.7, 0.7)
       GameTooltip:Show()
     end
   end)
@@ -245,7 +246,7 @@ function LumberList:Create(sharedCtx)
   end
   local totalText = footer:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   totalText:SetPoint("LEFT", 12, 0)
-  totalText:SetText("Lumber Total: 0")
+  totalText:SetText(L["LUMBER_TOTAL_ZERO"])
   totalText:SetTextColor(unpack(T.text))
   if sharedCtx then
     sharedCtx.totalText = totalText
@@ -257,7 +258,7 @@ function LumberList:Create(sharedCtx)
   startFarmingBtn.text = startFarmingBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   startFarmingBtn.text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
   startFarmingBtn.text:SetPoint("CENTER", 0, 0)
-  startFarmingBtn.text:SetText("START FARMING")
+  startFarmingBtn.text:SetText(L["LUMBER_BTN_START_FARMING"])
   startFarmingBtn.text:SetTextColor(unpack(T.success))
   startFarmingBtn:SetScript("OnEnter", function(self)
     self:SetBackdropBorderColor(unpack(T.accentBright or T.accent))

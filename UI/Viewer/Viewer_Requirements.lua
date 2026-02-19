@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 
 NS.UI = NS.UI or {}
 local View = NS.UI.Viewer
@@ -136,7 +137,7 @@ local function GetRequirementLink(it)
     return {
       kind = "quest",
       id = id,
-      text = r.quest.title or GetQuestTitleSafe(id) or ("Quest " .. tostring(id)),
+      text = r.quest.title or GetQuestTitleSafe(id) or (L["QUEST_PREFIX"] .. tostring(id)),
       completed = completed
     }
   end
@@ -146,7 +147,7 @@ local function GetRequirementLink(it)
     return {
       kind = "achievement",
       id = id,
-      text = r.achievement.title or GetAchievementTitleSafe(id) or ("Achievement " .. tostring(id)),
+      text = r.achievement.title or GetAchievementTitleSafe(id) or (L["ACHIEVEMENT_PREFIX"] .. tostring(id)),
       completed = completed
     }
   end
@@ -312,13 +313,13 @@ local function GetRepRequirement(it)
       if out then return out end
       RequestRepRescanAfterLoad(itemID)
     end
-    return { text = "Reputation required" }
+    return { text = L["REQ_REPUTATION"] }
   end
 
   if type(rep) == "string" then
     local s = rep:gsub("^%s+",""):gsub("%s+$","")
     if s == "" then
-      return { text = "Reputation required" }
+      return { text = L["REQ_REPUTATION"] }
     end
     return { text = s }
   end
@@ -331,10 +332,10 @@ local function GetRepRequirement(it)
     elseif name then
       return { text = tostring(name) }
     end
-    return { text = "Reputation required" }
+    return { text = L["REQ_REPUTATION"] }
   end
 
-  return { text = "Reputation required" }
+  return { text = L["REQ_REPUTATION"] }
 end
 
 local function GetQuestRequirement(it)
@@ -354,7 +355,7 @@ local function GetQuestRequirement(it)
   if type(quest) == "table" then
     local questID = tonumber(quest.id)
     if not questID then
-      return { text = "Quest required", questID = nil, met = false }
+      return { text = L["REQ_QUEST"], questID = nil, met = false }
     end
 
     local isComplete = IsQuestComplete(questID)
@@ -378,7 +379,7 @@ local function GetQuestRequirement(it)
   if type(quest) == "number" then
     local questID = tonumber(quest)
     if not questID then
-      return { text = "Quest required", questID = nil, met = false }
+      return { text = L["REQ_QUEST"], questID = nil, met = false }
     end
 
     local isComplete = IsQuestComplete(questID)
@@ -394,7 +395,7 @@ local function GetQuestRequirement(it)
     return { text = quest, questID = nil, met = false }
   end
 
-  return { text = "Quest required", questID = nil, met = false }
+  return { text = L["REQ_QUEST"], questID = nil, met = false }
 end
 
 local function BuildRepDisplay(rep, hover)
@@ -480,7 +481,7 @@ local function EnsurePopup()
 
     local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("LEFT", 12, 0)
-    title:SetText("Wowhead Links")
+    title:SetText(L["WOWHEAD_LINKS"])
     local colors = T.colors or {}
     if title.SetTextColor then
       local c = colors.accent or {1,1,1,1}
@@ -490,7 +491,7 @@ local function EnsurePopup()
 
     local hint = p:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     hint:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 12, -8)
-    hint:SetText("Ctrl+C to copy, then paste into your browser.")
+    hint:SetText(L["HINT_CTRL_COPY"])
     p._hint = hint
 
     p._closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
@@ -595,7 +596,7 @@ local function ShowWowheadLinks(links)
 
     row.label:ClearAllPoints()
     row.label:SetPoint("TOPLEFT", 16, topY - ((i - 1) * rowGap))
-    row.label:SetText(l.label or "Link")
+    row.label:SetText(l.label or L["LINK"])
     row.label:Show()
 
     row.editbox:ClearAllPoints()

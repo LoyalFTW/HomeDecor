@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 
 NS.UI = NS.UI or {}
 local IA = {}
@@ -92,23 +93,23 @@ function IA:BuildWowheadLinks(it)
     local links, seen = {}, {}
     if src.type == "achievement" and R.BuildWowheadAchievementURL then
         local aid = src.achievementID or src.id
-        AddUnique(links, seen, "Achievement Link", R.BuildWowheadAchievementURL(aid))
+        AddUnique(links, seen, L["ACHIEVEMENT_LINK"], R.BuildWowheadAchievementURL(aid))
     elseif src.type == "quest" and R.BuildWowheadQuestURL then
         local qid = src.questID or src.id
-        AddUnique(links, seen, "Quest Link", R.BuildWowheadQuestURL(qid))
+        AddUnique(links, seen, L["QUEST_LINK"], R.BuildWowheadQuestURL(qid))
     end
 
     if R.GetRequirementLink then
         local req = R.GetRequirementLink(it)
         if req and req.kind == "quest" and R.BuildWowheadQuestURL then
-            AddUnique(links, seen, "Quest Link", R.BuildWowheadQuestURL(req.id))
+            AddUnique(links, seen, L["QUEST_LINK"], R.BuildWowheadQuestURL(req.id))
         elseif req and req.kind == "achievement" and R.BuildWowheadAchievementURL then
-            AddUnique(links, seen, "Achievement Link", R.BuildWowheadAchievementURL(req.id))
+            AddUnique(links, seen, L["ACHIEVEMENT_LINK"], R.BuildWowheadAchievementURL(req.id))
         end
     end
 
     if itemID and R.BuildWowheadItemURL then
-        AddUnique(links, seen, "Item Link", R.BuildWowheadItemURL(itemID))
+        AddUnique(links, seen, L["ITEM_LINK"], R.BuildWowheadItemURL(itemID))
     end
 
     if #links == 0 then return nil end

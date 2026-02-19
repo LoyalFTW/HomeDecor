@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.Data     = NS.Data     or {}
 NS.Systems  = NS.Systems  or {}
 NS.UI       = NS.UI       or {}
@@ -172,9 +173,9 @@ local minimapObject = LDB:NewDataObject("HomeDecor", {
     end
   end,
   OnTooltipShow = function(tt)
-    tt:AddLine("HomeDecor")
-    tt:AddLine("Left Click: Open", 1, 1, 1)
-    tt:AddLine("Right Click: Options", 1, 1, 1)
+    tt:AddLine(L["ADDON_NAME"])
+    tt:AddLine(L["LDB_LEFT_CLICK"], 1, 1, 1)
+    tt:AddLine(L["LDB_RIGHT_CLICK"], 1, 1, 1)
   end,
 })
 
@@ -192,8 +193,8 @@ local function RegisterAddonCompartment()
     end,
     funcOnEnter = function(button)
       GameTooltip:SetOwner(button, "ANCHOR_LEFT")
-      GameTooltip:SetText("HomeDecor")
-      GameTooltip:AddLine("Click to toggle HomeDecor", 1, 1, 1)
+      GameTooltip:SetText(L["ADDON_NAME"])
+      GameTooltip:AddLine(L["LDB_TOGGLE_TIP"], 1, 1, 1)
       GameTooltip:Show()
     end,
     funcOnLeave = function()
@@ -274,12 +275,12 @@ local function HandleSlash(msg)
     return
   end
 
-  print("|cffFFD200HomeDecor Commands:|r")
-  print("/hd                 - Toggle HomeDecor")
-  print("/hd minimap [show|hide]")
-  print("/hd pins [minimap|worldmap]  - Toggle vendor pins")
-  print("/hd options          - Open options")
-  print("/hd changelog       - Show What's New")
+  print("|cffFFD200" .. L["SLASH_HEADER"] .. "|r")
+  print(L["SLASH_HD"])
+  print(L["SLASH_MINIMAP"])
+  print(L["SLASH_PINS"])
+  print(L["SLASH_OPTIONS"])
+  print(L["SLASH_CHANGELOG"])
 end
 
 function Addon:OnInitialize()

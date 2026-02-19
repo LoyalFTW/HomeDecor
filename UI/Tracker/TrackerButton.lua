@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 
 NS.UI = NS.UI or {}
 NS.UI.Tracker = NS.UI.Tracker or {}
@@ -14,7 +15,7 @@ function TrackerButton:Attach(parent)
 
   local text = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   text:SetPoint("CENTER")
-  text:SetText("Tracker")
+  text:SetText(L["TRACKER"])
   button.text = text
 
   button:SetScript("OnClick", function()

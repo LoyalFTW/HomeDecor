@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local Rows = NS.UI.LumberTrackRows or {}
@@ -177,7 +178,7 @@ local function NewLumberRow(parent)
         local breakdown = AccountWide:GetCharacterBreakdown(self.itemID)
         if breakdown and #breakdown > 0 then
           GameTooltip:AddLine(" ")
-          GameTooltip:AddLine("Character Breakdown:", 0.9, 0.72, 0.18)
+          GameTooltip:AddLine(L["LUMBER_CHARACTER_BREAKDOWN"], 0.9, 0.72, 0.18)
           for _, data in ipairs(breakdown) do
             local countStr = Rows:FormatNumber(data.count)
             if data.warband then
@@ -295,7 +296,7 @@ local function NewCompactRow(parent)
         local breakdown = AccountWide:GetCharacterBreakdown(self.itemID)
         if breakdown and #breakdown > 0 then
           GameTooltip:AddLine(" ")
-          GameTooltip:AddLine("Character Breakdown:", 0.9, 0.72, 0.18)
+          GameTooltip:AddLine(L["LUMBER_CHARACTER_BREAKDOWN"], 0.9, 0.72, 0.18)
           for _, data in ipairs(breakdown) do
             local countStr = Rows:FormatNumber(data.count)
             if data.warband then
@@ -336,7 +337,7 @@ function Rows:SetCompactRowData(row, ctx, itemID, currentCount, itemName, iconTe
   end
 
   if row.name then
-    row.name:SetText(itemName or ("Item " .. tostring(itemID)))
+    row.name:SetText(itemName or (L["ITEM_PREFIX"] .. tostring(itemID)))
   end
 
   local v = tonumber(currentCount) or 0
@@ -502,7 +503,7 @@ function Rows:SetRowData(row, ctx, itemID, currentCount, itemName, iconTexture)
   end
 
   if row.name then
-    row.name:SetText(itemName or ("Item " .. tostring(itemID)))
+    row.name:SetText(itemName or (L["ITEM_PREFIX"] .. tostring(itemID)))
   end
 
   if row.rate then

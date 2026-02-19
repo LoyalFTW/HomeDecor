@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local Events = NS.UI.LumberTrackEvents or {}
@@ -40,7 +41,7 @@ local function ResetFarmingSession(ctx)
   end
 
   if ctx.farmingPauseBtn then
-    ctx.farmingPauseBtn.text:SetText("START")
+    ctx.farmingPauseBtn.text:SetText(L["LUMBER_BTN_START"])
     ctx.farmingPauseBtn.text:SetTextColor(0.30, 0.80, 0.40, 1)
   end
 
@@ -281,7 +282,7 @@ function Events:Attach(LumberTrack, ctx)
       end
 
       if ctx.totalText then
-        ctx.totalText:SetText("Lumber Total: " .. tostring(ctx.total or 0))
+        ctx.totalText:SetText(L["LUMBER_TOTAL"] .. tostring(ctx.total or 0))
       end
 
       if ctx.bagCounter then

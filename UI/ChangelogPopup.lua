@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 
 local C    = NS.UI and NS.UI.Controls
 local T    = NS.UI and NS.UI.Theme and NS.UI.Theme.colors
@@ -36,7 +37,7 @@ local function CreatePopup()
 
   header.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   header.title:SetPoint("CENTER")
-  header.title:SetText("What's New")
+  header.title:SetText(L["WHATS_NEW"])
   header.title:SetTextColor(unpack(T.accent))
 
   header.closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
@@ -60,7 +61,7 @@ local function CreatePopup()
   auto:SetPoint("LEFT", header, "LEFT", 8, 0)
   auto.text = auto:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   auto.text:SetPoint("LEFT", auto, "RIGHT", 4, 0)
-  auto.text:SetText("Auto Open")
+  auto.text:SetText(L["AUTO_OPEN"])
 
   auto:SetScript("OnClick", function(self)
     CLog:SetAutoOpen(self:GetChecked())
@@ -92,7 +93,7 @@ local function CreatePopup()
 
   local label = p:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   label:SetPoint("BOTTOMLEFT", 14, 18)
-  label:SetText("Support Discord:")
+  label:SetText(L["SUPPORT_DISCORD"])
   label:SetTextColor(unpack(T.accent))
 
   local edit = CreateFrame("EditBox", nil, p, "InputBoxTemplate")

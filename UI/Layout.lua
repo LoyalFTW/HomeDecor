@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local Loc = NS.L
 
 NS.UI = NS.UI or {}
 local L = NS.UI.Layout or {}
@@ -34,7 +35,7 @@ local function getDB()
 
   local ui = profile.ui
   if not ui then ui = {}; profile.ui = ui end
-  if not ui.viewMode then ui.viewMode = "Icon" end
+  if not ui.viewMode then ui.viewMode = Loc["VIEW_ICON"] end
   if not ui.activeCategory then ui.activeCategory = "Achievements" end
   if not ui.expanded then ui.expanded = {} end
   if ui.search == nil then ui.search = "" end
@@ -111,7 +112,7 @@ local function ShowCommunityPopup()
 
   local title = NewFS(header, "GameFontNormalLarge")
   title:SetPoint("CENTER")
-  title:SetText("Community")
+  title:SetText(Loc["COMMUNITY"])
   title:SetTextColor(unpack(ACCENT))
 
   local closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
@@ -135,10 +136,10 @@ local function ShowCommunityPopup()
   div:SetPoint("TOPRIGHT", -12, -60)
 
   local links = {
-    { "Join our Discord community", "https://discord.gg/G2gCV9Zc57" },
-    { "Support development (BuyMeACoffee)", "https://buymeacoffee.com/azroaddons" },
-    { "Donate via PayPal", "https://www.paypal.com/donate/?business=Jhookftw1@hotmail.com" },
-    { "Share HomeDecor with friends", "https://www.curseforge.com/wow/addons/home-decor" },
+    { Loc["JOIN_DISCORD"], "https://discord.gg/G2gCV9Zc57" },
+    { Loc["SUPPORT_BUYMEACOFFEE"], "https://buymeacoffee.com/azroaddons" },
+    { Loc["DONATE_PAYPAL"], "https://www.paypal.com/donate/?business=Jhookftw1@hotmail.com" },
+    { Loc["SHARE_HOMEDECOR"], "https://www.curseforge.com/wow/addons/home-decor" },
   }
 
   local function Highlight(self)
@@ -401,7 +402,7 @@ function L:CreateShell()
   local trackersText = NewFS(trackersBtn, "GameFontNormal")
   trackersBtn.text = trackersText
   trackersText:SetPoint("CENTER", -6, 0)
-  trackersText:SetText("Trackers")
+  trackersText:SetText(Loc["TRACKERS"])
   trackersText:SetTextColor(unpack(ACCENT))
   trackersBtn:SetFrameLevel(header:GetFrameLevel() + 6)
   trackersText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
@@ -432,7 +433,7 @@ function L:CreateShell()
 
   local decorText = NewFS(decorOption, "GameFontNormal")
   decorText:SetPoint("CENTER", 0, 0)
-  decorText:SetText("Decor Tracker")
+  decorText:SetText(Loc["DECOR_TRACKER"])
   decorText:SetTextColor(unpack(ACCENT))
 
   decorOption:SetScript("OnClick", function()
@@ -450,7 +451,7 @@ function L:CreateShell()
 
   local lumberText = NewFS(lumberOption, "GameFontNormal")
   lumberText:SetPoint("CENTER", 0, 0)
-  lumberText:SetText("Lumber Tracker")
+  lumberText:SetText(Loc["LUMBER_TRACKER"])
   lumberText:SetTextColor(unpack(ACCENT))
 
   lumberOption:SetScript("OnClick", function()
@@ -494,7 +495,7 @@ function L:CreateShell()
   end)
 
   header.viewToggle = C:Segmented(
-    header, { "Icon", "List" },
+    header, { Loc["VIEW_ICON"], Loc["VIEW_LIST"] },
     function() return UI.viewMode end,
     function(v) UI.viewMode = v end
   )
@@ -550,7 +551,7 @@ function L:CreateShell()
 
   local filtersTitle = NewFS(left, "GameFontNormal")
   filtersTitle:SetPoint("TOPLEFT", 10, y - 10)
-  filtersTitle:SetText("Filters")
+  filtersTitle:SetText(Loc["FILTERS"])
   filtersTitle:SetTextColor(unpack(ACCENT))
   y = y - 24
 
@@ -620,7 +621,7 @@ function L:CreateShell()
     savedBtn.icon:SetTexture("Interface/Common/ReputationStar")
   end
   savedBtn.icon:SetVertexColor(1, 1, 1, 1)
-  savedBtn.text:SetText("Saved Items")
+  savedBtn.text:SetText(Loc["SAVED_ITEMS"])
 
   local eventsBtn = MakeTopButton(bar, 96, 24)
   eventsBtn:SetPoint("LEFT", savedBtn, "RIGHT", 6, 0)
@@ -628,7 +629,7 @@ function L:CreateShell()
   eventsBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   eventsBtn.icon:SetDesaturated(true)
   eventsBtn.icon:SetVertexColor(1, 1, 1, 0.9)
-  eventsBtn.text:SetText("Events")
+  eventsBtn.text:SetText(Loc["EVENTS"])
   eventsBtn.text:SetTextColor(unpack(TEXT_MUTED))
 
   local glow = eventsBtn:CreateTexture(nil, "ARTWORK")
@@ -819,7 +820,7 @@ function L:CreateShell()
 
   local placeholder = search:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
   placeholder:SetPoint("LEFT", search, "LEFT", 8, 0)
-  placeholder:SetText("Search...")
+  placeholder:SetText(Loc["SEARCH_PLACEHOLDER"])
   placeholder:SetTextColor(unpack(PLACEHOLDER))
 
   f.SearchBox = search
@@ -982,7 +983,7 @@ function L:CreateShell()
 
   local resetText = NewFS(resetFiltersBtn, "GameFontNormal")
   resetText:SetPoint("LEFT", resetIcon, "RIGHT", 6, 0)
-  resetText:SetText("Reset All Filters")
+  resetText:SetText(Loc["RESET_ALL_FILTERS"])
   resetText:SetTextColor(1, 0.82, 0)
 
   resetFiltersBtn:SetScript("OnClick", function()
@@ -1035,7 +1036,7 @@ function L:CreateShell()
 
   local commText = NewFS(communityBtn, "GameFontNormal")
   commText:SetPoint("LEFT", commIcon, "RIGHT", 6, 0)
-  commText:SetText("Community")
+  commText:SetText(Loc["COMMUNITY"])
 
   communityBtn:SetScript("OnClick", ShowCommunityPopup)
 
@@ -1048,7 +1049,7 @@ function L:CreateShell()
 
   local wnText = NewFS(whatsNewBtn, "GameFontNormal")
   wnText:SetPoint("CENTER")
-  wnText:SetText("What's New")
+  wnText:SetText(Loc["WHATS_NEW"])
 
   whatsNewBtn:SetScript("OnClick", function()
     if NS.UI and NS.UI.ShowChangelogPopup then

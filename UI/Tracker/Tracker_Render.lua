@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local Tracker = NS.UI.Tracker or {}
@@ -363,7 +364,7 @@ function Render:Attach(_, ctx)
             if not title then
               local src = v.source or {}
               local id = tonumber(src.id or v.npcID or v.id)
-              title = (id and ("Vendor " .. tostring(id))) or "Vendor"
+              title = (id and (L["VENDOR_PREFIX"] .. tostring(id))) or L["VENDOR"]
             else
               v.title = title
             end
@@ -457,7 +458,7 @@ function Render:Attach(_, ctx)
                 title = GetDecorName(it.decorID)
               end
               if not title or title == "" then
-                title = "Decor " .. tostring(it.decorID or "")
+                title = L["DECOR_PREFIX"] .. tostring(it.decorID or "")
               end
               
               if isFavorite and not collected then

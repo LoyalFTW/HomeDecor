@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local Tracker = NS.UI.Tracker or {}
@@ -243,7 +244,7 @@ function UI:CreateFrame()
 
   settings.title = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   settings.title:SetPoint("TOP", 0, -12)
-  settings.title:SetText("Settings")
+  settings.title:SetText(L["SETTINGS"])
   settings.title:SetTextColor(unpack(T.accent))
   if RowStyles and RowStyles.StrongText then
     RowStyles:StrongText(settings.title)
@@ -251,7 +252,7 @@ function UI:CreateFrame()
 
   settings.hideLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   settings.hideLabel:SetPoint("TOPLEFT", 16, -38)
-  settings.hideLabel:SetText("Hide Completed:")
+  settings.hideLabel:SetText(L["HIDE_COMPLETED"])
   if RowStyles and RowStyles.NormalText then
     RowStyles:NormalText(settings.hideLabel)
   end
@@ -265,7 +266,7 @@ function UI:CreateFrame()
 
   settings.highlightLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   settings.highlightLabel:SetPoint("TOPLEFT", 16, -68)
-  settings.highlightLabel:SetText("Highlight Saved Items:")
+  settings.highlightLabel:SetText(L["HIGHLIGHT_SAVED"])
   if RowStyles and RowStyles.NormalText then
     RowStyles:NormalText(settings.highlightLabel)
   end
@@ -279,7 +280,7 @@ function UI:CreateFrame()
 
   settings.alphaLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   settings.alphaLabel:SetPoint("TOPLEFT", 16, -98)
-  settings.alphaLabel:SetText("Transparency")
+  settings.alphaLabel:SetText(L["TRANSPARENCY"])
   if RowStyles and RowStyles.NormalText then
     RowStyles:NormalText(settings.alphaLabel)
   end
@@ -360,7 +361,7 @@ function UI:CreateFrame()
   local trackZoneCB = CreateFrame("CheckButton", nil, trackRow, "UICheckButtonTemplate")
   trackZoneCB:SetPoint("LEFT", 6, 0)
   if trackZoneCB.text then
-    trackZoneCB.text:SetText("Track Current Zone")
+    trackZoneCB.text:SetText(L["TRACK_CURRENT_ZONE"])
   end
   trackZoneCB:SetChecked(not (db and db.trackZone == false))
 

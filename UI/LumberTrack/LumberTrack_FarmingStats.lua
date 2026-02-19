@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local FarmingStats = NS.UI.LumberTrackFarmingStats or {}
@@ -103,7 +104,7 @@ function FarmingStats:Create(sharedCtx)
   self.collapseBtn = collapseBtn
   local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   title:SetPoint("CENTER", 0, 0)
-  title:SetText("Farming Stats")
+  title:SetText(L["LUMBER_FARMING_STATS"])
   title:SetTextColor(unpack(T.accent or { 0.90, 0.72, 0.18, 1 }))
   self.title = title
   local settingsBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
@@ -187,13 +188,13 @@ function FarmingStats:Create(sharedCtx)
   statRow:SetPoint("TOPLEFT", 0, 0)
   statRow:SetPoint("TOPRIGHT", 0, 0)
   statRow:SetHeight(50)
-  local totalBox = CreateStatBox(statRow, "TOTAL")
+  local totalBox = CreateStatBox(statRow, L["LUMBER_STAT_TOTAL"])
   totalBox:SetPoint("TOPLEFT", 0, 0)
   totalBox:SetPoint("BOTTOMLEFT", 0, 0)
   totalBox:SetWidth(62)
   self.totalText = totalBox.value
   self.totalBox = totalBox
-  local bagsBox = CreateStatBox(statRow, "BAGS")
+  local bagsBox = CreateStatBox(statRow, L["LUMBER_STAT_BAGS"])
   bagsBox:SetPoint("LEFT", totalBox, "RIGHT", 4, 0)
   bagsBox:SetPoint("TOP", 0, 0)
   bagsBox:SetPoint("BOTTOM", 0, 0)
@@ -228,7 +229,7 @@ function FarmingStats:Create(sharedCtx)
   local timerLabel = timerBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   timerLabel:SetFont(STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
   timerLabel:SetPoint("LEFT", 10, 0)
-  timerLabel:SetText("SESSION")
+  timerLabel:SetText(L["LUMBER_STAT_SESSION"])
   timerLabel:SetTextColor(0.63, 0.63, 0.75, 1)
   local timerValue = timerBar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   timerValue:SetFont(STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF", 18, "THICKOUTLINE")
@@ -256,7 +257,7 @@ function FarmingStats:Create(sharedCtx)
   pauseBtn.text = pauseBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   pauseBtn.text:SetFont(STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
   pauseBtn.text:SetPoint("CENTER", 0, 0)
-  pauseBtn.text:SetText("START")
+  pauseBtn.text:SetText(L["LUMBER_BTN_START"])
   pauseBtn.text:SetTextColor(0.30, 0.80, 0.40, 1)
   pauseBtn:SetScript("OnClick", function()
     local Farming = NS.UI.LumberTrackFarming
@@ -283,7 +284,7 @@ function FarmingStats:Create(sharedCtx)
   resetBtn.text = resetBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   resetBtn.text:SetFont(STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
   resetBtn.text:SetPoint("CENTER", 0, 0)
-  resetBtn.text:SetText("RESET")
+  resetBtn.text:SetText(L["LUMBER_BTN_RESET"])
   resetBtn.text:SetTextColor(1, 0.53, 0.53, 1)
   resetBtn:SetScript("OnClick", function()
     local Farming = NS.UI.LumberTrackFarming
@@ -312,7 +313,7 @@ function FarmingStats:Create(sharedCtx)
   local collectingTitle = collectingContainer:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   collectingTitle:SetFont(STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
   collectingTitle:SetPoint("TOPLEFT", 10, -8)
-  collectingTitle:SetText("COLLECTING")
+  collectingTitle:SetText(L["LUMBER_STAT_COLLECTING"])
   collectingTitle:SetTextColor(0.63, 0.63, 0.75, 1)
   self.collectingContainer = collectingContainer
   if collapsed then
@@ -326,14 +327,14 @@ function FarmingStats:Create(sharedCtx)
   Utils.CreateBackdrop(settings, T.panel or { 0.08, 0.08, 0.10, 0.95 }, T.border or { 0.24, 0.24, 0.28, 0.8 })
   local settingsTitle = settings:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   settingsTitle:SetPoint("TOP", 0, -16)
-  settingsTitle:SetText("Farming Settings")
+  settingsTitle:SetText(L["LUMBER_FARMING_SETTINGS"])
   settingsTitle:SetTextColor(unpack(T.accent))
   local autoFarmCB = CreateFrame("CheckButton", nil, settings, "UICheckButtonTemplate")
   autoFarmCB:SetPoint("TOPLEFT", 20, -50)
   autoFarmCB:SetChecked((db and db.autoStartFarming) and true or false)
   local autoFarmLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   autoFarmLabel:SetPoint("LEFT", autoFarmCB, "RIGHT", 4, 0)
-  autoFarmLabel:SetText("Auto Farm Mode")
+  autoFarmLabel:SetText(L["LUMBER_AUTO_FARM"])
   autoFarmLabel:SetTextColor(unpack(T.text or { 0.92, 0.92, 0.92, 1 }))
   autoFarmCB:SetScript("OnClick", function(self)
     local checked = self:GetChecked() and true or false
@@ -342,7 +343,7 @@ function FarmingStats:Create(sharedCtx)
   end)
   local alphaLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   alphaLabel:SetPoint("TOPLEFT", 20, -90)
-  alphaLabel:SetText("Transparency:")
+  alphaLabel:SetText(L["TRANSPARENCY_COLON"])
   alphaLabel:SetTextColor(unpack(T.text or { 0.92, 0.92, 0.92, 1 }))
   local alphaSlider = CreateFrame("Slider", nil, settings, "OptionsSliderTemplate")
   alphaSlider:SetPoint("TOPLEFT", alphaLabel, "BOTTOMLEFT", 0, -10)
@@ -570,13 +571,13 @@ function FarmingStats:UpdateStats()
   end
   if self.pauseBtn and self.sharedCtx.farming then
     if not self.sharedCtx.farming.active then
-      self.pauseBtn.text:SetText("START")
+      self.pauseBtn.text:SetText(L["LUMBER_BTN_START"])
       self.pauseBtn.text:SetTextColor(0.30, 0.80, 0.40, 1)
     elseif self.sharedCtx.farming.paused then
-      self.pauseBtn.text:SetText("RESUME")
+      self.pauseBtn.text:SetText(L["LUMBER_BTN_RESUME"])
       self.pauseBtn.text:SetTextColor(0.30, 0.80, 0.40, 1)
     else
-      self.pauseBtn.text:SetText("PAUSE")
+      self.pauseBtn.text:SetText(L["LUMBER_BTN_PAUSE"])
       self.pauseBtn.text:SetTextColor(1, 0.85, 0.40, 1)
     end
   end
@@ -588,10 +589,10 @@ function FarmingStats:UpdateStats()
         lumberName = lumberName:gsub(" Lumber$", "")
         self.title:SetText(lumberName .. " ")
       else
-        self.title:SetText("Farming Stats")
+        self.title:SetText(L["LUMBER_FARMING_STATS"])
       end
     else
-      self.title:SetText("Farming Stats")
+      self.title:SetText(L["LUMBER_FARMING_STATS"])
     end
   end
 end

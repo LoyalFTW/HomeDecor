@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local F = {}
@@ -153,7 +154,7 @@ function F:UpdateTopItems(ctx)
         itemID = itemID,
         rate = rate,
         sessionGained = sessionGained,
-        name = (ctx.meta[itemID] and ctx.meta[itemID].name) or "Unknown",
+        name = (ctx.meta[itemID] and ctx.meta[itemID].name) or L["UNKNOWN"],
         icon = (ctx.meta[itemID] and ctx.meta[itemID].icon) or nil,
       })
     end

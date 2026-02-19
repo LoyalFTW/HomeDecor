@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 
 NS.UI = NS.UI or {}
 NS.UI.Options = NS.UI.Options or {}
@@ -163,43 +164,43 @@ function Options:Ensure()
   if self.panel then return end
 
   local panel = CreateFrame("Frame")
-  panel.name = "HomeDecor"
+  panel.name = L["ADDON_NAME"]
 
   local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
   title:SetPoint("TOPLEFT", 16, -16)
-  title:SetText("HomeDecor")
+  title:SetText(L["ADDON_NAME"])
 
   local sub = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
   sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
-  sub:SetText("Quality-of-life settings for the addon.")
+  sub:SetText(L["OPT_SUBTITLE"])
 
   local y = -60
 
-  local cbMinimapButton = mkCheckbox(panel, "Show minimap button")
+  local cbMinimapButton = mkCheckbox(panel, L["OPT_SHOW_MINIMAP_BTN"])
   cbMinimapButton:SetPoint("TOPLEFT", 16, y)
   y = y - 34
 
   local minimapHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   minimapHeader:SetPoint("TOPLEFT", 16, y)
-  minimapHeader:SetText("Minimap")
+  minimapHeader:SetText(L["OPT_MINIMAP"])
   y = y - 24
 
-  local cbMiniPins = mkCheckbox(panel, "Show vendor pins on the minimap")
+  local cbMiniPins = mkCheckbox(panel, L["OPT_MINIMAP_PINS"])
   cbMiniPins:SetPoint("TOPLEFT", 32, y)
   y = y - 34
 
   local worldmapHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   worldmapHeader:SetPoint("TOPLEFT", 16, y)
-  worldmapHeader:SetText("World Map")
+  worldmapHeader:SetText(L["OPT_WORLD_MAP"])
   y = y - 24
 
-  local cbWorldPins = mkCheckbox(panel, "Show vendor pins on the world map")
+  local cbWorldPins = mkCheckbox(panel, L["OPT_WORLDMAP_PINS"])
   cbWorldPins:SetPoint("TOPLEFT", 32, y)
   y = y - 34
 
   local filterHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   filterHeader:SetPoint("TOPLEFT", 16, y)
-  filterHeader:SetText("Filters")
+  filterHeader:SetText(L["FILTERS"])
   y = y - 24
 
   local cbHideCollected = mkCheckbox(panel, "Hide already collected items",
@@ -209,12 +210,12 @@ function Options:Ensure()
 
   local appearanceHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   appearanceHeader:SetPoint("TOPLEFT", 16, y)
-  appearanceHeader:SetText("Pin Appearance")
+  appearanceHeader:SetText(L["OPT_PIN_APPEARANCE"])
   y = y - 24
 
   local styleLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
   styleLabel:SetPoint("TOPLEFT", 32, y)
-  styleLabel:SetText("Pin Style:")
+  styleLabel:SetText(L["OPT_PIN_STYLE"])
 
   local ddPinStyle = mkDropdown(panel, 120)
   ddPinStyle:SetPoint("LEFT", styleLabel, "RIGHT", 0, -3)
@@ -225,22 +226,22 @@ function Options:Ensure()
 
     local info = _G.UIDropDownMenu_CreateInfo()
 
-    info.text = "House Icon"
+    info.text = L["OPT_PIN_HOUSE"]
     info.value = "house"
     info.checked = (prof.mapPins.pinStyle == "house")
     info.func = function()
       prof.mapPins.pinStyle = "house"
-      _G.UIDropDownMenu_SetText(ddPinStyle, "House Icon")
+      _G.UIDropDownMenu_SetText(ddPinStyle, L["OPT_PIN_HOUSE"])
       refreshPins()
     end
     _G.UIDropDownMenu_AddButton(info)
 
-    info.text = "Dot"
+    info.text = L["OPT_PIN_DOT"]
     info.value = "dot"
     info.checked = (prof.mapPins.pinStyle == "dot")
     info.func = function()
       prof.mapPins.pinStyle = "dot"
-      _G.UIDropDownMenu_SetText(ddPinStyle, "Dot")
+      _G.UIDropDownMenu_SetText(ddPinStyle, L["OPT_PIN_DOT"])
       refreshPins()
     end
     _G.UIDropDownMenu_AddButton(info)
@@ -248,13 +249,13 @@ function Options:Ensure()
 
   y = y - 34
 
-  local colorPicker = mkColorPicker(panel, "Pin Color")
+  local colorPicker = mkColorPicker(panel, L["OPT_PIN_COLOR"])
   colorPicker:SetPoint("TOPLEFT", 32, y)
 
   local btnResetColor = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
   btnResetColor:SetSize(100, 22)
   btnResetColor:SetPoint("LEFT", colorPicker.label, "RIGHT", 10, 0)
-  btnResetColor:SetText("Reset Color")
+  btnResetColor:SetText(L["OPT_RESET_COLOR"])
   btnResetColor:SetScript("OnClick", function()
     local prof = ensureProfile()
     if not prof then return end
@@ -267,7 +268,7 @@ function Options:Ensure()
 
   y = y - 40
 
-  local sizeSlider = mkSlider(panel, "Pin Size", 0.5, 2.0, 0.1)
+  local sizeSlider = mkSlider(panel, L["OPT_PIN_SIZE"], 0.5, 2.0, 0.1)
   sizeSlider:SetSize(200, 16)
   sizeSlider:SetPoint("TOPLEFT", 32, y)
   sizeSlider:SetScript("OnValueChanged", function(self, value)
@@ -283,7 +284,7 @@ function Options:Ensure()
 
   local trackerHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   trackerHeader:SetPoint("TOPLEFT", 16, y)
-  trackerHeader:SetText("Tracker")
+  trackerHeader:SetText(L["OPT_TRACKER_HEADER"])
   y = y - 24
 
   local cbShowFavoritesOnZone = mkCheckbox(panel, "Highlight saved items when entering zone",
@@ -302,9 +303,9 @@ function Options:Ensure()
     cbShowFavoritesOnZone:SetChecked(tracker.showFavoritesOnZoneEnter ~= false)
 
     if prof.mapPins.pinStyle == "dot" then
-      _G.UIDropDownMenu_SetText(ddPinStyle, "Dot")
+      _G.UIDropDownMenu_SetText(ddPinStyle, L["OPT_PIN_DOT"])
     else
-      _G.UIDropDownMenu_SetText(ddPinStyle, "House Icon")
+      _G.UIDropDownMenu_SetText(ddPinStyle, L["OPT_PIN_HOUSE"])
     end
 
     local c = prof.mapPins.pinColor
@@ -376,15 +377,15 @@ function Options:Ensure()
   self.panel = panel
 
   local vendorPanel = CreateFrame("Frame")
-  vendorPanel.name = "Vendor Options"
+  vendorPanel.name = L["VENDOR_OPTIONS"]
 
   local vendorTitle = vendorPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
   vendorTitle:SetPoint("TOPLEFT", 16, -16)
-  vendorTitle:SetText("Vendor Options")
+  vendorTitle:SetText(L["VENDOR_OPTIONS"])
 
   local vendorSub = vendorPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
   vendorSub:SetPoint("TOPLEFT", vendorTitle, "BOTTOMLEFT", 0, -6)
-  vendorSub:SetText("Control what HomeDecor overlays on the vendor window.")
+  vendorSub:SetText(L["OPT_VENDOR_SUBTITLE"])
 
   local vy = -60
 

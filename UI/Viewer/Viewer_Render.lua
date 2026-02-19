@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local View = NS.UI.Viewer
@@ -109,8 +110,8 @@ end
 local function GetDyeableOrClassLabel(it)
     local classLabel = GetClassLabelForVendor(it)
     local isDyeable = IsItemDyeable(it and it.decorID)
-    if isDyeable and classLabel then return "Dyeable - " .. classLabel end
-    if isDyeable then return "Dyeable" end
+    if isDyeable and classLabel then return L["DYEABLE_CLASS"] .. classLabel end
+    if isDyeable then return L["DYEABLE"] end
     return classLabel
 end
 
@@ -186,7 +187,7 @@ local function GetCurrencyInfo(it)
                 end
             end
         end
-        currencyName = currencyName or "Currency"
+        currencyName = currencyName or L["CURRENCY"]
     end
 
     return goldCost, currencyAmount, currencyName, iconFileID
@@ -402,7 +403,7 @@ local function ReqClick(btn)
     if not req or not R.ShowWowheadLinks then return end
 
     local url = (req.kind == "quest" and R.BuildWowheadQuestURL(req.id)) or R.BuildWowheadAchievementURL(req.id)
-    R.ShowWowheadLinks({ { label = "Link", url = url } })
+    R.ShowWowheadLinks({ { label = L["LINK"], url = url } })
 end
 
 local function BindReqButton(btn)
@@ -674,8 +675,8 @@ local function RebuildEntries(f, content)
 
         if #list == 0 then
             addListItem(0, {
-                title = "No active events",
-                decorType = "Event items will appear here while active",
+                title = L["NO_ACTIVE_EVENTS"],
+                decorType = L["EVENT_ITEMS_PLACEHOLDER"],
                 source = { type = "event", icon = "Interface\\Icons\\INV_Misc_PocketWatch_01" }
             }, nil)
             f.totalHeight = y + LAYOUT.PAD_BOTTOM
@@ -796,7 +797,7 @@ local function RebuildEntries(f, content)
                                 local vTitle = (D and D.ResolveVendorTitle and D.ResolveVendorTitle(it)) or it.title
                                 if not vTitle or vTitle == "" then
                                     local vid = (it.source and it.source.id) or it.npcID or it.id
-                                    vTitle = vid and ("Vendor #" .. tostring(vid)) or "Vendor"
+                                    vTitle = vid and (L["VENDOR_PREFIX"] .. tostring(vid)) or L["VENDOR"]
                                 end
 
                                 addHeader(44, 30, "[Vendor] " .. vTitle, vC, vT, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
@@ -857,7 +858,7 @@ local function RebuildEntries(f, content)
                                 local vTitle = (D and D.ResolveVendorTitle and D.ResolveVendorTitle(it)) or it.title
                                 if not vTitle or vTitle == "" then
                                     local vid = (it.source and it.source.id) or it.npcID or it.id
-                                    vTitle = vid and ("Vendor #" .. tostring(vid)) or "Vendor"
+                                    vTitle = vid and (L["VENDOR_PREFIX"] .. tostring(vid)) or L["VENDOR"]
                                 end
 
                                 addHeader(44, 30, "[Vendor] " .. vTitle, vC, vT, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
@@ -1216,7 +1217,7 @@ function Render:Create(parent)
                             fr.req:SetText(R.BuildReqDisplay(req, false))
                         else
                             fr.req._req = nil
-                            fr.req:SetText("|cff8c959fNo quest or achievement required|r")
+                            fr.req:SetText("|cff8c959f" .. L["REQ_NONE_QUEST_ACH"] .. "|r")
                         end
                         fr.req:Show()
 
@@ -1248,7 +1249,7 @@ function Render:Create(parent)
                         if rep then
                             fr.rep:SetText(R.BuildRepDisplay(rep, false))
                         else
-                            fr.rep:SetText("|cff8c959fNo reputation required|r")
+                            fr.rep:SetText("|cff8c959f" .. L["REQ_NONE_REPUTATION"] .. "|r")
                         end
                         fr.rep:Show()
 

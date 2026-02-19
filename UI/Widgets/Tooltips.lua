@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 
 NS.UI = NS.UI or {}
 NS.UI.Tooltips = NS.UI.Tooltips or {}
@@ -216,10 +217,10 @@ local function addCommonKeys(data, includeVendor)
   local s = data.source or {}
   if includeVendor then
     local n, z = vendorNameZone(data)
-    kv("Vendor", n)
-    kv("Zone", z)
+    kv(L["VENDOR"], n)
+    kv(L["ZONE"], z)
   else
-    kv("Zone", s.zone or data.zone)
+    kv(L["ZONE"], s.zone or data.zone)
   end
 
   local faction = factionFor(data)
@@ -232,7 +233,7 @@ local function addCommonKeys(data, includeVendor)
     elseif faction == "Both" then
       factionText = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:16|t |TInterface\\FriendsFrame\\PlusManz-Horde:16:16|t Both"
     end
-    kv("Faction", factionText)
+    kv(L["FACTION"], factionText)
   end
 
   do
@@ -275,14 +276,14 @@ local function addCommonKeys(data, includeVendor)
   if classLabel then
     local classColor = CLASS_COLORS[classLabel]
     if classColor then
-      GameTooltip:AddDoubleLine("Requires", classLabel, 0.8, 0.8, 0.8, classColor.r, classColor.g, classColor.b)
+      GameTooltip:AddDoubleLine(L["REQUIRES"], classLabel, 0.8, 0.8, 0.8, classColor.r, classColor.g, classColor.b)
     else
-      kv("Requires", classLabel)
+      kv(L["REQUIRES"], classLabel)
     end
   end
   
   if IsDyeable(data) then
-    GameTooltip:AddLine("Dyeable", 0.4, 0.8, 1)
+    GameTooltip:AddLine(L["DYEABLE"], 0.4, 0.8, 1)
   end
 end
 
@@ -291,8 +292,8 @@ local function questTitleWarn()
   local qt = titleObj and titleObj.GetText and titleObj:GetText()
   if qt and qt:lower():find("decor treasure hunt", 1, true) then
     GameTooltip:AddLine(" ")
-    GameTooltip:AddLine("There are many versions of the Decor Treasure Hunt quest.", 1, 0.2, 0.2, true)
-    GameTooltip:AddLine("Use Ctrl+Click to open the correct WoWHead link.", 1, 0.2, 0.2, true)
+    GameTooltip:AddLine(L["TREASURE_HUNT_WARNING"], 1, 0.2, 0.2, true)
+    GameTooltip:AddLine(L["HINT_CTRL_WOWHEAD"], 1, 0.2, 0.2, true)
   end
 end
 
@@ -313,13 +314,13 @@ function TT:Attach(frame, data)
     local t = s.type
 
     if d.type == "vendor" and d.items then
-      GameTooltip:AddLine(d.title or "Vendor", 1, 1, 1)
+      GameTooltip:AddLine(d.title or L["VENDOR"], 1, 1, 1)
       GameTooltip:AddLine(" ")
-      actionLine("Left Click: Expand/Collapse")
-      actionLine("Right Click: Vendor Location")
-      actionLine("Alt + Click: Wowhead Link")
+      actionLine(L["HINT_EXPAND_COLLAPSE"])
+      actionLine(L["HINT_VENDOR_LOCATION"])
+      actionLine(L["HINT_ALT_WOWHEAD"])
       kv("Zone", d.zone)
-      kv("Faction", factionFor(d))
+      kv(L["FACTION"], factionFor(d))
       GameTooltip:Show()
       return
     end
@@ -328,16 +329,16 @@ function TT:Attach(frame, data)
       if showItem(d.id or s.itemID) then
         label("[Vendor Item]")
         GameTooltip:AddLine(" ")
-        actionLine("Left Click: View Item")
-        actionLine("Right Click: Vendor Location")
+        actionLine(L["HINT_VIEW_ITEM"])
+        actionLine(L["HINT_VENDOR_LOCATION"])
         
         local hasAchReq = false
         if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
           hasAchReq = true
-          actionLine("Ctrl + Click: View Achievement")
+          actionLine(L["HINT_CTRL_ACHIEVEMENT"])
         end
         
-        actionLine("Alt + Click: Wowhead Link")
+        actionLine(L["HINT_ALT_WOWHEAD"])
         addCommonKeys(d, true)
         GameTooltip:Show()
         return
@@ -346,18 +347,18 @@ function TT:Attach(frame, data)
       showItem(s.itemID or d.id)
       label("[Drop]")
       GameTooltip:AddLine(" ")
-      actionLine("Left Click: View Item")
+      actionLine(L["HINT_VIEW_ITEM"])
 
       if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
-        actionLine("Ctrl + Click: View Achievement")
+        actionLine(L["HINT_CTRL_ACHIEVEMENT"])
       end
       
-      actionLine("Alt + Click: Wowhead Link")
+      actionLine(L["HINT_ALT_WOWHEAD"])
 
       local list = dropNPCs(d)
       if list then
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("Drops From:", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(L["DROPS_FROM"], 0.9, 0.9, 0.9)
         for _, n in ipairs(list) do
           GameTooltip:AddLine("* " .. n, 1, 0.82, 0)
         end
@@ -370,14 +371,14 @@ function TT:Attach(frame, data)
       showItem(s.itemID or d.id)
       label("[PvP]")
       GameTooltip:AddLine(" ")
-      actionLine("Left Click: View Item")
-      actionLine("Right Click: Vendor Location")
+      actionLine(L["HINT_VIEW_ITEM"])
+      actionLine(L["HINT_VENDOR_LOCATION"])
 
       if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
-        actionLine("Ctrl + Click: View Achievement")
+        actionLine(L["HINT_CTRL_ACHIEVEMENT"])
       end
       
-      actionLine("Alt + Click: Wowhead Link")
+      actionLine(L["HINT_ALT_WOWHEAD"])
       addCommonKeys(d, true)
       GameTooltip:Show()
       return
@@ -386,28 +387,28 @@ function TT:Attach(frame, data)
       if showSpell(sid) then
         label("[Profession]")
         GameTooltip:AddLine(" ")
-        actionLine("Left Click: View Item")
+        actionLine(L["HINT_VIEW_ITEM"])
 
         if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
-          actionLine("Ctrl + Click: View Achievement")
+          actionLine(L["HINT_CTRL_ACHIEVEMENT"])
         end
         
-        actionLine("Alt + Click: Wowhead Link")
-        kv("Faction", factionFor(d))
+        actionLine(L["HINT_ALT_WOWHEAD"])
+        kv(L["FACTION"], factionFor(d))
         GameTooltip:Show()
         return
       end
       if showItem(s.itemID or d.id or s.id) then
         label("[Profession]")
         GameTooltip:AddLine(" ")
-        actionLine("Left Click: View Item")
+        actionLine(L["HINT_VIEW_ITEM"])
 
         if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
-          actionLine("Ctrl + Click: View Achievement")
+          actionLine(L["HINT_CTRL_ACHIEVEMENT"])
         end
         
-        actionLine("Alt + Click: Wowhead Link")
-        kv("Faction", factionFor(d))
+        actionLine(L["HINT_ALT_WOWHEAD"])
+        kv(L["FACTION"], factionFor(d))
         GameTooltip:Show()
         return
       end
@@ -415,10 +416,10 @@ function TT:Attach(frame, data)
       if showAchievement(s.id) then
         label("[Achievement]")
         GameTooltip:AddLine(" ")
-        actionLine("Left Click: View Item")
-        actionLine("Right Click: Vendor Location")
-        actionLine("Ctrl + Click: View Achievement")
-        actionLine("Alt + Click: Wowhead Link")
+        actionLine(L["HINT_VIEW_ITEM"])
+        actionLine(L["HINT_VENDOR_LOCATION"])
+        actionLine(L["HINT_CTRL_ACHIEVEMENT"])
+        actionLine(L["HINT_ALT_WOWHEAD"])
         addCommonKeys(d, true)
         GameTooltip:Show()
         return
@@ -427,9 +428,9 @@ function TT:Attach(frame, data)
       if showQuest(s.id) then
         label("[Quest]")
         GameTooltip:AddLine(" ")
-        actionLine("Left Click: View Item")
-        actionLine("Right Click: Vendor Location")
-        actionLine("Alt + Click: Wowhead Link")
+        actionLine(L["HINT_VIEW_ITEM"])
+        actionLine(L["HINT_VENDOR_LOCATION"])
+        actionLine(L["HINT_ALT_WOWHEAD"])
         questTitleWarn()
         addCommonKeys(d, true)
         GameTooltip:Show()
@@ -453,7 +454,7 @@ function TT:ShowRequirement(owner, req)
   if req.kind == "achievement" and req.id and showAchievement(req.id) then
     label("[Achievement]")
     GameTooltip:AddLine(" ")
-    actionLine("Click: Wowhead Link")
+    actionLine(L["HINT_CLICK_WOWHEAD"])
     GameTooltip:Show()
     return
   end
@@ -461,7 +462,7 @@ function TT:ShowRequirement(owner, req)
   if req.kind == "quest" and req.id and showQuest(req.id) then
     label("[Quest]")
     GameTooltip:AddLine(" ")
-    actionLine("Click: Wowhead Link")
+    actionLine(L["HINT_CLICK_WOWHEAD"])
     GameTooltip:Show()
   end
 end
@@ -527,14 +528,14 @@ function TT.AppendNpcMouseover(tooltip, npcID)
 
   local missing = total - owned
   tooltip:AddLine(" ")
-  tooltip:AddLine("HomeDecor", 1, 0.82, 0)
-  tooltip:AddDoubleLine("Collected", owned .. " / " .. total, 1, 1, 1, 1, 1, 1)
+  tooltip:AddLine(L["ADDON_NAME"], 1, 0.82, 0)
+  tooltip:AddDoubleLine(L["COLLECTED"], owned .. " / " .. total, 1, 1, 1, 1, 1, 1)
 
   if not IsShiftKeyDown() then
     if missing > 0 then
-      tooltip:AddLine("Hold Shift: show missing", 0.8, 0.8, 0.8)
+      tooltip:AddLine(L["HINT_SHIFT_MISSING"], 0.8, 0.8, 0.8)
     else
-      tooltip:AddLine("All collected", 0.3, 1, 0.3)
+      tooltip:AddLine(L["ALL_COLLECTED"], 0.3, 1, 0.3)
     end
     return
   end
@@ -543,11 +544,11 @@ function TT.AppendNpcMouseover(tooltip, npcID)
   for i = 1, total do
     local decorID = list[i]
     if not hasDecor(decorID) then
-      tooltip:AddLine(decorName(decorID) or ("Decor " .. tostring(decorID)), 1, 0.2, 0.2)
+      tooltip:AddLine(decorName(decorID) or (L["DECOR_PREFIX"] .. tostring(decorID)), 1, 0.2, 0.2)
       shown = shown + 1
       if shown >= 25 then
         local left = missing - shown
-        if left > 0 then tooltip:AddLine("+" .. left .. " more...", 0.8, 0.8, 0.8) end
+        if left > 0 then tooltip:AddLine("+" .. left .. " " .. L["MORE_ITEMS"], 0.8, 0.8, 0.8) end
         break
       end
     end

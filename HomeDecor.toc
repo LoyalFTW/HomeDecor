@@ -9,6 +9,16 @@
 ## X-Curse-Project-ID: 1402921
 ## X-Wago-ID: O67DjgK3
 ## Category-enUS: Housing
+## Category-deDE: Behausung
+## Category-esES: Hogares
+## Category-esMX: Viviendas
+## Category-frFR: Logis
+## Category-itIT: Alloggi
+## Category-koKR: 하우징
+## Category-ptBR: Moradia
+## Category-ruRU: Жилье
+## Category-zhCN: 住宅
+## Category-zhTW: 房屋
 
 Libs\Krowi_WorldMapButtons\Krowi_WorldMapButtons-1.4.xml
 Libs\LibStub\LibStub.lua
@@ -20,6 +30,7 @@ Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 Libs\HereBeDragons\HereBeDragons-2.0.lua
 Libs\HereBeDragons\HereBeDragons-Pins-2.0.lua
 
+Localization\Localization.xml
 Core\Init.lua
 HomeDecor.xml
 
@@ -69,9 +80,9 @@ UI\Widgets\StatusIcon.lua
 UI\Widgets\ItemInteractions.lua
 
 UI\MapPopup\MapPopup_Util.lua
-UI\MapPopup\MapPopup_Rows.lua 
+UI\MapPopup\MapPopup_Rows.lua
 UI\MapPopup\MapPopup_UI.lua
-UI\MapPopup\MapPopup_Render.lua 
+UI\MapPopup\MapPopup_Render.lua
 UI\MapPopup\MapPopup.lua
 
 UI\Tracker\Tracker_Util.lua

@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local R = {}
@@ -287,7 +288,7 @@ function R:Refresh(ctx)
   self:BuildList(ctx)
   self:LayoutRows(ctx)
 
-  if ctx.totalText then ctx.totalText:SetText("Lumber Total: "..tostring(ctx.total or 0)) end
+  if ctx.totalText then ctx.totalText:SetText(L["LUMBER_TOTAL"]..tostring(ctx.total or 0)) end
   
   local Farming = NS.UI.LumberTrackFarming
   if Farming and ctx.farming and ctx.farming.active then

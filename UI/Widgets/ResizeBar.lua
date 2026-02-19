@@ -1,4 +1,5 @@
 local _, NS = ...
+local L = NS.L
 
 NS.UI = NS.UI or {}
 NS.UI.ResizeBar = NS.UI.ResizeBar or {}
@@ -111,7 +112,7 @@ end
 
   local label = holder:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   label:SetPoint("LEFT", 0, 0)
-  label:SetText("Scale")
+  label:SetText(L["SCALE"])
 
   local sliderBG = CreateFrame("Frame", nil, holder, "BackdropTemplate")
   C:Backdrop(sliderBG, T.panel, T.border)

@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 local View = NS.UI.Viewer
 local Frames = View.Frames
@@ -218,7 +219,7 @@ function Frames.CreateTile(content)
   r.secReq.text = r.secReq:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   r.secReq.text:SetPoint("LEFT", 12, 0)
   r.secReq.text:SetJustifyH("LEFT")
-  r.secReq.text:SetText("Quests / Achs")
+  r.secReq.text:SetText(L["QUESTS_ACHS"])
   r.secReq.text:SetTextColor(0.9, 0.9, 0.9, 1)
   r.reqRow = CreateFrame("Frame", nil, r, "BackdropTemplate")
   r.reqRow:SetHeight(32)
@@ -253,7 +254,7 @@ function Frames.CreateTile(content)
   r.secRep.text = r.secRep:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   r.secRep.text:SetPoint("LEFT", 12, 0)
   r.secRep.text:SetJustifyH("LEFT")
-  r.secRep.text:SetText("Reputation")
+  r.secRep.text:SetText(L["REPUTATION"])
   r.secRep.text:SetTextColor(0.9, 0.9, 0.9, 1)
   r.repRow = CreateFrame("Frame", nil, r, "BackdropTemplate")
   r.repRow:SetHeight(32)
@@ -283,7 +284,7 @@ function Frames.CreateTile(content)
   r.secCur.text = r.secCur:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   r.secCur.text:SetPoint("LEFT", 12, 0)
   r.secCur.text:SetJustifyH("LEFT")
-  r.secCur.text:SetText("Currency")
+  r.secCur.text:SetText(L["CURRENCY"])
   r.secCur.text:SetTextColor(0.9, 0.9, 0.9, 1)
 
   r.curRow = CreateFrame("Frame", nil, r, "BackdropTemplate")

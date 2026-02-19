@@ -1,4 +1,5 @@
 local ADDON, NS = ...
+local L = NS.L
 
 NS.UI = NS.UI or {}
 
@@ -34,7 +35,7 @@ function MapPopup:Show(vendorID, vendorData)
 
   local frame = self.frame
   if not frame then 
-    print("HomeDecor: Failed to create MapPopup frame")
+    print(L["ERR_MAPOPUP_FAILED"])
     return 
   end
 
@@ -65,7 +66,7 @@ function MapPopup:ShowMultiple(vendors)
   
   local frame = self.frame
   if not frame then 
-    print("HomeDecor: Failed to create MapPopup frame")
+    print(L["ERR_MAPOPUP_FAILED"])
     return 
   end
   
@@ -99,7 +100,7 @@ function MapPopup:Create()
   
   local UI = GetUI()
   if not (UI and UI.CreateFrame) then 
-    print("HomeDecor: MapPopupUI not available")
+    print(L["ERR_MAPOPUPUI_UNAVAILABLE"])
     return 
   end
 

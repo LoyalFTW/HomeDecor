@@ -1,4 +1,5 @@
 local _, NS = ...
+local L = NS.L
 NS.UI = NS.UI or {}
 
 local DropPanel = NS.UI.DropPanel or {}
@@ -77,7 +78,7 @@ function DropPanel:AttachBadge(frame, it, mode)
     end
 
     b:SetSize(80, 16)
-    b.text:SetText("Drops (" .. #list .. ")")
+    b.text:SetText(L["TAG_DROP"] .. " (" .. #list .. ")")
     b:Show()
 
     b:SetScript("OnClick", function()
@@ -130,7 +131,7 @@ local function ensureRow(f, i)
         GameTooltip:ClearLines()
         GameTooltip:AddLine(self._mobName or "", 1, 0.82, 0)
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("Click: Open Map", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(L["HINT_CLICK_MAP"], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     r:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -149,7 +150,7 @@ function DropPanel:ShowForItem(it, anchor)
     if not (list and #list > 0) then return end
 
     local f = ensurePopup(self)
-    f.title:SetText("Drops From (" .. #list .. ")")
+    f.title:SetText(L["DROPS_FROM"] .. " (" .. #list .. ")")
 
     for i = 1, #list do
         local m = list[i]
