@@ -1,10 +1,7 @@
 # HomeDecor
 
-## [v12.0.10](https://github.com/LoyalFTW/HomeDecor/tree/v12.0.10) (2026-01-22)
-[Full Changelog](https://github.com/LoyalFTW/HomeDecor/compare/v12.0.09...v12.0.10) [Previous Releases](https://github.com/LoyalFTW/HomeDecor/releases)
+## [v12.0.50](https://github.com/LoyalFTW/HomeDecor/tree/v12.0.50) (2026-02-18)
+[Full Changelog](https://github.com/LoyalFTW/HomeDecor/compare/v12.0.49...v12.0.50) [Previous Releases](https://github.com/LoyalFTW/HomeDecor/releases)
 
-- Updated missing Achievements  
-    Added missing Achievements items  
-    * Ebon Blade Planning Map  
-    * Fel Hammer Scouting Map  
-    * Glorious Pendant of Rukhmar - Added for Midnight 12.0 should be working now.  
+- Bug Fix  
+    * Lumber Tracker Bug Fix thought I got them all but found another.  

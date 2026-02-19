@@ -354,6 +354,10 @@ function Addon:OnEnable()
     pcall(function() NS.Systems.MapPins:Enable() end)
   end
 
+  if NS.UI and NS.UI.CreateWorldMapButton then
+    pcall(function() NS.UI.CreateWorldMapButton() end)
+  end
+
   do
     local prof = self.db and self.db.profile
     local tdb = prof and prof.tracker

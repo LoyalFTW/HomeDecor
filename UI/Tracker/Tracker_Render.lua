@@ -348,7 +348,7 @@ function Render:Attach(_, ctx)
           end
         end
 
-        if tV > 0 then
+        if tV > 0 and not (frame._hideCompletedVendors and cV == tV) then
           local vKey = VendorKey(v)
           local open = (frame._openVendors[vKey] == true)
 

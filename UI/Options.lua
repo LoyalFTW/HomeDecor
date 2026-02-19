@@ -197,6 +197,16 @@ function Options:Ensure()
   cbWorldPins:SetPoint("TOPLEFT", 32, y)
   y = y - 34
 
+  local filterHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  filterHeader:SetPoint("TOPLEFT", 16, y)
+  filterHeader:SetText("Filters")
+  y = y - 24
+
+  local cbHideCollected = mkCheckbox(panel, "Hide already collected items",
+    "Hides items you have already collected from the browser and list views")
+  cbHideCollected:SetPoint("TOPLEFT", 32, y)
+  y = y - 34
+
   local appearanceHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   appearanceHeader:SetPoint("TOPLEFT", 16, y)
   appearanceHeader:SetText("Pin Appearance")
@@ -286,6 +296,7 @@ function Options:Ensure()
     cbMinimapButton:SetChecked(not bool(prof.minimap.hide))
     cbMiniPins:SetChecked(bool(prof.mapPins.minimap))
     cbWorldPins:SetChecked(bool(prof.mapPins.worldmap))
+    cbHideCollected:SetChecked(bool(prof.filters and prof.filters.hideCollected))
 
     local tracker = prof.tracker or {}
     cbShowFavoritesOnZone:SetChecked(tracker.showFavoritesOnZoneEnter ~= false)
@@ -324,6 +335,17 @@ function Options:Ensure()
     if not prof then return end
     prof.mapPins.minimap = self:GetChecked() and true or false
     refreshPins()
+  end)
+
+  cbHideCollected:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    prof.filters = prof.filters or {}
+    prof.filters.hideCollected = self:GetChecked() and true or false
+    local UI = NS.UI
+    if UI and UI.MainFrame and UI.MainFrame.view then
+      pcall(function() UI.MainFrame.view:RequestRender(true) end)
+    end
   end)
 
   cbWorldPins:SetScript("OnClick", function(self)

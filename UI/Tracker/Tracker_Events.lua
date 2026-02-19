@@ -37,9 +37,11 @@ function Events:Attach(Tracker, ctx)
         if cb and db then cb:SetChecked(db.trackZone ~= false) end
         local a = (db and db.alpha)
         if a == nil then a = 1 end
-        local hc = (db and db.hideCompleted) and true or false
+        local hc  = (db and db.hideCompleted)        and true or false
+        local hcv = (db and db.hideCompletedVendors) and true or false
 
-        f._hideCompleted = hc
+        f._hideCompleted        = hc
+        f._hideCompletedVendors = hcv
         settings.hideCB:SetChecked(hc)
 
         if f._ApplyPanelsAlpha then f._ApplyPanelsAlpha(a, false) end

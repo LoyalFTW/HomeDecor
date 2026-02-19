@@ -213,6 +213,19 @@ function Render:RefreshContent(popup, frame, vendors)
       local items = Util.GetVendorItems(vendorID)
       
       if #items > 0 then
+        local allCollected = false
+        local prof = NS.db and NS.db.profile
+        if prof and prof.tracker and prof.tracker.hideCompletedVendors then
+          allCollected = true
+          for _, item in ipairs(items) do
+            if not Util.IsCollected(item.decorID) then
+              allCollected = false
+              break
+            end
+          end
+        end
+        if not allCollected then
+
         hasItems = true
         
         local header = Rows.GetOrCreate("vendor", frame.content)
@@ -225,11 +238,17 @@ function Render:RefreshContent(popup, frame, vendors)
         header.label:SetText(vendorName)
         header.npcID = vendorID
         
-        local total = #items
+        local total = 0
         local collected = 0
+        local _profCount = NS.db and NS.db.profile
+        local _hideCompleted = _profCount and _profCount.tracker and _profCount.tracker.hideCompleted
         for _, item in ipairs(items) do
-          if Util.IsCollected(item.decorID) then
+          local isCollected = Util.IsCollected(item.decorID)
+          if isCollected then
             collected = collected + 1
+          end
+          if not (_hideCompleted and isCollected) then
+            total = total + 1
           end
         end
         
@@ -265,6 +284,13 @@ function Render:RefreshContent(popup, frame, vendors)
           end)
           
           for _, item in ipairs(items) do
+            local _skipItem = false
+            local _profCheck = NS.db and NS.db.profile
+            if _profCheck and _profCheck.tracker and _profCheck.tracker.hideCompleted then
+              if Util.IsCollected(item.decorID) then _skipItem = true end
+            end
+
+            if not _skipItem then
             local itemData = Util.GetItemData(item.itemID)
             
             if itemData then
@@ -411,8 +437,10 @@ function Render:RefreshContent(popup, frame, vendors)
             else
               needsItemLoad = true
             end
+            end 
           end
         end
+        end 
       end
     end
   end
