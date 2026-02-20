@@ -1,5 +1,4 @@
 local ADDON, NS = ...
-local L = NS.L
 
 NS.UI = NS.UI or {}
 
@@ -7,6 +6,7 @@ local MapPopup = NS.UI.MapPopup or {}
 NS.UI.MapPopup = MapPopup
 
 local UI = NS.UI.MapPopupUI or {}
+local L = NS.L
 NS.UI.MapPopupUI = UI
 MapPopup.UI = UI
 
@@ -39,7 +39,7 @@ end
 local function ApplyRegionAlpha(root, alpha)
   if not root or not root.GetRegions then return end
   if not Util or not Util.Clamp then return end
-  
+
   alpha = Util.Clamp(tonumber(alpha) or 1, 0, 1)
 
   local regions = { root:GetRegions() }
@@ -74,11 +74,11 @@ function UI:CreateFrame()
   local theme = GetTheme()
 
   local frame = CreateFrame("Frame", "HomeDecorMapPopup", _G.UIParent, "BackdropTemplate")
-  
+
   local database = GetMapPopupDB()
   local width, height = (database and database.width) or 340, (database and database.height) or 520
   frame:SetSize(width, height)
-  
+
   frame:SetPoint("RIGHT", _G.UIParent, "RIGHT", -20, 0)
   frame:SetFrameStrata("DIALOG")
   frame:SetFrameLevel(220)
@@ -132,7 +132,7 @@ function UI:CreateHeader(frame)
   end
 
   header:SetScript("OnDragStart", function() frame:StartMoving() end)
-  header:SetScript("OnDragStop", function() 
+  header:SetScript("OnDragStop", function()
     frame:StopMovingOrSizing()
     local db = GetMapPopupDB()
     if db then
@@ -156,7 +156,7 @@ function UI:CreateHeader(frame)
 
   header.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   header.title:SetPoint("CENTER", header, "CENTER", 0, 0)
-  header.title:SetText(L["VENDORS"])
+  header.title:SetText(L["MAP_POPUP_VENDORS"])
   header.title:SetTextColor(theme.accent[1] or 1, theme.accent[2] or 0.82, theme.accent[3] or 0)
 
   if RowStyles and RowStyles.StrongText then
@@ -456,8 +456,8 @@ function UI:SetupAlpha(frame)
   frame.settings.slider:SetScript("OnValueChanged", function(self, value)
     ApplyPanelsAlpha(value, not frame.initing)
     local database = GetMapPopupDB()
-    if database and Util and Util.Clamp then 
-      database.alpha = Util.Clamp(value, 0, 1) 
+    if database and Util and Util.Clamp then
+      database.alpha = Util.Clamp(value, 0, 1)
     end
   end)
 
@@ -476,15 +476,15 @@ function UI:SetupAlpha(frame)
     NPCNames.RegisterListener(function(npcID, name)
       if not frame:IsShown() then return end
       if frame.isRefreshing then return end
-      
+
       local Rows = NS.UI.MapPopupRows
       if not Rows then return end
-      
+
       local activeRows = Rows.GetActive()
       for row in pairs(activeRows) do
         if row.kind == "vendor" and row.npcID == npcID and name then
           row.label:SetText(name)
-          
+
           local popup = NS.UI.MapPopup
           if popup and #(popup.currentVendors or {}) == 1 then
             frame.header.title:SetText(name)

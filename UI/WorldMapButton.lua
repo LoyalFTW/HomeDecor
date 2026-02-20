@@ -53,14 +53,14 @@ end
 
 local PIN_STYLES = {
     { value = "house", label = L["OPT_PIN_HOUSE"] },
-    { value = "dot",   label = "Dot"        },
+    { value = "dot", label = L["OPT_PIN_DOT"] },
 }
 
-local PANEL_W   = 200  
-local ROW_H     = 22   
-local SEC_H     = 18   
-local PAD       = 6     
-local GAP       = 4   
+local PANEL_W   = 200
+local ROW_H     = 22
+local SEC_H     = 18
+local PAD       = 6
+local GAP       = 4
 
 local function buildDropPanel()
     if dropPanel then return dropPanel end
@@ -78,7 +78,7 @@ local function buildDropPanel()
     WorldMapFrame:HookScript("OnHide", hideDropPanel)
     f:Hide()
 
-    local y = 0  
+    local y = 0
 
     local TITLE_H = 28
     local titleBar = CreateFrame("Frame", nil, f, "BackdropTemplate")
@@ -157,28 +157,28 @@ local function buildDropPanel()
         return row
     end
 
-    addSection(L["MAP_PINS_HEADER"])
-    local cbWorld = addCheck(L["MAP_SHOW_WORLDMAP"],
+    addSection(L["MAP_PANEL_MAP_PINS"])
+    local cbWorld = addCheck(L["MAP_PANEL_SHOW_WORLDMAP"],
         function() local p = ensureProfile(); return p and p.mapPins.worldmap ~= false end,
         function(v) local p = ensureProfile(); if p then p.mapPins.worldmap = v; refreshPins() end end)
-    local cbMini  = addCheck(L["MAP_SHOW_MINIMAP"],
+    local cbMini  = addCheck(L["MAP_PANEL_SHOW_MINIMAP"],
         function() local p = ensureProfile(); return p and p.mapPins.minimap ~= false end,
         function(v) local p = ensureProfile(); if p then p.mapPins.minimap = v; refreshPins() end end)
     y = y + 2
 
-    addSection(L["VENDOR_TRACKER"])
-    local cbHideColl = addCheck(L["MAP_HIDE_COLLECTED"],
+    addSection(L["MAP_PANEL_VENDOR_TRACKER"])
+    local cbHideColl = addCheck(L["MAP_PANEL_HIDE_COLLECTED"],
         function() local p = ensureProfile(); return p and p.tracker.hideCompleted == true end,
         function(v) applyTrackerFlag("_hideCompleted", v) end)
-    local cbHideVend = addCheck(L["MAP_HIDE_COMPLETED_VENDORS"],
+    local cbHideVend = addCheck(L["MAP_PANEL_HIDE_COMPLETED_VEND"],
         function() local p = ensureProfile(); return p and p.tracker.hideCompletedVendors == true end,
         function(v) applyTrackerFlag("_hideCompletedVendors", v) end)
     y = y + 2
 
-    addSection(L["MAP_PIN_STYLE_HEADER"])
+    addSection(L["MAP_PANEL_PIN_APPEARANCE"])
 
     local styleControl
-    addRow(L["MAP_STYLE"], function(row, lbl)
+    addRow(L["MAP_PANEL_STYLE"], function(row, lbl)
         local styleValues = {}
         for _, e in ipairs(PIN_STYLES) do styleValues[#styleValues+1] = e.label end
 
@@ -249,7 +249,7 @@ local function buildDropPanel()
     end)
 
     local swatch
-    addRow(L["MAP_COLOR"], function(row, lbl)
+    addRow(L["MAP_PANEL_COLOR"], function(row, lbl)
         local swatchBtn = CreateFrame("Button", nil, row, "BackdropTemplate")
         swatchBtn:SetSize(18, 18)
         swatchBtn:SetPoint("RIGHT", row, "RIGHT", -40, 0)
@@ -339,7 +339,7 @@ local function buildDropPanel()
         y = y + SLIDER_ROW_H + GAP
     end
 
-    y = y + 4  
+    y = y + 4
     f:SetHeight(y)
 
     function f:Sync()

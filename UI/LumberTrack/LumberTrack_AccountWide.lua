@@ -1,5 +1,4 @@
 local ADDON, NS = ...
-local L = NS.L
 NS.UI = NS.UI or {}
 
 local AW = {}
@@ -12,8 +11,8 @@ function AW:SetWarbandDataLoaded()
 end
 
 local function GetCharacterKey()
-  local name = UnitName("player") or L["UNKNOWN"]
-  local realm = GetRealmName() or L["UNKNOWN"]
+  local name = UnitName("player") or "Unknown"
+  local realm = GetRealmName() or "Unknown"
   return name .. " - " .. realm
 end
 
@@ -24,14 +23,14 @@ local function GetAccountDB()
   if not addon.db.global then
     addon.db.global = {}
   end
-  
+
   if not addon.db.global.lumberTrackAccount then
     addon.db.global.lumberTrackAccount = {
       characterData = {},
       accountWide = false,
     }
   end
-  
+
   return addon.db.global.lumberTrackAccount
 end
 
@@ -246,7 +245,7 @@ function AW:GetCharacterBreakdown(itemID)
   local warbandAmt = self:GetWarbandCountForItem(itemID)
   if warbandAmt > 0 then
     breakdown[#breakdown + 1] = {
-      label    = L["LUMBER_WARBAND_BANK"],
+      label    = "Warband Bank",
       count    = warbandAmt,
       sort     = 3,
       warband  = true,
@@ -265,10 +264,10 @@ end
 function AW:GetCurrentCharacterCount(itemID)
   local db = GetAccountDB()
   if not db or not itemID then return 0 end
-  
+
   local charKey = GetCharacterKey()
   local charData = db.characterData[charKey]
-  
+
   if not charData then return 0 end
   return tonumber(charData[itemID]) or 0
 end
@@ -277,7 +276,7 @@ function AW:CleanupOldData(maxCharacters)
   maxCharacters = maxCharacters or 50
   local db = GetAccountDB()
   if not db then return end
-  
+
   local charCount = 0
   for k in pairs(db.characterData or {}) do
     charCount = charCount + 1

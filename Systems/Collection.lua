@@ -79,41 +79,19 @@ end
 
 local function IsOwnedViaCatalog(decorID)
     if not decorID then return nil end
-    if not C_HousingCatalog or not C_HousingCatalog.GetCatalogEntryInfoByRecordID then return nil end
+    if not (C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByRecordID) then return nil end
 
     local et = DiscoverEntryType(decorID) or 1
-    local info = TryRecord(et, decorID)
-    if not info then
-
-        info = TryRecord(1, decorID)
-    end
+    local info = TryRecord(et, decorID) or TryRecord(1, decorID)
     if not info then return nil end
 
-    if type(info.isOwned) == "boolean" then return info.isOwned end
+    if type(info.isOwned)     == "boolean" then return info.isOwned end
     if type(info.isCollected) == "boolean" then return info.isCollected end
-    if type(info.owned) == "boolean" then return info.owned end
 
-    local ownedInfo = info.ownedInfo or info.ownedData or info.ownedStatus
-    if type(ownedInfo) == "table" then
-        if type(ownedInfo.isOwned) == "boolean" then return ownedInfo.isOwned end
-        if type(ownedInfo.isCollected) == "boolean" then return ownedInfo.isCollected end
-        if type(ownedInfo.owned) == "boolean" then return ownedInfo.owned end
-        if type(ownedInfo.count) == "number" then return ownedInfo.count > 0 end
-        if type(ownedInfo.ownedCount) == "number" then return ownedInfo.ownedCount > 0 end
-    end
-
-    if type(info.ownedCount) == "number" then return info.ownedCount > 0 end
-    if type(info.countOwned) == "number" then return info.countOwned > 0 end
-
-    local q = tonumber(info.quantity) or 0
-    local r = tonumber(info.remainingRedeemable) or 0
-    local p = tonumber(info.numPlaced) or 0
-    if (q + r + p) > 0 then return true end
-
-    if type(info.firstAcquisitionBonus) == "number" and info.firstAcquisitionBonus >= 0 then
-
-        return info.firstAcquisitionBonus == 0
-    end
+    local qty    = type(info.quantity)            == "number" and info.quantity            or 0
+    local redeem = type(info.remainingRedeemable) == "number" and info.remainingRedeemable or 0
+    local placed = type(info.numPlaced)           == "number" and info.numPlaced           or 0
+    if (qty + redeem + placed) > 0 then return true end
 
     return nil
 end

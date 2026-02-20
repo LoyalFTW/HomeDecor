@@ -1,27 +1,18 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Feb 18, 2026
+Feb 20, 2026
 
-* Added Localization currently only have French
-if you would like your language added please reach out to me
-on curse or on discord and I'd be happy to add it.
+* Big Update added Decor Pricing and
+Alts Professions buttons this will allow you
+to keep track of all pricing keep track of
+all professions and see which has what. 
 
-* Added new way for world map options, open the world map
-and see a new HomeDecor button, it will give you options to hide
-whatever you want including stuff in the map viewer. 
-
-Feb 17, 2026
-
-* Added away to turn off counter/ check marks on vendors
-just go to the options or right click minimap for the options 
-under vendor 
-
-* Added compact mode to the lumber tracker
-also fixed a bug I found where if you put things
-in the bank or mailed to a alt it wasn't tracking right
-any more. 
-
-
+* Added Sales and Queue as well this will 
+allow you to keep track of all your sales 
+using the mail box and also be able to add
+whatever you want from the Decor Pricing to 
+the Queue as a shopping list so you can sell 
+your items. 
 
 ]]

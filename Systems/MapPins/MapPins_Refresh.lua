@@ -8,6 +8,7 @@ local R = NS.Systems.MapPinsRefresh or {}
 NS.Systems.MapPinsRefresh = R
 MapPins.Refresh = R
 
+local L = NS.L
 local GameTooltip = GameTooltip
 local IsShiftKeyDown = IsShiftKeyDown
 local WorldMapFrame = WorldMapFrame
@@ -44,7 +45,7 @@ function R.AddWorldPinsForMap(mapID)
       local vendorName = v.name
       local shiftKeyDown = IsShiftKeyDown and IsShiftKeyDown()
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-      GameTooltip:SetText(vendorName or "Vendor", 1, 1, 1)
+      GameTooltip:SetText(vendorName or L["VENDOR"], 1, 1, 1)
       if zoneName then GameTooltip:AddLine(zoneName, 0.8, 0.8, 0.8) end
       local faction = U.GetFactionForVendor(v)
       if faction then
@@ -53,22 +54,22 @@ function R.AddWorldPinsForMap(mapID)
         elseif faction == "Horde" then factionText = "|TInterface\\FriendsFrame\\PlusManz-Horde:16:16|t " .. faction
         elseif faction == "Both" then factionText = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:16|t |TInterface\\FriendsFrame\\PlusManz-Horde:16:16|t Both"
         end
-        GameTooltip:AddDoubleLine("Faction", factionText, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
+        GameTooltip:AddDoubleLine(L["FACTION"], factionText, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
       end
       local classLabel = U.GetClassLabelForVendor(npcID)
       if classLabel then
         local classColor = U.CLASS_COLORS and U.CLASS_COLORS[classLabel]
         if classColor then
-          GameTooltip:AddDoubleLine("Requires", classLabel, 0.8, 0.8, 0.8, classColor.r, classColor.g, classColor.b)
+          GameTooltip:AddDoubleLine(L["REQUIRES"], classLabel, 0.8, 0.8, 0.8, classColor.r, classColor.g, classColor.b)
         else
-          GameTooltip:AddDoubleLine("Requires", classLabel, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
+          GameTooltip:AddDoubleLine(L["REQUIRES"], classLabel, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
         end
       end
       GameTooltip:AddLine(" ", 0, 0, 0)
       local hasWaypoint = MapPins.IsActiveWaypoint and MapPins:IsActiveWaypoint(v.mapID, v.x, v.y, npcID)
-      GameTooltip:AddLine(hasWaypoint and "Left-click: Clear waypoint" or "Left-click: Set waypoint", 1, 0.82, 0)
-      GameTooltip:AddLine("Right-click: Show vendor items", 1, 0.82, 0)
-      if shiftKeyDown and npcID then GameTooltip:AddLine("NPC ID: " .. npcID, 0.8, 0.8, 0.8) end
+      GameTooltip:AddLine(hasWaypoint and L["MAPPIN_LEFT_CLICK_CLEAR_WP"] or L["MAPPIN_LEFT_CLICK_SET_WP"], 1, 0.82, 0)
+      GameTooltip:AddLine(L["MAPPIN_RIGHT_CLICK_VENDOR_ITEMS"], 1, 0.82, 0)
+      if shiftKeyDown and npcID then GameTooltip:AddLine(L["MAPPIN_NPC_ID"] .. npcID, 0.8, 0.8, 0.8) end
       if npcID and TooltipSys and type(TooltipSys.AppendNpcMouseover) == "function" then
         pcall(TooltipSys.AppendNpcMouseover, GameTooltip, npcID)
       end
@@ -133,7 +134,7 @@ function R.AddMiniPinsForMap(mapID)
       local vendorName = v.name
       local shiftKeyDown = IsShiftKeyDown and IsShiftKeyDown()
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-      GameTooltip:SetText(vendorName or "Vendor", 1, 1, 1)
+      GameTooltip:SetText(vendorName or L["VENDOR"], 1, 1, 1)
       if zoneName then GameTooltip:AddLine(zoneName, 0.8, 0.8, 0.8) end
       local faction = U.GetFactionForVendor(v)
       if faction then
@@ -142,22 +143,22 @@ function R.AddMiniPinsForMap(mapID)
         elseif faction == "Horde" then factionText = "|TInterface\\FriendsFrame\\PlusManz-Horde:16:16|t " .. faction
         elseif faction == "Both" then factionText = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:16|t |TInterface\\FriendsFrame\\PlusManz-Horde:16:16|t Both"
         end
-        GameTooltip:AddDoubleLine("Faction", factionText, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
+        GameTooltip:AddDoubleLine(L["FACTION"], factionText, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
       end
       local classLabel = U.GetClassLabelForVendor(npcID)
       if classLabel then
         local classColor = U.CLASS_COLORS and U.CLASS_COLORS[classLabel]
         if classColor then
-          GameTooltip:AddDoubleLine("Requires", classLabel, 0.8, 0.8, 0.8, classColor.r, classColor.g, classColor.b)
+          GameTooltip:AddDoubleLine(L["REQUIRES"], classLabel, 0.8, 0.8, 0.8, classColor.r, classColor.g, classColor.b)
         else
-          GameTooltip:AddDoubleLine("Requires", classLabel, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
+          GameTooltip:AddDoubleLine(L["REQUIRES"], classLabel, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
         end
       end
       GameTooltip:AddLine(" ", 0, 0, 0)
       local hasWaypoint = MapPins.IsActiveWaypoint and MapPins:IsActiveWaypoint(v.mapID, v.x, v.y, npcID)
-      GameTooltip:AddLine(hasWaypoint and "Left-click: Clear waypoint" or "Left-click: Set waypoint", 1, 0.82, 0)
-      GameTooltip:AddLine("Right-click: Show vendor items", 1, 0.82, 0)
-      if shiftKeyDown and npcID then GameTooltip:AddLine("NPC ID: " .. npcID, 0.8, 0.8, 0.8) end
+      GameTooltip:AddLine(hasWaypoint and L["MAPPIN_LEFT_CLICK_CLEAR_WP"] or L["MAPPIN_LEFT_CLICK_SET_WP"], 1, 0.82, 0)
+      GameTooltip:AddLine(L["MAPPIN_RIGHT_CLICK_VENDOR_ITEMS"], 1, 0.82, 0)
+      if shiftKeyDown and npcID then GameTooltip:AddLine(L["MAPPIN_NPC_ID"] .. npcID, 0.8, 0.8, 0.8) end
       if npcID and TooltipSys and type(TooltipSys.AppendNpcMouseover) == "function" then
         pcall(TooltipSys.AppendNpcMouseover, GameTooltip, npcID)
       end
@@ -228,8 +229,8 @@ function R.ShowZoneBadges(continentMapID)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText((badgeData.vendorCount or 0) .. " Vendors", 1, 1, 1)
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("Left-click: View zone map", 0.5, 0.5, 0.5)
-        GameTooltip:AddLine("Right-click: Show all vendors", 1, 0.82, 0)
+        GameTooltip:AddLine(L["MAPPIN_LEFT_CLICK_ZONE_MAP"], 0.5, 0.5, 0.5)
+        GameTooltip:AddLine(L["MAPPIN_RIGHT_CLICK_ALL_VENDORS"], 1, 0.82, 0)
         GameTooltip:Show()
       end)
       frame:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
@@ -307,8 +308,8 @@ function R.ShowContinentBadges()
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
       GameTooltip:SetText((badgeData.vendorCount or 0) .. " Vendors", 1, 1, 1)
       GameTooltip:AddLine(" ")
-      GameTooltip:AddLine("Left-click: View zone map", 0.5, 0.5, 0.5)
-      GameTooltip:AddLine("Right-click: Show all vendors", 1, 0.82, 0)
+      GameTooltip:AddLine(L["MAPPIN_LEFT_CLICK_ZONE_MAP"], 0.5, 0.5, 0.5)
+      GameTooltip:AddLine(L["MAPPIN_RIGHT_CLICK_ALL_VENDORS"], 1, 0.82, 0)
       GameTooltip:Show()
     end)
     frame:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
@@ -380,8 +381,8 @@ function R.ShowContinentBadges()
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText((badgeData.vendorCount or 0) .. " Vendors", 1, 1, 1)
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("Left-click: View zone map", 0.5, 0.5, 0.5)
-        GameTooltip:AddLine("Right-click: Show all vendors", 1, 0.82, 0)
+        GameTooltip:AddLine(L["MAPPIN_LEFT_CLICK_ZONE_MAP"], 0.5, 0.5, 0.5)
+        GameTooltip:AddLine(L["MAPPIN_RIGHT_CLICK_ALL_VENDORS"], 1, 0.82, 0)
         GameTooltip:Show()
       end)
       frame:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)

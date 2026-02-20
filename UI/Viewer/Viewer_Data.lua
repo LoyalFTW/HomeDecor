@@ -15,17 +15,17 @@ Data.TEX_HORDE = "Interface\\Icons\\INV_BannerPVP_01"
 
 local EXPANSION_RANK = {
   Classic = 1,
-
   BurningCrusade = 2, ["Burning Crusade"] = 2, Outland = 2,
   Wrath = 3, ["Wrath of the Lich King"] = 3, Northrend = 3,
   Cataclysm = 4, Cata = 4,
   Pandaria = 5, MistsOfPandaria = 5, ["Mists of Pandaria"] = 5, Pandaren = 5,
   WarlordsOfDraenor = 6, ["Warlords of Draenor"] = 6, Draenor = 6,
   Legion = 7,
-  BattleForAzeroth = 8, ["Battle for Azeroth"] = 8, Kul = 8,
+  BattleForAzeroth = 8, ["Battle for Azeroth"] = 8, Kul = 8, KulTiras = 8, Zandalar = 8,
   Shadowlands = 9,
-  Dragonflight = 10, Dragon = 10,
-  WarWithin = 11, TheWarWithin = 11, ["The War Within"] = 11, Khaz = 11,
+  Dragonflight = 10, Dragon = 10, DragonIsles = 10, ["Dragon Isles"] = 10,
+  WarWithin = 11, TheWarWithin = 11, ["The War Within"] = 11, Khaz = 11, KhazAlgar = 11, ["Khaz Algar"] = 11,
+  Midnight = 12,
 }
 
 local function ExpansionRank(name)
@@ -241,7 +241,7 @@ end
 
 function Data.GetDecorBreadcrumbFromCatalog(decorID)
   if not decorID then return nil, nil, nil, nil, nil end
-  
+
   if CategoryBreadcrumbCache[decorID] then
     local cached = CategoryBreadcrumbCache[decorID]
     return cached.catID, cached.subID, cached.breadcrumb, cached.catName, cached.subName
@@ -656,7 +656,7 @@ end
 
 function Data.PrefetchQuestAndAchievementNames()
   if not DecorIndex then return end
-  
+
   local questIDs = {}
   local achIDs = {}
 
@@ -685,13 +685,13 @@ function Data.PrefetchQuestAndAchievementNames()
       end
     end
   end
-  
+
   C_Timer.After(0.5, function()
     for id in pairs(questIDs) do
-      Data.GetQuestTitle(id) 
+      Data.GetQuestTitle(id)
     end
     for id in pairs(achIDs) do
-      Data.GetAchievementTitle(id) 
+      Data.GetAchievementTitle(id)
     end
   end)
 end

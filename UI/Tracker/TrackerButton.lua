@@ -1,10 +1,10 @@
 local ADDON, NS = ...
-local L = NS.L
 
 NS.UI = NS.UI or {}
 NS.UI.Tracker = NS.UI.Tracker or {}
 
 local Tracker = NS.UI.Tracker
+local L = NS.L
 
 local TrackerButton = NS.UI.TrackerButton or {}
 NS.UI.TrackerButton = TrackerButton

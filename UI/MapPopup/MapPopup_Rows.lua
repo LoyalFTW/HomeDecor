@@ -23,7 +23,7 @@ end
 
 function Rows.CreateSectionHeader(parent)
   local theme = GetTheme()
-  
+
   local row = CreateFrame("Frame", nil, parent)
   row:SetHeight(26)
   row.kind = "section"
@@ -32,7 +32,7 @@ function Rows.CreateSectionHeader(parent)
   row.label:SetPoint("LEFT", 8, 0)
   row.label:SetJustifyH("LEFT")
   row.label:SetTextColor(1, 0.82, 0)
-  
+
   row.line = row:CreateTexture(nil, "BACKGROUND")
   row.line:SetHeight(1)
   row.line:SetPoint("BOTTOMLEFT", 0, 2)
@@ -48,7 +48,7 @@ end
 
 function Rows.CreateSubsectionHeader(parent)
   local theme = GetTheme()
-  
+
   local row = CreateFrame("Frame", nil, parent)
   row:SetHeight(22)
   row.kind = "subsection"
@@ -67,7 +67,7 @@ end
 
 function Rows.CreateVendorHeader(parent)
   local theme = GetTheme()
-  
+
   local row = CreateFrame("Button", nil, parent, "BackdropTemplate")
   row:SetHeight(34)
   row.kind = "vendor"
@@ -133,7 +133,7 @@ function Rows.CreateItemRow(parent)
 
   local CHECK_ATLAS = "common-icon-checkmark"
   local CHECK_FALLBACK = "Interface\\RaidFrame\\ReadyCheck-Ready"
-  
+
   row.check = row.media:CreateTexture(nil, "OVERLAY", nil, 7)
   row.check:SetSize(13, 13)
   row.check:SetPoint("BOTTOMLEFT", row.media, "BOTTOMLEFT", 1, 1)
@@ -208,7 +208,7 @@ end
 
 function Rows.Release(row)
   if not row then return end
-  
+
   row:Hide()
   row:ClearAllPoints()
   row.vendorID = nil

@@ -31,17 +31,17 @@ local function InitializeDefaults(db)
 end
 
 function LumberTrack:Create()
-  if sharedCtx then return end 
-  
+  if sharedCtx then return end
+
   local db = GetDB()
   InitializeDefaults(db)
 
   local Render = NS.UI.LumberTrackRender
-  sharedCtx = Render:Init({ 
+  sharedCtx = Render:Init({
     GetDB = GetDB,
     lumberIDs = db.lumberIDs or {},
     compactMode = db.compactMode and true or false
-  }) or { 
+  }) or {
     GetDB = GetDB,
     lumberIDs = db.lumberIDs or {},
     compactMode = db.compactMode and true or false
@@ -49,7 +49,7 @@ function LumberTrack:Create()
 
   local LumberList = NS.UI.LumberTrackLumberList
   if LumberList then LumberList:Create(sharedCtx) end
-  
+
   local FarmingStats = NS.UI.LumberTrackFarmingStats
   if FarmingStats then FarmingStats:Create(sharedCtx) end
 
@@ -59,7 +59,7 @@ function LumberTrack:Create()
     sharedCtx.frame = sharedCtx.eventFrame
     Events:Attach(self, sharedCtx)
   end
-  
+
   if Render then Render:Refresh(sharedCtx) end
 
   if db.lumberListOpen and LumberList then LumberList:Show() end

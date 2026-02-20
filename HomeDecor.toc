@@ -52,20 +52,40 @@ Systems\ReputationAlts.lua
 Systems\QuestsAlts.lua
 Systems\Quests.lua
 Systems\Events.lua
+Systems\PriceSource.lua
+Systems\AuctionScan.lua
+Systems\ProfessionScanner.lua
+Systems\ProfessionTracker.lua
+Systems\RecipeTracker.lua
+Systems\DecorAH\DecorAH.lua
+Systems\DecorAH\DecorAH_Sales.lua
+Systems\DecorAH\DecorAH_Queue.lua
+Systems\DecorAH\DecorAH_History.lua
+Systems\DecorAH\DecorAH_Favorites.lua
+Systems\DecorAH\DecorAH_Export.lua
 
 Systems\Vendor\CheckMarks.lua
 Systems\Vendor\DecorCounts.lua
 Systems\Vendor\DecorCounts_System.lua
 Systems\Vendor\VendorChecks.lua
+Systems\Vendor\VendorNPCTooltip.lua
 
 UI\Theme.lua
 UI\Controls.lua
 UI\Options.lua
 UI\Widgets\RowStyles.lua
 UI\ChangelogPopup.lua
+UI\ProfessionsTipPopup.lua
 UI\Widgets\FilterPopup.lua
 UI\Widgets\Dropdown.lua
 UI\Layout.lua
+UI\DecorAH\DecorAH.lua
+UI\DecorAH\DecorAH_SalesPanel.lua
+UI\DecorAH\DecorAH_QueuePanel.lua
+UI\AltsProfessions.lua
+UI\AltsProfessions_Opportunities.lua
+
+Data\Trainers\Trainers.lua
 
 UI\Widgets\HeaderController.lua
 UI\Widgets\Filters.lua
@@ -80,9 +100,9 @@ UI\Widgets\StatusIcon.lua
 UI\Widgets\ItemInteractions.lua
 
 UI\MapPopup\MapPopup_Util.lua
-UI\MapPopup\MapPopup_Rows.lua
+UI\MapPopup\MapPopup_Rows.lua 
 UI\MapPopup\MapPopup_UI.lua
-UI\MapPopup\MapPopup_Render.lua
+UI\MapPopup\MapPopup_Render.lua 
 UI\MapPopup\MapPopup.lua
 
 UI\Tracker\Tracker_Util.lua

@@ -1,9 +1,9 @@
 local ADDON, NS = ...
-local L = NS.L
 
 NS.UI = NS.UI or {}
 NS.UI.Tooltips = NS.UI.Tooltips or {}
 local TT = NS.UI.Tooltips
+local L = NS.L
 
 local tonumber, tostring, type, pairs, ipairs = tonumber, tostring, type, pairs, ipairs
 local pcall = pcall
@@ -187,21 +187,21 @@ end
 
 local function IsDyeable(data)
   if not data then return false end
-  
+
   local Util = NS.UI and NS.UI.Util
   if Util and Util.IsDyeable then
     return Util.IsDyeable(data)
   end
-  
+
   local decorID = data.decorID or data.id or (data.source and (data.source.id or data.source.decorID))
   if not decorID then return false end
-  
+
   local info
   if _G.C_HousingCatalog and _G.C_HousingCatalog.GetCatalogEntryInfo then
     local ok, res = pcall(_G.C_HousingCatalog.GetCatalogEntryInfo, decorID)
     if ok then info = res end
   end
-  
+
   if type(info) == "table" then
     return (info.canCustomize == true) or (info.isCustomizable == true) or (info.customizable == true)
   elseif data.canCustomize ~= nil then
@@ -209,7 +209,7 @@ local function IsDyeable(data)
   elseif data.dyeable ~= nil then
     return data.dyeable == true
   end
-  
+
   return false
 end
 
@@ -253,7 +253,7 @@ local function addCommonKeys(data, includeVendor)
       end
     end
   end
-  
+
   do
     local QuestsAlts = NS.Systems and NS.Systems.QuestsAlts
     local View = NS.UI and NS.UI.Viewer
@@ -271,7 +271,7 @@ local function addCommonKeys(data, includeVendor)
       end
     end
   end
-  
+
   local classLabel = GetClassLabel(data)
   if classLabel then
     local classColor = CLASS_COLORS[classLabel]
@@ -281,7 +281,7 @@ local function addCommonKeys(data, includeVendor)
       kv(L["REQUIRES"], classLabel)
     end
   end
-  
+
   if IsDyeable(data) then
     GameTooltip:AddLine(L["DYEABLE"], 0.4, 0.8, 1)
   end
@@ -319,7 +319,7 @@ function TT:Attach(frame, data)
       actionLine(L["HINT_EXPAND_COLLAPSE"])
       actionLine(L["HINT_VENDOR_LOCATION"])
       actionLine(L["HINT_ALT_WOWHEAD"])
-      kv("Zone", d.zone)
+      kv(L["ZONE"], d.zone)
       kv(L["FACTION"], factionFor(d))
       GameTooltip:Show()
       return
@@ -331,13 +331,13 @@ function TT:Attach(frame, data)
         GameTooltip:AddLine(" ")
         actionLine(L["HINT_VIEW_ITEM"])
         actionLine(L["HINT_VENDOR_LOCATION"])
-        
+
         local hasAchReq = false
         if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
           hasAchReq = true
           actionLine(L["HINT_CTRL_ACHIEVEMENT"])
         end
-        
+
         actionLine(L["HINT_ALT_WOWHEAD"])
         addCommonKeys(d, true)
         GameTooltip:Show()
@@ -352,7 +352,7 @@ function TT:Attach(frame, data)
       if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
         actionLine(L["HINT_CTRL_ACHIEVEMENT"])
       end
-      
+
       actionLine(L["HINT_ALT_WOWHEAD"])
 
       local list = dropNPCs(d)
@@ -377,7 +377,7 @@ function TT:Attach(frame, data)
       if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
         actionLine(L["HINT_CTRL_ACHIEVEMENT"])
       end
-      
+
       actionLine(L["HINT_ALT_WOWHEAD"])
       addCommonKeys(d, true)
       GameTooltip:Show()
@@ -392,7 +392,7 @@ function TT:Attach(frame, data)
         if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
           actionLine(L["HINT_CTRL_ACHIEVEMENT"])
         end
-        
+
         actionLine(L["HINT_ALT_WOWHEAD"])
         kv(L["FACTION"], factionFor(d))
         GameTooltip:Show()
@@ -406,7 +406,7 @@ function TT:Attach(frame, data)
         if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
           actionLine(L["HINT_CTRL_ACHIEVEMENT"])
         end
-        
+
         actionLine(L["HINT_ALT_WOWHEAD"])
         kv(L["FACTION"], factionFor(d))
         GameTooltip:Show()
@@ -548,7 +548,7 @@ function TT.AppendNpcMouseover(tooltip, npcID)
       shown = shown + 1
       if shown >= 25 then
         local left = missing - shown
-        if left > 0 then tooltip:AddLine("+" .. left .. " " .. L["MORE_ITEMS"], 0.8, 0.8, 0.8) end
+        if left > 0 then tooltip:AddLine("+" .. left .. " more...", 0.8, 0.8, 0.8) end
         break
       end
     end

@@ -3,6 +3,7 @@ NS.Systems = NS.Systems or {}
 
 local MapPins = NS.Systems.MapPins or {}
 NS.Systems.MapPins = MapPins
+local L = NS.L
 
 local D = NS.Systems.MapPinsData or {}
 NS.Systems.MapPinsData = D
@@ -103,7 +104,7 @@ function D.BuildIndex()
         vendor.name = NPCNames.Get(vendor.id)
       end
       if not vendor.name or vendor.name == "" then
-        vendor.name = "Vendor #" .. vendor.id
+        vendor.name = L["VENDOR_PREFIX"] .. vendor.id
       end
     end
   end
@@ -132,7 +133,7 @@ function D.ResolveNamesFor(vendorList)
         vendor.name = NPCNames.Get(vendor.id)
       end
       if not vendor.name or vendor.name == "" then
-        vendor.name = "Vendor #" .. vendor.id
+        vendor.name = L["VENDOR_PREFIX"] .. vendor.id
       end
     end
   end

@@ -1,5 +1,4 @@
 local ADDON, NS = ...
-local L = NS.L
 NS.UI = NS.UI or {}
 
 local Goals = NS.UI.LumberTrackGoals or {}
@@ -178,12 +177,12 @@ function Goals:GetGoalTooltip(lumberItemID, ctx)
   local db = ctx and ctx.GetDB and ctx.GetDB()
   local autoGoal = db and db.autoGoal
   if not autoGoal then
-    return L["GOAL_MANUAL_PREFIX"] .. goal .. "\n|cff888888" .. L["GOAL_MANUAL_SUB"] .. "|r"
+    return "Manual Goal: " .. goal .. "\n|cff888888(Set in Settings)|r"
   end
   if goal > 0 then
-    return L["GOAL_AUTO_PREFIX"] .. goal .. "\n|cff888888" .. L["GOAL_AUTO_SUB"] .. "|r"
+    return "Auto Goal: " .. goal .. "\n|cff888888Based on housing decor recipes you haven't crafted|r"
   else
-    return L["GOAL_AUTO_PREFIX"] .. "0\n|cff888888" .. L["GOAL_AUTO_COMPLETE"] .. "|r"
+    return "Auto Goal: 0\n|cff888888All known housing decor using this lumber is complete|r"
   end
 end
 function Goals:PreloadRecipeData()

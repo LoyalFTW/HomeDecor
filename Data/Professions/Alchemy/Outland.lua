@@ -9,4 +9,6 @@ NS.Data.Professions["Alchemy"]["Outland"] = {
   {decorID=16082, decorType="Ornamental", source={type="profession", skillID=1272712, itemID=264705}},
   {decorID=16083, decorType="Misc Lighting", source={type="profession", skillID=1272723, itemID=264706}},
   {decorID=16086, decorType="Uncategorized", source={type="profession", skillID=1272715, itemID=264709}},
+  {decorID=16219, decorType="Ornamental", source={type="profession", skillID=1273070, itemID=264899}},
+  {decorID=16220, decorType="Ornamental", source={type="profession", skillID=1273064, itemID=264900}},
 }

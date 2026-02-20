@@ -1,4 +1,4 @@
-local _, NS = ...
+local ADDON, NS = ...
 
 NS.Systems = NS.Systems or {}
 NS.Systems.Quests = NS.Systems.Quests or {}
@@ -12,6 +12,21 @@ local function recordQuestAlt(questID, isComplete)
   if not QuestsAlts or not QuestsAlts.Record then return end
   if not questID or isComplete ~= true then return end
   pcall(QuestsAlts.Record, QuestsAlts, questID, true)
+end
+
+local function CheckQuest(questID)
+  if not (C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted) then return false end
+  local ok, result = pcall(C_QuestLog.IsQuestFlaggedCompleted, questID)
+  local isComplete = ok and result or false
+  if isComplete then recordQuestAlt(questID, true) end
+  return isComplete
+end
+
+local function GetQuestName(questID)
+  if not (C_QuestLog and C_QuestLog.GetQuestInfo) then return nil end
+  local ok, info = pcall(C_QuestLog.GetQuestInfo, questID)
+  if ok and info then return info.title or info.name end
+  return nil
 end
 
 function Q.GetRequirement(it)
@@ -36,39 +51,9 @@ function Q.GetRequirement(it)
     if not questID then
       return { text = "Quest required", questID = nil, met = false }
     end
-
-    local isComplete = false
-    if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
-      local ok, result = pcall(C_QuestLog.IsQuestFlaggedCompleted, questID)
-      if ok then
-        isComplete = result
-      end
-    end
-
-    if isComplete then
-      recordQuestAlt(questID, true)
-    end
-
-    local questName = quest.name or quest.title
-    if not questName and C_QuestLog and C_QuestLog.GetQuestInfo then
-      local ok, info = pcall(C_QuestLog.GetQuestInfo, questID)
-      if ok and info then
-        questName = info.title or info.name
-      end
-    end
-
-    local displayText
-    if questName then
-      displayText = questName
-    else
-      displayText = "Quest #" .. tostring(questID)
-    end
-
-    return {
-      text = displayText,
-      questID = questID,
-      met = isComplete
-    }
+    local isComplete = CheckQuest(questID)
+    local questName = quest.name or quest.title or GetQuestName(questID) or ("Quest #" .. tostring(questID))
+    return { text = questName, questID = questID, met = isComplete }
   end
 
   if type(quest) == "number" then
@@ -76,24 +61,8 @@ function Q.GetRequirement(it)
     if not questID then
       return { text = "Quest required", questID = nil, met = false }
     end
-
-    local isComplete = false
-    if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
-      local ok, result = pcall(C_QuestLog.IsQuestFlaggedCompleted, questID)
-      if ok then
-        isComplete = result
-      end
-    end
-
-    if isComplete then
-      recordQuestAlt(questID, true)
-    end
-
-    return {
-      text = "Quest #" .. tostring(questID),
-      questID = questID,
-      met = isComplete
-    }
+    local isComplete = CheckQuest(questID)
+    return { text = "Quest #" .. tostring(questID), questID = questID, met = isComplete }
   end
 
   if type(quest) == "string" then
@@ -106,27 +75,17 @@ end
 function Q.IsQuestComplete(questID)
   questID = tonumber(questID)
   if not questID then return false end
-  
-  if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
-    local ok, result = pcall(C_QuestLog.IsQuestFlaggedCompleted, questID)
-    return ok and result or false
-  end
-  
-  return false
+  if not (C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted) then return false end
+  local ok, result = pcall(C_QuestLog.IsQuestFlaggedCompleted, questID)
+  return ok and result or false
 end
 
 function Q.GetQuestInfo(questID)
   questID = tonumber(questID)
   if not questID then return nil end
-  
-  if C_QuestLog and C_QuestLog.GetQuestInfo then
-    local ok, info = pcall(C_QuestLog.GetQuestInfo, questID)
-    if ok and info then
-      return info
-    end
-  end
-  
-  return nil
+  if not (C_QuestLog and C_QuestLog.GetQuestInfo) then return nil end
+  local ok, info = pcall(C_QuestLog.GetQuestInfo, questID)
+  return ok and info or nil
 end
 
 return Q

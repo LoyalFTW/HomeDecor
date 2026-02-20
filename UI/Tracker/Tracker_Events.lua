@@ -24,10 +24,7 @@ function Events:Attach(Tracker, ctx)
             if not cb:GetChecked() then return end
             if mapID and mapID == f._lastZoneMapID then return end
             if (not mapID) and name and name ~= "" and name == f._lastZoneName then return end
-            
-            f._zoneJustChanged = true
             f._lastZoneName, f._lastZoneMapID = name, mapID
-            
             if not f._collapsed then f:RequestRefresh("zone") end
         end)
     end
@@ -37,11 +34,9 @@ function Events:Attach(Tracker, ctx)
         if cb and db then cb:SetChecked(db.trackZone ~= false) end
         local a = (db and db.alpha)
         if a == nil then a = 1 end
-        local hc  = (db and db.hideCompleted)        and true or false
-        local hcv = (db and db.hideCompletedVendors) and true or false
+        local hc = (db and db.hideCompleted) and true or false
 
-        f._hideCompleted        = hc
-        f._hideCompletedVendors = hcv
+        f._hideCompleted = hc
         settings.hideCB:SetChecked(hc)
 
         if f._ApplyPanelsAlpha then f._ApplyPanelsAlpha(a, false) end
@@ -52,11 +47,6 @@ function Events:Attach(Tracker, ctx)
             if MapTracker.GetCurrentZone then
                 local name, mapID = MapTracker:GetCurrentZone()
                 if (not name or name == "") and GetRealZoneText then name = GetRealZoneText() or "" end
-                
-                if name ~= f._lastZoneName then
-                    f._zoneJustChanged = true
-                end
-                
                 f._lastZoneName, f._lastZoneMapID = name, mapID
             end
         end

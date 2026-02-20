@@ -9,7 +9,6 @@ local CreateFrame = _G.CreateFrame
 local C_Timer = _G.C_Timer
 local hooksecurefunc = _G.hooksecurefunc
 
-
 local DecorCounts = NS.Systems and NS.Systems.DecorCounts
 
 local function ShouldClear(ev)
@@ -99,25 +98,22 @@ function VendorChecks:Enable()
     self._frame = f
 
     local function SafeRegister(ev)
-  local ok = pcall(f.RegisterEvent, f, ev)
-  return ok
-end
+      local ok = pcall(f.RegisterEvent, f, ev)
+      return ok
+    end
 
-SafeRegister("PLAYER_LOGIN")
-SafeRegister("MERCHANT_SHOW")
-SafeRegister("MERCHANT_UPDATE")
-SafeRegister("MERCHANT_CLOSED")
-
-SafeRegister("HOUSE_DECOR_ADDED_TO_CHEST")
-SafeRegister("HOUSING_STORAGE_UPDATED")
-SafeRegister("HOUSING_STORAGE_ENTRY_UPDATED")
-
-SafeRegister("HOUSING_COLLECTION_UPDATED")
-SafeRegister("HOUSING_DECOR_ITEM_LEARNED")
-
-SafeRegister("BAG_UPDATE_DELAYED")
-SafeRegister("QUEST_TURNED_IN")
-SafeRegister("ACHIEVEMENT_EARNED")
+    SafeRegister("PLAYER_LOGIN")
+    SafeRegister("MERCHANT_SHOW")
+    SafeRegister("MERCHANT_UPDATE")
+    SafeRegister("MERCHANT_CLOSED")
+    SafeRegister("HOUSE_DECOR_ADDED_TO_CHEST")
+    SafeRegister("HOUSING_STORAGE_UPDATED")
+    SafeRegister("HOUSING_STORAGE_ENTRY_UPDATED")
+    SafeRegister("HOUSING_COLLECTION_UPDATED")
+    SafeRegister("HOUSING_DECOR_ITEM_LEARNED")
+    SafeRegister("BAG_UPDATE_DELAYED")
+    SafeRegister("QUEST_TURNED_IN")
+    SafeRegister("ACHIEVEMENT_EARNED")
 
     f:SetScript("OnEvent", function(_, event)
       if event == "PLAYER_LOGIN" then

@@ -1,9 +1,9 @@
 local _, NS = ...
-local L = NS.L
 
 NS.UI = NS.UI or {}
 NS.UI.ResizeBar = NS.UI.ResizeBar or {}
 local RB = NS.UI.ResizeBar
+local L = NS.L
 
 local C = NS.UI and NS.UI.Controls
 local T = NS.UI and NS.UI.Theme and NS.UI.Theme.colors

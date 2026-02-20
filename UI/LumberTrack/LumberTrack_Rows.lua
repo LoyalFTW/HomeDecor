@@ -32,7 +32,7 @@ local function NewLumberRow(parent)
   r.iconFrame:SetSize(ICON_SIZE, ICON_SIZE)
   r.iconFrame:SetPoint("LEFT", 10, 0)
   Utils.CreateBackdrop(r.iconFrame, {0.08, 0.08, 0.10, 0.8}, {0.90, 0.72, 0.18, 0.5})
-  
+
   r.icon = r.iconFrame:CreateTexture(nil, "ARTWORK")
   r.icon:SetSize(ICON_SIZE - 4, ICON_SIZE - 4)
   r.icon:SetPoint("CENTER")
@@ -55,7 +55,7 @@ local function NewLumberRow(parent)
   r.countNumber:SetJustifyH("RIGHT")
   r.countNumber:SetShadowColor(0, 0, 0, 1)
   r.countNumber:SetShadowOffset(1, -1)
-  
+
   r.name:SetPoint("RIGHT", r.countNumber, "LEFT", -12, 0)
 
   r.rate = r:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -66,14 +66,12 @@ local function NewLumberRow(parent)
   r.rate:SetShadowOffset(1, -1)
   r.rate:SetText("")
 
-
-
   r.progressContainer = CreateFrame("Frame", nil, r, "BackdropTemplate")
   r.progressContainer:SetHeight(20)
   r.progressContainer:SetPoint("BOTTOMLEFT", r.iconFrame, "BOTTOMRIGHT", 10, 8)
   r.progressContainer:SetPoint("RIGHT", r, "RIGHT", -10, 0)
   Utils.CreateBackdrop(r.progressContainer, {0.04, 0.04, 0.05, 0.95}, {0.90, 0.72, 0.18, 0.5})
-  
+
   r.progressFill = r.progressContainer:CreateTexture(nil, "ARTWORK")
   r.progressFill:SetPoint("LEFT", 1, 0)
   r.progressFill:SetPoint("TOP", 0, -1)
@@ -83,7 +81,7 @@ local function NewLumberRow(parent)
   r.progressFill:SetGradient("HORIZONTAL",
     CreateColor(0.28, 0.24, 0.10, 1),
     CreateColor(0.90, 0.72, 0.18, 1))
-  
+
   r.progressText = r.progressContainer:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   r.progressText:SetFont("Fonts\\FRIZQT__.TTF", 11, "THICKOUTLINE")
   r.progressText:SetPoint("CENTER")
@@ -96,13 +94,13 @@ local function NewLumberRow(parent)
     showIcons = showIcons ~= false
     if self._iconsShown == showIcons then return end
     self._iconsShown = showIcons
-    
+
     self:SetHeight(showIcons and ROW_HEIGHT or ROW_HEIGHT_NO_ICON)
-    
+
     if self.iconFrame then
       self.iconFrame:SetShown(showIcons)
     end
-    
+
     if self.name then
       self.name:ClearAllPoints()
       if showIcons and self.iconFrame then
@@ -114,7 +112,7 @@ local function NewLumberRow(parent)
       end
       self.name:SetPoint("RIGHT", self.countNumber, "LEFT", -12, 0)
     end
-    
+
     if self.countNumber then
       self.countNumber:ClearAllPoints()
       if showIcons then
@@ -125,7 +123,7 @@ local function NewLumberRow(parent)
         self.countNumber:SetPoint("TOPRIGHT", self, "TOPRIGHT", -10, -6)
       end
     end
-    
+
     if self.rate then
       self.rate:ClearAllPoints()
       if showIcons then
@@ -136,7 +134,7 @@ local function NewLumberRow(parent)
         self.rate:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
       end
     end
-    
+
     if self.progressContainer then
       self.progressContainer:ClearAllPoints()
       if showIcons and self.iconFrame then
@@ -147,7 +145,7 @@ local function NewLumberRow(parent)
         self.progressContainer:SetHeight(16)
       end
       self.progressContainer:SetPoint("RIGHT", self, "RIGHT", -10, 0)
-      
+
       if self.progressText then
         if showIcons then
           self.progressText:SetFont("Fonts\\FRIZQT__.TTF", 11, "THICKOUTLINE")
@@ -172,7 +170,7 @@ local function NewLumberRow(parent)
     if self.itemID and GameTooltip then
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
       GameTooltip:SetItemByID(self.itemID)
-      
+
       local AccountWide = NS.UI.LumberTrackAccountWide
       if AccountWide then
         local breakdown = AccountWide:GetCharacterBreakdown(self.itemID)
@@ -201,7 +199,7 @@ local function NewLumberRow(parent)
       GameTooltip:Show()
     end
   end)
-  
+
   r:SetScript("OnLeave", function(self)
     local T2 = Utils.GetTheme()
     self:SetBackdropBorderColor(unpack(T2.border))
@@ -215,7 +213,7 @@ local function NewLumberRow(parent)
       GameTooltip:Hide()
     end
   end)
-  
+
   return r
 end
 
@@ -274,8 +272,6 @@ local function NewCompactRow(parent)
   r.countNumber:SetJustifyH("RIGHT")
   r.countNumber:SetShadowColor(0, 0, 0, 1)
   r.countNumber:SetShadowOffset(1, -1)
-
-
 
   r.sep = r:CreateTexture(nil, "BACKGROUND")
   r.sep:SetHeight(1)
@@ -430,14 +426,14 @@ function Rows:Acquire(frame, kind)
   kind = kind or "lumber"
   local pool = frame._pool and frame._pool[kind]
   if not pool then return end
-  
+
   local row = table.remove(pool)
   if not row then
     local f = frame._rowFactories and frame._rowFactories[kind]
     row = f and f() or nil
   end
   if not row then return end
-  
+
   row:Show()
   local active = frame._active
   active[#active + 1] = row
@@ -448,7 +444,7 @@ function Rows:ReleaseAll(frame)
   local active = frame and frame._active
   local pool = frame and frame._pool
   if not active or not pool then return end
-  
+
   for i = 1, #active do
     local r = active[i]
     if r then
@@ -461,7 +457,7 @@ function Rows:ReleaseAll(frame)
       end
     end
   end
-  
+
   for k in pairs(active) do
     active[k] = nil
   end
@@ -525,13 +521,13 @@ function Rows:SetRowData(row, ctx, itemID, currentCount, itemName, iconTexture)
   local v = tonumber(currentCount) or 0
   local Goals = NS.UI.LumberTrackGoals
   local goalVal = 1000
-  
+
   if Goals and Goals.GetGoal then
     goalVal = Goals:GetGoal(itemID, ctx)
   else
     goalVal = (ctx and tonumber(ctx.goal)) or 1000
   end
-  
+
   if goalVal < 1 then goalVal = 1 end
 
   if row.countNumber then
@@ -549,17 +545,17 @@ function Rows:SetRowData(row, ctx, itemID, currentCount, itemName, iconTexture)
     local pct = goalVal > 0 and (v / goalVal) or 0
     if pct > 1 then pct = 1 end
     row._lastPct = pct
-    
+
     local containerWidth = row.progressContainer:GetWidth() or 100
     local fillWidth = math.max(2, (containerWidth - 2) * pct)
     row.progressFill:SetWidth(fillWidth)
-    
+
     if showBackgrounds then
       row.progressContainer:SetBackdropColor(0.04, 0.04, 0.05, 0.95)
     else
       row.progressContainer:SetBackdropColor(0, 0, 0, 0)
     end
-    
+
     if pct >= 1 then
       row.progressFill:SetGradient("HORIZONTAL",
         CreateColor(0.18, 0.50, 0.24, 1),
@@ -589,7 +585,7 @@ function Rows:SetRowData(row, ctx, itemID, currentCount, itemName, iconTexture)
       end
     end
   end
-  
+
   if row.progressText then
     row.progressText:SetFormattedText("%s / %s",
       self:FormatNumber(v),
@@ -603,9 +599,9 @@ end
 
 function Rows:Reflow(ctx)
   if not ctx or type(ctx.rows) ~= "table" then return end
-  
+
   local showIcons = ctx.showIcons ~= false
-  
+
   for i = 1, #ctx.rows do
     local row = ctx.rows[i]
     if row and row.IsShown and row:IsShown() then
@@ -614,7 +610,7 @@ function Rows:Reflow(ctx)
       elseif row.iconFrame then
         row.iconFrame:SetShown(showIcons)
       end
-      
+
       if row.progressFill and row.progressContainer and row._lastPct then
         local containerWidth = row.progressContainer:GetWidth() or 100
         local fillWidth = math.max(2, (containerWidth - 2) * row._lastPct)
@@ -626,33 +622,33 @@ end
 
 function Rows:UpdateRowTransparency(ctx)
   if not ctx or type(ctx.rows) ~= "table" then return end
-  
+
   local showBackgrounds = ctx.showRowBackgrounds ~= false
-  
+
   for i = 1, #ctx.rows do
     local row = ctx.rows[i]
     if row and row.IsShown and row:IsShown() then
       if showBackgrounds then
         row:SetBackdropColor(0.10, 0.10, 0.13, 0.90)
         row:SetBackdropBorderColor(0.90, 0.72, 0.18, 0.3)
-        
+
         if row.iconFrame then
           row.iconFrame:SetBackdropColor(0.08, 0.08, 0.10, 0.8)
           row.iconFrame:SetBackdropBorderColor(0.90, 0.72, 0.18, 0.5)
         end
-        
+
         if row.progressContainer then
           row.progressContainer:SetBackdropColor(0.04, 0.04, 0.05, 0.95)
         end
       else
         row:SetBackdropColor(0, 0, 0, 0)
         row:SetBackdropBorderColor(0, 0, 0, 0)
-        
+
         if row.iconFrame then
           row.iconFrame:SetBackdropColor(0, 0, 0, 0)
           row.iconFrame:SetBackdropBorderColor(0, 0, 0, 0)
         end
-        
+
         if row.progressContainer then
           row.progressContainer:SetBackdropColor(0, 0, 0, 0)
           row.progressContainer:SetBackdropBorderColor(0, 0, 0, 0)

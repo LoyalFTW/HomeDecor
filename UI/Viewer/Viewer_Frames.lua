@@ -1,8 +1,8 @@
 local ADDON, NS = ...
-local L = NS.L
 NS.UI = NS.UI or {}
 local View = NS.UI.Viewer
 local Frames = View.Frames
+local L = NS.L
 
 local function RS()
   return NS.UI and NS.UI.RowStyles

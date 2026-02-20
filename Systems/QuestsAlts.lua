@@ -11,9 +11,7 @@ local tonumber = tonumber
 local C_QuestLog = C_QuestLog
 
 local function GetCharacterKey()
-  local name = UnitName and UnitName("player") or "Unknown"
-  local realm = GetRealmName and GetRealmName() or "Unknown"
-  return tostring(name) .. " - " .. tostring(realm)
+  return NS.Systems.GetCharacterKey()
 end
 
 local function GetAccountDB()
@@ -110,13 +108,13 @@ end
 function QA:AnyCharacterHas(questID)
   local bucket = GetBucket(questID)
   if type(bucket) ~= "table" then return false end
-  
+
   for charKey, has in pairs(bucket) do
     if has then
       return true
     end
   end
-  
+
   return false
 end
 
@@ -140,11 +138,11 @@ end
 function QA:IsQuestComplete(questID)
   questID = tonumber(questID)
   if not questID then return false end
-  
+
   if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
     return C_QuestLog.IsQuestFlaggedCompleted(questID)
   end
-  
+
   return false
 end
 

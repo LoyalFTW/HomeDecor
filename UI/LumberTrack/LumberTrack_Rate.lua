@@ -28,14 +28,14 @@ local function CleanHistory(history, now, maxAge)
       break
     end
   end
-  
+
   if firstValid > 1 then
     local newHistory = {}
     for i = firstValid, #history do newHistory[#newHistory+1]=history[i] end
     Utils.Wipe(history)
     for i = 1, #newHistory do history[i]=newHistory[i] end
   end
-  
+
   if #history > MAX_HISTORY then
     local keep = {}
     local startIdx = #history - MAX_HISTORY + 1
@@ -49,14 +49,14 @@ function R:RecordGain(itemID, amount)
   self:InitItem(itemID)
   local data = self.data[itemID]
   local now = time()
-  
+
   CleanHistory(data.history, now, 60)
-  
+
   local safeAmount = math.min(amount, 1000)
   for i = 1, safeAmount do data.history[#data.history+1]=now end
-  
+
   if #data.history > CLEANUP_THRESHOLD then CleanHistory(data.history, now, 45) end
-  
+
   data.sessionGained = data.sessionGained + amount
   self.mostRecentItemID = itemID
   self.mostRecentTime = now
@@ -88,7 +88,7 @@ end
 function R:CheckGains(counts)
   if not counts then return end
   if not self.data then self.data={} end
-  
+
   local latestGainItemID, latestGainAmount = nil, 0
   for itemID, newCount in pairs(counts) do
     self:InitItem(itemID)
@@ -104,7 +104,7 @@ function R:CheckGains(counts)
     end
     data.lastCount = newCount
   end
-  
+
   if latestGainItemID then
     self.mostRecentItemID = latestGainItemID
     self.mostRecentTime = time()

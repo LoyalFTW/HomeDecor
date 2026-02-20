@@ -5,9 +5,10 @@ local GI = {}
 NS.Systems.GlobalIndex = GI
 
 GI.byCategory = {}
-GI.counts = {}
-GI.collected = {}
-GI._built = false
+GI.byItemID   = {}
+GI.counts     = {}
+GI.collected  = {}
+GI._built     = false
 
 local Collection = NS.Systems and NS.Systems.Collection
 
@@ -22,6 +23,7 @@ local function add(cat, decorID)
     cat = norm(cat)
     GI.byCategory[cat] = GI.byCategory[cat] or {}
     GI.byCategory[cat][decorID] = true
+    GI.byItemID[decorID] = true
 end
 
 local function countSet(set)
@@ -77,6 +79,7 @@ end
 
 function GI:Build()
     wipe(self.byCategory)
+    wipe(self.byItemID)
     wipe(self.counts)
     wipe(self.collected)
 

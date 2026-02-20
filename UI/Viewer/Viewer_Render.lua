@@ -88,8 +88,8 @@ local VENDOR_CLASS_LABEL = {
     [105986] = "Rogue",
     [112318] = "Shaman",
     [112323] = "Druid",
-	[93550] = "Death Knight", 
-	[100196] = "Paladin", 
+	[93550] = "Death Knight",
+	[100196] = "Paladin",
     [112338] = "Monk",
     [112392] = "Warrior",
     [112401] = "Priest",
@@ -110,17 +110,16 @@ end
 local function GetDyeableOrClassLabel(it)
     local classLabel = GetClassLabelForVendor(it)
     local isDyeable = IsItemDyeable(it and it.decorID)
-    if isDyeable and classLabel then return L["DYEABLE_CLASS"] .. classLabel end
-    if isDyeable then return L["DYEABLE"] end
+    if isDyeable and classLabel then return "Dyeable - " .. classLabel end
+    if isDyeable then return "Dyeable" end
     return classLabel
 end
 
-
 local function GetDecorCategoryBreadcrumb(decorID)
     if not decorID then return "" end
-    
-    if CategoryBreadcrumbCache[decorID] then 
-        return CategoryBreadcrumbCache[decorID] 
+
+    if CategoryBreadcrumbCache[decorID] then
+        return CategoryBreadcrumbCache[decorID]
     end
 
     if C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByRecordID then
@@ -155,7 +154,7 @@ local function GetDecorCategoryBreadcrumb(decorID)
             elseif subcategoryName and subcategoryName ~= "" then
                 breadcrumb = subcategoryName
             end
-            
+
             CategoryBreadcrumbCache[decorID] = breadcrumb
             return breadcrumb
         end
@@ -187,7 +186,7 @@ local function GetCurrencyInfo(it)
                 end
             end
         end
-        currencyName = currencyName or L["CURRENCY"]
+        currencyName = currencyName or "Currency"
     end
 
     return goldCost, currencyAmount, currencyName, iconFileID
@@ -403,7 +402,7 @@ local function ReqClick(btn)
     if not req or not R.ShowWowheadLinks then return end
 
     local url = (req.kind == "quest" and R.BuildWowheadQuestURL(req.id)) or R.BuildWowheadAchievementURL(req.id)
-    R.ShowWowheadLinks({ { label = L["LINK"], url = url } })
+    R.ShowWowheadLinks({ { label = "Link", url = url } })
 end
 
 local function BindReqButton(btn)
@@ -475,7 +474,7 @@ local GridCache = {}
 
 local function ComputeGrid(indent, contentWidth)
     local avail = math.max(0, contentWidth - indent - 8)
-    if GridCache.lastAvail and GridCache.lastIndent == indent and 
+    if GridCache.lastAvail and GridCache.lastIndent == indent and
        math.abs(avail - GridCache.lastAvail) < 4 then
         return GridCache.cols, GridCache.startX, GridCache.tileW, GridCache.tileH, GridCache.iconSize
     end
@@ -606,6 +605,17 @@ local function RebuildEntries(f, content)
     if flatMode then
         if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
 
+        local _GM = NS.UI and NS.UI.DecorAH
+        local _decorAHFrame = _GM and (_GM.frame or _G["HomeDecorDecorAH"])
+        if _decorAHFrame and _decorAHFrame._embedded then _decorAHFrame:Hide() end
+        local _AltProfs = NS.UI and NS.UI.AltsProfessions
+        local _altProfsFrame = _AltProfs and _AltProfs.frame
+        if _altProfsFrame then _altProfsFrame:Hide() end
+        if f.scrollFrame or f._scrollFrame then
+            local sf = f.scrollFrame or f._scrollFrame
+            sf:Show()
+        end
+
         local scope = (cat == "Search" or cat == "ALL" or cat == "All" or cat == "Everything") and "GLOBAL" or
                       (D and D.CATEGORY_MAP and D.CATEGORY_MAP[cat]) or cat
         if cat == "PvP" or cat == "PVP" then scope = "PvP" end
@@ -668,6 +678,96 @@ local function RebuildEntries(f, content)
         return
     end
 
+    local GM = NS.UI and NS.UI.DecorAH
+    local decorAHFrame = GM and (GM.frame or _G["HomeDecorDecorAH"])
+
+    local AltProfs = NS.UI and NS.UI.AltsProfessions
+    local altProfsFrame = AltProfs and AltProfs.frame
+
+    if cat == "Decor Pricing" then
+        if not decorAHFrame or not decorAHFrame._embedded then
+            if GM and GM.CreateEmbedded then
+                GM:CreateEmbedded(f)
+                decorAHFrame = GM.frame or _G["HomeDecorDecorAH"]
+            end
+        end
+
+        if f.scrollFrame or f._scrollFrame then
+            local sf = f.scrollFrame or f._scrollFrame
+            sf:Hide()
+        end
+
+        if altProfsFrame then
+            altProfsFrame:Hide()
+        end
+
+        if decorAHFrame then
+            decorAHFrame:Show()
+            decorAHFrame:SetFrameLevel(f:GetFrameLevel() + 1)
+
+            if GM and GM.Refresh then
+                C_Timer.After(0, function()
+                    if decorAHFrame and decorAHFrame:IsShown() then
+                        GM:Refresh()
+                    end
+                end)
+            end
+        end
+
+        f.totalHeight = y + LAYOUT.PAD_BOTTOM
+        return
+    elseif cat == "Alts Professions" then
+        if not altProfsFrame then
+            if AltProfs and AltProfs.Create then
+                AltProfs:Create(f)
+                altProfsFrame = AltProfs.frame
+            end
+        end
+
+        if f.scrollFrame or f._scrollFrame then
+            local sf = f.scrollFrame or f._scrollFrame
+            sf:Hide()
+        end
+
+        if decorAHFrame and decorAHFrame._embedded then
+            decorAHFrame:Hide()
+        end
+
+        if altProfsFrame then
+            altProfsFrame:Show()
+            altProfsFrame:SetFrameLevel(f:GetFrameLevel() + 1)
+            if AltProfs and AltProfs.activateOpps then
+                C_Timer.After(0, function()
+                    if altProfsFrame and altProfsFrame:IsShown() then
+                        AltProfs.activateOpps()
+                    end
+                end)
+            elseif AltProfs and AltProfs.Refresh then
+                C_Timer.After(0, function()
+                    if altProfsFrame and altProfsFrame:IsShown() then
+                        AltProfs:Refresh()
+                    end
+                end)
+            end
+        end
+
+        f.totalHeight = y + LAYOUT.PAD_BOTTOM
+        return
+    else
+        if decorAHFrame and decorAHFrame._embedded then
+            decorAHFrame:Hide()
+        end
+
+        if altProfsFrame then
+            altProfsFrame:Hide()
+        end
+
+        if f.scrollFrame or f._scrollFrame then
+            local sf = f.scrollFrame or f._scrollFrame
+            sf:Show()
+        end
+    end
+
     if cat == "Events" then
         local Ev = Systems.Events
         local list = (Ev and Ev.GetActive and Ev:GetActive()) or
@@ -675,8 +775,8 @@ local function RebuildEntries(f, content)
 
         if #list == 0 then
             addListItem(0, {
-                title = L["NO_ACTIVE_EVENTS"],
-                decorType = L["EVENT_ITEMS_PLACEHOLDER"],
+                title = L["NO_ACTIVE_EVENTS_TITLE"],
+                decorType = L["EVENTS_PLACEHOLDER_BODY"],
                 source = { type = "event", icon = "Interface\\Icons\\INV_Misc_PocketWatch_01" }
             }, nil)
             f.totalHeight = y + LAYOUT.PAD_BOTTOM
@@ -686,17 +786,17 @@ local function RebuildEntries(f, content)
         for _, ev in ipairs(list) do
             local eTitle = ev.title or ev.name or "Event"
             local evKey = "event:" .. tostring(ev.id or ev.key or eTitle)
-            
+
             if not db.eventHeaderStates then db.eventHeaderStates = {} end
             local savedOpen = db.eventHeaderStates[evKey]
-            
+
             local open
             if savedOpen ~= nil then
                 open = savedOpen
             elseif ev._uiOpen ~= nil then
                 open = ev._uiOpen
             else
-                open = false  
+                open = false
             end
 
             ev._uiOpen = open
@@ -1071,7 +1171,7 @@ function Render:Create(parent)
                         fr.chevron:Show()
                     elseif fr.icon then
                         if e.expanded then
-                            fr.icon:SetRotation(math.pi / 2) 
+                            fr.icon:SetRotation(math.pi / 2)
                         else
                             fr.icon:SetRotation(0)
                         end
@@ -1217,7 +1317,7 @@ function Render:Create(parent)
                             fr.req:SetText(R.BuildReqDisplay(req, false))
                         else
                             fr.req._req = nil
-                            fr.req:SetText("|cff8c959f" .. L["REQ_NONE_QUEST_ACH"] .. "|r")
+                            fr.req:SetText("|cff8c959fNo quest or achievement required|r")
                         end
                         fr.req:Show()
 
@@ -1249,7 +1349,7 @@ function Render:Create(parent)
                         if rep then
                             fr.rep:SetText(R.BuildRepDisplay(rep, false))
                         else
-                            fr.rep:SetText("|cff8c959f" .. L["REQ_NONE_REPUTATION"] .. "|r")
+                            fr.rep:SetText("|cff8c959fNo reputation required|r")
                         end
                         fr.rep:Show()
 

@@ -86,7 +86,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   yOffset = yOffset - 35
 
   local compactCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_COMPACT_MODE"],
-    "Shows a condensed single-line list — fits more items with less screen space")
+    L["LUMBER_COMPACT_TIP"])
   compactCB:SetChecked(sharedCtx and sharedCtx.compactMode and true or false)
   compactCB:SetScript("OnClick", function(self)
     if sharedCtx then
@@ -117,8 +117,8 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   settings.compactCB = compactCB
   yOffset = yOffset - 35
 
-  local autoFarmCB = CreateCheckbox(settings, 20, yOffset, "Auto Farm Mode",
-    "Automatically start farming stats when you loot lumber")
+  local autoFarmCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_AUTO_FARM"],
+    L["LUMBER_AUTO_FARM_TIP"])
   autoFarmCB:SetChecked((db and db.autoStartFarming) and true or false)
   autoFarmCB:SetScript("OnClick", function(self)
     local checked = self:GetChecked() and true or false
@@ -127,7 +127,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   end)
   yOffset = yOffset - 35
 
-  local accountWideCB = CreateCheckbox(settings, 20, yOffset, "Account Wide",
+  local accountWideCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_ACCOUNT_WIDE"],
     "Combines lumber counts from all characters.\n\nHover over rows to see per-character breakdown.")
   local AccountWide = NS.UI.LumberTrackAccountWide
   accountWideCB:SetChecked(AccountWide and AccountWide:IsEnabled() or false)
@@ -171,8 +171,8 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   end)
   yOffset = yOffset - 35
 
-  local autoGoalCB = CreateCheckbox(settings, 20, yOffset, "Auto-Calculate Goals",
-    "Automatically calculates goals based on housing decor recipes you haven't crafted yet")
+  local autoGoalCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_AUTO_CALC_GOALS"],
+    L["LUMBER_AUTO_CALC_GOALS_TIP"])
   autoGoalCB:SetChecked((db and db.autoGoal) and true or false)
   autoGoalCB:SetScript("OnClick", function(self)
     local checked = self:GetChecked() and true or false

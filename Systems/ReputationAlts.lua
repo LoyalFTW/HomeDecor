@@ -14,9 +14,7 @@ local function Trim(s)
 end
 
 local function GetCharacterKey()
-  local name = UnitName and UnitName("player") or "Unknown"
-  local realm = GetRealmName and GetRealmName() or "Unknown"
-  return tostring(name) .. " - " .. tostring(realm)
+  return NS.Systems.GetCharacterKey()
 end
 
 local function GetAccountDB()
@@ -283,4 +281,3 @@ f:SetScript("OnEvent", function()
 end)
 
 return RA
-

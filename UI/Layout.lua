@@ -1,9 +1,9 @@
 local ADDON, NS = ...
-local Loc = NS.L
 
 NS.UI = NS.UI or {}
 local L = NS.UI.Layout or {}
 NS.UI.Layout = L
+local Loc = NS.L
 
 local Dropdown = NS.UI.Dropdown
 
@@ -35,7 +35,7 @@ local function getDB()
 
   local ui = profile.ui
   if not ui then ui = {}; profile.ui = ui end
-  if not ui.viewMode then ui.viewMode = Loc["VIEW_ICON"] end
+  if not ui.viewMode then ui.viewMode = "Icon" end
   if not ui.activeCategory then ui.activeCategory = "Achievements" end
   if not ui.expanded then ui.expanded = {} end
   if ui.search == nil then ui.search = "" end
@@ -317,6 +317,14 @@ local function SetCategorySelected(btn, selected)
   if btn.selBottom then btn.selBottom:SetShown(show) end
   if btn.selLeft then btn.selLeft:SetShown(show) end
   if btn.selRight then btn.selRight:SetShown(show) end
+
+  if btn.text then
+    if selected then
+      btn.text:SetTextColor(1, 1, 1, 0.95)
+    else
+      btn.text:SetTextColor(unpack(ACCENT))
+    end
+  end
 end
 
 function L:CreateShell()
@@ -366,11 +374,10 @@ function L:CreateShell()
     logo:SetColorTexture(1, 0.82, 0.2, 1)
   end
 
-  logo:SetSize(506, 50) 
+  logo:SetSize(506, 50)
   logo:SetPoint("CENTER", header, "TOP", 0, -26)
   logo:SetTexCoord(0, 1, 0, 1)
   logo:SetAlpha(1)
-
 
   local closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
   header.closeBtn = closeBtn
@@ -471,15 +478,15 @@ function L:CreateShell()
   trackersMenu:SetScript("OnShow", function(self)
     self._hideTimer = nil
     self:SetScript("OnUpdate", function(self, elapsed)
-      local mouseOver = MouseIsOver(self) or MouseIsOver(trackersBtn) or 
+      local mouseOver = MouseIsOver(self) or MouseIsOver(trackersBtn) or
                         MouseIsOver(decorOption) or MouseIsOver(lumberOption)
-      
+
       if not mouseOver then
         if not self._hideTimer then
           self._hideTimer = 0
         end
         self._hideTimer = self._hideTimer + elapsed
-        
+
         if self._hideTimer >= 0.3 then
           self:Hide()
         end
@@ -495,7 +502,7 @@ function L:CreateShell()
   end)
 
   header.viewToggle = C:Segmented(
-    header, { Loc["VIEW_ICON"], Loc["VIEW_LIST"] },
+    header, { "Icon", "List" },
     function() return UI.viewMode end,
     function(v) UI.viewMode = v end
   )
@@ -526,6 +533,44 @@ function L:CreateShell()
   end
 
   local y = -12
+
+  local savedItemsBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
+  Backdrop(savedItemsBtn, T.panel, T.border)
+  SkinBtn(savedItemsBtn)
+  savedItemsBtn:SetPoint("TOPLEFT", 10, y)
+  savedItemsBtn:SetPoint("RIGHT", -10, y)
+  savedItemsBtn:SetHeight(28)
+
+  local savedItemsIcon = savedItemsBtn:CreateTexture(nil, "OVERLAY")
+  savedItemsIcon:SetSize(14, 14)
+  savedItemsIcon:SetPoint("LEFT", savedItemsBtn, "LEFT", 10, 0)
+  if savedItemsIcon.SetAtlas then
+    savedItemsIcon:SetAtlas("auctionhouse-icon-favorite", false)
+  else
+    savedItemsIcon:SetTexture("Interface/Common/ReputationStar")
+  end
+  savedItemsIcon:SetVertexColor(unpack(ACCENT))
+  savedItemsBtn.icon = savedItemsIcon
+
+  local savedItemsTxt = NewFS(savedItemsBtn, "GameFontNormal")
+  savedItemsTxt:SetPoint("LEFT", savedItemsIcon, "RIGHT", 6, 0)
+  savedItemsTxt:SetText(Loc["SAVED_ITEMS"])
+  savedItemsTxt:SetTextColor(unpack(ACCENT))
+  savedItemsBtn.text = savedItemsTxt
+  savedItemsBtn._category = "Saved Items"
+
+  CreateCategoryIndicators(savedItemsBtn)
+  Hover(savedItemsBtn, T.panel, T.hover)
+  left.buttons[#left.buttons + 1] = savedItemsBtn
+  y = y - 36
+
+  local savedDivider = left:CreateTexture(nil, "ARTWORK")
+  savedDivider:SetColorTexture(1, 1, 1, 0.15)
+  savedDivider:SetHeight(1)
+  savedDivider:SetPoint("TOPLEFT", 10, y)
+  savedDivider:SetPoint("TOPRIGHT", -10, y)
+  y = y - 10
+
   for i = 1, #cats do
     local cname = cats[i]
     local b = CreateFrame("Button", nil, left, "BackdropTemplate")
@@ -564,7 +609,7 @@ function L:CreateShell()
 
   local filterScroll = CreateFrame("ScrollFrame", nil, left, "ScrollFrameTemplate")
   filterScroll:SetPoint("TOPLEFT", 8, y)
-  filterScroll:SetPoint("BOTTOMRIGHT", -28, 122)  
+  filterScroll:SetPoint("BOTTOMRIGHT", -28, 122)
 
   local filterContent = CreateFrame("Frame", nil, filterScroll)
   filterContent:SetPoint("TOPLEFT", 0, 0)
@@ -572,7 +617,7 @@ function L:CreateShell()
   filterScroll:SetScript("OnSizeChanged", function(self, w)
     filterContent:SetWidth((w or 0) - 2)
   end)
-  
+
   left.filterContent = filterContent
 
   if C and C.SkinScrollFrame then
@@ -613,18 +658,8 @@ function L:CreateShell()
     return b
   end
 
-  local savedBtn = MakeTopButton(bar, 120, 24)
-  savedBtn:SetPoint("LEFT", bar, "LEFT", 8, 0)
-  if savedBtn.icon.SetAtlas then
-    savedBtn.icon:SetAtlas("auctionhouse-icon-favorite", false)
-  else
-    savedBtn.icon:SetTexture("Interface/Common/ReputationStar")
-  end
-  savedBtn.icon:SetVertexColor(1, 1, 1, 1)
-  savedBtn.text:SetText(Loc["SAVED_ITEMS"])
-
   local eventsBtn = MakeTopButton(bar, 96, 24)
-  eventsBtn:SetPoint("LEFT", savedBtn, "RIGHT", 6, 0)
+  eventsBtn:SetPoint("LEFT", bar, "LEFT", 8, 0)
   eventsBtn.icon:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
   eventsBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   eventsBtn.icon:SetDesaturated(true)
@@ -682,9 +717,30 @@ function L:CreateShell()
   local UpdateTopTabs
   local SelectCategory
   local setSearchUI
+  local decorPricingBtn
+  local altProfsTopBtn
 
   UpdateTopTabs = function()
-    C:SetSelected(savedBtn, UI.activeCategory == "Saved Items", T.panel, T.row)
+    local isPricingSelected = UI.activeCategory == "Decor Pricing"
+    C:SetSelected(decorPricingBtn, isPricingSelected, T.panel, T.row)
+    if isPricingSelected then
+      decorPricingBtn.icon:SetVertexColor(1, 1, 1, 1)
+      decorPricingBtn.text:SetTextColor(1, 1, 1, 0.95)
+    else
+      decorPricingBtn.icon:SetVertexColor(1, 1, 1, 0.9)
+      decorPricingBtn.text:SetTextColor(unpack(ACCENT))
+    end
+
+    local isAltsSelected = UI.activeCategory == "Alts Professions"
+    C:SetSelected(altProfsTopBtn, isAltsSelected, T.panel, T.row)
+    if isAltsSelected then
+      altProfsTopBtn.icon:SetVertexColor(1, 1, 1, 1)
+      altProfsTopBtn.text:SetTextColor(1, 1, 1, 0.95)
+    else
+      altProfsTopBtn.icon:SetVertexColor(1, 1, 1, 0.9)
+      altProfsTopBtn.text:SetTextColor(unpack(ACCENT))
+    end
+
     C:SetSelected(eventsBtn, UI.activeCategory == "Events", T.panel, T.row)
 
     local hasActive, sig = getEventState()
@@ -729,13 +785,13 @@ function L:CreateShell()
           f.availableRepOnly = false
           f.questsCompleted = false
           f.achievementCompleted = false
-          
+
           if Filters then
             Filters.availableRepOnly = false
             Filters.questsCompleted = false
             Filters.achievementCompleted = false
           end
-          
+
           local filterContent = left.filterContent
           if filterContent and filterContent.SyncVisuals then
             filterContent:SyncVisuals()
@@ -777,7 +833,6 @@ function L:CreateShell()
     b:SetScript("OnClick", function() SelectCategory(b._category) end)
   end
 
-  savedBtn:SetScript("OnClick", function() SelectCategory("Saved Items") end)
   eventsBtn:SetScript("OnClick", function()
     SelectCategory("Events")
     local _, sig = getEventState()
@@ -804,9 +859,35 @@ function L:CreateShell()
     header.viewToggle:SetPoint("RIGHT", bar, "RIGHT", -8, 0)
   end
 
+  decorPricingBtn = MakeTopButton(bar, 120, 24)
+  decorPricingBtn:SetPoint("LEFT", eventsBtn, "RIGHT", 6, 0)
+  decorPricingBtn.icon:SetTexture("Interface\\Icons\\INV_Misc_Coin_01")
+  decorPricingBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+  decorPricingBtn.icon:SetVertexColor(1, 1, 1, 0.9)
+  decorPricingBtn.text:SetText(Loc["DECOR_PRICING"])
+  decorPricingBtn.text:SetTextColor(1, 1, 1, 0.95)
+
+  decorPricingBtn:SetScript("OnClick", function()
+    SelectCategory("Decor Pricing")
+    if NS.UI and NS.UI.ShowProfessionsTipPopup then NS.UI:ShowProfessionsTipPopup() end
+  end)
+
+  altProfsTopBtn = MakeTopButton(bar, 130, 24)
+  altProfsTopBtn:SetPoint("LEFT", decorPricingBtn, "RIGHT", 6, 0)
+  altProfsTopBtn.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_11")
+  altProfsTopBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+  altProfsTopBtn.icon:SetVertexColor(1, 1, 1, 0.9)
+  altProfsTopBtn.text:SetText(Loc["ALTS_PROFESSIONS"])
+  altProfsTopBtn.text:SetTextColor(unpack(ACCENT))
+
+  altProfsTopBtn:SetScript("OnClick", function()
+    SelectCategory("Alts Professions")
+    if NS.UI and NS.UI.ShowProfessionsTipPopup then NS.UI:ShowProfessionsTipPopup() end
+  end)
+
   local search = CreateFrame("EditBox", nil, bar, "BackdropTemplate")
   Backdrop(search, T.panel, T.border)
-  search:SetPoint("LEFT", eventsBtn, "RIGHT", 8, 0)
+  search:SetPoint("LEFT", altProfsTopBtn, "RIGHT", 8, 0)
   if header.viewToggle and header.viewToggle.GetLeft then
     search:SetPoint("RIGHT", header.viewToggle, "LEFT", -8, 0)
   else
@@ -993,9 +1074,9 @@ function L:CreateShell()
     else
       local db = NS.db and NS.db.profile
       if not db then return end
-      
+
       local f = db.filters or {}
-      
+
       f.expansion, f.zone, f.category, f.subcategory, f.faction = "ALL", "ALL", "ALL", "ALL", "ALL"
       f.hideCollected, f.onlyCollected = false, false
       f.availableRepOnly = false

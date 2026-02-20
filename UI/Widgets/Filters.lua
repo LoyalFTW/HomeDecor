@@ -3,6 +3,7 @@ local ADDON, NS = ...
 local Filters = {}
 NS.Systems = NS.Systems or {}
 NS.Systems.Filters = Filters
+local L = NS.L
 
 local Collection = NS.Systems and NS.Systems.Collection
 
@@ -339,8 +340,8 @@ end
 function Filters:EnsureDefaults(db) Ensure(db) end
 
 function Filters:GetCategoryForDecorType(decorType)
-  if not decorType or decorType == "" then return "Uncategorized" end
-  return self.DecorTypeToCategory and (self.DecorTypeToCategory[decorType] or "Uncategorized") or "Uncategorized"
+  if not decorType or decorType == "" then return L["UNCATEGORIZED"] end
+  return self.DecorTypeToCategory and (self.DecorTypeToCategory[decorType] or L["UNCATEGORIZED"]) or "Uncategorized"
 end
 
 function Filters:GetActiveData(ui)
@@ -749,7 +750,7 @@ function Filters:Passes(it, ui, db)
     if not req or not req.quest then
       return false
     end
-    
+
     local questID = tonumber(req.quest.id or req.quest)
     if not questID then
       return false
@@ -774,7 +775,7 @@ function Filters:Passes(it, ui, db)
     if not req or not req.achievement then
       return false
     end
-    
+
     local achID = tonumber(req.achievement.id or req.achievement)
     if not achID then
       return false

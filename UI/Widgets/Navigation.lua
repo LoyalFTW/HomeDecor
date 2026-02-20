@@ -1,9 +1,9 @@
 local ADDON, NS = ...
-local L = NS.L
 
 local Nav = {}
 NS.UI = NS.UI or {}
 NS.UI.Navigation = Nav
+local L = NS.L
 
 local function ParseWorldMapLink(str)
     if type(str) ~= "string" then return end
@@ -133,7 +133,6 @@ local function PrintCoords(src)
     if DEFAULT_CHAT_FRAME and DEFAULT_CHAT_FRAME.AddMessage then
         DEFAULT_CHAT_FRAME:AddMessage(msg)
     else
-        print(msg)
     end
 end
 

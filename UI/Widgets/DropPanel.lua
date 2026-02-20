@@ -1,9 +1,9 @@
 local _, NS = ...
-local L = NS.L
 NS.UI = NS.UI or {}
 
 local DropPanel = NS.UI.DropPanel or {}
 NS.UI.DropPanel = DropPanel
+local L = NS.L
 
 local C = NS.UI.Controls
 local T = (NS.UI.Theme and NS.UI.Theme.colors) or {}
@@ -78,7 +78,7 @@ function DropPanel:AttachBadge(frame, it, mode)
     end
 
     b:SetSize(80, 16)
-    b.text:SetText(L["TAG_DROP"] .. " (" .. #list .. ")")
+    b.text:SetText(L["DROPS_LABEL"] .. " (" .. #list .. ")")
     b:Show()
 
     b:SetScript("OnClick", function()
@@ -150,7 +150,7 @@ function DropPanel:ShowForItem(it, anchor)
     if not (list and #list > 0) then return end
 
     local f = ensurePopup(self)
-    f.title:SetText(L["DROPS_FROM"] .. " (" .. #list .. ")")
+    f.title:SetText(L["DROPS_FROM_PANEL"] .. " (" .. #list .. ")")
 
     for i = 1, #list do
         local m = list[i]

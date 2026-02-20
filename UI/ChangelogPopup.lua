@@ -1,9 +1,9 @@
 local ADDON, NS = ...
-local L = NS.L
 
 local C    = NS.UI and NS.UI.Controls
 local T    = NS.UI and NS.UI.Theme and NS.UI.Theme.colors
 local CLog = NS.Systems and NS.Systems.Changelog
+local L    = NS.L
 if not C or not T or not CLog then return end
 
 local Popup

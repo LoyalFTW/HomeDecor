@@ -104,7 +104,7 @@ function FarmingStats:Create(sharedCtx)
   self.collapseBtn = collapseBtn
   local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   title:SetPoint("CENTER", 0, 0)
-  title:SetText(L["LUMBER_FARMING_STATS"])
+  title:SetText(L["LUMBER_FARMING_STATS_TITLE"])
   title:SetTextColor(unpack(T.accent or { 0.90, 0.72, 0.18, 1 }))
   self.title = title
   local settingsBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
@@ -188,13 +188,13 @@ function FarmingStats:Create(sharedCtx)
   statRow:SetPoint("TOPLEFT", 0, 0)
   statRow:SetPoint("TOPRIGHT", 0, 0)
   statRow:SetHeight(50)
-  local totalBox = CreateStatBox(statRow, L["LUMBER_STAT_TOTAL"])
+  local totalBox = CreateStatBox(statRow, "TOTAL")
   totalBox:SetPoint("TOPLEFT", 0, 0)
   totalBox:SetPoint("BOTTOMLEFT", 0, 0)
   totalBox:SetWidth(62)
   self.totalText = totalBox.value
   self.totalBox = totalBox
-  local bagsBox = CreateStatBox(statRow, L["LUMBER_STAT_BAGS"])
+  local bagsBox = CreateStatBox(statRow, "BAGS")
   bagsBox:SetPoint("LEFT", totalBox, "RIGHT", 4, 0)
   bagsBox:SetPoint("TOP", 0, 0)
   bagsBox:SetPoint("BOTTOM", 0, 0)
@@ -589,10 +589,10 @@ function FarmingStats:UpdateStats()
         lumberName = lumberName:gsub(" Lumber$", "")
         self.title:SetText(lumberName .. " ")
       else
-        self.title:SetText(L["LUMBER_FARMING_STATS"])
+        self.title:SetText(L["LUMBER_FARMING_STATS_TITLE"])
       end
     else
-      self.title:SetText(L["LUMBER_FARMING_STATS"])
+      self.title:SetText(L["LUMBER_FARMING_STATS_TITLE"])
     end
   end
 end

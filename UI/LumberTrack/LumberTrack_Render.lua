@@ -101,7 +101,7 @@ function R:Init(ctx)
       end
     end
   end
-  
+
   return ctx
 end
 
@@ -174,14 +174,14 @@ function R:CleanMetaCache(ctx)
   local metaCount = 0
   for k in pairs(ctx.meta) do metaCount = metaCount+1 end
   if metaCount <= MAX_META_CACHE then return end
-  
+
   local candidates = {}
   for itemID in pairs(ctx.meta) do
     local inBags = ctx.counts and ctx.counts[itemID] and ctx.counts[itemID]>0
     local isKnownLumber = ctx.lumberIDs and ctx.lumberIDs[itemID]
     if not inBags and not isKnownLumber then candidates[#candidates+1]=itemID end
   end
-  
+
   local toRemove = metaCount - math.floor(MAX_META_CACHE * 0.75)
   for i = 1, math.min(toRemove, #candidates) do ctx.meta[candidates[i]]=nil end
 end
@@ -274,7 +274,7 @@ function R:LayoutRows(ctx)
   local maxRows = math.max(n, 20)
   for i = n+1, #ctx.rows do
     local row = ctx.rows[i]
-    if row then 
+    if row then
       row:Hide()
       if i > maxRows then ctx.rows[i]=nil end
     end
@@ -289,13 +289,13 @@ function R:Refresh(ctx)
   self:LayoutRows(ctx)
 
   if ctx.totalText then ctx.totalText:SetText(L["LUMBER_TOTAL"]..tostring(ctx.total or 0)) end
-  
+
   local Farming = NS.UI.LumberTrackFarming
   if Farming and ctx.farming and ctx.farming.active then
     Farming:Update(ctx)
     if ctx.farmingStatsUpdate then ctx.farmingStatsUpdate() end
   end
-  
+
   local Rate = NS.UI.LumberTrackRate
   if Rate and Rate.UpdateAll then Rate:UpdateAll() end
 end

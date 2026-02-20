@@ -1,8 +1,22 @@
 local ADDON, NS = ...
-local L = NS.L
 NS.Data     = NS.Data     or {}
 NS.Systems  = NS.Systems  or {}
 NS.UI       = NS.UI       or {}
+
+do
+  local _cachedKey
+  function NS.Systems.GetCharacterKey()
+    if _cachedKey then return _cachedKey end
+    local name  = UnitName and UnitName("player") or "Unknown"
+    local realm = GetRealmName and GetRealmName() or "Unknown"
+    realm = realm:gsub("%s+", "")
+    _cachedKey = name .. "-" .. realm
+    return _cachedKey
+  end
+  local _f = CreateFrame("Frame")
+  _f:RegisterEvent("PLAYER_LOGOUT")
+  _f:SetScript("OnEvent", function() _cachedKey = nil end)
+end
 
 NS.Data.Vendors       = NS.Data.Vendors       or {}
 NS.Data.Achievements  = NS.Data.Achievements  or {}
@@ -69,6 +83,7 @@ local defaults = {
       collapsed = false,
       trackZone = true,
       hideCompleted = false,
+      hideCompletedVendors = false,
       showFavoritesOnZoneEnter = true,
       alpha = 0.7,
       width = 310,
@@ -86,8 +101,8 @@ local defaults = {
       goal = 1000,
       search = "",
       autoGoal = false,
-      accountWide = false,  
-      
+      accountWide = false,
+
       lumberListOpen = false,
       lumberListCollapsed = false,
       lumberListWidth = 380,
@@ -108,7 +123,7 @@ local defaults = {
       farmingStatsRelPoint = "TOPLEFT",
       farmingStatsX = 250,
       farmingStatsY = -80,
-      
+
       autoStartFarming = false,
     },
 
@@ -125,6 +140,21 @@ local defaults = {
 
     favorites = {},
     collection = { completedItems = {} },
+
+    decorAH = {
+      window = {},
+      preferredSource = nil,
+      lastAuctionatorScan = nil,
+      queue = {},
+      favorites = {},
+      priceAlerts = {},
+      history = {},
+      sales = {
+        history = {},
+        dailyTotals = {},
+        weeklyTotals = {},
+      },
+    },
 
     minimap = { hide = false },
 
@@ -173,15 +203,15 @@ local minimapObject = LDB:NewDataObject("HomeDecor", {
     end
   end,
   OnTooltipShow = function(tt)
-    tt:AddLine(L["ADDON_NAME"])
-    tt:AddLine(L["LDB_LEFT_CLICK"], 1, 1, 1)
-    tt:AddLine(L["LDB_RIGHT_CLICK"], 1, 1, 1)
+    tt:AddLine("HomeDecor")
+    tt:AddLine("Left Click: Open", 1, 1, 1)
+    tt:AddLine("Right Click: Options", 1, 1, 1)
   end,
 })
 
 local function RegisterAddonCompartment()
   if not AddonCompartmentFrame then return end
-  
+
   AddonCompartmentFrame:RegisterAddon({
     text = "HomeDecor",
     icon = "Interface/AddOns/HomeDecor/Media/Icon.tga",
@@ -193,8 +223,8 @@ local function RegisterAddonCompartment()
     end,
     funcOnEnter = function(button)
       GameTooltip:SetOwner(button, "ANCHOR_LEFT")
-      GameTooltip:SetText(L["ADDON_NAME"])
-      GameTooltip:AddLine(L["LDB_TOGGLE_TIP"], 1, 1, 1)
+      GameTooltip:SetText("HomeDecor")
+      GameTooltip:AddLine("Click to toggle HomeDecor", 1, 1, 1)
       GameTooltip:Show()
     end,
     funcOnLeave = function()
@@ -275,12 +305,6 @@ local function HandleSlash(msg)
     return
   end
 
-  print("|cffFFD200" .. L["SLASH_HEADER"] .. "|r")
-  print(L["SLASH_HD"])
-  print(L["SLASH_MINIMAP"])
-  print(L["SLASH_PINS"])
-  print(L["SLASH_OPTIONS"])
-  print(L["SLASH_CHANGELOG"])
 end
 
 function Addon:OnInitialize()
@@ -297,7 +321,6 @@ function Addon:OnInitialize()
       end
     end
     if removed > 0 then
-      print("|cffFFD200[HomeDecor]|r Cleaned up " .. removed .. " unfavorited items from saved data.")
     end
   end
 
@@ -305,20 +328,6 @@ function Addon:OnInitialize()
     pcall(function()
       NS.Systems.Filters:EnsureDefaults(self.db.profile)
     end)
-  end
-  
-  if self.db.profile and self.db.profile.filters then
-    local f = self.db.profile.filters
-    f.expansion = "ALL"
-    f.zone = "ALL"
-    f.category = "ALL"
-    f.subcategory = "ALL"
-    f.faction = "ALL"
-    f.hideCollected = false
-    f.onlyCollected = false
-    f.availableRepOnly = false
-    f.questsCompleted = false
-    f.achievementCompleted = false
   end
 
   if not LDBIcon:IsRegistered(ADDON) then
@@ -337,13 +346,33 @@ function Addon:OnEnable()
     pcall(function() NS.UI.Options:Ensure() end)
   end
 
-  if NS.Systems.DecorIndex then
-    NS.Systems.DecorIndex:Build()
+  if NS.Systems.ProfessionScanner and NS.Systems.ProfessionScanner.WireAliases then
+    pcall(function() NS.Systems.ProfessionScanner:WireAliases() end)
   end
 
-  if NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data and NS.UI.Viewer.Data.PrefetchQuestAndAchievementNames then
-    pcall(function() 
-      NS.UI.Viewer.Data.PrefetchQuestAndAchievementNames()
+  C_Timer.After(0, function()
+    if NS.Systems.DecorIndex then
+      NS.Systems.DecorIndex:Build()
+    end
+  end)
+
+  if NS.Systems.AuctionScan and NS.Systems.AuctionScan.InitializeScanTracking then
+    pcall(function() NS.Systems.AuctionScan.InitializeScanTracking() end)
+  end
+
+  if NS.DecorAH and NS.DecorAH.Initialize then
+    pcall(function() NS.DecorAH:Initialize() end)
+  end
+
+  if not NS._prefetchDone then
+    NS._prefetchDone = true
+    C_Timer.After(2, function()
+      if NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
+         and NS.UI.Viewer.Data.PrefetchQuestAndAchievementNames then
+        pcall(function()
+          NS.UI.Viewer.Data.PrefetchQuestAndAchievementNames()
+        end)
+      end
     end)
   end
 
@@ -359,20 +388,14 @@ function Addon:OnEnable()
     pcall(function() NS.UI.CreateWorldMapButton() end)
   end
 
-  do
-    local prof = self.db and self.db.profile
-    local tdb = prof and prof.tracker
-    if tdb and tdb.open and NS.UI and NS.UI.Tracker and NS.UI.Tracker.Create then
-      NS.UI.Tracker:Create()
-    end
+  local prof = self.db and self.db.profile
+
+  if prof and prof.tracker and prof.tracker.open and NS.UI and NS.UI.Tracker and NS.UI.Tracker.Create then
+    NS.UI.Tracker:Create()
   end
 
-  do
-    local prof = self.db and self.db.profile
-    local ltdb = prof and prof.lumberTrack
-    if NS.UI and NS.UI.LumberTrack and NS.UI.LumberTrack.Create then
-      NS.UI.LumberTrack:Create()
-    end
+  if prof and prof.lumberTrack and NS.UI and NS.UI.LumberTrack and NS.UI.LumberTrack.Create then
+    NS.UI.LumberTrack:Create()
   end
 
   if NS.UI and NS.UI.MinimapVendor then

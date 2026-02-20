@@ -1,5 +1,4 @@
 local ADDON, NS = ...
-local L = NS.L
 
 NS.UI = NS.UI or {}
 
@@ -34,14 +33,13 @@ function MapPopup:Show(vendorID, vendorData)
   end
 
   local frame = self.frame
-  if not frame then 
-    print(L["ERR_MAPOPUP_FAILED"])
-    return 
+  if not frame then
+    return
   end
 
   if vendorID then
     self.currentVendors = {{ id = vendorID, data = vendorData }}
-    
+
     local Render = GetRender()
     if Render and Render.SetTitle then
       Render:SetTitle(frame, vendorID)
@@ -63,13 +61,12 @@ function MapPopup:ShowMultiple(vendors)
   end
 
   self.currentVendors = vendors or {}
-  
+
   local frame = self.frame
-  if not frame then 
-    print(L["ERR_MAPOPUP_FAILED"])
-    return 
+  if not frame then
+    return
   end
-  
+
   local Render = GetRender()
   if Render and Render.SetMultipleTitle then
     Render:SetMultipleTitle(frame, vendors)
@@ -97,11 +94,10 @@ end
 
 function MapPopup:Create()
   if self.frame then return end
-  
+
   local UI = GetUI()
-  if not (UI and UI.CreateFrame) then 
-    print(L["ERR_MAPOPUPUI_UNAVAILABLE"])
-    return 
+  if not (UI and UI.CreateFrame) then
+    return
   end
 
   local frame = UI:CreateFrame()

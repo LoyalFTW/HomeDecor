@@ -4,6 +4,7 @@ NS.UI = NS.UI or {}
 
 local MapPopup = NS.UI.MapPopup or {}
 NS.UI.MapPopup = MapPopup
+local L = NS.L
 
 local Util = NS.UI.MapPopupUtil or {}
 NS.UI.MapPopupUtil = Util
@@ -20,13 +21,13 @@ end
 
 function Util.GetItemData(itemID)
   if not itemID then return nil end
-  
+
   local name, link, quality, _, _, _, _, _, _, icon = GetItemInfo(itemID)
   if not name then
     C_Item.RequestLoadItemDataByID(itemID)
     return nil
   end
-  
+
   return {
     id = itemID,
     name = name,
@@ -38,17 +39,17 @@ end
 
 function Util.GetQualityColor(quality)
   if not quality then return 1, 1, 1 end
-  
+
   local color = _G.ITEM_QUALITY_COLORS[quality]
   return color and color.r or 1, color and color.g or 1, color and color.b or 1
 end
 
 function Util.IsCollected(decorID)
   if not decorID then return false end
-  
+
   local Collection = NS.Systems and NS.Systems.Collection
   if not Collection or not Collection.IsCollected then return false end
-  
+
   local itemObj = { decorID = decorID }
   return Collection:IsCollected(itemObj) or false
 end
@@ -56,12 +57,12 @@ end
 local NPCNames = NS.Systems and NS.Systems.NPCNames
 
 function Util.GetVendorName(vendorID)
-  if not vendorID then return "Vendor" end
-  
+  if not vendorID then return L["VENDOR"] end
+
   if NPCNames and NPCNames.Get then
     return NPCNames.Get(vendorID) or ("Vendor #" .. vendorID)
   end
-  
+
   return "Vendor #" .. vendorID
 end
 

@@ -4,6 +4,7 @@ NS.Systems = NS.Systems or {}
 
 local VendorNPCTooltip = {}
 NS.Systems.VendorNPCTooltip = VendorNPCTooltip
+local L = NS.L
 
 local _G = _G
 local GameTooltip = _G.GameTooltip
@@ -77,7 +78,7 @@ local function AppendVendorInfo(tooltip)
   if not total then return end
 
   tooltip:AddLine(" ")
-  tooltip:AddLine("HomeDecor", 1, 0.82, 0, 1)
+  tooltip:AddLine(L["ADDON_NAME"], 1, 0.82, 0, 1)
   tooltip:AddDoubleLine(
     "Decor collected:",
     string.format("%d / %d", collected, total),

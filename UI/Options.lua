@@ -1,9 +1,9 @@
 local ADDON, NS = ...
-local L = NS.L
 
 NS.UI = NS.UI or {}
 NS.UI.Options = NS.UI.Options or {}
 local Options = NS.UI.Options
+local L = NS.L
 
 local CreateFrame = _G.CreateFrame
 local InterfaceOptionsFrame_OpenToCategory = _G.InterfaceOptionsFrame_OpenToCategory
@@ -164,7 +164,7 @@ function Options:Ensure()
   if self.panel then return end
 
   local panel = CreateFrame("Frame")
-  panel.name = L["ADDON_NAME"]
+  panel.name = "HomeDecor"
 
   local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
   title:SetPoint("TOPLEFT", 16, -16)
@@ -203,8 +203,8 @@ function Options:Ensure()
   filterHeader:SetText(L["FILTERS"])
   y = y - 24
 
-  local cbHideCollected = mkCheckbox(panel, "Hide already collected items",
-    "Hides items you have already collected from the browser and list views")
+  local cbHideCollected = mkCheckbox(panel, L["OPT_HIDE_COLLECTED"],
+    L["OPT_HIDE_COLLECTED_TIP"])
   cbHideCollected:SetPoint("TOPLEFT", 32, y)
   y = y - 34
 
@@ -287,8 +287,8 @@ function Options:Ensure()
   trackerHeader:SetText(L["OPT_TRACKER_HEADER"])
   y = y - 24
 
-  local cbShowFavoritesOnZone = mkCheckbox(panel, "Highlight saved items when entering zone",
-    "When enabled, saved items will be highlighted when you enter a new zone")
+  local cbShowFavoritesOnZone = mkCheckbox(panel, L["OPT_HIGHLIGHT_ZONE"],
+    L["OPT_HIGHLIGHT_ZONE_TIP"])
   cbShowFavoritesOnZone:SetPoint("TOPLEFT", 32, y)
 
   local function syncFromDB()
@@ -389,18 +389,18 @@ function Options:Ensure()
 
   local vy = -60
 
-  local cbCollectedCheckmark = mkCheckbox(vendorPanel, "Show collected checkmark",
-    "Show a checkmark on vendor items you already own in your housing storage")
+  local cbCollectedCheckmark = mkCheckbox(vendorPanel, L["OPT_SHOW_CHECKMARK"],
+    L["OPT_SHOW_CHECKMARK_TIP"])
   cbCollectedCheckmark:SetPoint("TOPLEFT", 16, vy)
   vy = vy - 34
 
-  local cbOwnedCount = mkCheckbox(vendorPanel, "Show owned count",
-    "Show a number on vendor items indicating how many you own in your housing storage")
+  local cbOwnedCount = mkCheckbox(vendorPanel, L["OPT_SHOW_OWNED_COUNT"],
+    L["OPT_SHOW_OWNED_COUNT_TIP"])
   cbOwnedCount:SetPoint("TOPLEFT", 16, vy)
   vy = vy - 34
 
-  local cbVendorNPCTooltip = mkCheckbox(vendorPanel, "Show vendor NPC tooltip info",
-    "Show HomeDecor info in the tooltip when hovering over a vendor NPC")
+  local cbVendorNPCTooltip = mkCheckbox(vendorPanel, L["OPT_VENDOR_TOOLTIP"],
+    L["OPT_VENDOR_TOOLTIP_TIP"])
   cbVendorNPCTooltip:SetPoint("TOPLEFT", 16, vy)
 
   local function syncVendorFromDB()

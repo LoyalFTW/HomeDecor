@@ -5,15 +5,15 @@ local HB = {}
 NS.Systems.HousingBootstrap = HB
 
 HB.ready = false
-HB.searcher = nil
-HB.retryTimer = nil
-HB.timeoutTimer = nil
-HB.tries = 0
-HB.maxTries = 6
+local _searcher    = nil
+local _retryTimer  = nil
+local _timeoutTimer = nil
+local _tries       = 0
+local _maxTries    = 6
 
 local function CancelTimers()
-  if HB.retryTimer then HB.retryTimer:Cancel() HB.retryTimer = nil end
-  if HB.timeoutTimer then HB.timeoutTimer:Cancel() HB.timeoutTimer = nil end
+  if _retryTimer  then _retryTimer:Cancel()   _retryTimer  = nil end
+  if _timeoutTimer then _timeoutTimer:Cancel() _timeoutTimer = nil end
 end
 
 local function MarkReady()
@@ -23,21 +23,21 @@ end
 
 local function TryWarmCatalog()
   if HB.ready then return end
-  HB.tries = HB.tries + 1
-  if HB.tries > HB.maxTries then return end
+  _tries = _tries + 1
+  if _tries > _maxTries then return end
 
   if not (C_HousingCatalog and C_HousingCatalog.CreateCatalogSearcher) then
-    HB.retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
+    _retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
     return
   end
 
   local searcher = C_HousingCatalog.CreateCatalogSearcher()
   if not searcher then
-    HB.retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
+    _retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
     return
   end
 
-  HB.searcher = searcher
+  _searcher = searcher
 
   if searcher.SetOwnedOnly then searcher:SetOwnedOnly(false) end
   if searcher.SetCollected then searcher:SetCollected(true) end
@@ -45,19 +45,17 @@ local function TryWarmCatalog()
   if searcher.SetAutoUpdateOnParamChanges then searcher:SetAutoUpdateOnParamChanges(false) end
 
   if searcher.SetResultsUpdatedCallback then
-    searcher:SetResultsUpdatedCallback(function()
-      MarkReady()
-    end)
+    searcher:SetResultsUpdatedCallback(MarkReady)
   end
 
   if searcher.RunSearch then
     searcher:RunSearch()
   end
 
-  HB.timeoutTimer = C_Timer.NewTimer(5.0, function()
+  _timeoutTimer = C_Timer.NewTimer(5.0, function()
     if HB.ready then return end
-    HB.searcher = nil
-    HB.retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
+    _searcher = nil
+    _retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
   end)
 end
 

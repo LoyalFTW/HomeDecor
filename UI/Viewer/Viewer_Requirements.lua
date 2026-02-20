@@ -1,9 +1,9 @@
 local ADDON, NS = ...
-local L = NS.L
 
 NS.UI = NS.UI or {}
 local View = NS.UI.Viewer
 local Requirements = View.Requirements
+local L = NS.L
 
 local C = NS.UI.Controls
 local function Theme() return NS.UI.Theme or {} end
@@ -63,7 +63,7 @@ local function GetQuestTitleSafe(id)
   if questNameCache[id] ~= nil then
     return questNameCache[id] or nil
   end
-  
+
   if C_QuestLog and C_QuestLog.GetTitleForQuestID then
     local title = C_QuestLog.GetTitleForQuestID(id)
     if title and title ~= "" then
@@ -71,7 +71,7 @@ local function GetQuestTitleSafe(id)
       return title
     end
   end
-  
+
   if C_QuestLog and C_QuestLog.RequestLoadQuestByID then
     C_QuestLog.RequestLoadQuestByID(id)
     C_Timer.After(0.1, function()
@@ -90,7 +90,7 @@ local function GetQuestTitleSafe(id)
       end
     end)
   end
-  
+
   questNameCache[id] = false
   return nil
 end
@@ -137,7 +137,7 @@ local function GetRequirementLink(it)
     return {
       kind = "quest",
       id = id,
-      text = r.quest.title or GetQuestTitleSafe(id) or (L["QUEST_PREFIX"] .. tostring(id)),
+      text = r.quest.title or GetQuestTitleSafe(id) or ("Quest " .. tostring(id)),
       completed = completed
     }
   end
@@ -147,7 +147,7 @@ local function GetRequirementLink(it)
     return {
       kind = "achievement",
       id = id,
-      text = r.achievement.title or GetAchievementTitleSafe(id) or (L["ACHIEVEMENT_PREFIX"] .. tostring(id)),
+      text = r.achievement.title or GetAchievementTitleSafe(id) or ("Achievement " .. tostring(id)),
       completed = completed
     }
   end
@@ -313,13 +313,13 @@ local function GetRepRequirement(it)
       if out then return out end
       RequestRepRescanAfterLoad(itemID)
     end
-    return { text = L["REQ_REPUTATION"] }
+    return { text = "Reputation required" }
   end
 
   if type(rep) == "string" then
     local s = rep:gsub("^%s+",""):gsub("%s+$","")
     if s == "" then
-      return { text = L["REQ_REPUTATION"] }
+      return { text = "Reputation required" }
     end
     return { text = s }
   end
@@ -332,10 +332,10 @@ local function GetRepRequirement(it)
     elseif name then
       return { text = tostring(name) }
     end
-    return { text = L["REQ_REPUTATION"] }
+    return { text = "Reputation required" }
   end
 
-  return { text = L["REQ_REPUTATION"] }
+  return { text = "Reputation required" }
 end
 
 local function GetQuestRequirement(it)
@@ -355,7 +355,7 @@ local function GetQuestRequirement(it)
   if type(quest) == "table" then
     local questID = tonumber(quest.id)
     if not questID then
-      return { text = L["REQ_QUEST"], questID = nil, met = false }
+      return { text = "Quest required", questID = nil, met = false }
     end
 
     local isComplete = IsQuestComplete(questID)
@@ -379,7 +379,7 @@ local function GetQuestRequirement(it)
   if type(quest) == "number" then
     local questID = tonumber(quest)
     if not questID then
-      return { text = L["REQ_QUEST"], questID = nil, met = false }
+      return { text = "Quest required", questID = nil, met = false }
     end
 
     local isComplete = IsQuestComplete(questID)
@@ -395,7 +395,7 @@ local function GetQuestRequirement(it)
     return { text = quest, questID = nil, met = false }
   end
 
-  return { text = L["REQ_QUEST"], questID = nil, met = false }
+  return { text = "Quest required", questID = nil, met = false }
 end
 
 local function BuildRepDisplay(rep, hover)

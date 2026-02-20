@@ -1,8 +1,8 @@
 local _, NS = ...
-local L = NS.L
 NS.UI = NS.UI or {}
 NS.UI.Util = NS.UI.Util or {}
 local U = NS.UI.Util
+local L = NS.L
 
 local unpack = unpack
 local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
@@ -144,10 +144,10 @@ function M:Build(popup, env)
 
         b:SetScript("OnClick", function() if onClick then onClick() end end)
         popup._rows[#popup._rows + 1] = { isButton = true, dd = b }
-        
+
         popup._allElements[#popup._allElements + 1] = b
         popup._allElements[#popup._allElements + 1] = b.text
-        
+
         return b
     end
 
@@ -163,7 +163,7 @@ function M:Build(popup, env)
 
         popup._allElements[#popup._allElements + 1] = r.title
         popup._allElements[#popup._allElements + 1] = r.line
-        
+
         return r
     end
 
@@ -188,7 +188,7 @@ function M:Build(popup, env)
         b.indicator:SetSize(8, 8)
         b.indicator:SetPoint("RIGHT", -10, 0)
         b.indicator:SetTexture("Interface\\Buttons\\WHITE8x8")
-        
+
         local function updateIndicator()
             if get() == true then
                 b.indicator:SetColorTexture(unpack(T.accent))
@@ -267,7 +267,7 @@ function M:Build(popup, env)
         arrow:SetSize(12, 12)
         arrow:SetPoint("LEFT", 8, 0)
         arrow:SetTexture("Interface\\ChatFrame\\ChatFrameExpandArrow")
-        
+
         local label = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         label:SetPoint("LEFT", arrow, "RIGHT", 6, 0)
         label:SetText(titleText)
@@ -295,7 +295,7 @@ function M:Build(popup, env)
         popup._allElements[#popup._allElements + 1] = header
         popup._allElements[#popup._allElements + 1] = arrow
         popup._allElements[#popup._allElements + 1] = label
-        
+
         return r
     end
 
@@ -361,15 +361,15 @@ function M:Build(popup, env)
     end
 
     if #popup._tabs == 0 then
-        createTabButton("Filters", "filters")
-        createTabButton("Completed", "completion")
+        createTabButton(L["FILTER_TAB_FILTERS"], "filters")
+        createTabButton(L["FILTER_TAB_COMPLETED"], "completion")
     end
 
     function popup:UpdateTabs()
         for i = 1, #self._tabs do
             local btn = self._tabs[i]
             local isActive = (btn._tabId == self._activeTab)
-            
+
             if isActive then
                 U.Backdrop(btn, C, T.row, T.accent)
                 btn.text:SetTextColor(unpack(T.accent))
@@ -395,26 +395,26 @@ function M:Build(popup, env)
         wipe(popup._allElements)
 
         if self._activeTab == "filters" then
-            checkRow(L["FILTER_HIDE_COMPLETED"],
+            checkRow(L["FILTER_HIDE_COMPLETED_ROW"],
                 function() local f = F(); return (f and f.hideCollected) == true end,
                 function(v) local f = F(); if f then f.hideCollected = (v == true) end end,
                 true)
 
             spacer(8)
 
-            ddRow(L["FACTION"],
+            ddRow(L["FILTER_FACTION_ROW"],
                 function() local f = F(); return (f and f.faction) or "ALL" end,
                 function(v) local f = F(); if f then f.faction = v or "ALL" end end,
                 function()
                     return {
-                        { value = "ALL",      text = L["ALL_FACTIONS"] },
-                        { value = "Alliance", text = "Alliance" },
-                        { value = "Horde",    text = "Horde" },
+                        { value = "ALL", text = L["ALL_FACTIONS"] },
+                        { value = "Alliance", text = L["FILTER_ALLIANCE"] },
+                        { value = "Horde", text = L["FILTER_HORDE"] },
                     }
                 end,
                 true)
 
-            ddRow(L["EXPANSION"],
+            ddRow(L["FILTER_EXPANSION_ROW"],
                 function()
                     local f = F()
                     local v = (f and f.expansion) or "ALL"
@@ -444,7 +444,7 @@ function M:Build(popup, env)
                 end,
                 true)
 
-            ddRow(L["ZONE"],
+            ddRow(L["FILTER_ZONE_ROW"],
                 function()
                     local f = F()
                     local v = (f and f.zone) or "ALL"
@@ -496,7 +496,7 @@ function M:Build(popup, env)
                 end,
                 true)
 
-            ddRow(L["CATEGORY"],
+            ddRow(L["FILTER_CATEGORY_ROW"],
                 function()
                     local f = F()
                     local v = (f and f.category) or "ALL"
@@ -528,7 +528,7 @@ function M:Build(popup, env)
                 end
             )
 
-            ddRow(L["SUBCATEGORY"],
+            ddRow(L["FILTER_SUBCATEGORY_ROW"],
                 function()
                     local f = F()
                     local v = (f and f.subcategory) or "ALL"
@@ -562,7 +562,7 @@ function M:Build(popup, env)
             )
 
         elseif self._activeTab == "completion" then
-            checkRow(L["REPUTATION"],
+            checkRow(L["FILTER_REPUTATION_ROW"],
                 function() local f = F(); return (f and f.availableRepOnly) == true end,
                 function(v)
                     local f = F()
@@ -580,9 +580,9 @@ function M:Build(popup, env)
                 true,
                 L["FILTER_ALTS_REP_HINT"])
 
-            checkRow(L["QUESTS"],
+            checkRow(L["FILTER_QUESTS_ROW"],
                 function() local f = F(); return (f and f.questsCompleted) == true end,
-                function(v) 
+                function(v)
                     local f = F()
                     if not f then return end
                     f.questsCompleted = (v == true)
@@ -593,9 +593,9 @@ function M:Build(popup, env)
                 true,
                 L["FILTER_ALTS_QUEST_HINT"])
 
-            checkRow(L["ACHIEVEMENTS"],
+            checkRow(L["FILTER_ACHIEVEMENT_ROW"],
                 function() local f = F(); return (f and f.achievementCompleted) == true end,
-                function(v) 
+                function(v)
                     local f = F()
                     if not f then return end
                     f.achievementCompleted = (v == true)
@@ -626,7 +626,7 @@ function M:Build(popup, env)
 
         for i = 1, #self._rows do
             local r = self._rows[i]
-            
+
             if r.isSpacer then
                 y = y - r.height
             elseif r.isCollapsible then
@@ -643,7 +643,7 @@ function M:Build(popup, env)
                     r.line:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
                     y = y - 6
                 end
-                
+
                 r.dd:Show()
                 r.dd:ClearAllPoints()
                 r.dd:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
@@ -654,7 +654,7 @@ function M:Build(popup, env)
                 r.title:Show()
                 r.line:Show()
                 r.dd:Show()
-                
+
                 r.title:ClearAllPoints()
                 r.title:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
                 y = y - 20
@@ -671,7 +671,7 @@ function M:Build(popup, env)
                 y = y - 30
             end
         end
-        
+
         self:SetHeight(-y + 12)
     end
 
