@@ -317,6 +317,7 @@ function M:Build(popup, env)
         f.availableRepOnly = false
         f.questsCompleted = false
         f.achievementCompleted = false
+        f.hidePvpItems = false
 
         if Filters then
             Filters.expansion, Filters.zone, Filters.category, Filters.subcategory, Filters.faction =
@@ -324,6 +325,7 @@ function M:Build(popup, env)
             Filters.availableRepOnly = false
             Filters.questsCompleted = false
             Filters.achievementCompleted = false
+            Filters.hidePvpItems = false
         end
 
         syncAll()
@@ -399,6 +401,19 @@ function M:Build(popup, env)
                 function() local f = F(); return (f and f.hideCollected) == true end,
                 function(v) local f = F(); if f then f.hideCollected = (v == true) end end,
                 true)
+
+            spacer(8)
+
+            checkRow(L["FILTER_HIDE_PVP_ROW"],
+                function() local f = F(); return (f and f.hidePvpItems) == true end,
+                function(v)
+                    local f = F()
+                    if not f then return end
+                    f.hidePvpItems = (v == true)
+                    if Filters then Filters.pvpDecorSet = nil end
+                end,
+                true,
+                L["FILTER_HIDE_PVP_HINT"])
 
             spacer(8)
 

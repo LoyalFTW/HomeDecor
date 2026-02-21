@@ -58,16 +58,14 @@ local function CreatePopup()
   okBtn.text:SetText(L["PROF_TIP_OK"])
 
   okBtn:SetScript("OnClick", function()
-    HomeDecorGlobal = HomeDecorGlobal or {}
-    HomeDecorGlobal.seenProfTip = true
+    if NS.db and NS.db.global then NS.db.global.seenProfTip = true end
     p:Hide()
   end)
 
   p:SetPropagateKeyboardInput(true)
   p:SetScript("OnKeyDown", function(self, key)
     if key == "ESCAPE" then
-      HomeDecorGlobal = HomeDecorGlobal or {}
-      HomeDecorGlobal.seenProfTip = true
+      if NS.db and NS.db.global then NS.db.global.seenProfTip = true end
       self:Hide()
       self:SetPropagateKeyboardInput(false)
     end
@@ -78,7 +76,6 @@ local function CreatePopup()
 end
 
 function NS.UI:ShowProfessionsTipPopup()
-  HomeDecorGlobal = HomeDecorGlobal or {}
-  if HomeDecorGlobal.seenProfTip then return end
+  if NS.db and NS.db.global and NS.db.global.seenProfTip then return end
   CreatePopup():Show()
 end

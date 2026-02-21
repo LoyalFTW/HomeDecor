@@ -343,6 +343,8 @@ L["FILTER_REPUTATION_ROW"]          = "Réputation"
 L["FILTER_QUESTS_ROW"]              = "Quêtes"
 L["FILTER_ACHIEVEMENT_ROW"]         = "Haut fait"
 
+L["FILTER_HIDE_PVP_ROW"]             = "Masquer les objets JcJ"
+L["FILTER_HIDE_PVP_HINT"]            = "Masquer les objets JcJ des autres catégories"
 L["FILTER_FACTION_ROW"]             = "Faction"
 L["FILTER_EXPANSION_ROW"]           = "Extension"
 L["FILTER_ZONE_ROW"]                = "Zone"

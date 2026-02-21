@@ -10,7 +10,7 @@ if not Render then return end
 
 local LAYOUT = {
     ROW_GAP = 8,
-    LIST_H = 84,
+    LIST_H = 90,
     LIST_GAP = 6,
     PAD_TOP = 10,
     PAD_BOTTOM = 12,
@@ -338,13 +338,27 @@ local function ApplyFactionBadge(fr, it, size)
     local icon = (fac == "Alliance" and D.TEX_ALLI) or (fac == "Horde" and D.TEX_HORDE) or nil
 
     fr.factionIcon:ClearAllPoints()
+
     if fr._kind == "tile" then
         fr.factionIcon:SetPoint("TOPRIGHT", (fr.media or fr), "TOPRIGHT", -8, -8)
+        if fr.factionIcon.SetSize then fr.factionIcon:SetSize(size or 18, size or 18) end
     else
-        fr.factionIcon:SetPoint("TOPRIGHT", (fr.iconBG or fr), "TOPRIGHT", -2, -2)
-    end
+        local iconSize = 14
+        if fr.factionIcon.SetSize then fr.factionIcon:SetSize(iconSize, iconSize) end
 
-    if fr.factionIcon.SetSize then fr.factionIcon:SetSize(size or 16, size or 16) end
+        if icon then
+            fr.factionIcon:SetPoint("TOPLEFT", fr, "TOPLEFT", 70, -9)
+            if fr.text then
+                fr.text:ClearAllPoints()
+                fr.text:SetPoint("TOPLEFT", fr, "TOPLEFT", 70 + iconSize + 3, -8)
+            end
+        else
+            if fr.text then
+                fr.text:ClearAllPoints()
+                fr.text:SetPoint("TOPLEFT", fr, "TOPLEFT", 70, -8)
+            end
+        end
+    end
 
     if icon and fr.factionIcon.SetTexture then
         fr.factionIcon:SetTexture(icon)
@@ -1432,14 +1446,18 @@ end
                 elseif e.kind == "list" then
                     local it = D and D.ResolveAchievementDecor and D.ResolveAchievementDecor(e.it) or e.it
                     local state = U and U.GetStateSafe and U.GetStateSafe(it)
-                    local maxW = (e.w or 0) - 84
+                    local textLeft = 70        -- base left edge of text column
+                    local fac = it and (it.faction or (it.source and it.source.faction))
+                    local hasFaction = (fac == "Alliance" or fac == "Horde")
+                    local titleLeft = hasFaction and (textLeft + 14 + 3) or textLeft
+                    local maxW = (e.w or 0) - titleLeft - 10
 
                     if fr.icon then
                         local tex = (it and it.source and it.source.icon) or
                                    (it and it.decorID and D and D.GetDecorIcon and D.GetDecorIcon(it.decorID)) or
                                    "Interface\\Icons\\INV_Misc_QuestionMark"
                         fr.icon:SetTexture(tex)
-                        if fr.icon.SetTexCoord then fr.icon:SetTexCoord(0.20, 0.80, 0.20, 0.80) end
+                        if fr.icon.SetTexCoord then fr.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
                     end
 
                     if fr.text then
@@ -1458,11 +1476,7 @@ end
 
                     if fr.meta then
                         if it and (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") then
-
-                            if D and D.ApplyDecorBreadcrumb then
-                                D.ApplyDecorBreadcrumb(it)
-                            end
-
+                            if D and D.ApplyDecorBreadcrumb then D.ApplyDecorBreadcrumb(it) end
                             if (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") and it.decorID then
                                 local breadcrumb = GetDecorCategoryBreadcrumb(it.decorID)
                                 if breadcrumb and breadcrumb ~= "" then
@@ -1472,39 +1486,50 @@ end
                         end
                         local metaText = it and (it.decorTypeBreadcrumb or it.decorType or it.subcategory or "Uncategorized") or "Uncategorized"
                         fr.meta:ClearAllPoints()
-                        if metaText ~= "" then
-                            fr.meta:SetPoint("TOPLEFT", fr.text, "BOTTOMLEFT", 0, -4)
-                            fr.meta:SetWidth(maxW)
-                            fr.meta:SetHeight(16)
-                            fr.meta:SetText("|cff9aa0a6" .. metaText .. "|r")
-                            fr.meta:Show()
+                        fr.meta:SetPoint("TOPLEFT", fr.text, "BOTTOMLEFT", 0, -3)
+                        fr.meta:SetWidth(maxW)
+                        fr.meta:SetHeight(14)
+                        fr.meta:SetText("|cff9aa0a6" .. metaText .. "|r")
+                        fr.meta:Show()
+                    end
+
+                    local noteAnchor = (fr.meta and fr.meta:IsShown()) and fr.meta or fr.text
+                    if fr.note then
+                        local noteText = (it and it.source and type(it.source.note) == "string" and it.source.note ~= "" and it.source.note) or nil
+                        if noteText then
+                            fr.note:ClearAllPoints()
+                            fr.note:SetPoint("TOPLEFT", noteAnchor, "BOTTOMLEFT", 0, -2)
+                            fr.note:SetWidth(maxW)
+                            fr.note:SetHeight(14)
+                            fr.note:SetText("|cff9fb0c5" .. noteText .. "|r")
+                            fr.note:Show()
+                            noteAnchor = fr.note
                         else
-                            fr.meta:Hide()
+                            fr.note:Hide()
                         end
                     end
 
-                    local anchor = (fr.meta and fr.meta:IsShown()) and fr.meta or fr.text
                     if fr.div then
                         local req = R and R.GetRequirementLink and R.GetRequirementLink(it)
                         local rep = R and R.GetRepRequirement and R.GetRepRequirement(it)
-                        if (fr.meta and fr.meta:IsShown()) or req or rep then
+                        if req or rep then
                             fr.div:ClearAllPoints()
-                            fr.div:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -6)
-                            fr.div:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, -6)
-                            fr.div:SetHeight(1)
+                            fr.div:SetPoint("TOPLEFT", noteAnchor, "BOTTOMLEFT", 0, -5)
+                            fr.div:SetPoint("TOPRIGHT", noteAnchor, "BOTTOMRIGHT", 0, -5)
                             fr.div:Show()
                         else
                             fr.div:Hide()
                         end
                     end
 
+                    local divAnchor = (fr.div and fr.div:IsShown()) and fr.div or noteAnchor
                     local req = R and R.GetRequirementLink and R.GetRequirementLink(it)
                     if req and fr.req and fr.reqBtn and R.BuildReqDisplay then
                         fr.req:Show()
                         fr.req:ClearAllPoints()
-                        fr.req:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -12)
+                        fr.req:SetPoint("TOPLEFT", divAnchor, "BOTTOMLEFT", 0, -4)
                         fr.req:SetWidth(maxW)
-                        fr.req:SetHeight(18)
+                        fr.req:SetHeight(16)
                         fr.req._req = req
                         fr.req:SetText(R.BuildReqDisplay(req, false))
 
@@ -1518,34 +1543,31 @@ end
                         if fr.reqBtn then fr.reqBtn:Hide() end
                     end
 
+                    local repAnchor = (fr.req and fr.req:IsShown()) and fr.req or divAnchor
                     local rep = R and R.GetRepRequirement and R.GetRepRequirement(it)
                     if rep and fr.rep and R.BuildRepDisplay then
                         fr.rep:Show()
                         fr.rep:ClearAllPoints()
-                        if req and fr.req and fr.req:IsShown() then
-                            fr.rep:SetPoint("TOPLEFT", fr.req, "BOTTOMLEFT", 0, -3)
-                        else
-                            fr.rep:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -12)
-                        end
+                        fr.rep:SetPoint("TOPLEFT", repAnchor, "BOTTOMLEFT", 0, -3)
                         fr.rep:SetWidth(maxW)
-                        fr.rep:SetHeight(18)
+                        fr.rep:SetHeight(16)
                         fr.rep:SetText(R.BuildRepDisplay(rep, false))
                     else
                         if fr.rep then fr.rep:Hide() end
                     end
 
                     if fr.dyePaletteFrame then
-    local label = GetDyeableOrClassLabel(it)
-    if label and label ~= "" then
-        if fr.dyePaletteFrame.text then fr.dyePaletteFrame.text:SetText(label) end
-        fr.dyePaletteFrame:Show()
-    else
-        fr.dyePaletteFrame:Hide()
-    end
-end
+                        local label = GetDyeableOrClassLabel(it)
+                        if label and label ~= "" then
+                            if fr.dyePaletteFrame.text then fr.dyePaletteFrame.text:SetText(label) end
+                            fr.dyePaletteFrame:Show()
+                        else
+                            fr.dyePaletteFrame:Hide()
+                        end
+                    end
 
                     if StatusIcon and StatusIcon.Attach then StatusIcon:Attach(fr, state, it) end
-                    ApplyFactionBadge(fr, it, 16)
+                    ApplyFactionBadge(fr, it, 18)
 
                     if Favorite and Favorite.Attach then
                         local id = U and U.GetItemID and U.GetItemID(it)
@@ -1557,7 +1579,7 @@ end
                         end
                         if fr._fav then
                             fr._fav:ClearAllPoints()
-                            fr._fav:SetPoint("TOPRIGHT", (fr.media or fr), "TOPRIGHT", -8, -8)
+                            fr._fav:SetPoint("TOPRIGHT", fr, "TOPRIGHT", -8, -8)
                             if fr._fav.SetFrameLevel then fr._fav:SetFrameLevel((fr:GetFrameLevel() or 1) + 20) end
                             if fr._fav.SetAlpha then fr._fav:SetAlpha(0.85) end
                             SetupFavoriteHover(fr._fav)

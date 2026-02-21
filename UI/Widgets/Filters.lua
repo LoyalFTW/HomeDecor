@@ -47,6 +47,7 @@ local DEFAULTS = {
   availableRepOnly = false,
   questsCompleted = false,
   achievementCompleted = false,
+  hidePvpItems  = false,
 }
 
 local Tax = {
@@ -788,6 +789,31 @@ function Filters:Passes(it, ui, db)
       end
     else
       return false
+    end
+  end
+
+  if f.hidePvpItems then
+    local activeCat = ui and ui.activeCategory
+    if activeCat ~= "PvP" and activeCat ~= "PVP" then
+      local decorID = it.decorID
+      if decorID then
+        if not self.pvpDecorSet then
+          self.pvpDecorSet = {}
+          local pvp = NS.Data and NS.Data.PVP
+          if type(pvp) == "table" then
+            local function walk(node)
+              if type(node) ~= "table" then return end
+              if node.decorID then
+                self.pvpDecorSet[node.decorID] = true
+                return
+              end
+              for _, v in pairs(node) do walk(v) end
+            end
+            walk(pvp)
+          end
+        end
+        if self.pvpDecorSet[decorID] then return false end
+      end
     end
   end
 

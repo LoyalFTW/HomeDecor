@@ -1,6 +1,21 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
+Feb 21, 2026
+* List Mode overhaul - faction icons now show
+inline next to item names, collection checkmark
+moved to top of icon and made smaller so it
+stays out of the way.
+
+* Fixed the Whats New popup and Professions Tip
+popup so they only ever show once across all
+your characters, not every time you log in or
+swap alts.
+
+* Added Hide PvP Items filter with tooltip so
+you can browse Achievements and Vendors without
+PvP rewards cluttering the list.
+
 Feb 20, 2026
 
 * Big Update added Decor Pricing and

@@ -68,6 +68,7 @@ local defaults = {
       zones = {},
       categories = {},
       subcats = {},
+      hidePvpItems = false,
       decorTypes = {
         Chairs = false,
         Floors = false,
@@ -181,7 +182,14 @@ local defaults = {
       autoOpen = true,
       lastSeenVersion = "",
     },
-  }
+  },
+
+  global = {
+    changelog = {
+      seenVersion = "",
+    },
+    seenProfTip = false,
+  },
 }
 
 local minimapObject = LDB:NewDataObject("HomeDecor", {

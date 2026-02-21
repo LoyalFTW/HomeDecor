@@ -342,6 +342,8 @@ L["FILTER_REPUTATION_ROW"]          = "Reputation"
 L["FILTER_QUESTS_ROW"]              = "Quests"
 L["FILTER_ACHIEVEMENT_ROW"]         = "Achievement"
 
+L["FILTER_HIDE_PVP_ROW"]             = "Hide PvP Items"
+L["FILTER_HIDE_PVP_HINT"]            = "Hide PvP Items from other Categories"
 L["FILTER_FACTION_ROW"]             = "Faction"
 L["FILTER_EXPANSION_ROW"]           = "Expansion"
 L["FILTER_ZONE_ROW"]                = "Zone"
