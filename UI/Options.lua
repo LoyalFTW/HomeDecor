@@ -34,6 +34,16 @@ local function ensureProfile()
   if prof.vendor.showCollectedCheckmark == nil then prof.vendor.showCollectedCheckmark = true end
   if prof.vendor.showOwnedCount == nil then prof.vendor.showOwnedCount = false end
   if prof.vendor.showVendorNPCTooltip == nil then prof.vendor.showVendorNPCTooltip = false end
+  prof.lumberTrack = prof.lumberTrack or {}
+  if prof.lumberTrack.hideZero == nil then prof.lumberTrack.hideZero = false end
+  if prof.lumberTrack.showIcons == nil then prof.lumberTrack.showIcons = true end
+  if prof.lumberTrack.compactMode == nil then prof.lumberTrack.compactMode = false end
+  if prof.lumberTrack.alpha == nil then prof.lumberTrack.alpha = 0.7 end
+  if prof.lumberTrack.goal == nil then prof.lumberTrack.goal = 1000 end
+  if prof.lumberTrack.search == nil then prof.lumberTrack.search = "" end
+  if prof.lumberTrack.autoGoal == nil then prof.lumberTrack.autoGoal = false end
+  if prof.lumberTrack.accountWide == nil then prof.lumberTrack.accountWide = false end
+  if prof.lumberTrack.autoStartFarming == nil then prof.lumberTrack.autoStartFarming = false end
   return prof
 end
 
@@ -483,6 +493,316 @@ function Options:Ensure()
   end
 
   self.vendorPanel = vendorPanel
+
+  local lumberPanel = CreateFrame("Frame")
+  lumberPanel.name = L["LUMBER_OPTIONS"] or "Lumber Tracker"
+
+  local lumberTitle = lumberPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+  lumberTitle:SetPoint("TOPLEFT", 16, -16)
+  lumberTitle:SetText(L["LUMBER_OPTIONS"] or "Lumber Tracker")
+
+  local lumberSub = lumberPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  lumberSub:SetPoint("TOPLEFT", lumberTitle, "BOTTOMLEFT", 0, -6)
+  lumberSub:SetText(L["OPT_LUMBER_SUBTITLE"] or "Configure the Lumber Tracker window.")
+
+  local ly = -60
+
+  local lumberDisplayHeader = lumberPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  lumberDisplayHeader:SetPoint("TOPLEFT", 16, ly)
+  lumberDisplayHeader:SetText(L["OPT_LUMBER_DISPLAY"] or "Display")
+  ly = ly - 24
+
+  local cbLumberShowIcons = mkCheckbox(lumberPanel,
+    L["LUMBER_SHOW_ICONS"] or "Show Item Icons",
+    L["OPT_LUMBER_SHOW_ICONS_TIP"] or "Show item icons next to each lumber entry.")
+  cbLumberShowIcons:SetPoint("TOPLEFT", 32, ly)
+  ly = ly - 34
+
+  local cbLumberHideZero = mkCheckbox(lumberPanel,
+    L["LUMBER_HIDE_ZERO"] or "Hide Zero Counts",
+    L["OPT_LUMBER_HIDE_ZERO_TIP"] or "Hide lumber types that have a count of zero.")
+  cbLumberHideZero:SetPoint("TOPLEFT", 32, ly)
+  ly = ly - 34
+
+  local cbLumberCompact = mkCheckbox(lumberPanel,
+    L["LUMBER_COMPACT_MODE"] or "Compact Mode",
+    L["LUMBER_COMPACT_TIP"] or "Use a condensed single-line layout for each row.")
+  cbLumberCompact:SetPoint("TOPLEFT", 32, ly)
+  ly = ly - 34
+
+  local lumberAlphaSlider = mkSlider(lumberPanel,
+    L["TRANSPARENCY_COLON"] or "Transparency:", 0, 1, 0.05)
+  lumberAlphaSlider:SetSize(200, 16)
+  lumberAlphaSlider:SetPoint("TOPLEFT", 32, ly)
+  lumberAlphaSlider.Low:SetText("0%")
+  lumberAlphaSlider.High:SetText("100%")
+  lumberAlphaSlider:SetScript("OnValueChanged", function(self, value)
+    local prof = ensureProfile()
+    if not prof then return end
+    value = math.floor(value * 20 + 0.5) / 20
+    prof.lumberTrack.alpha = value
+    self.valueText:SetText(string.format("%.0f%%", value * 100))
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    if LumberList and LumberList.sharedCtx then
+      local sharedCtx = LumberList.sharedCtx
+      if sharedCtx.frame then sharedCtx.frame._bgAlpha = value end
+      sharedCtx.showRowBackgrounds = value >= 0.3
+      local Rows = NS.UI.LumberTrackRows
+      if Rows and Rows.UpdateRowTransparency then
+        Rows:UpdateRowTransparency(sharedCtx)
+      end
+    end
+  end)
+  ly = ly - 40
+
+  local lumberGoalsHeader = lumberPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  lumberGoalsHeader:SetPoint("TOPLEFT", 16, ly)
+  lumberGoalsHeader:SetText(L["OPT_LUMBER_GOALS"] or "Goals")
+  ly = ly - 24
+
+  local lumberGoalLabel = lumberPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  lumberGoalLabel:SetPoint("TOPLEFT", 32, ly)
+  lumberGoalLabel:SetText(L["LUMBER_GOAL_AMOUNT"] or "Goal Amount:")
+
+  local lumberGoalInput = CreateFrame("EditBox", nil, lumberPanel, "InputBoxTemplate")
+  lumberGoalInput:SetPoint("LEFT", lumberGoalLabel, "RIGHT", 10, 0)
+  lumberGoalInput:SetSize(80, 20)
+  lumberGoalInput:SetAutoFocus(false)
+  lumberGoalInput:SetFontObject(GameFontHighlight)
+  lumberGoalInput:SetMaxLetters(6)
+  lumberGoalInput:SetNumeric(true)
+  lumberGoalInput:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+  lumberGoalInput:SetScript("OnEnterPressed", function(self)
+    local prof = ensureProfile()
+    if not prof then self:ClearFocus() return end
+    local val = math.max(1, math.min(tonumber(self:GetText()) or 1000, 999999))
+    self:SetText(tostring(val))
+    prof.lumberTrack.goal = val
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    if LumberList and LumberList.sharedCtx then
+      LumberList.sharedCtx.goal = val
+      local Render = NS.UI.LumberTrackRender
+      if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
+    end
+    self:ClearFocus()
+  end)
+  ly = ly - 34
+
+  local cbLumberAutoGoal = mkCheckbox(lumberPanel,
+    L["LUMBER_AUTO_CALC_GOALS"] or "Auto-Calculate Goals",
+    L["LUMBER_AUTO_CALC_GOALS_TIP"] or "Automatically set goals based on uncrafted housing decor recipes.")
+  cbLumberAutoGoal:SetPoint("TOPLEFT", 32, ly)
+  ly = ly - 34
+
+  local lumberFarmingHeader = lumberPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  lumberFarmingHeader:SetPoint("TOPLEFT", 16, ly)
+  lumberFarmingHeader:SetText(L["OPT_LUMBER_FARMING"] or "Farming")
+  ly = ly - 24
+
+  local cbLumberAutoFarm = mkCheckbox(lumberPanel,
+    L["LUMBER_AUTO_FARM"] or "Auto-Start Farming",
+    L["LUMBER_AUTO_FARM_TIP"] or "Automatically start a farming session when lumber enters your bags.")
+  cbLumberAutoFarm:SetPoint("TOPLEFT", 32, ly)
+  ly = ly - 34
+
+  local lumberAccountHeader = lumberPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  lumberAccountHeader:SetPoint("TOPLEFT", 16, ly)
+  lumberAccountHeader:SetText(L["OPT_LUMBER_ACCOUNT"] or "Account")
+  ly = ly - 24
+
+  local cbLumberAccountWide = mkCheckbox(lumberPanel,
+    L["LUMBER_ACCOUNT_WIDE"] or "Account-Wide Tracking",
+    L["OPT_LUMBER_ACCOUNT_WIDE_TIP"] or "Combines lumber counts from all characters. Hover rows to see a per-character breakdown.")
+  cbLumberAccountWide:SetPoint("TOPLEFT", 32, ly)
+
+  local function syncLumberFromDB()
+    local prof = ensureProfile()
+    if not prof then return end
+    local lt = prof.lumberTrack
+
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    local sharedCtx  = LumberList and LumberList.sharedCtx
+    if sharedCtx then
+      lt.showIcons        = sharedCtx.showIcons ~= false
+      lt.hideZero         = sharedCtx.hideZero and true or false
+      lt.compactMode      = sharedCtx.compactMode and true or false
+      lt.autoStartFarming = sharedCtx.autoStartFarming and true or false
+      lt.autoGoal         = sharedCtx.autoGoal and true or false
+      if tonumber(sharedCtx.goal) then lt.goal = sharedCtx.goal end
+      if sharedCtx.frame and tonumber(sharedCtx.frame._bgAlpha) then
+        lt.alpha = sharedCtx.frame._bgAlpha
+      end
+      local AccountWide = NS.UI and NS.UI.LumberTrackAccountWide
+      if AccountWide then lt.accountWide = AccountWide:IsEnabled() end
+    end
+
+    local showIcons = bool(lt.showIcons ~= false)
+    cbLumberShowIcons:SetChecked(showIcons)
+    cbLumberShowIcons.value = showIcons
+
+    cbLumberHideZero:SetChecked(bool(lt.hideZero))
+    cbLumberHideZero.value = bool(lt.hideZero)
+
+    cbLumberCompact:SetChecked(bool(lt.compactMode))
+    cbLumberCompact.value = bool(lt.compactMode)
+
+    cbLumberAutoFarm:SetChecked(bool(lt.autoStartFarming))
+    cbLumberAutoFarm.value = bool(lt.autoStartFarming)
+
+    local AccountWide = NS.UI and NS.UI.LumberTrackAccountWide
+    local awEnabled = AccountWide and AccountWide:IsEnabled() or bool(lt.accountWide)
+    cbLumberAccountWide:SetChecked(awEnabled)
+    cbLumberAccountWide.value = awEnabled
+
+    local goalVal = tonumber(lt.goal) or 1000
+    lumberGoalInput:SetText(tostring(goalVal))
+
+    local autoGoal = bool(lt.autoGoal)
+    cbLumberAutoGoal:SetChecked(autoGoal)
+    cbLumberAutoGoal.value = autoGoal
+    if autoGoal then
+      lumberGoalInput:Disable()
+      lumberGoalLabel:SetTextColor(0.5, 0.5, 0.5, 1)
+    else
+      lumberGoalInput:Enable()
+      lumberGoalLabel:SetTextColor(1, 1, 1, 1)
+    end
+
+    local alpha = tonumber(lt.alpha) or 0.7
+    lumberAlphaSlider:SetValue(alpha)
+    lumberAlphaSlider.valueText:SetText(string.format("%.0f%%", alpha * 100))
+  end
+
+  lumberPanel:SetScript("OnShow", syncLumberFromDB)
+
+  local lumberSettingsFrame = _G.SettingsPanel or _G.InterfaceOptionsFrame
+  if lumberSettingsFrame and lumberSettingsFrame.HookScript then
+    lumberSettingsFrame:HookScript("OnShow", syncLumberFromDB)
+  end
+
+  if Settings and Settings.OpenToCategory then
+    hooksecurefunc(Settings, "OpenToCategory", function()
+      C_Timer.After(0, syncLumberFromDB)
+    end)
+  end
+
+  cbLumberShowIcons:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.lumberTrack.showIcons = val
+    self.value = val
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    if LumberList and LumberList.sharedCtx then
+      LumberList.sharedCtx.showIcons = val
+      local Render = NS.UI.LumberTrackRender
+      if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
+    end
+  end)
+
+  cbLumberHideZero:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.lumberTrack.hideZero = val
+    self.value = val
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    if LumberList and LumberList.sharedCtx then
+      LumberList.sharedCtx.hideZero = val
+      local Render = NS.UI.LumberTrackRender
+      if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
+    end
+  end)
+
+  cbLumberCompact:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.lumberTrack.compactMode = val
+    self.value = val
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    if LumberList and LumberList.sharedCtx then
+      local sharedCtx = LumberList.sharedCtx
+      sharedCtx.compactMode = val
+      if sharedCtx.rows then
+        for i, row in pairs(sharedCtx.rows) do
+          if row then row:Hide(); row:SetParent(nil) end
+          sharedCtx.rows[i] = nil
+        end
+      end
+      if LumberList.compactBtn then
+        local Tx = NS.LT and NS.LT.Utils and NS.LT.Utils.GetTheme and NS.LT.Utils.GetTheme() or {}
+        if val then
+          LumberList.compactBtn:SetBackdropBorderColor(unpack(Tx.accentBright or Tx.accent or {1,0.82,0.2,1}))
+          LumberList.compactBtn.icon:SetVertexColor(unpack(Tx.accent or {1,0.82,0.2,1}))
+        else
+          LumberList.compactBtn:SetBackdropBorderColor(unpack(Tx.border or {0.24,0.24,0.28,0.8}))
+          LumberList.compactBtn.icon:SetVertexColor(0.6, 0.6, 0.6, 1)
+        end
+      end
+      local Render = NS.UI.LumberTrackRender
+      if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+    end
+  end)
+
+  cbLumberAutoGoal:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.lumberTrack.autoGoal = val
+    self.value = val
+    if val then
+      lumberGoalInput:Disable()
+      lumberGoalLabel:SetTextColor(0.5, 0.5, 0.5, 1)
+    else
+      lumberGoalInput:Enable()
+      lumberGoalLabel:SetTextColor(1, 1, 1, 1)
+    end
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    if LumberList and LumberList.sharedCtx then
+      LumberList.sharedCtx.autoGoal = val
+      local Render = NS.UI.LumberTrackRender
+      if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
+    end
+  end)
+
+  cbLumberAutoFarm:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.lumberTrack.autoStartFarming = val
+    self.value = val
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    if LumberList and LumberList.sharedCtx then
+      LumberList.sharedCtx.autoStartFarming = val
+    end
+  end)
+
+  cbLumberAccountWide:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.lumberTrack.accountWide = val
+    self.value = val
+    local AccountWide = NS.UI and NS.UI.LumberTrackAccountWide
+    if AccountWide then AccountWide:SetEnabled(val) end
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    if LumberList and LumberList.sharedCtx then
+      local Render = NS.UI.LumberTrackRender
+      if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
+    end
+  end)
+
+  if Settings and Settings.RegisterCanvasLayoutSubcategory then
+    local lumberCategory = Settings.RegisterCanvasLayoutSubcategory(panel.category, lumberPanel, lumberPanel.name)
+    lumberPanel.category = lumberCategory
+  else
+    lumberPanel.parent = panel
+    local add = _G.InterfaceOptions_AddCategory
+    if add then add(lumberPanel) end
+  end
+
+  self.lumberPanel = lumberPanel
 end
 
 function Options:Open()

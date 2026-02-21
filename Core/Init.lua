@@ -97,6 +97,7 @@ local defaults = {
     lumberTrack = {
       hideZero = false,
       showIcons = true,
+      compactMode = false,
       alpha = 0.7,
       goal = 1000,
       search = "",
