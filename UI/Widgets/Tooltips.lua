@@ -15,8 +15,38 @@ local function canAccess(v)
   return true
 end
 
+local function GetTooltipAnchor()
+  return "ANCHOR_RIGHT"
+end
+
+local function GetPinTooltipAnchor()
+  local profile = NS.Addon and NS.Addon.db and NS.Addon.db.profile
+  local anchor = profile and profile.mapPins and profile.mapPins.pinTooltipAnchor
+  return anchor or "ANCHOR_RIGHT"
+end
+
+local function CenterTooltip()
+  GameTooltip:ClearAllPoints()
+  GameTooltip:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+end
+
+local function applyOwner(frame, anchor)
+  if anchor == "ANCHOR_MIDDLE" then
+    GameTooltip:SetOwner(frame, "ANCHOR_NONE")
+    CenterTooltip()
+  else
+    GameTooltip:SetOwner(frame, anchor)
+  end
+end
+
 local function own(frame)
-  GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
+  local anchor = frame and frame.__hdUsePinAnchor and GetPinTooltipAnchor() or GetTooltipAnchor()
+  applyOwner(frame, anchor)
+  GameTooltip:ClearLines()
+end
+
+local function ownPin(frame)
+  applyOwner(frame, GetPinTooltipAnchor())
   GameTooltip:ClearLines()
 end
 
@@ -444,6 +474,32 @@ function TT:Attach(frame, data)
   end)
 
   frame:SetScript("OnLeave", hide)
+end
+
+function TT:AttachPin(frame, data)
+  if frame then frame.__hdUsePinAnchor = true end
+  self:Attach(frame, data)
+end
+
+function TT:ShowRequirementPin(owner, req)
+  if not owner or not req then return end
+  applyOwner(owner, GetPinTooltipAnchor())
+  GameTooltip:ClearLines()
+
+  if req.kind == "achievement" and req.id and showAchievement(req.id) then
+    label("[Achievement]")
+    GameTooltip:AddLine(" ")
+    actionLine(L["HINT_CLICK_WOWHEAD"])
+    GameTooltip:Show()
+    return
+  end
+
+  if req.kind == "quest" and req.id and showQuest(req.id) then
+    label("[Quest]")
+    GameTooltip:AddLine(" ")
+    actionLine(L["HINT_CLICK_WOWHEAD"])
+    GameTooltip:Show()
+  end
 end
 
 function TT:ShowRequirement(owner, req)

@@ -164,11 +164,11 @@ local function GetProfessionItems(profName, expansion)
         local skillID = d.source.skillID
         local mkt, src = PriceSource.GetItemPrice(itemID)
 
-        local name, _, quality = GetItemInfo(itemID)
-        if not name then
-          if C_Item and C_Item.RequestLoadItemDataByID then C_Item.RequestLoadItemDataByID(itemID) end
-          local n, _, q = GetItemInfoInstant(itemID)
-          name = n or ("Item #"..itemID); quality = q or 1
+        local name = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(itemID)
+        local _, _, quality = GetItemInfoInstant(itemID)
+        quality = quality or 1
+        if not name or name == "" then
+          name = "Item #"..itemID
         end
 
         local knownCrafters = (skillID and crafters[skillID]) or {}

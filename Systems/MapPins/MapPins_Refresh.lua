@@ -18,6 +18,27 @@ local C_Map = C_Map
 local U = NS.Systems.MapPinsUtil
 local D = NS.Systems.MapPinsData
 local P = NS.Systems.MapPinsPools
+
+local function GetMapPinTooltipAnchor()
+  local profile = NS.Addon and NS.Addon.db and NS.Addon.db.profile
+  return (profile and profile.mapPins and profile.mapPins.pinTooltipAnchor) or "ANCHOR_RIGHT"
+end
+
+local function applyAnchor(owner, anchor)
+  if anchor == "ANCHOR_MIDDLE" then
+    GameTooltip:SetOwner(owner, "ANCHOR_NONE")
+    GameTooltip:ClearAllPoints()
+    GameTooltip:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+  else
+    GameTooltip:SetOwner(owner, anchor)
+  end
+end
+
+local function SetOwnerWithAnchor(owner)
+  applyAnchor(owner, GetMapPinTooltipAnchor())
+end
+
+local SetWorldOwnerWithAnchor = SetOwnerWithAnchor
 local TooltipSys = NS.UI and NS.UI.Tooltips
 
 function R.AddWorldPinsForMap(mapID)
@@ -44,7 +65,7 @@ function R.AddWorldPinsForMap(mapID)
       local zoneName = v.zone
       local vendorName = v.name
       local shiftKeyDown = IsShiftKeyDown and IsShiftKeyDown()
-      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      SetWorldOwnerWithAnchor(self)
       GameTooltip:SetText(vendorName or L["VENDOR"], 1, 1, 1)
       if zoneName then GameTooltip:AddLine(zoneName, 0.8, 0.8, 0.8) end
       local faction = U.GetFactionForVendor(v)
@@ -133,7 +154,7 @@ function R.AddMiniPinsForMap(mapID)
       local zoneName = v.zone
       local vendorName = v.name
       local shiftKeyDown = IsShiftKeyDown and IsShiftKeyDown()
-      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      SetOwnerWithAnchor(self)
       GameTooltip:SetText(vendorName or L["VENDOR"], 1, 1, 1)
       if zoneName then GameTooltip:AddLine(zoneName, 0.8, 0.8, 0.8) end
       local faction = U.GetFactionForVendor(v)
@@ -226,7 +247,7 @@ function R.ShowZoneBadges(continentMapID)
       frame:SetScript("OnEnter", function(self)
         if not self.badgeData then return end
         local badgeData = self.badgeData
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        SetWorldOwnerWithAnchor(self)
         GameTooltip:SetText((badgeData.vendorCount or 0) .. " Vendors", 1, 1, 1)
         GameTooltip:AddLine(" ")
         GameTooltip:AddLine(L["MAPPIN_LEFT_CLICK_ZONE_MAP"], 0.5, 0.5, 0.5)
@@ -305,7 +326,7 @@ function R.ShowContinentBadges()
     frame:SetScript("OnEnter", function(self)
       if not self.badgeData then return end
       local badgeData = self.badgeData
-      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      SetWorldOwnerWithAnchor(self)
       GameTooltip:SetText((badgeData.vendorCount or 0) .. " Vendors", 1, 1, 1)
       GameTooltip:AddLine(" ")
       GameTooltip:AddLine(L["MAPPIN_LEFT_CLICK_ZONE_MAP"], 0.5, 0.5, 0.5)
@@ -378,7 +399,7 @@ function R.ShowContinentBadges()
       frame:SetScript("OnEnter", function(self)
         if not self.badgeData then return end
         local badgeData = self.badgeData
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        SetWorldOwnerWithAnchor(self)
         GameTooltip:SetText((badgeData.vendorCount or 0) .. " Vendors", 1, 1, 1)
         GameTooltip:AddLine(" ")
         GameTooltip:AddLine(L["MAPPIN_LEFT_CLICK_ZONE_MAP"], 0.5, 0.5, 0.5)

@@ -366,6 +366,17 @@ function PS:Initialize()
         local delay = (event == "NEW_RECIPE_LEARNED") and 0.5 or 0.3
         C_Timer.After(delay, function()
             ScanOpenProfession(GetCharKey())
+
+            if NS.UI and NS.UI.DecorAH and NS.UI.DecorAH._refreshReagentCache then
+                local skillIDs = {}
+                if C_TradeSkillUI and C_TradeSkillUI.GetAllRecipeIDs then
+                    local ids = C_TradeSkillUI.GetAllRecipeIDs() or {}
+                    for _, id in ipairs(ids) do tinsert(skillIDs, id) end
+                end
+                if #skillIDs > 0 then
+                    NS.UI.DecorAH._refreshReagentCache(skillIDs)
+                end
+            end
             if NS.UI and NS.UI.DecorAH and NS.UI.DecorAH._invalidate then
                 NS.UI.DecorAH._invalidate()
             end

@@ -2,6 +2,28 @@ HomeDecor_Changelog = [[
 #HomeDecor
 
 Feb 21, 2026
+
+* Map pin tooltip position is now its own setting
+  separate from the rest of the addon - changing
+  it won't touch tooltips anywhere else. Works
+  the same across both the World Map and Minimap.
+  Added a Middle option that locks the tooltip
+  to the center of your screen instead of
+  following the cursor. Button order in the
+  World Map panel fixed to Left Right instead
+  of Right Left.
+  
+* DecorAH filter results are now cached and only
+  rebuild when something actually changes instead
+  of recalculating the full list on every scroll
+  or interaction. Recipe lookups are cached the
+  same way. Noticeable on larger profession lists.
+  
+* Item data for profession recipes now preloads
+  in small batches shortly after login so prices
+  and tooltips are ready before you open the
+  window instead of loading on demand.
+  
 * List Mode overhaul - faction icons now show
 inline next to item names, collection checkmark
 moved to top of icon and made smaller so it
@@ -15,19 +37,5 @@ swap alts.
 * Added Hide PvP Items filter with tooltip so
 you can browse Achievements and Vendors without
 PvP rewards cluttering the list.
-
-Feb 20, 2026
-
-* Big Update added Decor Pricing and
-Alts Professions buttons this will allow you
-to keep track of all pricing keep track of
-all professions and see which has what. 
-
-* Added Sales and Queue as well this will 
-allow you to keep track of all your sales 
-using the mail box and also be able to add
-whatever you want from the Decor Pricing to 
-the Queue as a shopping list so you can sell 
-your items. 
 
 ]]

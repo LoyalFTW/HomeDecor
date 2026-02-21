@@ -22,6 +22,7 @@ local function ensureProfile()
   if prof.mapPins.worldmap == nil then prof.mapPins.worldmap = true end
   if prof.mapPins.pinStyle == nil then prof.mapPins.pinStyle = "house" end
   if prof.mapPins.pinSize == nil then prof.mapPins.pinSize = 1.0 end
+  if prof.mapPins.pinTooltipAnchor == nil then prof.mapPins.pinTooltipAnchor = "ANCHOR_RIGHT" end
   if prof.mapPins.pinColor == nil or type(prof.mapPins.pinColor) ~= "table" then
     prof.mapPins.pinColor = { r = 1.0, g = 1.0, b = 1.0 }
   else
@@ -208,6 +209,39 @@ function Options:Ensure()
   cbWorldPins:SetPoint("TOPLEFT", 32, y)
   y = y - 34
 
+  local worldTooltipAnchorLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  worldTooltipAnchorLabel:SetPoint("TOPLEFT", 32, y)
+  worldTooltipAnchorLabel:SetText(L["OPT_WORLDMAP_TOOLTIP_ANCHOR"] or "Map Pin Tooltip (Minimap & World Map)")
+
+  local ANCHOR_OPTIONS_WORLD = {
+    { value = "ANCHOR_LEFT",   label = L["ANCHOR_LEFT"]   or "Left"   },
+	{ value = "ANCHOR_RIGHT",  label = L["ANCHOR_RIGHT"]  or "Right"  },
+    { value = "ANCHOR_MIDDLE", label = L["ANCHOR_MIDDLE"] or "Middle" },
+    { value = "ANCHOR_BOTTOM", label = L["ANCHOR_BOTTOM"] or "Bottom" },
+    { value = "ANCHOR_CURSOR", label = L["ANCHOR_CURSOR"] or "Cursor" },
+  }
+
+  local ddWorldTooltipAnchor = mkDropdown(panel, 120)
+  ddWorldTooltipAnchor:SetPoint("LEFT", worldTooltipAnchorLabel, "RIGHT", 0, -3)
+
+  _G.UIDropDownMenu_Initialize(ddWorldTooltipAnchor, function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    for _, entry in ipairs(ANCHOR_OPTIONS_WORLD) do
+      local info = _G.UIDropDownMenu_CreateInfo()
+      info.text    = entry.label
+      info.value   = entry.value
+      info.checked = (prof.mapPins.pinTooltipAnchor == entry.value)
+      info.func    = function()
+        prof.mapPins.pinTooltipAnchor = entry.value
+        _G.UIDropDownMenu_SetText(ddWorldTooltipAnchor, entry.label)
+      end
+      _G.UIDropDownMenu_AddButton(info)
+    end
+  end)
+
+  y = y - 40
+
   local filterHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   filterHeader:SetPoint("TOPLEFT", 16, y)
   filterHeader:SetText(L["FILTERS"])
@@ -324,6 +358,13 @@ function Options:Ensure()
     local size = prof.mapPins.pinSize or 1.0
     sizeSlider:SetValue(size)
     sizeSlider.valueText:SetText(string.format("%.1fx", size))
+
+    local curAnchor = prof.mapPins.pinTooltipAnchor or "ANCHOR_RIGHT"
+    local anchorLabel = curAnchor
+    for _, entry in ipairs(ANCHOR_OPTIONS_WORLD) do
+      if entry.value == curAnchor then anchorLabel = entry.label break end
+    end
+    _G.UIDropDownMenu_SetText(ddWorldTooltipAnchor, anchorLabel)
   end
 
   cbMinimapButton:SetScript("OnClick", function(self)

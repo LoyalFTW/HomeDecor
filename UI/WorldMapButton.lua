@@ -15,6 +15,7 @@ local function ensureProfile()
     if prof.mapPins.worldmap  == nil then prof.mapPins.worldmap  = true    end
     if prof.mapPins.pinStyle  == nil then prof.mapPins.pinStyle  = "house" end
     if prof.mapPins.pinSize   == nil then prof.mapPins.pinSize   = 1.0     end
+    if prof.mapPins.pinTooltipAnchor == nil then prof.mapPins.pinTooltipAnchor = "ANCHOR_RIGHT" end
     if prof.mapPins.pinColor  == nil or type(prof.mapPins.pinColor) ~= "table" then
         prof.mapPins.pinColor = { r = 1.0, g = 1.0, b = 1.0 }
     end
@@ -339,6 +340,90 @@ local function buildDropPanel()
         y = y + SLIDER_ROW_H + GAP
     end
 
+    y = y + 2
+    addSection(L["MAP_PANEL_TOOLTIP_ANCHOR"] or "TOOLTIP POSITION")
+
+    local ANCHOR_OPTIONS = {
+        { value = "ANCHOR_LEFT",   label = L["ANCHOR_LEFT"]   or "Left"   },
+        { value = "ANCHOR_RIGHT",  label = L["ANCHOR_RIGHT"]  or "Right"  },
+        { value = "ANCHOR_MIDDLE", label = L["ANCHOR_MIDDLE"] or "Middle" },
+        { value = "ANCHOR_BOTTOM", label = L["ANCHOR_BOTTOM"] or "Bottom" },
+        { value = "ANCHOR_CURSOR", label = L["ANCHOR_CURSOR"] or "Cursor" },
+    }
+
+    local anchorSegBtns = {}
+    local anchorSegControl
+
+    addRow(L["MAP_PANEL_TOOLTIP_ANCHOR"] or "Position", function(row, lbl)
+        local C      = NS.UI.Controls
+        local colors = GetColors()
+        local BTN_W  = 34
+        local BTN_H  = 18
+        local BTN_PAD = 2
+        local totalW = #ANCHOR_OPTIONS * BTN_W + (#ANCHOR_OPTIONS - 1) * BTN_PAD
+
+        local seg = CreateFrame("Frame", nil, row)
+        seg:SetSize(totalW, BTN_H)
+        seg:SetPoint("RIGHT", row, "RIGHT", -6, 0)
+
+        local function anchorRefresh()
+            local p   = ensureProfile()
+            local cur = p and p.mapPins.pinTooltipAnchor or "ANCHOR_RIGHT"
+            for i, btn in ipairs(anchorSegBtns) do
+                local isActive = (ANCHOR_OPTIONS[i].value == cur)
+                if btn.bg then
+                    btn.bg:SetVertexColor(
+                        isActive and 0.90 or 0.13,
+                        isActive and 0.72 or 0.13,
+                        isActive and 0.18 or 0.15,
+                        isActive and 0.30 or 1.0)
+                end
+                btn.txt:SetTextColor(
+                    isActive and 1.0  or (colors and colors.textMuted or {0.65,0.65,0.68})[1],
+                    isActive and 0.95 or (colors and colors.textMuted or {0.65,0.65,0.68})[2],
+                    isActive and 0.6  or (colors and colors.textMuted or {0.65,0.65,0.68})[3])
+            end
+        end
+
+        for i, entry in ipairs(ANCHOR_OPTIONS) do
+            local btn = CreateFrame("Button", nil, seg, "BackdropTemplate")
+            btn:SetSize(BTN_W, BTN_H)
+            if i == 1 then
+                btn:SetPoint("LEFT", seg, "LEFT", 0, 0)
+            else
+                btn:SetPoint("LEFT", anchorSegBtns[i-1], "RIGHT", BTN_PAD, 0)
+            end
+            if C then C:Backdrop(btn, colors and colors.panel, colors and colors.border) end
+
+            btn.bg = btn:CreateTexture(nil, "BACKGROUND", nil, 1)
+            btn.bg:SetAllPoints()
+            btn.bg:SetColorTexture(0.13, 0.13, 0.15, 1)
+
+            btn.txt = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            btn.txt:SetAllPoints()
+            btn.txt:SetJustifyH("CENTER")
+            btn.txt:SetText(entry.label)
+
+            btn:SetScript("OnClick", function()
+                local p = ensureProfile(); if not p then return end
+                p.mapPins.pinTooltipAnchor = entry.value
+                anchorRefresh()
+            end)
+            btn:SetScript("OnEnter", function(self)
+                GameTooltip:SetOwner(self, "ANCHOR_TOP")
+                GameTooltip:AddLine(entry.label, 1, 1, 1)
+                GameTooltip:Show()
+            end)
+            btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+            anchorSegBtns[i] = btn
+        end
+
+        anchorSegControl = seg
+        anchorSegControl.Refresh = anchorRefresh
+        anchorRefresh()
+    end)
+
     y = y + 4
     f:SetHeight(y)
 
@@ -360,6 +445,8 @@ local function buildDropPanel()
         local sz = p.mapPins.pinSize or 1.0
         slider:SetValue(sz)
         sizeVal:SetText(string.format("%.1fx", sz))
+
+        if anchorSegControl and anchorSegControl.Refresh then anchorSegControl:Refresh() end
     end
 
     dropPanel = f
