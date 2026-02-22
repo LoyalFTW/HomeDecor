@@ -44,6 +44,7 @@ local function applyTrackerFlag(key, value)
     if MP and MP.frame and MP.frame:IsShown() then
         pcall(function() MP:Refresh() end)
     end
+    refreshPins()
 end
 
 local dropPanel = nil
