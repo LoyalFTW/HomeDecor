@@ -3,6 +3,12 @@ HomeDecor_Changelog = [[
 
 Feb 21, 2026
 
+* Added Favorites / Saved List to the tracker, 
+ the tracker itself now has two buttons you can view
+ the tracker or see specifically your Saved List or 
+ Favorites or Wishlist whatever you wanna call it 
+ and collect a lot easier
+
 * Map pin tooltip position is now its own setting
   separate from the rest of the addon - changing
   it won't touch tooltips anywhere else. Works
