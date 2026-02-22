@@ -172,6 +172,34 @@ function MapPins:Enable()
     self.merchantFrame = merchantFrame
   end
 
+  if not self.indoorTicker then
+    local lastKnownIndoors = IsIndoors and IsIndoors()
+    self.indoorTicker = C_Timer.NewTicker(1, function()
+      if not MapPins.enabled then return end
+      local indoors = IsIndoors and IsIndoors()
+      if indoors ~= lastKnownIndoors then
+        lastKnownIndoors = indoors
+        MapPins:RefreshCurrentZone()
+      end
+    end)
+  end
+
+  if not self.eventTicker then
+    local Events = NS.Systems and NS.Systems.Events
+    local lastEventSig = Events and Events.RecalcStatus and select(2, Events:RecalcStatus(time()))
+    self.eventTicker = C_Timer.NewTicker(60, function()
+      if not MapPins.enabled then return end
+      local Ev = NS.Systems and NS.Systems.Events
+      if not Ev or not Ev.RecalcStatus then return end
+      local _, newSig = Ev:RecalcStatus(time())
+      if newSig ~= lastEventSig then
+        lastEventSig = newSig
+        MapPins:RefreshCurrentZone()
+        MapPins:RefreshWorldMap()
+      end
+    end)
+  end
+
   self:RefreshCurrentZone()
 end
 
@@ -190,6 +218,14 @@ function MapPins:Disable()
     self.merchantFrame:SetScript("OnEvent", nil)
     self.merchantFrame:UnregisterAllEvents()
     self.merchantFrame = nil
+  end
+  if self.indoorTicker then
+    self.indoorTicker:Cancel()
+    self.indoorTicker = nil
+  end
+  if self.eventTicker then
+    self.eventTicker:Cancel()
+    self.eventTicker = nil
   end
 end
 

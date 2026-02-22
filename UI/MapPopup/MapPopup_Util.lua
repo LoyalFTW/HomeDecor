@@ -70,39 +70,54 @@ function Util.GetVendorItems(vendorID)
   local items = {}
   if not vendorID then return items end
 
-  local Vendors = NS.Data and NS.Data.Vendors
-  if type(Vendors) ~= "table" then return items end
-
   local seenItemIDs = {}
 
-  for _, regions in pairs(Vendors) do
-    if type(regions) == "table" then
-      for _, vendorList in pairs(regions) do
-        if type(vendorList) == "table" then
-          for vendorIndex = 1, #vendorList do
-            local vendor = vendorList[vendorIndex]
-            if vendor and vendor.source and tonumber(vendor.source.id) == tonumber(vendorID) then
-              if vendor.items and type(vendor.items) == "table" then
-                for itemIndex = 1, #vendor.items do
-                  local item = vendor.items[itemIndex]
-                  if item and item.source and item.source.itemID then
-                    local itemID = tonumber(item.source.itemID)
-                    if itemID and not seenItemIDs[itemID] then
-                      seenItemIDs[itemID] = true
-                      local fullItem = {
-                        itemID = itemID,
-                        decorID = item.decorID,
-                        title = item.title,
-                        source = item.source or {},
-                        requirements = item.requirements,
-                        navVendor = vendor,
-                      }
-                      items[#items + 1] = fullItem
-                    end
-                  end
-                end
+  local function extractFromList(vendorList)
+    if type(vendorList) ~= "table" then return end
+    for vendorIndex = 1, #vendorList do
+      local vendor = vendorList[vendorIndex]
+      if vendor and vendor.source and tonumber(vendor.source.id) == tonumber(vendorID) then
+        if vendor.items and type(vendor.items) == "table" then
+          for itemIndex = 1, #vendor.items do
+            local item = vendor.items[itemIndex]
+            if item and item.source and item.source.itemID then
+              local itemID = tonumber(item.source.itemID)
+              if itemID and not seenItemIDs[itemID] then
+                seenItemIDs[itemID] = true
+                items[#items + 1] = {
+                  itemID = itemID,
+                  decorID = item.decorID,
+                  title = item.title,
+                  source = item.source or {},
+                  requirements = item.requirements,
+                  navVendor = vendor,
+                }
               end
             end
+          end
+        end
+      end
+    end
+  end
+
+  local Vendors = NS.Data and NS.Data.Vendors
+  if type(Vendors) == "table" then
+    for _, regions in pairs(Vendors) do
+      if type(regions) == "table" then
+        for _, vendorList in pairs(regions) do
+          extractFromList(vendorList)
+        end
+      end
+    end
+  end
+
+  local Events = NS.Data and NS.Data.Events
+  if type(Events) == "table" then
+    for _, eventGroup in pairs(Events) do
+      if type(eventGroup) == "table" then
+        for _, ev in pairs(eventGroup) do
+          if type(ev) == "table" then
+            extractFromList({ ev })
           end
         end
       end

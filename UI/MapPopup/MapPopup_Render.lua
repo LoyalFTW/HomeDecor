@@ -425,8 +425,8 @@ function Render:RefreshContent(popup, frame, vendors)
               end
 
               local ItemIA = IA or (NS.UI and NS.UI.ItemInteractions)
-              if ItemIA and ItemIA.BindPin then
-                ItemIA:BindPin(row, item, item.navVendor)
+              if ItemIA and ItemIA.Bind then
+                ItemIA:Bind(row, item, item.navVendor)
               end
 
               row:SetPoint("TOPLEFT", frame.content, "TOPLEFT", 4, yOffset)

@@ -21,12 +21,12 @@ local U = NS.Systems.MapPinsUtil
 local D = NS.Systems.MapPinsData
 local P = NS.Systems.MapPinsPools
 
+
 local function IsHideCompletedVendors()
   local profile = NS.Addon and NS.Addon.db and NS.Addon.db.profile
   if profile and profile.tracker and profile.tracker.hideCompletedVendors then
     return true
   end
-  -- Also check the tracker frame flag (set by WorldMapButton toggle)
   local trackerFrame = NS.UI and NS.UI.Tracker and NS.UI.Tracker.frame
   if trackerFrame and trackerFrame._hideCompletedVendors then
     return true
@@ -46,7 +46,6 @@ local function IsVendorFullyCompleted(vendorID)
   end
   return true
 end
-
 local hbdMapSupport = {}
 local function IsHBDSupported(mapID)
   if hbdMapSupport[mapID] ~= nil then return hbdMapSupport[mapID] end

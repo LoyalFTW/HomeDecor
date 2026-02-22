@@ -1,6 +1,16 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
+Feb 22, 2026
+* Hide Completed Vendors on the World Map button
+  now also hides the zone and continent badges
+  when all vendors in that area are completed.
+  Toggling the setting updates the map instantly
+  without needing to close and reopen it.
+  
+* * Update to how the minimap reacts to the game hopefully fixes some bugs
+  * Updated how events act with the minimap as well. 
+
 Feb 21, 2026
 
 * Added Favorites / Saved List to the tracker, 
@@ -30,18 +40,18 @@ Feb 21, 2026
   and tooltips are ready before you open the
   window instead of loading on demand.
   
-* List Mode overhaul - faction icons now show
-inline next to item names, collection checkmark
-moved to top of icon and made smaller so it
-stays out of the way.
+ * List Mode overhaul - faction icons now show
+ inline next to item names, collection checkmark
+ moved to top of icon and made smaller so it
+ stays out of the way.
 
-* Fixed the Whats New popup and Professions Tip
-popup so they only ever show once across all
-your characters, not every time you log in or
-swap alts.
+ * Fixed the Whats New popup and Professions Tip
+ popup so they only ever show once across all
+ your characters, not every time you log in or
+ swap alts.
 
-* Added Hide PvP Items filter with tooltip so
-you can browse Achievements and Vendors without
-PvP rewards cluttering the list.
+ * Added Hide PvP Items filter with tooltip so
+ you can browse Achievements and Vendors without
+ PvP rewards cluttering the list.
 
 ]]

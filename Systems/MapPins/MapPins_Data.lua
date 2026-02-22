@@ -36,13 +36,52 @@ function D.BuildIndex()
 
   local seenVendorsByMap = {}
 
+  local function indexVendorList(vendorList, isEvent, eventRef)
+    if type(vendorList) ~= "table" then return end
+    for vendorIndex = 1, #vendorList do
+      local vendor = vendorList[vendorIndex]
+      local source = vendor and vendor.source
+      local id = source and source.id
+      local zone = source and source.zone
+      local faction = source and source.faction
+      local mapID, x, y = parseWorldmap(source and source.worldmap)
+      if mapID and id then
+        local seenInMap = seenVendorsByMap[mapID]
+        if not seenInMap then
+          seenInMap = {}
+          seenVendorsByMap[mapID] = seenInMap
+        end
+        local vendorID = tonumber(id)
+        if not seenInMap[vendorID] then
+          seenInMap[vendorID] = true
+          local mapVendors = D.mapIndex[mapID]
+          if not mapVendors then mapVendors = {}; D.mapIndex[mapID] = mapVendors end
+          mapVendors[#mapVendors + 1] = {
+            id = vendorID, mapID = mapID, x = x, y = y,
+            zone = zone, faction = faction,
+            isEvent = isEvent or nil,
+            eventRef = eventRef or nil,
+          }
+        end
+      end
+    end
+  end
+
   for regionKey, regions in pairs(Vendors) do
     if type(regions) == "table" then
       for listKey, vendorList in pairs(regions) do
-        if type(vendorList) == "table" then
-          for vendorIndex = 1, #vendorList do
-            local vendor = vendorList[vendorIndex]
-            local source = vendor and vendor.source
+        indexVendorList(vendorList, false, nil)
+      end
+    end
+  end
+
+  local Events = NS.Data and NS.Data.Events
+  if type(Events) == "table" then
+    for groupKey, eventGroup in pairs(Events) do
+      if type(eventGroup) == "table" then
+        for _, ev in pairs(eventGroup) do
+          if type(ev) == "table" then
+            local source = ev.source
             local id = source and source.id
             local zone = source and source.zone
             local faction = source and source.faction
@@ -58,7 +97,12 @@ function D.BuildIndex()
                 seenInMap[vendorID] = true
                 local mapVendors = D.mapIndex[mapID]
                 if not mapVendors then mapVendors = {}; D.mapIndex[mapID] = mapVendors end
-                mapVendors[#mapVendors + 1] = { id = vendorID, mapID = mapID, x = x, y = y, zone = zone, faction = faction }
+                mapVendors[#mapVendors + 1] = {
+                  id = vendorID, mapID = mapID, x = x, y = y,
+                  zone = zone, faction = faction,
+                  isEvent = true,
+                  eventRef = ev,
+                }
               end
             end
           end
