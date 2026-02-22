@@ -20,17 +20,6 @@ NS.Data.Events["Events"]["New Events"] = {
       {decorID=1236,  source={type="vendor",  itemID=245330, currency="2000", currencytype="Honor"}},
       {decorID=1227,       source={type="vendor",  itemID=251997, currency="2000", currencytype="Honor"}}}
   },
- {
-   title="Twitch Event!",
-   endsOn="Feb-17",
-   source={
-     type="external",
-     platform="twitch",
-     label="Claim via Twitch event",
-     url="https://twitch.tv/"},
-   items={
-     {decorID=15151,  source={type="external", itemID=263301}}}
-  },
    {
    title="It's Nearly Midnight",
    endsOn="Mar-02",
