@@ -4,18 +4,18 @@ NS.Systems  = NS.Systems  or {}
 NS.UI       = NS.UI       or {}
 
 do
-  local _cachedKey
+  local cachedCharKey
   function NS.Systems.GetCharacterKey()
-    if _cachedKey then return _cachedKey end
+    if cachedCharKey then return cachedCharKey end
     local name  = UnitName and UnitName("player") or "Unknown"
     local realm = GetRealmName and GetRealmName() or "Unknown"
     realm = realm:gsub("%s+", "")
-    _cachedKey = name .. "-" .. realm
-    return _cachedKey
+    cachedCharKey = name .. "-" .. realm
+    return cachedCharKey
   end
-  local _f = CreateFrame("Frame")
-  _f:RegisterEvent("PLAYER_LOGOUT")
-  _f:SetScript("OnEvent", function() _cachedKey = nil end)
+  local logoutFrame = CreateFrame("Frame")
+  logoutFrame:RegisterEvent("PLAYER_LOGOUT")
+  logoutFrame:SetScript("OnEvent", function() cachedCharKey = nil end)
 end
 
 NS.Data.Vendors       = NS.Data.Vendors       or {}
@@ -177,6 +177,10 @@ local defaults = {
         g = 1.0,
         b = 1.0,
       },
+      panelPoint    = nil,
+      panelRelPoint = nil,
+      panelX        = nil,
+      panelY        = nil,
     },
 
     changelog = {
@@ -321,6 +325,10 @@ function Addon:OnInitialize()
   self.db = AceDB:New("HomeDecorDB", defaults)
   NS.db = self.db
 
+  if NS.Systems.Endeavors then
+    NS.Systems.Endeavors:Initialize()
+  end
+
   if self.db.profile and self.db.profile.favorites then
     local favs = self.db.profile.favorites
     local removed = 0
@@ -329,8 +337,6 @@ function Addon:OnInitialize()
         favs[id] = nil
         removed = removed + 1
       end
-    end
-    if removed > 0 then
     end
   end
 
@@ -374,8 +380,8 @@ function Addon:OnEnable()
     pcall(function() NS.DecorAH:Initialize() end)
   end
 
-  if not NS._prefetchDone then
-    NS._prefetchDone = true
+  if not NS.prefetchDone then
+    NS.prefetchDone = true
     C_Timer.After(2, function()
       if NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
          and NS.UI.Viewer.Data.PrefetchQuestAndAchievementNames then

@@ -64,6 +64,26 @@ local SEC_H     = 18
 local PAD       = 6
 local GAP       = 4
 
+local function SavePanelPosition(f)
+    local p = NS.db and NS.db.profile and NS.db.profile.mapPins
+    if not p or not f then return end
+    local point, _, relPoint, x, y = f:GetPoint()
+    p.panelPoint    = point
+    p.panelRelPoint = relPoint
+    p.panelX        = x
+    p.panelY        = y
+end
+
+local function RestorePanelPosition(f, anchorBtn)
+    local p = NS.db and NS.db.profile and NS.db.profile.mapPins
+    f:ClearAllPoints()
+    if p and p.panelPoint and p.panelX and p.panelY then
+        f:SetPoint(p.panelPoint, UIParent, p.panelRelPoint or p.panelPoint, p.panelX, p.panelY)
+    else
+        f:SetPoint("TOPLEFT", anchorBtn, "BOTTOMLEFT", 0, -4)
+    end
+end
+
 local function buildDropPanel()
     if dropPanel then return dropPanel end
 
@@ -75,6 +95,8 @@ local function buildDropPanel()
     f:SetFrameStrata("FULLSCREEN_DIALOG")
     f:SetFrameLevel(200)
     f:EnableMouse(true)
+    f:SetMovable(true)
+    f:SetClampedToScreen(true)
     if C then C:Backdrop(f, colors and colors.bg, colors and colors.border) end
 
     WorldMapFrame:HookScript("OnHide", hideDropPanel)
@@ -87,11 +109,18 @@ local function buildDropPanel()
     titleBar:SetPoint("TOPLEFT",  f, "TOPLEFT",  1, -1)
     titleBar:SetPoint("TOPRIGHT", f, "TOPRIGHT", -1, -1)
     titleBar:SetHeight(TITLE_H)
+    titleBar:EnableMouse(true)
+    titleBar:RegisterForDrag("LeftButton")
+    titleBar:SetScript("OnDragStart", function() f:StartMoving() end)
+    titleBar:SetScript("OnDragStop",  function()
+        f:StopMovingOrSizing()
+        SavePanelPosition(f)
+    end)
     if C then C:Backdrop(titleBar, colors and colors.header, colors and colors.border) end
 
-    local titleTxt = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    titleTxt:SetPoint("LEFT", titleBar, "LEFT", 8, 0)
-    titleTxt:SetText("Home|cffff7d0aDecor|r")
+    local dragHint = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    dragHint:SetPoint("LEFT", titleBar, "LEFT", 8, 0)
+    dragHint:SetText("Home|cffff7d0aDecor|r  |cff666666|r")
 
     local closeBtn = CreateFrame("Button", nil, titleBar)
     closeBtn:SetSize(20, 20)
@@ -355,7 +384,7 @@ local function buildDropPanel()
     local anchorSegBtns = {}
     local anchorSegControl
 
-    addRow(L["MAP_PANEL_TOOLTIP_ANCHOR"] or "Position", function(row, lbl)
+    addRow(L["MAP_PANEL_TOOLTIP_ANCHOR"] or "", function(row, lbl)
         local C      = NS.UI.Controls
         local colors = GetColors()
         local BTN_W  = 34
@@ -474,6 +503,7 @@ function HomeDecorWorldMapButtonMixin:OnEnter()
     GameTooltip:SetOwner(self, "ANCHOR_LEFT")
     GameTooltip:AddLine("Home|cffff7d0aDecor|r")
     GameTooltip:AddLine(L["MAP_TRACKER_SETTINGS"], 1, 1, 1)
+    GameTooltip:AddLine("Drag the panel title bar to reposition", 0.6, 0.6, 0.6, true)
     GameTooltip:Show()
 end
 
@@ -483,8 +513,7 @@ function HomeDecorWorldMapButtonMixin:OnClick()
         panel:Hide()
         return
     end
-    panel:ClearAllPoints()
-    panel:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -4)
+    RestorePanelPosition(panel, self)
     panel:Sync()
     panel:Show()
     panel:Raise()
