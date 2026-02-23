@@ -65,18 +65,18 @@ local function GetOrCreateChar(charKey)
     return db[charKey]
 end
 
-local _allCharsWithSkillsCache = nil
+local allCharsWithSkillsCache = nil
 
-local _altRecipeFlatCache = nil
+local altRecipeFlatCache = nil
 
 local function InvalidateCaches()
-    _allCharsWithSkillsCache = nil
-    _altRecipeFlatCache      = nil
+    allCharsWithSkillsCache = nil
+    altRecipeFlatCache      = nil
 end
 
 local function BuildAltRecipeFlatCache()
-    if _altRecipeFlatCache then return end
-    _altRecipeFlatCache = {}
+    if altRecipeFlatCache then return end
+    altRecipeFlatCache = {}
     InitDB()
     local chars = HomeDecorDB.global.professionScanner.characters
     for charKey, v in pairs(chars) do
@@ -84,11 +84,11 @@ local function BuildAltRecipeFlatCache()
             for _, profData in pairs(v.professions) do
                 if profData.recipes then
                     for recipeID in pairs(profData.recipes) do
-                        if not _altRecipeFlatCache[recipeID] then
-                            _altRecipeFlatCache[recipeID] = {}
+                        if not altRecipeFlatCache[recipeID] then
+                            altRecipeFlatCache[recipeID] = {}
                         end
-                        local t = _altRecipeFlatCache[recipeID]
-                        t[#t+1] = charKey
+                        local charList = altRecipeFlatCache[recipeID]
+                        charList[#charList+1] = charKey
                     end
                 end
             end
@@ -96,9 +96,9 @@ local function BuildAltRecipeFlatCache()
     end
 end
 
-local _housingRecipeIndex = nil
+local housingRecipeIndex = nil
 local function GetHousingRecipeIndex()
-    if _housingRecipeIndex then return _housingRecipeIndex end
+    if housingRecipeIndex then return housingRecipeIndex end
     local index = {}
     local data = NS.Data and NS.Data.Professions
     if not data then return index end
@@ -124,7 +124,7 @@ local function GetHousingRecipeIndex()
             end
         end
     end
-    _housingRecipeIndex = index
+    housingRecipeIndex = index
     return index
 end
 
@@ -176,8 +176,6 @@ local function ScanOpenProfession(charKey)
                 end
             end
         end
-        if learned > 0 then
-        end
     end
 
     charData.lastScan = time()
@@ -212,7 +210,7 @@ function PS:GetCharacterData(charKey)
 end
 
 function PS:GetAllCharactersWithSkills()
-    if _allCharsWithSkillsCache then return _allCharsWithSkillsCache end
+    if allCharsWithSkillsCache then return allCharsWithSkillsCache end
     InitDB()
     local chars = HomeDecorDB.global.professionScanner.characters
     local view = {}
@@ -241,14 +239,14 @@ function PS:GetAllCharactersWithSkills()
         end
         view[k] = entry
     end
-    _allCharsWithSkillsCache = view
+    allCharsWithSkillsCache = view
     return view
 end
 
 function PS:GetCharactersWithRecipe(recipeID)
     if not recipeID then return {} end
     BuildAltRecipeFlatCache()
-    local entries = _altRecipeFlatCache[recipeID]
+    local entries = altRecipeFlatCache[recipeID]
     if not entries then return {} end
     local result = {}
     for i = 1, #entries do result[i] = entries[i] end
@@ -259,7 +257,7 @@ end
 function PS:IsRecipeKnownByAnyAlt(recipeID, excludeCurrent)
     if not recipeID then return false, nil end
     BuildAltRecipeFlatCache()
-    local entries = _altRecipeFlatCache[recipeID]
+    local entries = altRecipeFlatCache[recipeID]
     if not entries then return false, nil end
     local currentKey = (excludeCurrent ~= false) and GetCharKey() or nil
     for i = 1, #entries do
@@ -330,8 +328,6 @@ function PS:Initialize()
                 migrated = migrated + 1
             end
         end
-        if migrated > 0 then
-        end
     end
 
     if HomeDecorDB.global.recipeData and HomeDecorDB.global.recipeData.characters then
@@ -380,8 +376,8 @@ function PS:Initialize()
             if NS.UI and NS.UI.DecorAH and NS.UI.DecorAH._invalidate then
                 NS.UI.DecorAH._invalidate()
             end
-            if NS._AltsProfessionsInvalidate then
-                NS._AltsProfessionsInvalidate()
+            if NS.AltsProfessionsInvalidate then
+                NS.AltsProfessionsInvalidate()
             end
             if NS.UI and NS.UI.AltsProfessions and NS.UI.AltsProfessions.OnScanComplete then
                 NS.UI.AltsProfessions:OnScanComplete()
@@ -419,8 +415,8 @@ function PS:WireAliases()
     NS.Systems.ProfessionTracker = compat
 end
 
-if not NS._professionScannerInitialized then
-  NS._professionScannerInitialized = true
+if not NS.professionScannerInitialized then
+  NS.professionScannerInitialized = true
   C_Timer.After(1.5, function()
     PS:Initialize()
     PS:WireAliases()

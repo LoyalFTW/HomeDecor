@@ -120,7 +120,7 @@ local function buildDropPanel()
 
     local dragHint = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     dragHint:SetPoint("LEFT", titleBar, "LEFT", 8, 0)
-    dragHint:SetText("Home|cffff7d0aDecor|r  |cff666666|r")
+    dragHint:SetText("Home|cffff7d0aDecor|r  |cff666666✥|r")
 
     local closeBtn = CreateFrame("Button", nil, titleBar)
     closeBtn:SetSize(20, 20)
@@ -371,7 +371,7 @@ local function buildDropPanel()
     end
 
     y = y + 2
-    addSection(L["MAP_PANEL_TOOLTIP_ANCHOR"] or "TOOLTIP POSITION")
+    addSection(L["MAP_PANEL_TOOLTIP_ANCHOR_SECTION"] or "TOOLTIP POSITION")
 
     local ANCHOR_OPTIONS = {
         { value = "ANCHOR_LEFT",   label = L["ANCHOR_LEFT"]   or "Left"   },
@@ -384,7 +384,7 @@ local function buildDropPanel()
     local anchorSegBtns = {}
     local anchorSegControl
 
-    addRow(L["MAP_PANEL_TOOLTIP_ANCHOR"] or "", function(row, lbl)
+    addRow(L["MAP_PANEL_TOOLTIP_ANCHOR"] or "Anchor", function(row, lbl)
         local C      = NS.UI.Controls
         local colors = GetColors()
         local BTN_W  = 34

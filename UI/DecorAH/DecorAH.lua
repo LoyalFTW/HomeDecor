@@ -161,8 +161,8 @@ local function NewFS(parent, template)
 end
 
 local pendingItemNames = {}
-local _invalidateDataRows
-local _refreshTable
+local invalidateDataRowsFn
+local refreshTableFn
 
 local function ItemName(itemID)
   if not itemID then return "?" end
@@ -183,8 +183,8 @@ itemLoadFrame:SetScript("OnEvent", function(_, _, itemID, success)
   if success and pendingItemNames[itemID] then
     pendingItemNames[itemID] = nil
     if frame and frame:IsShown() then
-      if _invalidateDataRows then _invalidateDataRows() end
-      if _refreshTable then _refreshTable() end
+      if invalidateDataRowsFn then invalidateDataRowsFn() end
+      if refreshTableFn then refreshTableFn() end
     end
   end
 end)
@@ -342,7 +342,7 @@ local function InvalidateDataRows()
   cachedFilteredDirty = true
   cachedFiltered = nil
 end
-_invalidateDataRows = InvalidateDataRows
+invalidateDataRowsFn = InvalidateDataRows
 
 local InvalidateFilteredCache
 
@@ -529,6 +529,8 @@ local function AcquireRow()
           local data = self.itemData
           Queue.AddToQueue(data.itemID, data.name, 1, data.profit, data.reagents)
           if DecorAH._updateQueueCount then DecorAH._updateQueueCount() end
+          local QP = NS.UI and NS.UI.DecorAH_Queue
+          if QP and QP.frame and QP.frame:IsShown() then QP:Refresh() end
         end
         return
       end
@@ -542,7 +544,7 @@ local function AcquireRow()
             if Favorites and self.itemID then
               Favorites.ToggleFavorite(self.itemID)
               InvalidateFilteredCache()
-              if DecorAH._refreshTable then DecorAH._refreshTable() end
+              if DecorAH.refreshTableFn then DecorAH.refreshTableFn() end
             end
             return
           end
@@ -815,10 +817,10 @@ local function RefreshTable()
   RenderVisibleRows()
 end
 
-DecorAH._refreshTable  = RefreshTable
+DecorAH.refreshTableFn  = RefreshTable
 DecorAH._invalidate    = InvalidateDataRows
 DecorAH._invalidFilter = InvalidateFilteredCache
-_refreshTable = RefreshTable
+refreshTableFn = RefreshTable
 
 local function RefreshSourceHighlights()
   for src, btn in pairs(sourceButtons) do
@@ -1044,8 +1046,8 @@ function DH:Create(parentFrame, embedded)
 
   local topBar = CreateFrame("Frame", nil, canvas, "BackdropTemplate")
   if embedded then
-    topBar:SetPoint("TOPLEFT", canvas, "TOPLEFT", 8, -52)
-    topBar:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -8, -52)
+    topBar:SetPoint("TOPLEFT", canvas, "TOPLEFT", 8, -16)
+    topBar:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -8, -16)
   else
     topBar:SetPoint("TOPLEFT", 0, -44)
     topBar:SetPoint("TOPRIGHT", 0, -44)
@@ -1274,8 +1276,8 @@ function DH:Create(parentFrame, embedded)
   RefreshSourceHighlights()
   local filterRow = CreateFrame("Frame", nil, canvas, "BackdropTemplate")
   if embedded then
-    filterRow:SetPoint("TOPLEFT", canvas, "TOPLEFT", 14, -98)
-    filterRow:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -14, -98)
+    filterRow:SetPoint("TOPLEFT", canvas, "TOPLEFT", 14, -62)
+    filterRow:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -14, -62)
   else
     filterRow:SetPoint("TOPLEFT", 14, -90)
     filterRow:SetPoint("TOPRIGHT", -14, -90)
@@ -1375,8 +1377,8 @@ function DH:Create(parentFrame, embedded)
 
   local filterRow2 = CreateFrame("Frame", nil, canvas, "BackdropTemplate")
   if embedded then
-    filterRow2:SetPoint("TOPLEFT", canvas, "TOPLEFT", 14, -134)
-    filterRow2:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -14, -134)
+    filterRow2:SetPoint("TOPLEFT", canvas, "TOPLEFT", 14, -98)
+    filterRow2:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -14, -98)
   else
     filterRow2:SetPoint("TOPLEFT", 14, -126)
     filterRow2:SetPoint("TOPRIGHT", -14, -126)
@@ -1433,7 +1435,7 @@ function DH:Create(parentFrame, embedded)
   recipeCountLabel:SetText("0 / 0 recipes")
   recipeCountLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
 
-  local headerY = embedded and (-134 - 28 - 4) or (-126 - 28 - 4)
+  local headerY = embedded and (-98 - 28 - 4) or (-126 - 28 - 4)
   CreateHeaderRow(canvas, headerY)
   for _, b in ipairs(headerButtons) do
     if b.UpdateSortIndicator then b:UpdateSortIndicator() end
@@ -1454,12 +1456,12 @@ function DH:Create(parentFrame, embedded)
   scrollFrame:SetScrollChild(scrollChild)
   if C and C.SkinScrollFrame then C:SkinScrollFrame(scrollFrame) end
 
-  local _scrollDebounce = nil
+  local scrollDebounce = nil
   scrollFrame:SetScript("OnVerticalScroll", function(self, offset)
     self:SetVerticalScroll(offset)
-    if _scrollDebounce then _scrollDebounce:Cancel() end
-    _scrollDebounce = C_Timer.NewTimer(0.04, function()
-      _scrollDebounce = nil
+    if scrollDebounce then scrollDebounce:Cancel() end
+    scrollDebounce = C_Timer.NewTimer(0.04, function()
+      scrollDebounce = nil
       RenderVisibleRows()
     end)
   end)
@@ -2220,9 +2222,9 @@ function DH:Refresh()
   end
 end
 
-local _dahCollectionHooked = false
+local dahCollectionHooked = false
 local function HookDecorAHCollection()
-  if _dahCollectionHooked then return end
+  if dahCollectionHooked then return end
   local Collection = NS.Systems and NS.Systems.Collection
   if not Collection or not Collection.RegisterListener then return end
   Collection:RegisterListener(function()
@@ -2232,7 +2234,7 @@ local function HookDecorAHCollection()
       RefreshTable()
     end
   end)
-  _dahCollectionHooked = true
+  dahCollectionHooked = true
 end
 
 C_Timer.After(0.1, function()
@@ -2242,6 +2244,9 @@ C_Timer.After(0.1, function()
   Export = NS.DecorAH.Export
   Sales = NS.DecorAH.Sales
   HookDecorAHCollection()
+  if Sales and Sales.Initialize then
+    Sales.Initialize()
+  end
 end)
 
 return DH

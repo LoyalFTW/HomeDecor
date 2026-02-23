@@ -63,6 +63,7 @@ function QueuePanel:Create(parent, width, height)
   height = height or 570
 
   queueFrame = CreateFrame("Frame", "HomeDecorQueueFrame", parent, "BackdropTemplate")
+  QueuePanel.frame = queueFrame
   queueFrame:SetSize(width, height)
   queueFrame:SetPoint("CENTER")
   queueFrame:SetFrameStrata("DIALOG")
@@ -250,13 +251,14 @@ end
 function QueuePanel:Refresh()
   EnsureModules()
   if not queueFrame or not Queue then return end
+  local updateCount = NS.UI and NS.UI.DecorAH and NS.UI.DecorAH._updateQueueCount
 
   local queue      = Queue.GetQueue()
   local scrollChild = queueFrame.scrollChild
   local scrollFrame = queueFrame.scrollFrame
 
   if queueFrame.queueCount then
-    queueFrame.queueCount:SetText(tostring(#queue))
+    queueFrame.queueCount:SetText(tostring(Queue.GetQueueSize and Queue.GetQueueSize() or #queue))
   end
 
   for _, row in ipairs(queueRows) do
@@ -401,6 +403,7 @@ function QueuePanel:Refresh()
 
   scrollChild:SetHeight(math.max(1, math.abs(y)))
   QueuePanel:UpdateMaterialsSummary()
+  if updateCount then updateCount() end
 end
 
 function QueuePanel:UpdateMaterialsSummary()
@@ -560,17 +563,17 @@ function QueuePanel:Toggle()
   if queueFrame:IsShown() then
     queueFrame:Hide()
   else
-    self:Refresh()
     queueFrame:Show()
     queueFrame:Raise()
+    self:Refresh()
   end
 end
 
 function QueuePanel:Show()
   if not queueFrame then self:Create(UIParent) end
-  self:Refresh()
   queueFrame:Show()
   queueFrame:Raise()
+  self:Refresh()
 end
 
 function QueuePanel:Hide()

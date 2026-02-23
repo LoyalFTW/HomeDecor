@@ -36,8 +36,8 @@ function Collection:ClearCache(decorID)
     end
 end
 
-local _entryType
-local _entryTypeTried = {}
+local cachedEntryType
+local entryTypesTried = {}
 
 local function TryRecord(entryType, decorID)
     if not C_HousingCatalog or not C_HousingCatalog.GetCatalogEntryInfoByRecordID then return nil end
@@ -49,15 +49,15 @@ local function TryRecord(entryType, decorID)
 end
 
 local function DiscoverEntryType(sampleDecorID)
-    if _entryType then return _entryType end
+    if cachedEntryType then return cachedEntryType end
     if not sampleDecorID then return nil end
 
     if Enum and Enum.HousingCatalogEntryType then
         for _, v in pairs(Enum.HousingCatalogEntryType) do
-            if type(v) == "number" and not _entryTypeTried[v] then
-                _entryTypeTried[v] = true
+            if type(v) == "number" and not entryTypesTried[v] then
+                entryTypesTried[v] = true
                 if TryRecord(v, sampleDecorID) then
-                    _entryType = v
+                    cachedEntryType = v
                     return v
                 end
             end
@@ -65,10 +65,10 @@ local function DiscoverEntryType(sampleDecorID)
     end
 
     for v = 0, 30 do
-        if not _entryTypeTried[v] then
-            _entryTypeTried[v] = true
+        if not entryTypesTried[v] then
+            entryTypesTried[v] = true
             if TryRecord(v, sampleDecorID) then
-                _entryType = v
+                cachedEntryType = v
                 return v
             end
         end
@@ -123,15 +123,15 @@ function Collection:IsCollected(it)
     end
 
     local src = it.source or {}
-    local st = src.type
+    local sourceType = src.type
 
-    if st == "achievement" and src.id then
+    if sourceType == "achievement" and src.id then
 
         local ok = select(4, GetAchievementInfo(src.id))
         return ok and true or false
     end
 
-    if st == "quest" and src.id then
+    if sourceType == "quest" and src.id then
         return C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted and C_QuestLog.IsQuestFlaggedCompleted(src.id) or false
     end
 
@@ -142,11 +142,11 @@ function Collection:GetState(it)
     return self:IsCollected(it) and Collection.State.COLLECTED or Collection.State.NOT_COLLECTED
 end
 
-local f = CreateFrame("Frame")
-f:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")
-f:RegisterEvent("PLAYER_ENTERING_WORLD")
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")
+eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-f:SetScript("OnEvent", function(_, event, decorID)
+eventFrame:SetScript("OnEvent", function(_, event, decorID)
     if event == "HOUSE_DECOR_ADDED_TO_CHEST" then
         if decorID then
             decorCache[decorID] = nil

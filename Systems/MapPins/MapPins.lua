@@ -5,10 +5,10 @@ local MapPins = NS.Systems.MapPins or {}
 NS.Systems.MapPins = MapPins
 
 local CreateFrame = CreateFrame
-local U = NS.Systems.MapPinsUtil
-local D = NS.Systems.MapPinsData
-local P = NS.Systems.MapPinsPools
-local R = NS.Systems.MapPinsRefresh
+local MapPinsUtil = NS.Systems.MapPinsUtil
+local MapPinsData = NS.Systems.MapPinsData
+local MapPinsPools = NS.Systems.MapPinsPools
+local MapPinsRefresh = NS.Systems.MapPinsRefresh
 local LibStub = LibStub
 local HBD = LibStub and LibStub("HereBeDragons-2.0", true)
 local HBDPins = LibStub and LibStub("HereBeDragons-Pins-2.0", true)
@@ -17,15 +17,15 @@ local C_Map = C_Map
 local activeWaypointRef = {}
 
 function MapPins:ClearUserWaypoint()
-  U.ClearUserWaypoint(activeWaypointRef)
+  MapPinsUtil.ClearUserWaypoint(activeWaypointRef)
 end
 
 function MapPins:SetUserWaypoint(mapID, x, y, npcID)
-  U.SetUserWaypoint(mapID, x, y, npcID, activeWaypointRef)
+  MapPinsUtil.SetUserWaypoint(mapID, x, y, npcID, activeWaypointRef)
 end
 
 function MapPins:IsActiveWaypoint(mapID, x, y, npcID)
-  return U.IsActiveWaypoint(activeWaypointRef[1], mapID, x, y, npcID)
+  return MapPinsUtil.IsActiveWaypoint(activeWaypointRef[1], mapID, x, y, npcID)
 end
 
 function MapPins.RefreshTooltip()
@@ -59,10 +59,10 @@ function MapPins:RefreshCurrentZone()
   currentMapID = tonumber(currentMapID)
   if not currentMapID then return end
 
-  if U.IsEnabled(profile, "minimap", true) then
-    R.AddMiniPinsForMap(currentMapID)
+  if MapPinsUtil.IsEnabled(profile, "minimap", true) then
+    MapPinsRefresh.AddMiniPinsForMap(currentMapID)
   else
-    P.ClearMiniPins()
+    MapPinsPools.ClearMiniPins()
   end
 end
 
@@ -71,9 +71,9 @@ function MapPins:RefreshWorldMap()
   local profile = NS.db and NS.db.profile
   if not profile then return end
 
-  if not U.IsEnabled(profile, "worldmap", true) then
-    P.ClearWorldPins()
-    P.ClearBadges()
+  if not MapPinsUtil.IsEnabled(profile, "worldmap", true) then
+    MapPinsPools.ClearWorldPins()
+    MapPinsPools.ClearBadges()
     return
   end
 
@@ -84,7 +84,7 @@ function MapPins:RefreshWorldMap()
 
   local mapInfo = C_Map and C_Map.GetMapInfo and C_Map.GetMapInfo(mapID)
   if not mapInfo then
-    R.AddWorldPinsForMap(mapID)
+    MapPinsRefresh.AddWorldPinsForMap(mapID)
     return
   end
 
@@ -92,14 +92,14 @@ function MapPins:RefreshWorldMap()
   local cosmicType = Enum.UIMapType.Cosmic
   local continentType = Enum.UIMapType.Continent
   if mapInfo.mapType == worldType or mapInfo.mapType == cosmicType then
-    P.ClearWorldPins()
-    R.ShowContinentBadges()
+    MapPinsPools.ClearWorldPins()
+    MapPinsRefresh.ShowContinentBadges()
   elseif mapInfo.mapType == continentType then
-    P.ClearWorldPins()
-    R.ShowZoneBadges(mapID)
+    MapPinsPools.ClearWorldPins()
+    MapPinsRefresh.ShowZoneBadges(mapID)
   else
-    P.ClearBadges()
-    R.AddWorldPinsForMap(mapID)
+    MapPinsPools.ClearBadges()
+    MapPinsRefresh.AddWorldPinsForMap(mapID)
   end
 end
 
@@ -107,7 +107,7 @@ function MapPins:Enable()
   if self.enabled then return end
   if not HBDPins or not HBD then return end
 
-  D.BuildIndex()
+  MapPinsData.BuildIndex()
   self.enabled = true
 
   local worldMap = WorldMapFrame
@@ -149,7 +149,7 @@ function MapPins:Enable()
             local deltaY = waypoint.y - playerY
             distance = ((deltaX * deltaX + deltaY * deltaY) ^ 0.5) * 10000
           end
-          local clearYards = U and U.WAYPOINT_CLEAR_YARDS or 25
+          local clearYards = U and MapPinsUtil.WAYPOINT_CLEAR_YARDS or 25
           if distance and distance <= clearYards then
             MapPins:ClearUserWaypoint()
             MapPins.RefreshTooltip()
@@ -206,9 +206,9 @@ end
 function MapPins:Disable()
   if not self.enabled then return end
   self.enabled = false
-  P.ClearWorldPins()
-  P.ClearBadges()
-  P.ClearMiniPins()
+  MapPinsPools.ClearWorldPins()
+  MapPinsPools.ClearBadges()
+  MapPinsPools.ClearMiniPins()
   self:ClearUserWaypoint()
   if self.waypointFrame then
     self.waypointFrame:SetScript("OnUpdate", nil)

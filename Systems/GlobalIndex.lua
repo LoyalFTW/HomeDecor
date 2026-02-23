@@ -12,27 +12,27 @@ GI._built     = false
 
 local Collection = NS.Systems and NS.Systems.Collection
 
-local function norm(cat)
+local function NormalizeCategory(cat)
     if cat == "Saved Items" then return "Saved Items" end
     if cat == "PvP" then return "PVP" end
     return cat
 end
 
-local function add(cat, decorID)
+local function AddToCategory(cat, decorID)
     if not decorID then return end
-    cat = norm(cat)
+    cat = NormalizeCategory(cat)
     GI.byCategory[cat] = GI.byCategory[cat] or {}
     GI.byCategory[cat][decorID] = true
     GI.byItemID[decorID] = true
 end
 
-local function countSet(set)
+local function CountSet(set)
     local n = 0
     for _ in pairs(set or {}) do n = n + 1 end
     return n
 end
 
-local function countCollected(set)
+local function CountCollected(set)
     local n = 0
     if not Collection or not Collection.IsCollected then return 0 end
     for decorID in pairs(set or {}) do
@@ -50,7 +50,7 @@ local function buildVendors()
         for _, zone in pairs(exp or {}) do
             for _, vendor in ipairs(zone or {}) do
                 for _, it in ipairs(vendor.items or {}) do
-                    add("Vendors", it.decorID)
+                    AddToCategory("Vendors", it.decorID)
                 end
             end
         end
@@ -64,11 +64,11 @@ local function walkCategory(cat)
     local function walk(node)
         if type(node) ~= "table" then return end
         if node[1] and node[1].decorID then
-            for _, it in ipairs(node) do add(cat, it.decorID) end
+            for _, it in ipairs(node) do AddToCategory(cat, it.decorID) end
             return
         end
         if node.items and type(node.items) == "table" then
-            for _, it in ipairs(node.items) do add(cat, it.decorID) end
+            for _, it in ipairs(node.items) do AddToCategory(cat, it.decorID) end
             return
         end
         for _, v in pairs(node) do walk(v) end
@@ -92,8 +92,8 @@ function GI:Build()
     walkCategory("PVP")
 
     for cat, set in pairs(self.byCategory) do
-        self.counts[cat] = countSet(set)
-        self.collected[cat] = countCollected(set)
+        self.counts[cat] = CountSet(set)
+        self.collected[cat] = CountCollected(set)
     end
 
     self._built = true
@@ -105,7 +105,7 @@ end
 
 function GI:GetCounts(cat)
     self:Ensure()
-    cat = norm(cat)
+    cat = NormalizeCategory(cat)
     return (self.collected[cat] or 0), (self.counts[cat] or 0)
 end
 

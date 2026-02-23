@@ -16,9 +16,12 @@ local Map = NS.Systems and NS.Systems.MapTracker
 local DecorCounts = NS.Systems and NS.Systems.DecorCounts
 local Collection = NS.Systems and NS.Systems.Collection
 local HousingBootstrap = NS.Systems and NS.Systems.HousingBootstrap
+local Viewer = NS.UI and NS.UI.Viewer
 local C_Timer = C_Timer
 
 local CreateFrame = CreateFrame
+local UIParent = UIParent
+local GetTime = GetTime
 local pcall = pcall
 
 local NPCNames = NS.Systems and NS.Systems.NPCNames
@@ -41,8 +44,7 @@ local function ResolveVendorTitle(vendor, frame)
   local id = tonumber((src and src.id) or vendor.npcID or vendor.id)
   if not id then return nil end
 
-  local v = NS.UI and NS.UI.Viewer
-  local Data = v and v.Data
+  local Data = Viewer and Viewer.Data
   if Data and Data.ResolveVendorTitle then
     t = CleanVendorTitle(Data.ResolveVendorTitle(vendor))
     if t then return t end
@@ -132,6 +134,14 @@ local function FetchZoneVendors()
   return vendors
 end
 
+local function _trimTitle(s)
+  if type(s) ~= "string" then return nil end
+  s = s:gsub("^%s+", ""):gsub("%s+$", "")
+  if s == "" then return nil end
+  if s:match("^%d+$") then return nil end
+  return s
+end
+
 local function SetArrow(tex, open)
   if tex and tex.SetRotation then
     tex:SetRotation(open and -1.5708 or 0)
@@ -145,74 +155,6 @@ local function ItemFaction(it)
   end
 end
 
-local function RenderItemRow(frame, content, rows, u, counts, ia, cache, it, vendor, y)
-  local did = it.decorID or it.id or tostring(it)
-  local collected = cache[did]
-  if collected == nil then
-    collected = (u and u.IsCollectedSafe and u.IsCollectedSafe(it)) or false
-    cache[did] = collected
-  end
-
-  local ir = rows:Acquire(frame, "item")
-  ir:SetPoint("TOPLEFT", 0, -y)
-  ir:SetPoint("TOPRIGHT", 0, -y)
-
-  local title = it.title
-  if (not title or title == "") and u and u.GetDecorName and it.decorID then
-    title = u.GetDecorName(it.decorID)
-  end
-  if not title or title == "" then
-    title = "Decor " .. tostring(it.decorID or "")
-  end
-  ir.title:SetText(title)
-
-  if ir.icon then
-    ir.icon:SetTexture((u and u.GetDecorIcon and u.GetDecorIcon(it.decorID)) or "Interface\\Icons\\INV_Misc_QuestionMark")
-  end
-
-  if collected then ir.check:Show() else ir.check:Hide() end
-
-  if ir.owned and counts then
-    local itemID = tonumber((it.source and it.source.itemID) or it.itemID or it.id)
-    local owned = 0
-    if itemID and itemID > 0 then
-      owned = (counts.GetBreakdownByItem and select(1, counts:GetBreakdownByItem(itemID))) or 0
-    end
-    if owned and owned > 0 then
-      ir.owned:SetText(tostring(owned))
-      ir.owned:Show()
-    else
-      ir.owned:Hide()
-    end
-  elseif ir.owned then
-    ir.owned:Hide()
-  end
-
-  local aq, rep
-  if u and u.GetAQAndRepLines then
-    aq, rep = u.GetAQAndRepLines(it)
-  end
-  if aq then ir.reqAQ:SetText(aq); ir.reqAQ:Show() else ir.reqAQ:Hide() end
-  if rep then ir.reqRep:SetText(rep); ir.reqRep:Show() else ir.reqRep:Hide() end
-
-  local fac = ItemFaction(it)
-  if fac == "Alliance" then
-    ir.faction:SetTexture(ir._texAlliance)
-    ir.faction:Show()
-  elseif fac == "Horde" then
-    ir.faction:SetTexture(ir._texHorde)
-    ir.faction:Show()
-  else
-    ir.faction:Hide()
-  end
-
-  if ia and ia.Bind then
-    ia:Bind(ir, it, it._navVendor or it.vendor or vendor)
-  end
-
-  return y + (ir:GetHeight() or 54) + 8, collected
-end
-
 function Render:Attach(_, ctx)
   local frame = ctx.frame
   local trackCB = ctx.trackCB
@@ -221,24 +163,8 @@ function Render:Attach(_, ctx)
 
   Rows:InitPools(frame, content)
 
-  if not frame._favListenerSet then
-    frame._favListenerSet = true
-    local Star = NS.UI and NS.UI.FavoriteStar
-    if Star and Star.RegisterListener then
-      Star:RegisterListener(function()
-        if frame and frame._activeTab == "saved"
-          and frame.RequestRefresh
-          and frame.IsShown and frame:IsShown()
-          and not frame._collapsed
-        then
-          frame:RequestRefresh("favorites")
-        end
-      end)
-    end
-  end
-
-  if NPCNames and NPCNames.RegisterListener and not frame._npcListenerSet then
-    frame._npcListenerSet = true
+  if NPCNames and NPCNames.RegisterListener and not frame._npcNamesListenerInstalled then
+    frame._npcNamesListenerInstalled = true
     NPCNames.RegisterListener(function(_, name)
       if not name or name == "" then return end
       if frame and frame.RequestRefresh and frame.IsShown and frame:IsShown() and not frame._collapsed then
@@ -247,25 +173,30 @@ function Render:Attach(_, ctx)
     end)
   end
 
+  local GetDecorIcon = U and U.GetDecorIcon
+  local GetDecorName = U and U.GetDecorName
+  local IsCollected = U and U.IsCollectedSafe
+  local GetReqLines = U and U.GetAQAndRepLines
+
   frame._collectedCache = frame._collectedCache or {}
   frame._scratchVisible = frame._scratchVisible or {}
   frame._openVendors = frame._openVendors or {}
 
-  if not frame._collectionListenerSet then
-    frame._collectionListenerSet = true
-    local pending = false
-    local function requestRefresh(reason)
-      if pending then return end
-      pending = true
+  if not frame.__hdCollectionListener then
+    frame.__hdCollectionListener = true
+    local queued = false
+    local function request(reason)
+      if queued then return end
+      queued = true
       if C_Timer and C_Timer.After then
         C_Timer.After(0, function()
-          pending = false
+          queued = false
           if frame and frame.RequestRefresh then
             frame:RequestRefresh(reason or "collection")
           end
         end)
       else
-        pending = false
+        queued = false
         if frame and frame.RequestRefresh then
           frame:RequestRefresh(reason or "collection")
         end
@@ -274,7 +205,7 @@ function Render:Attach(_, ctx)
 
     if Collection and Collection.RegisterListener then
       Collection:RegisterListener(function()
-        requestRefresh("collection")
+        request("collection")
       end)
     else
       local ef = CreateFrame("Frame")
@@ -282,16 +213,16 @@ function Render:Attach(_, ctx)
       ef:RegisterEvent("HOUSING_STORAGE_ENTRY_UPDATED")
       ef:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")
       ef:SetScript("OnEvent", function()
-        requestRefresh("housing")
+        request("housing")
       end)
-      frame._collectionEventFrame = ef
+      frame.__hdCollectionEventFrame = ef
     end
 
     if HousingBootstrap and HousingBootstrap.ready == false then
       local function poll()
         if not frame then return end
         if HousingBootstrap.ready then
-          requestRefresh("catalog_ready")
+          request("catalog_ready")
           return
         end
         if C_Timer and C_Timer.After then
@@ -302,103 +233,11 @@ function Render:Attach(_, ctx)
     end
   end
 
-  local function RefreshSavedItems()
-    if frame._collapsed then return end
-
-    Rows:ReleaseAll(frame)
-    if frame._SyncContentWidth then frame:_SyncContentWidth() end
-
-    overall.zone:SetText("")
-    overall.count:SetText("")
-    if overall.bar then overall.bar:Hide() end
-
-    local viewer = NS.UI and NS.UI.Viewer
-    local search = viewer and viewer.Search
-    local profile = NS.db and NS.db.profile
-    local items = {}
-
-    if search and search.CollectAllFavorites then
-      items = search.CollectAllFavorites(profile) or {}
-    else
-      local favDB = profile and profile.favorites
-      if favDB then
-        for id, v in pairs(favDB) do
-          if v then
-            items[#items + 1] = { id = id, title = "" }
-          end
-        end
-      end
-    end
-
-    if #items == 0 then
-      local vr = Rows:Acquire(frame, "vendor")
-      vr:SetPoint("TOPLEFT", 0, 0)
-      vr:SetPoint("TOPRIGHT", 0, 0)
-      vr.label:SetText(L["NO_SAVED_ITEMS"] or "No saved items yet.")
-      vr.count:SetText("")
-      if vr.bar then vr.bar:Hide() end
-      if vr.arrow then vr.arrow:Hide() end
-      content:SetHeight(max(1, (vr:GetHeight() or 34) + 8))
-    else
-      local cache = frame._collectedCache
-      wipe(cache)
-      local found, done = 0, 0
-      local y = 0
-
-      for _, it in ipairs(items) do
-        if IsValid(it) then
-          found = found + 1
-          local ny, col = RenderItemRow(frame, content, Rows, U, DecorCounts, IA, cache, it, it._navVendor or it.vendor, y)
-          y = ny
-          if col then done = done + 1 end
-        end
-      end
-
-      overall.count:SetText(found > 0 and (done .. " / " .. found) or "")
-      if overall.bar and found > 0 then
-        overall.bar:SetProgress(done, found)
-        overall.bar:Show()
-      elseif overall.bar then
-        overall.bar:Hide()
-      end
-
-      content:SetHeight(max(1, y))
-    end
-
-    if frame._SyncBarsToWidth then frame:_SyncBarsToWidth() end
-    if frame._ApplyPanelsAlpha then frame:_ApplyPanelsAlpha(frame._bgAlpha, false) end
-  end
-
   function frame:Refresh()
-    local tab = frame._activeTab or "tracker"
-
-    if tab == "tracker" then
-      ctx.trackRow:Show()
-      overall:Show()
-      if ctx.scrollAnchor then
-        ctx.scrollAnchor:ClearAllPoints()
-        ctx.scrollAnchor:SetPoint("TOPLEFT", overall, "BOTTOMLEFT", 0, -6)
-        ctx.scrollAnchor:SetPoint("TOPRIGHT", overall, "BOTTOMRIGHT", 0, -6)
-      end
-    else
-      ctx.trackRow:Hide()
-      overall:Hide()
-      if ctx.scrollAnchor then
-        ctx.scrollAnchor:ClearAllPoints()
-        ctx.scrollAnchor:SetPoint("TOPLEFT", ctx.tabBar, "BOTTOMLEFT", 0, -6)
-        ctx.scrollAnchor:SetPoint("TOPRIGHT", ctx.tabBar, "BOTTOMRIGHT", 0, -6)
-      end
-    end
-
-    if tab == "saved" then
-      RefreshSavedItems()
-      return
-    end
-
     local tracking = trackCB:GetChecked() and true or false
-    local zoneName = tracking and GetZone() or ((GetRealZoneText and GetRealZoneText()) or "")
+    local zoneName, zoneMapID = tracking and GetZone() or ((GetRealZoneText and GetRealZoneText()) or ""), nil
 
-    frame._lastZoneName = zoneName
+    frame._lastZoneName, frame._lastZoneMapID = zoneName, zoneMapID
     overall.zone:SetText(zoneName or "")
 
     if zoneName ~= frame._shownZoneName then
@@ -409,24 +248,23 @@ function Render:Attach(_, ctx)
     if frame._collapsed then return end
 
     Rows:ReleaseAll(frame)
-    if frame._SyncContentWidth then frame:_SyncContentWidth() end
+    if frame._SyncContentWidth then
+      frame:_SyncContentWidth()
+    end
 
     local vendors = tracking and FetchZoneVendors() or {}
     local cAll, tAll = 0, 0
 
     overall.count:SetText("")
-    if overall.bar then overall.bar:Hide() end
+    if overall.bar then
+      overall.bar:Hide()
+    end
 
-    local cache = frame._collectedCache
-    wipe(cache)
+    local collectedCache = frame._collectedCache
+    wipe(collectedCache)
 
     local visible = frame._scratchVisible
     local y = 0
-
-    local IsCollected = U and U.IsCollectedSafe
-    local GetDecorName = U and U.GetDecorName
-    local GetDecorIcon = U and U.GetDecorIcon
-    local GetReqLines = U and U.GetAQAndRepLines
 
     for vi, v in ipairs(vendors) do
       local items = (type(v) == "table" and type(v.items) == "table") and v.items or nil
@@ -437,14 +275,16 @@ function Render:Attach(_, ctx)
         for ii, it in ipairs(items) do
           if IsValid(it) then
             local did = it.decorID or it.id or tostring(it)
-            local col = cache[did]
-            if col == nil then
-              col = IsCollected and IsCollected(it) or false
-              cache[did] = col
+            local collected = collectedCache[did]
+            if collected == nil then
+              collected = IsCollected and IsCollected(it) or false
+              collectedCache[did] = collected
             end
-            if not (frame._hideCompleted and col) then
+            if not (frame._hideCompleted and collected) then
               tV = tV + 1
-              if col then cV = cV + 1 end
+              if collected then
+                cV = cV + 1
+              end
               visible[#visible + 1] = it
             end
           end
@@ -479,8 +319,8 @@ function Render:Attach(_, ctx)
           SetArrow(vr.arrow, open)
 
           vr._owner, vr._vKey = frame, vKey
-          if not vr._vendorClickSet then
-            vr._vendorClickSet = true
+          if not vr.__hdVendorClick then
+            vr.__hdVendorClick = true
             vr:SetScript("OnClick", function(self)
               local owner, key = self._owner, self._vKey
               if not owner or not key then return end
@@ -495,7 +335,7 @@ function Render:Attach(_, ctx)
             for i = 1, #visible do
               local it = visible[i]
               local did = it.decorID or it.id or tostring(it)
-              local col = cache[did]
+              local collected = collectedCache[did]
 
               local ir = Rows:Acquire(frame, "item")
               ir:SetPoint("TOPLEFT", 0, -y)
@@ -514,16 +354,20 @@ function Render:Attach(_, ctx)
                 ir.icon:SetTexture((GetDecorIcon and GetDecorIcon(it.decorID)) or "Interface\\Icons\\INV_Misc_QuestionMark")
               end
 
-              if col then ir.check:Show() else ir.check:Hide() end
+              if collected then
+                ir.check:Show()
+              else
+                ir.check:Hide()
+              end
 
               if ir.owned and DecorCounts then
                 local itemID = tonumber((it.source and it.source.itemID) or it.itemID or it.id)
-                local owned = 0
+                local totalOwned = 0
                 if itemID and itemID > 0 then
-                  owned = (DecorCounts.GetBreakdownByItem and select(1, DecorCounts:GetBreakdownByItem(itemID))) or 0
+                  totalOwned = (DecorCounts.GetBreakdownByItem and select(1, DecorCounts:GetBreakdownByItem(itemID))) or 0
                 end
-                if owned and owned > 0 then
-                  ir.owned:SetText(tostring(owned))
+                if totalOwned and totalOwned > 0 then
+                  ir.owned:SetText(tostring(totalOwned))
                   ir.owned:Show()
                 else
                   ir.owned:Hide()
@@ -532,10 +376,22 @@ function Render:Attach(_, ctx)
                 ir.owned:Hide()
               end
 
-              local aq, rep
-              if GetReqLines then aq, rep = GetReqLines(it) end
-              if aq then ir.reqAQ:SetText(aq); ir.reqAQ:Show() else ir.reqAQ:Hide() end
-              if rep then ir.reqRep:SetText(rep); ir.reqRep:Show() else ir.reqRep:Hide() end
+              local aq, rep = nil, nil
+              if GetReqLines then
+                aq, rep = GetReqLines(it)
+              end
+              if aq then
+                ir.reqAQ:SetText(aq)
+                ir.reqAQ:Show()
+              else
+                ir.reqAQ:Hide()
+              end
+              if rep then
+                ir.reqRep:SetText(rep)
+                ir.reqRep:Show()
+              else
+                ir.reqRep:Hide()
+              end
 
               local fac = ItemFaction(it)
               if fac == "Alliance" then
@@ -568,15 +424,23 @@ function Render:Attach(_, ctx)
     end
 
     content:SetHeight(max(1, y))
-    if frame._SyncBarsToWidth then frame:_SyncBarsToWidth() end
-    if frame._ApplyPanelsAlpha then frame:_ApplyPanelsAlpha(frame._bgAlpha, false) end
+    if frame._SyncBarsToWidth then
+      frame:_SyncBarsToWidth()
+    end
+    if frame._ApplyPanelsAlpha then
+      frame:_ApplyPanelsAlpha(frame._bgAlpha, false)
+    end
   end
 
   trackCB:SetScript("OnClick", function()
     local checked = trackCB:GetChecked() and true or false
     local db = ctx.GetDB and ctx.GetDB() or nil
-    if db then db.trackZone = checked end
-    if Map and Map.Enable then Map:Enable(checked) end
+    if db then
+      db.trackZone = checked
+    end
+    if Map and Map.Enable then
+      Map:Enable(checked)
+    end
     frame:RequestRefresh("trackzone")
   end)
 end

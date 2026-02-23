@@ -108,7 +108,7 @@ local function InvalidateItemCache()
   itemListCache = {}
   profitCache   = {}
 end
-NS._AltsProfessionsInvalidate = InvalidateItemCache
+NS.AltsProfessionsInvalidate = InvalidateItemCache
 
 local function Label(parent, tmpl)
   return parent:CreateFontString(nil, "OVERLAY", tmpl or "GameFontNormal")
@@ -357,8 +357,8 @@ function SmartProfs:Create(parent)
   self.frame = frame
 
   local controls = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate")
-  controls:SetPoint("TOPLEFT",  frame, "TOPLEFT",   PAD, -74)
-  controls:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD, -74)
+  controls:SetPoint("TOPLEFT",  frame, "TOPLEFT",   PAD, -52)
+  controls:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD, -52)
   controls:SetHeight(28)
   ApplyBackdrop(controls, T.header or {0.075,0.075,0.085,1}, T.border or {0.24,0.24,0.28,1})
 

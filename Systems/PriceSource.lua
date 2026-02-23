@@ -1,7 +1,7 @@
 local ADDON, NS = ...
 NS.Systems = NS.Systems or {}
-local PS = {}
-NS.Systems.PriceSource = PS
+local PriceSource = {}
+NS.Systems.PriceSource = PriceSource
 
 local function db()
   local profile = NS.db and NS.db.profile
@@ -11,32 +11,32 @@ local function db()
   return profile.decorAH
 end
 
-local _tsmCache  = {}
-local _atrCache  = {}
-local _cacheTime = 0
+local tsmPriceCache  = {}
+local atrPriceCache  = {}
+local cacheTimestamp = 0
 local CACHE_TTL  = 120
 
 local function IsCacheStale()
-  return (time() - _cacheTime) > CACHE_TTL
+  return (time() - cacheTimestamp) > CACHE_TTL
 end
 
-function PS.FlushPriceCache()
-  _tsmCache  = {}
-  _atrCache  = {}
-  _cacheTime = time()
+function PriceSource.FlushPriceCache()
+  tsmPriceCache  = {}
+  atrPriceCache  = {}
+  cacheTimestamp = time()
 end
 
 local function GetTSMPrice(itemID)
   if not itemID then return nil end
   if not TSM_API or type(TSM_API.GetCustomPriceValue) ~= "function" then return nil end
 
-  if _tsmCache[itemID] ~= nil then
-    return _tsmCache[itemID] or nil
+  if tsmPriceCache[itemID] ~= nil then
+    return tsmPriceCache[itemID] or nil
   end
 
   local ok, price = pcall(TSM_API.GetCustomPriceValue, "DBMarket", "i:" .. tostring(itemID))
   local result = (ok and price and type(price) == "number" and price > 0) and price or false
-  _tsmCache[itemID] = result
+  tsmPriceCache[itemID] = result
   return result or nil
 end
 
@@ -46,22 +46,22 @@ local function GetAuctionatorPrice(itemID)
   local getPrice = Auctionator.API.v1.GetAuctionPriceByItemID
   if type(getPrice) ~= "function" then return nil end
 
-  if _atrCache[itemID] ~= nil then
-    return _atrCache[itemID] or nil
+  if atrPriceCache[itemID] ~= nil then
+    return atrPriceCache[itemID] or nil
   end
 
   local ok, price = pcall(getPrice, ADDON, itemID)
   local result = (ok and price and type(price) == "number" and price > 0) and price or false
-  _atrCache[itemID] = result
+  atrPriceCache[itemID] = result
   return result or nil
 end
 
-function PS.GetItemPrice(itemID, forceSource)
+function PriceSource.GetItemPrice(itemID, forceSource)
   if not itemID then return nil, nil end
   itemID = tonumber(itemID)
   if not itemID or itemID <= 0 then return nil, nil end
 
-  if IsCacheStale() then PS.FlushPriceCache() end
+  if IsCacheStale() then PriceSource.FlushPriceCache() end
 
   local preferred = (forceSource == nil) and (db() and db().preferredSource) or forceSource
 
@@ -83,60 +83,60 @@ function PS.GetItemPrice(itemID, forceSource)
   return nil, nil
 end
 
-function PS.IsTSMAvailable()
+function PriceSource.IsTSMAvailable()
   return (TSM_API and type(TSM_API.GetCustomPriceValue) == "function") and true or false
 end
 
-function PS.IsAuctionatorAvailable()
+function PriceSource.IsAuctionatorAvailable()
   if not Auctionator or not Auctionator.API or not Auctionator.API.v1 then return false end
   return type(Auctionator.API.v1.GetAuctionPriceByItemID) == "function"
 end
 
-function PS.GetAvailableSources()
+function PriceSource.GetAvailableSources()
   local out = {}
-  if PS.IsTSMAvailable()    then out[#out + 1] = "TSM"        end
-  if PS.IsAuctionatorAvailable() then out[#out + 1] = "Auctionator" end
+  if PriceSource.IsTSMAvailable()    then out[#out + 1] = "TSM"        end
+  if PriceSource.IsAuctionatorAvailable() then out[#out + 1] = "Auctionator" end
   return out
 end
 
-function PS.GetPreferredSource()
+function PriceSource.GetPreferredSource()
   local g = db()
   return (g and g.preferredSource) or nil
 end
 
-function PS.SetPreferredSource(name)
+function PriceSource.SetPreferredSource(name)
   local g = db()
   if g then
     g.preferredSource = (name == "TSM" or name == "Auctionator") and name or nil
   end
 end
 
-function PS.AutoDetectSource()
-  local current = PS.GetPreferredSource()
+function PriceSource.AutoDetectSource()
+  local current = PriceSource.GetPreferredSource()
   if current then return current end
 
-  if PS.IsAuctionatorAvailable() then
-    PS.SetPreferredSource("Auctionator")
+  if PriceSource.IsAuctionatorAvailable() then
+    PriceSource.SetPreferredSource("Auctionator")
     return "Auctionator"
-  elseif PS.IsTSMAvailable() then
-    PS.SetPreferredSource("TSM")
+  elseif PriceSource.IsTSMAvailable() then
+    PriceSource.SetPreferredSource("TSM")
     return "TSM"
   end
 
   return nil
 end
 
-function PS.GetLastAuctionatorScanTime()
+function PriceSource.GetLastAuctionatorScanTime()
   local g = db()
   return g and g.lastAuctionatorScan or nil
 end
 
-function PS.SetLastAuctionatorScanTime(timestamp)
+function PriceSource.SetLastAuctionatorScanTime(timestamp)
   local g = db()
   if g then g.lastAuctionatorScan = timestamp or time() end
 end
 
-function PS.FormatGold(copper, full)
+function PriceSource.FormatGold(copper, full)
   if not copper or copper == 0 then return "0" end
 
   local isNegative = copper < 0
@@ -163,7 +163,7 @@ local tsmFrame = CreateFrame("Frame")
 tsmFrame:RegisterEvent("ADDON_LOADED")
 tsmFrame:SetScript("OnEvent", function(self, _, addonName)
   if addonName == "TradeSkillMaster" or addonName == "TSM_AppHelper" then
-    PS.FlushPriceCache()
+    PriceSource.FlushPriceCache()
     self:UnregisterEvent("ADDON_LOADED")
   end
 end)

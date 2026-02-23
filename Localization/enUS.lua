@@ -361,6 +361,8 @@ L["MAP_PANEL_HIDE_COLLECTED"]       = "Hide collected items"
 L["MAP_PANEL_HIDE_COMPLETED_VEND"]  = "Hide completed vendors"
 L["MAP_PANEL_STYLE"]                = "Style"
 L["MAP_PANEL_COLOR"]                = "Color"
+L["MAP_PANEL_TOOLTIP_ANCHOR_SECTION"] = "Tooltip Position"
+L["MAP_PANEL_TOOLTIP_ANCHOR"]         = "Anchor"
 
 L["LUMBER_SHOW_ICONS_TIP"]          = ""
 L["LUMBER_COMPACT_MODE_TIP"]        = "Shows a condensed single-line list — fits more items with less screen space"

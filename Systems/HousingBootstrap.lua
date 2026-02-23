@@ -5,15 +5,15 @@ local HB = {}
 NS.Systems.HousingBootstrap = HB
 
 HB.ready = false
-local _searcher    = nil
-local _retryTimer  = nil
-local _timeoutTimer = nil
-local _tries       = 0
-local _maxTries    = 6
+local searcher    = nil
+local retryTimer  = nil
+local timeoutTimer = nil
+local retryCount   = 0
+local maxRetries   = 6
 
 local function CancelTimers()
-  if _retryTimer  then _retryTimer:Cancel()   _retryTimer  = nil end
-  if _timeoutTimer then _timeoutTimer:Cancel() _timeoutTimer = nil end
+  if retryTimer  then retryTimer:Cancel()   retryTimer  = nil end
+  if timeoutTimer then timeoutTimer:Cancel() timeoutTimer = nil end
 end
 
 local function MarkReady()
@@ -23,21 +23,21 @@ end
 
 local function TryWarmCatalog()
   if HB.ready then return end
-  _tries = _tries + 1
-  if _tries > _maxTries then return end
+  retryCount = retryCount + 1
+  if retryCount > maxRetries then return end
 
   if not (C_HousingCatalog and C_HousingCatalog.CreateCatalogSearcher) then
-    _retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
+    retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
     return
   end
 
   local searcher = C_HousingCatalog.CreateCatalogSearcher()
   if not searcher then
-    _retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
+    retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
     return
   end
 
-  _searcher = searcher
+  searcher = searcher
 
   if searcher.SetOwnedOnly then searcher:SetOwnedOnly(false) end
   if searcher.SetCollected then searcher:SetCollected(true) end
@@ -52,10 +52,10 @@ local function TryWarmCatalog()
     searcher:RunSearch()
   end
 
-  _timeoutTimer = C_Timer.NewTimer(5.0, function()
+  timeoutTimer = C_Timer.NewTimer(5.0, function()
     if HB.ready then return end
-    _searcher = nil
-    _retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
+    searcher = nil
+    retryTimer = C_Timer.NewTimer(1.0, TryWarmCatalog)
   end)
 end
 

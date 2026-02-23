@@ -1,6 +1,15 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
+Feb 23, 2026
+
+* Endeavors system — Entirely new feature (3 new files): 
+tracks housing neighborhood tasks, XP, coupon currency, 
+and per-house GUID progress
+
+* All Endeavor needs in one place now let me 
+know if anything needs to be added!
+
 Feb 22, 2026
 * Hide Completed Vendors on the World Map button
   now also hides the zone and continent badges

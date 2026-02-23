@@ -161,8 +161,8 @@ local function NewFS(parent, template)
 end
 
 local pendingItemNames = {}
-local _invalidateDataRows
-local _refreshTable
+local invalidateDataRowsFn
+local refreshTableFn
 
 local function ItemName(itemID)
   if not itemID then return "?" end
@@ -178,19 +178,19 @@ local function ItemName(itemID)
 end
 
 local itemLoadFrame = CreateFrame("Frame")
-local _itemLoadDebounce = nil
+local itemLoadDebounce = nil
 itemLoadFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
 itemLoadFrame:SetScript("OnEvent", function(_, _, itemID, success)
   if success and pendingItemNames[itemID] then
     pendingItemNames[itemID] = nil
 
     if frame and frame:IsShown() then
-      if _itemLoadDebounce then _itemLoadDebounce:Cancel() end
-      _itemLoadDebounce = C_Timer.NewTimer(0.3, function()
-        _itemLoadDebounce = nil
+      if itemLoadDebounce then itemLoadDebounce:Cancel() end
+      itemLoadDebounce = C_Timer.NewTimer(0.3, function()
+        itemLoadDebounce = nil
         if frame and frame:IsShown() then
-          if _invalidateDataRows then _invalidateDataRows() end
-          if _refreshTable then _refreshTable() end
+          if invalidateDataRowsFn then invalidateDataRowsFn() end
+          if refreshTableFn then refreshTableFn() end
         end
       end)
     end
@@ -360,7 +360,7 @@ local function InvalidateDataRows()
   cachedFilteredDirty = true
   cachedFiltered = nil
 end
-_invalidateDataRows = InvalidateDataRows
+invalidateDataRowsFn = InvalidateDataRows
 
 local InvalidateFilteredCache
 
@@ -547,6 +547,8 @@ local function AcquireRow()
           local data = self.itemData
           Queue.AddToQueue(data.itemID, data.name, 1, data.profit, data.reagents)
           if DecorAH._updateQueueCount then DecorAH._updateQueueCount() end
+          local QP = NS.UI and NS.UI.DecorAH_Queue
+          if QP and QP.frame and QP.frame:IsShown() then QP:Refresh() end
         end
         return
       end
@@ -560,7 +562,7 @@ local function AcquireRow()
             if Favorites and self.itemID then
               Favorites.ToggleFavorite(self.itemID)
               InvalidateFilteredCache()
-              if DecorAH._refreshTable then DecorAH._refreshTable() end
+              if DecorAH.refreshTableFn then DecorAH.refreshTableFn() end
             end
             return
           end
@@ -833,10 +835,10 @@ local function RefreshTable()
   RenderVisibleRows()
 end
 
-DecorAH._refreshTable  = RefreshTable
+DecorAH.refreshTableFn  = RefreshTable
 DecorAH._invalidate    = InvalidateDataRows
 DecorAH._invalidFilter = InvalidateFilteredCache
-_refreshTable = RefreshTable
+refreshTableFn = RefreshTable
 
 local function RefreshSourceHighlights()
   for src, btn in pairs(sourceButtons) do
@@ -1472,12 +1474,12 @@ function DH:Create(parentFrame, embedded)
   scrollFrame:SetScrollChild(scrollChild)
   if C and C.SkinScrollFrame then C:SkinScrollFrame(scrollFrame) end
 
-  local _scrollDebounce = nil
+  local scrollDebounce = nil
   scrollFrame:SetScript("OnVerticalScroll", function(self, offset)
     self:SetVerticalScroll(offset)
-    if _scrollDebounce then _scrollDebounce:Cancel() end
-    _scrollDebounce = C_Timer.NewTimer(0.04, function()
-      _scrollDebounce = nil
+    if scrollDebounce then scrollDebounce:Cancel() end
+    scrollDebounce = C_Timer.NewTimer(0.04, function()
+      scrollDebounce = nil
       RenderVisibleRows()
     end)
   end)
@@ -2238,9 +2240,9 @@ function DH:Refresh()
   end
 end
 
-local _dahCollectionHooked = false
+local dahCollectionHooked = false
 local function HookDecorAHCollection()
-  if _dahCollectionHooked then return end
+  if dahCollectionHooked then return end
   local Collection = NS.Systems and NS.Systems.Collection
   if not Collection or not Collection.RegisterListener then return end
   Collection:RegisterListener(function()
@@ -2250,7 +2252,7 @@ local function HookDecorAHCollection()
       RefreshTable()
     end
   end)
-  _dahCollectionHooked = true
+  dahCollectionHooked = true
 end
 
 C_Timer.After(0.1, function()
@@ -2260,6 +2262,9 @@ C_Timer.After(0.1, function()
   Export = NS.DecorAH.Export
   Sales = NS.DecorAH.Sales
   HookDecorAHCollection()
+  if Sales and Sales.Initialize then
+    Sales.Initialize()
+  end
 end)
 
 return DH

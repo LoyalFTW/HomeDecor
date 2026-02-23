@@ -619,12 +619,12 @@ local function RebuildEntries(f, content)
     if flatMode then
         if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
 
-        local _GM = NS.UI and NS.UI.DecorAH
-        local _decorAHFrame = _GM and (_GM.frame or _G["HomeDecorDecorAH"])
-        if _decorAHFrame and _decorAHFrame._embedded then _decorAHFrame:Hide() end
-        local _AltProfs = NS.UI and NS.UI.AltsProfessions
-        local _altProfsFrame = _AltProfs and _AltProfs.frame
-        if _altProfsFrame then _altProfsFrame:Hide() end
+        local DecorAHModule = NS.UI and NS.UI.DecorAH
+        local decorAHFrame = DecorAHModule and (DecorAHModule.frame or _G["HomeDecorDecorAH"])
+        if decorAHFrame and decorAHFrame._embedded then decorAHFrame:Hide() end
+        local AltProfsModule = NS.UI and NS.UI.AltsProfessions
+        local altProfsFrame = AltProfsModule and AltProfsModule.frame
+        if altProfsFrame then altProfsFrame:Hide() end
         if f.scrollFrame or f._scrollFrame then
             local sf = f.scrollFrame or f._scrollFrame
             sf:Show()
@@ -1033,7 +1033,7 @@ function Render:Create(parent)
     if UI.Controls and UI.Controls.SkinScrollFrame then
         UI.Controls:SkinScrollFrame(sf)
     end
-    sf:SetPoint("TOPLEFT", 8, -52)
+    sf:SetPoint("TOPLEFT", 8, -8)
     sf:SetPoint("BOTTOMRIGHT", -28, 8)
 
     local content = CreateFrame("Frame", nil, sf)
@@ -1446,7 +1446,7 @@ end
                 elseif e.kind == "list" then
                     local it = D and D.ResolveAchievementDecor and D.ResolveAchievementDecor(e.it) or e.it
                     local state = U and U.GetStateSafe and U.GetStateSafe(it)
-                    local textLeft = 70        -- base left edge of text column
+                    local textLeft = 70
                     local fac = it and (it.faction or (it.source and it.source.faction))
                     local hasFaction = (fac == "Alliance" or fac == "Horde")
                     local titleLeft = hasFaction and (textLeft + 14 + 3) or textLeft

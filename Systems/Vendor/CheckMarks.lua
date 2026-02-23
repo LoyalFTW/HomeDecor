@@ -33,22 +33,22 @@ end
 local function EnsureCheck(button)
   if button.hdVendorCheckmark then return button.hdVendorCheckmark end
 
-  local t = button:CreateTexture(nil, "OVERLAY", nil, 7)
-  t:SetSize(13, 13)
-  t:ClearAllPoints()
-  t:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", 1, 1)
+  local checkTex = button:CreateTexture(nil, "OVERLAY", nil, 7)
+  checkTex:SetSize(13, 13)
+  checkTex:ClearAllPoints()
+  checkTex:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", 1, 1)
 
-  if t.SetAtlas then
-    t:SetAtlas(CHECK_ATLAS, true)
+  if checkTex.SetAtlas then
+    checkTex:SetAtlas(CHECK_ATLAS, true)
   else
-    t:SetTexture(CHECK_FALLBACK)
+    checkTex:SetTexture(CHECK_FALLBACK)
   end
 
-  t:SetVertexColor(0.75, 0.95, 0.75, 0.95)
-  t:Hide()
+  checkTex:SetVertexColor(0.75, 0.95, 0.75, 0.95)
+  checkTex:Hide()
 
-  button.hdVendorCheckmark = t
-  return t
+  button.hdVendorCheckmark = checkTex
+  return checkTex
 end
 
 function CM:HideAll()

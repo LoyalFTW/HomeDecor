@@ -29,16 +29,16 @@ function AS.HasAuctionatorData()
   return false
 end
 
-local _debounceTimer = nil
+local debounceTimer = nil
 
 local function OnDBUpdated()
-  if _debounceTimer then
-    _debounceTimer:Cancel()
-    _debounceTimer = nil
+  if debounceTimer then
+    debounceTimer:Cancel()
+    debounceTimer = nil
   end
 
-  _debounceTimer = C_Timer.NewTimer(0.3, function()
-    _debounceTimer = nil
+  debounceTimer = C_Timer.NewTimer(0.3, function()
+    debounceTimer = nil
 
     local PS = GetPriceSource()
     if PS then
@@ -57,16 +57,16 @@ local function OnDBUpdated()
   end)
 end
 
-local _registered = false
+local isRegistered = false
 
 local function TryRegister()
-  if _registered then return end
+  if isRegistered then return end
   local api = Auctionator and Auctionator.API and Auctionator.API.v1
   if not api or type(api.RegisterForDBUpdate) ~= "function" then return end
 
   local ok, err = pcall(api.RegisterForDBUpdate, ADDON, OnDBUpdated)
   if ok then
-    _registered = true
+    isRegistered = true
   end
 end
 

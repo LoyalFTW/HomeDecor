@@ -69,7 +69,8 @@ Systems\Vendor\DecorCounts.lua
 Systems\Vendor\DecorCounts_System.lua
 Systems\Vendor\VendorChecks.lua
 Systems\Vendor\VendorNPCTooltip.lua
-
+Systems\Endeavors.lua
+UI\Endeavors.lua
 UI\Theme.lua
 UI\Controls.lua
 UI\Options.lua
@@ -79,6 +80,7 @@ UI\ProfessionsTipPopup.lua
 UI\Widgets\FilterPopup.lua
 UI\Widgets\Dropdown.lua
 UI\Layout.lua
+UI\Footer.lua
 UI\DecorAH\DecorAH.lua
 UI\DecorAH\DecorAH_SalesPanel.lua
 UI\DecorAH\DecorAH_QueuePanel.lua

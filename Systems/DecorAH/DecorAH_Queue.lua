@@ -121,7 +121,11 @@ end
 function Queue.GetQueueSize()
   local g = db()
   if not g or not g.queue then return 0 end
-  return #g.queue
+  local total = 0
+  for _, entry in ipairs(g.queue) do
+    total = total + (entry.count or 1)
+  end
+  return total
 end
 
 return Queue

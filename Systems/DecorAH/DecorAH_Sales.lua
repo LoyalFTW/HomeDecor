@@ -9,6 +9,47 @@ local recentSales = {}
 
 local processedMails = {}
 
+local itemNameToIDCache = nil
+
+local function BuildNameCache()
+  if itemNameToIDCache then return end
+  itemNameToIDCache = {}
+  local data = NS.Data and NS.Data.Professions
+  if type(data) == "table" then
+    for _, expansions in pairs(data) do
+      for _, list in pairs(expansions) do
+        if type(list) == "table" then
+          for _, entry in ipairs(list) do
+            if entry.title and entry.source and entry.source.itemID then
+              itemNameToIDCache[entry.title:lower()] = entry.source.itemID
+            end
+          end
+        end
+      end
+    end
+  end
+  local vendors = NS.Data and NS.Data.Vendors
+  if type(vendors) == "table" then
+    for _, exp in pairs(vendors) do
+      for _, zone in pairs(exp or {}) do
+        for _, vendor in ipairs(zone or {}) do
+          for _, it in ipairs(vendor.items or {}) do
+            if it.name and it.itemID then
+              itemNameToIDCache[it.name:lower()] = it.itemID
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+local function LookupItemIDByName(name)
+  if not name then return nil end
+  BuildNameCache()
+  return itemNameToIDCache and itemNameToIDCache[name:lower()] or nil
+end
+
 local function GetMailHash(subject, money, sender)
   return string.format("%s|%d|%s", subject or "", money or 0, sender or "")
 end
@@ -93,7 +134,7 @@ local function CleanOldSales()
 end
 
 function Sales.RecordSale(itemID, itemLink, count, gold, buyerName, itemName)
-  if (not itemID and itemID ~= 0) or not count or not gold then
+  if not count or not gold then
     return false
   end
 
@@ -339,14 +380,10 @@ DetectAndRecordCollections = function(oldSnapshot, newSnapshot)
     if collectedCount > 0 then
       local itemName = data.subject:match(":%s*(.+)$") or data.subject
 
-      local itemID = nil
-      if NS.Systems.GlobalIndex then
-        itemID = NS.Systems.GlobalIndex.GetItemIDByName and
-                 NS.Systems.GlobalIndex.GetItemIDByName(itemName)
-      end
+      local itemID = LookupItemIDByName(itemName)
 
       for _ = 1, collectedCount do
-        local success = Sales.RecordSale(itemID or 0, nil, 1, data.money, nil, itemName)
+        local success = Sales.RecordSale(itemID, nil, 1, data.money, nil, itemName)
         if success then
           recordedCount = recordedCount + 1
           if NS.UI.DecorAH_SalesUI and NS.UI.DecorAH_SalesUI.RefreshSalesPanel then
@@ -355,9 +392,6 @@ DetectAndRecordCollections = function(oldSnapshot, newSnapshot)
         end
       end
     end
-  end
-
-  if recordedCount == 0 then
   end
 end
 
@@ -409,6 +443,8 @@ InitMailTracking = function()
   end)
 end
 function Sales.Initialize()
+
+  itemNameToIDCache = nil
 
   InitMailTracking()
 

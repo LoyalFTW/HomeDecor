@@ -355,7 +355,7 @@ function L:CreateShell()
   header:SetBackdropBorderColor(unpack(BORDER))
   header:SetPoint("TOPLEFT", 8, -8)
   header:SetPoint("TOPRIGHT", -8, -8)
-  header:SetHeight(52)
+  header:SetHeight(90)
   header:EnableMouse(false)
   f.Header = header
 
@@ -514,7 +514,7 @@ function L:CreateShell()
   end
   local contentTopY = -(8 + header:GetHeight() + 4)
   left:SetPoint("TOPLEFT", 8, contentTopY)
-  left:SetPoint("BOTTOMLEFT", 8, 8)
+  left:SetPoint("BOTTOMLEFT", 8, 46)
   left:SetWidth(200)
 
   local cats = { "Achievements", "Quests", "Vendors", "Drops", "Professions", "PVP" }
@@ -607,9 +607,98 @@ function L:CreateShell()
   filtersLine:SetPoint("TOPRIGHT", -10, y)
   y = y - 6
 
+  local divider = left:CreateTexture(nil, "ARTWORK")
+  divider:SetColorTexture(1, 1, 1, 0.15)
+  divider:SetHeight(1)
+  divider:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  12, 80)
+  divider:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -12, 80)
+
+  local resetFiltersBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
+  Backdrop(resetFiltersBtn, T.panel, T.border)
+  resetFiltersBtn:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  10, 86)
+  resetFiltersBtn:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -10, 86)
+  resetFiltersBtn:SetHeight(26)
+  Hover(resetFiltersBtn, T.panel, T.hover)
+
+  local resetIcon = resetFiltersBtn:CreateTexture(nil, "OVERLAY")
+  resetIcon:SetSize(14, 14)
+  resetIcon:SetPoint("LEFT", 10, 0)
+  resetIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
+  resetIcon:SetVertexColor(1, 0.82, 0, 1)
+
+  local resetText = NewFS(resetFiltersBtn, "GameFontNormal")
+  resetText:SetPoint("LEFT", resetIcon, "RIGHT", 6, 0)
+  resetText:SetText(Loc["RESET_ALL_FILTERS"])
+  resetText:SetTextColor(1, 0.82, 0)
+
+  resetFiltersBtn:SetScript("OnClick", function()
+    local fc = left.filterContent
+    if fc and fc.ResetAllFilters then
+      fc:ResetAllFilters()
+    else
+      local db2 = NS.db and NS.db.profile
+      if not db2 then return end
+      local flt = db2.filters or {}
+      flt.expansion, flt.zone, flt.category, flt.subcategory, flt.faction = "ALL", "ALL", "ALL", "ALL", "ALL"
+      flt.hideCollected, flt.onlyCollected = false, false
+      flt.availableRepOnly = false
+      flt.questsCompleted = false
+      flt.achievementCompleted = false
+      if Filters then
+        Filters.expansion, Filters.zone, Filters.category, Filters.subcategory, Filters.faction =
+          flt.expansion, flt.zone, flt.category, flt.subcategory, flt.faction
+        Filters.availableRepOnly = false
+        Filters.questsCompleted = false
+        Filters.achievementCompleted = false
+      end
+      local HeaderCtrl = NS.UI and NS.UI.HeaderController
+      if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
+      if rerender then rerender() end
+    end
+  end)
+
+  local divider2 = left:CreateTexture(nil, "ARTWORK")
+  divider2:SetColorTexture(1, 1, 1, 0.15)
+  divider2:SetHeight(1)
+  divider2:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  12, 44)
+  divider2:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -12, 44)
+
+  local communityBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
+  Backdrop(communityBtn, T.header, T.border)
+  communityBtn:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  10, 50)
+  communityBtn:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -10, 50)
+  communityBtn:SetHeight(26)
+  Hover(communityBtn, T.header, T.hover)
+
+  local commIcon = communityBtn:CreateTexture(nil, "OVERLAY")
+  commIcon:SetSize(14, 14)
+  commIcon:SetPoint("LEFT", 10, 0)
+  commIcon:SetTexture("Interface\\FriendsFrame\\UI-Toast-ChatInviteIcon")
+
+  local commText = NewFS(communityBtn, "GameFontNormal")
+  commText:SetPoint("LEFT", commIcon, "RIGHT", 6, 0)
+  commText:SetText(Loc["COMMUNITY"])
+  communityBtn:SetScript("OnClick", ShowCommunityPopup)
+
+  local whatsNewBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
+  Backdrop(whatsNewBtn, T.panel, T.border)
+  whatsNewBtn:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  10, 10)
+  whatsNewBtn:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -10, 10)
+  whatsNewBtn:SetHeight(26)
+  Hover(whatsNewBtn, T.header, T.hover)
+
+  local wnText = NewFS(whatsNewBtn, "GameFontNormal")
+  wnText:SetPoint("CENTER")
+  wnText:SetText(Loc["WHATS_NEW"])
+  whatsNewBtn:SetScript("OnClick", function()
+    if NS.UI and NS.UI.ShowChangelogPopup then
+      NS.UI:ShowChangelogPopup(true)
+    end
+  end)
+
   local filterScroll = CreateFrame("ScrollFrame", nil, left, "ScrollFrameTemplate")
   filterScroll:SetPoint("TOPLEFT", 8, y)
-  filterScroll:SetPoint("BOTTOMRIGHT", -28, 122)
+  filterScroll:SetPoint("BOTTOMRIGHT", resetFiltersBtn, "TOPRIGHT", -10, -8)
 
   local filterContent = CreateFrame("Frame", nil, filterScroll)
   filterContent:SetPoint("TOPLEFT", 0, 0)
@@ -624,6 +713,93 @@ function L:CreateShell()
     C:SkinScrollFrame(filterScroll)
   end
 
+  local function RefreshLeftLayout()
+    local fh = f:GetHeight() or 680
+    local ratio = fh / 680
+    if ratio > 1 then ratio = 1 end
+    if ratio < 0.65 then ratio = 0.65 end
+
+    local panelW = math.floor(200 * ratio + 0.5)
+    left:SetWidth(panelW)
+
+    local btnH = math.floor(28 * ratio + 0.5)
+    if btnH < 20 then btnH = 20 end
+    local gap  = math.floor(32 * ratio + 0.5)
+    if gap < 23 then gap = 23 end
+
+    local cy = -math.floor(12 * ratio + 0.5)
+
+    savedItemsBtn:ClearAllPoints()
+    savedItemsBtn:SetPoint("TOPLEFT", 10, cy)
+    savedItemsBtn:SetPoint("RIGHT", -10, cy)
+    savedItemsBtn:SetHeight(btnH)
+    cy = cy - (btnH + math.floor(8 * ratio + 0.5))
+
+    savedDivider:ClearAllPoints()
+    savedDivider:SetPoint("TOPLEFT",  10, cy)
+    savedDivider:SetPoint("TOPRIGHT", -10, cy)
+    cy = cy - math.floor(10 * ratio + 0.5)
+
+    for i = 1, #left.buttons do
+      local b = left.buttons[i]
+      if b ~= savedItemsBtn then
+        b:ClearAllPoints()
+        b:SetPoint("TOPLEFT", 10, cy)
+        b:SetPoint("RIGHT", -10, cy)
+        b:SetHeight(btnH)
+        cy = cy - gap
+      end
+    end
+
+    filtersTitle:ClearAllPoints()
+    filtersTitle:SetPoint("TOPLEFT", 10, cy - math.floor(8 * ratio + 0.5))
+
+    local lineY = cy - math.floor(22 * ratio + 0.5)
+    filtersLine:ClearAllPoints()
+    filtersLine:SetPoint("TOPLEFT",  10, lineY)
+    filtersLine:SetPoint("TOPRIGHT", -10, lineY)
+
+    local scrollTopY = lineY - math.floor(6 * ratio + 0.5)
+    filterScroll:ClearAllPoints()
+    filterScroll:SetPoint("TOPLEFT", 8, scrollTopY)
+    filterScroll:SetPoint("BOTTOMRIGHT", resetFiltersBtn, "TOPRIGHT", -10, -8)
+
+    local bottomBtnH = math.floor(26 * ratio + 0.5)
+    if bottomBtnH < 20 then bottomBtnH = 20 end
+    local b1Off = math.floor(86 * ratio + 0.5)
+    if b1Off < 68 then b1Off = 68 end
+    local b2Off = math.floor(50 * ratio + 0.5)
+    if b2Off < 40 then b2Off = 40 end
+    local b3Off = math.floor(10 * ratio + 0.5)
+    local d1Off = math.floor(80 * ratio + 0.5)
+    if d1Off < 63 then d1Off = 63 end
+    local d2Off = math.floor(44 * ratio + 0.5)
+    if d2Off < 35 then d2Off = 35 end
+
+    divider:ClearAllPoints()
+    divider:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  12, d1Off)
+    divider:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -12, d1Off)
+
+    resetFiltersBtn:ClearAllPoints()
+    resetFiltersBtn:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  10, b1Off)
+    resetFiltersBtn:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -10, b1Off)
+    resetFiltersBtn:SetHeight(bottomBtnH)
+
+    divider2:ClearAllPoints()
+    divider2:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  12, d2Off)
+    divider2:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -12, d2Off)
+
+    communityBtn:ClearAllPoints()
+    communityBtn:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  10, b2Off)
+    communityBtn:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -10, b2Off)
+    communityBtn:SetHeight(bottomBtnH)
+
+    whatsNewBtn:ClearAllPoints()
+    whatsNewBtn:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  10, b3Off)
+    whatsNewBtn:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -10, b3Off)
+    whatsNewBtn:SetHeight(bottomBtnH)
+  end
+
   local right = CreateFrame("Frame", nil, f, "BackdropTemplate")
   Backdrop(right, T.panel, T.border)
   if C.ApplyBackground and Textures then
@@ -631,14 +807,14 @@ function L:CreateShell()
     if bg then C:ApplyBackground(right, bg, 8, 1) end
   end
   right:SetPoint("TOPLEFT", left, "TOPRIGHT", 8, 0)
-  right:SetPoint("BOTTOMRIGHT", -8, 8)
+  right:SetPoint("BOTTOMRIGHT", -8, 46)
   f.Right = right
 
-  local bar = CreateFrame("Frame", nil, right, "BackdropTemplate")
+  local bar = CreateFrame("Frame", nil, header, "BackdropTemplate")
   Backdrop(bar, T.panel, T.border)
   if C.ApplyHeaderTexture then C:ApplyHeaderTexture(bar, false) end
-  bar:SetPoint("TOPLEFT", 8, -8)
-  bar:SetPoint("TOPRIGHT", -8, -8)
+  bar:SetPoint("BOTTOMLEFT",  header, "BOTTOMLEFT",   8,  6)
+  bar:SetPoint("BOTTOMRIGHT", header, "BOTTOMRIGHT", -8,  6)
   bar:SetHeight(36)
   f.TopBar = bar
 
@@ -719,6 +895,7 @@ function L:CreateShell()
   local setSearchUI
   local decorPricingBtn
   local altProfsTopBtn
+  local endeavorsTopBtn
 
   UpdateTopTabs = function()
     local isPricingSelected = UI.activeCategory == "Decor Pricing"
@@ -739,6 +916,23 @@ function L:CreateShell()
     else
       altProfsTopBtn.icon:SetVertexColor(1, 1, 1, 0.9)
       altProfsTopBtn.text:SetTextColor(unpack(ACCENT))
+    end
+
+    local isEndeavorsSelected = UI.activeCategory == "Endeavors"
+    C:SetSelected(endeavorsTopBtn, isEndeavorsSelected, T.panel, T.row)
+    if isEndeavorsSelected then
+      endeavorsTopBtn.icon:SetVertexColor(1, 1, 1, 1)
+      endeavorsTopBtn.text:SetTextColor(1, 1, 1, 0.95)
+    else
+      endeavorsTopBtn.icon:SetVertexColor(1, 1, 1, 0.9)
+      endeavorsTopBtn.text:SetTextColor(unpack(ACCENT))
+    end
+
+    if NS.UI.EndeavorsPanel then
+      NS.UI.EndeavorsPanel:SetShown(isEndeavorsSelected)
+    end
+    if f.view then
+      f.view:SetShown(not isEndeavorsSelected)
     end
 
     C:SetSelected(eventsBtn, UI.activeCategory == "Events", T.panel, T.row)
@@ -885,9 +1079,31 @@ function L:CreateShell()
     if NS.UI and NS.UI.ShowProfessionsTipPopup then NS.UI:ShowProfessionsTipPopup() end
   end)
 
+  endeavorsTopBtn = MakeTopButton(bar, 110, 24)
+  endeavorsTopBtn:SetPoint("LEFT", altProfsTopBtn, "RIGHT", 6, 0)
+  endeavorsTopBtn.icon:SetTexture("Interface\\Icons\\achievement_zone_cataclysm")
+  endeavorsTopBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+  endeavorsTopBtn.icon:SetVertexColor(1, 1, 1, 0.9)
+  endeavorsTopBtn.text:SetText("Endeavors")
+  endeavorsTopBtn.text:SetTextColor(unpack(ACCENT))
+
+  endeavorsTopBtn:SetScript("OnClick", function()
+    if not NS.UI.EndeavorsPanel then
+      NS.UI.EndeavorsPanel = NS.UI.Endeavors:Create(right)
+    end
+    SelectCategory("Endeavors")
+
+
+    if NS.UI.EndeavorsPanel:IsShown() then
+      NS.UI.EndeavorsPanel:FullRefresh()
+    else
+      NS.UI.EndeavorsPanel:Show()
+    end
+  end)
+
   local search = CreateFrame("EditBox", nil, bar, "BackdropTemplate")
   Backdrop(search, T.panel, T.border)
-  search:SetPoint("LEFT", altProfsTopBtn, "RIGHT", 8, 0)
+  search:SetPoint("LEFT", endeavorsTopBtn, "RIGHT", 8, 0)
   if header.viewToggle and header.viewToggle.GetLeft then
     search:SetPoint("RIGHT", header.viewToggle, "LEFT", -8, 0)
   else
@@ -1030,8 +1246,9 @@ function L:CreateShell()
     header:HookScript("OnShow", function() dockScale(f, header) end)
     header:HookScript("OnSizeChanged", function() dockScale(f, header) end)
   end
-  f:HookScript("OnShow", function() dockScale(f, header) end)
-  f:HookScript("OnSizeChanged", function() dockScale(f, header) end)
+  f:HookScript("OnShow", function() dockScale(f, header); RefreshLeftLayout() end)
+  f:HookScript("OnSizeChanged", function() dockScale(f, header); RefreshLeftLayout() end)
+  RefreshLeftLayout()
 
   if NS.UI and NS.UI.ViewFactory and NS.UI.ViewFactory.Create then
     f.view = NS.UI.ViewFactory:Create(f, UI, db)
@@ -1042,101 +1259,6 @@ function L:CreateShell()
   if NS.UI and NS.UI.HeaderController and NS.UI.HeaderController.Reset then
     NS.UI.HeaderController:Reset()
   end
-
-  local divider = left:CreateTexture(nil, "ARTWORK")
-  divider:SetColorTexture(1, 1, 1, 0.15)
-  divider:SetHeight(1)
-  divider:SetPoint("BOTTOMLEFT", 12, 80)
-  divider:SetPoint("BOTTOMRIGHT", -12, 80)
-
-  local resetFiltersBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
-  Backdrop(resetFiltersBtn, T.panel, T.border)
-  resetFiltersBtn:SetPoint("BOTTOMLEFT", 10, 86)
-  resetFiltersBtn:SetPoint("BOTTOMRIGHT", -10, 86)
-  resetFiltersBtn:SetHeight(26)
-  Hover(resetFiltersBtn, T.panel, T.hover)
-
-  local resetIcon = resetFiltersBtn:CreateTexture(nil, "OVERLAY")
-  resetIcon:SetSize(14, 14)
-  resetIcon:SetPoint("LEFT", 10, 0)
-  resetIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
-  resetIcon:SetVertexColor(1, 0.82, 0, 1)
-
-  local resetText = NewFS(resetFiltersBtn, "GameFontNormal")
-  resetText:SetPoint("LEFT", resetIcon, "RIGHT", 6, 0)
-  resetText:SetText(Loc["RESET_ALL_FILTERS"])
-  resetText:SetTextColor(1, 0.82, 0)
-
-  resetFiltersBtn:SetScript("OnClick", function()
-    local filterContent = left.filterContent or filterScroll:GetScrollChild()
-    if filterContent and filterContent.ResetAllFilters then
-      filterContent:ResetAllFilters()
-    else
-      local db = NS.db and NS.db.profile
-      if not db then return end
-
-      local f = db.filters or {}
-
-      f.expansion, f.zone, f.category, f.subcategory, f.faction = "ALL", "ALL", "ALL", "ALL", "ALL"
-      f.hideCollected, f.onlyCollected = false, false
-      f.availableRepOnly = false
-      f.questsCompleted = false
-      f.achievementCompleted = false
-
-      if Filters then
-        Filters.expansion, Filters.zone, Filters.category, Filters.subcategory, Filters.faction =
-          f.expansion, f.zone, f.category, f.subcategory, f.faction
-        Filters.availableRepOnly = false
-        Filters.questsCompleted = false
-        Filters.achievementCompleted = false
-      end
-
-      local HeaderCtrl = NS.UI and NS.UI.HeaderController
-      if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
-      if rerender then rerender() end
-    end
-  end)
-
-  local divider2 = left:CreateTexture(nil, "ARTWORK")
-  divider2:SetColorTexture(1, 1, 1, 0.15)
-  divider2:SetHeight(1)
-  divider2:SetPoint("BOTTOMLEFT", 12, 44)
-  divider2:SetPoint("BOTTOMRIGHT", -12, 44)
-
-  local communityBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
-  Backdrop(communityBtn, T.header, T.border)
-  communityBtn:SetPoint("BOTTOMLEFT", 10, 50)
-  communityBtn:SetPoint("BOTTOMRIGHT", -10, 50)
-  communityBtn:SetHeight(26)
-  Hover(communityBtn, T.header, T.hover)
-
-  local commIcon = communityBtn:CreateTexture(nil, "OVERLAY")
-  commIcon:SetSize(14, 14)
-  commIcon:SetPoint("LEFT", 10, 0)
-  commIcon:SetTexture("Interface\\FriendsFrame\\UI-Toast-ChatInviteIcon")
-
-  local commText = NewFS(communityBtn, "GameFontNormal")
-  commText:SetPoint("LEFT", commIcon, "RIGHT", 6, 0)
-  commText:SetText(Loc["COMMUNITY"])
-
-  communityBtn:SetScript("OnClick", ShowCommunityPopup)
-
-  local whatsNewBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
-  Backdrop(whatsNewBtn, T.panel, T.border)
-  whatsNewBtn:SetPoint("BOTTOMLEFT", 10, 10)
-  whatsNewBtn:SetPoint("BOTTOMRIGHT", -10, 10)
-  whatsNewBtn:SetHeight(26)
-  Hover(whatsNewBtn, T.header, T.hover)
-
-  local wnText = NewFS(whatsNewBtn, "GameFontNormal")
-  wnText:SetPoint("CENTER")
-  wnText:SetText(Loc["WHATS_NEW"])
-
-  whatsNewBtn:SetScript("OnClick", function()
-    if NS.UI and NS.UI.ShowChangelogPopup then
-      NS.UI:ShowChangelogPopup(true)
-    end
-  end)
 
   local function EnsureTicker()
     if f.eventTicker or not C_Timer or not C_Timer.NewTicker then return end

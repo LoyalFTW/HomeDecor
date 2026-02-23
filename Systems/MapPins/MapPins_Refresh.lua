@@ -21,7 +21,6 @@ local U = NS.Systems.MapPinsUtil
 local D = NS.Systems.MapPinsData
 local P = NS.Systems.MapPinsPools
 
-
 local function IsHideCompletedVendors()
   local profile = NS.Addon and NS.Addon.db and NS.Addon.db.profile
   if profile and profile.tracker and profile.tracker.hideCompletedVendors then

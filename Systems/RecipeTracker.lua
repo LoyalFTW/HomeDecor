@@ -21,9 +21,9 @@ for id, name in pairs(PROFESSION_SKILL_LINES) do
     PROFESSION_NAME_TO_ID[name] = id
 end
 
-local _housingRecipeIDsCache = nil
+local housingRecipeIDsCache = nil
 local function GetAllHousingRecipeIDs()
-    if _housingRecipeIDsCache then return _housingRecipeIDsCache end
+    if housingRecipeIDsCache then return housingRecipeIDsCache end
     local recipeIDs = {}
     local Data = NS.Data
     if not Data or not Data.Professions then
@@ -49,7 +49,7 @@ local function GetAllHousingRecipeIDs()
         end
     end
 
-    _housingRecipeIDsCache = recipeIDs
+    housingRecipeIDsCache = recipeIDs
     return recipeIDs
 end
 
@@ -438,8 +438,6 @@ SlashCmdList["HDRECIPES"] = function(msg)
         local count = 0
         for recipeID, data in pairs(recipes) do
             count = count + 1
-            if count <= 10 then
-            end
         end
     elseif msg:match("^check%s+(%d+)") then
         local recipeID = tonumber(msg:match("^check%s+(%d+)"))

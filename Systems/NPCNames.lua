@@ -40,7 +40,7 @@ local function getPersistentCache()
 
   local db = NS and NS.DB
   if type(db) == "table" then
-    local g = db.global
+    local globalDB = db.global
     if type(g) == "table" then
       g.npcNames = g.npcNames or {}
       persistentCache = g.npcNames

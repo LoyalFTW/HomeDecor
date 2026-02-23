@@ -271,7 +271,7 @@ function SmartProfs:BuildOppsFrame()
   local opps = CreateFrame("Frame", nil, self.frame)
   opps:SetClipsChildren(true)
   opps:Hide()
-  opps:SetPoint("TOPLEFT",     self.frame, "TOPLEFT",      10, -70)
+  opps:SetPoint("TOPLEFT",     self.frame, "TOPLEFT",      10, -48)
   opps:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -10,  10)
   self.oppsFrame = opps
 
@@ -874,8 +874,8 @@ function SmartProfs:Create(parent)
   self:BuildOppsFrame()
 
   local hdr = CreateFrame("Frame", nil, self.frame, BackdropTemplateMixin and "BackdropTemplate")
-  hdr:SetPoint("TOPLEFT",  self.frame, "TOPLEFT",  0, -38)
-  hdr:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, -38)
+  hdr:SetPoint("TOPLEFT",  self.frame, "TOPLEFT",  0, -16)
+  hdr:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, -16)
   hdr:SetHeight(32)
   ApplyBackdrop(hdr,
     T.header and {T.header[1], T.header[2], T.header[3], 0.97} or {0.075, 0.075, 0.085, 0.97},

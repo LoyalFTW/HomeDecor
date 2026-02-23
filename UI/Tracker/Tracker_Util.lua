@@ -136,12 +136,12 @@ function U.IsCollectedSafe(it)
   end
 
   local Systems = NS.Systems
-  local Col = Systems and Systems.Collection
-  if not (Col and Col.IsCollected) then
+  local Collection = Systems and Systems.Collection
+  if not (Collection and Collection.IsCollected) then
     return false
   end
 
-  local ok, res = pcall(Col.IsCollected, Col, it)
+  local ok, res = pcall(Collection.IsCollected, Collection, it)
   if ok and type(res) == "boolean" then
     return res
   end
@@ -153,7 +153,7 @@ function U.IsCollectedSafe(it)
 
   if not id then return false end
 
-  local ok2, res2 = pcall(Col.IsCollected, Col, id)
+  local ok2, res2 = pcall(Collection.IsCollected, Collection, id)
   if ok2 and type(res2) == "boolean" then
     return res2
   end
@@ -305,9 +305,11 @@ function U.GetAQAndRepLines(it)
   if not repLine then
     local rn = GetRepNameFromReq(req)
     if rn ~= nil then
-      local icon = "|TInterface\\Icons\\Achievement_Reputation_01:14:14:0:0:64:64:4:60:4:60|t "
-      local txt = (rn ~= "") and rn or "Reputation required"
-      repLine = icon .. "|cffff2020" .. txt .. "|r"
+      if rn ~= "" then
+        repLine = "|cffb0b0b0Reputation: " .. rn .. "|r"
+      else
+        repLine = "|cffb0b0b0Reputation required|r"
+      end
     end
   end
 
