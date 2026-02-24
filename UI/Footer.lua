@@ -135,14 +135,9 @@ local function AttachFooter(f)
 	couponIcon:SetSize(14, 14)
 	couponIcon:SetPoint("RIGHT", couponFS, "LEFT", -4, 0)
 
-
-
-
 	local cachedLevel = nil
 	local cachedXP    = 0
 	local cachedMaxXP = 0
-
-
 
 	local function RequestHouseLevelFavor()
 		if not (C_Housing and C_Housing.GetCurrentHouseLevelFavor) then return end
@@ -154,7 +149,6 @@ local function AttachFooter(f)
 			pcall(C_Housing.GetCurrentHouseLevelFavor, house.houseGUID)
 		end
 	end
-
 
 	local function Refresh()
 
@@ -179,7 +173,6 @@ local function AttachFooter(f)
 		else
 			nextLvlFS:SetText("")
 		end
-
 
 		local Sys = NS.Systems and NS.Systems.Endeavors
 		if Sys then
@@ -237,9 +230,6 @@ local function AttachFooter(f)
 		end)
 	end
 
-
-
-
 	do
 		local evFrame = CreateFrame("Frame")
 		evFrame:RegisterEvent("HOUSE_LEVEL_FAVOR_UPDATED")
@@ -251,7 +241,6 @@ local function AttachFooter(f)
 
 				cachedLevel = favor.houseLevel or 1
 				cachedXP    = favor.houseFavor or 0
-
 
 				local maxLevel = 50
 				if C_Housing and C_Housing.GetMaxHouseLevel then
@@ -278,7 +267,6 @@ local function AttachFooter(f)
 		end)
 	end
 
-
 	do
 		local hookSys = NS.Systems and NS.Systems.Endeavors
 		if hookSys then
@@ -294,9 +282,6 @@ local function AttachFooter(f)
 			WrapCallback("OnHouseListUpdated")
 		end
 	end
-
-
-
 
 	C_Timer.After(0.5, function()
 		if C_Housing and C_Housing.GetPlayerOwnedHouses then

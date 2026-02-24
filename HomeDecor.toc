@@ -38,6 +38,20 @@ Changelog.lua
 
 Systems\NPCNames.lua
 Systems\HousingBootstrap.lua
+Systems\EditMode\EditMode_API.lua
+Systems\EditMode\EditMode_Settings.lua
+Systems\EditMode\EditMode_Clipboard.lua
+Systems\EditMode\EditMode_Lock.lua
+Systems\EditMode\EditMode_Batch.lua
+Systems\EditMode\EditMode_HUD.lua
+Systems\EditMode\EditMode_RotPanel.lua
+Systems\EditMode\EditMode_Keys.lua
+Systems\EditMode\EditMode_Init.lua
+Systems\AddonConflict.lua
+Systems\QuickBar\QuickBar.lua
+Systems\QuickBar\QuickBar_Keys.lua
+Systems\QuickBar\QuickBar_ModeBar.lua
+Systems\QuickBar\QuickBar_UI.lua
 Systems\Collection.lua
 Systems\GlobalIndex.lua
 Systems\Changelog.lua

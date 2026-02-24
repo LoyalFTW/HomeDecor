@@ -1093,7 +1093,6 @@ function L:CreateShell()
     end
     SelectCategory("Endeavors")
 
-
     if NS.UI.EndeavorsPanel:IsShown() then
       NS.UI.EndeavorsPanel:FullRefresh()
     else

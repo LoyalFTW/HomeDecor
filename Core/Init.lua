@@ -160,6 +160,37 @@ local defaults = {
 
     minimap = { hide = false },
 
+    editMode = {
+      on            = true,
+      hud           = true,
+      clipboard     = true,
+      batchPlace    = true,
+      batchRotate   = true,
+      batchStep     = 15,
+      lock          = true,
+      rotPanel      = true,
+      rotPanelStep  = 15,
+      locks         = {},
+      keybinds      = {
+        copy      = "CTRL-C",
+        cut       = "CTRL-X",
+        paste     = "CTRL-V",
+        duplicate = "CTRL-D",
+        lock      = "L",
+      },
+    },
+
+    quickBar = {
+      enabled  = true,
+      page     = 1,
+      hotbars  = {},   
+      recent   = nil,
+      keybinds = {
+        [1] = "F1", [2] = "F2", [3] = "F3", [4] = "F4",
+        [5] = "F5", [6] = "F6", [7] = "F7", [8] = "F8",
+      },
+    },
+
     vendor = {
       showCollectedCheckmark = true,
       showOwnedCount = false,
@@ -319,6 +350,16 @@ local function HandleSlash(msg)
     return
   end
 
+  if cmd == "conflict" or cmd == "conflicts" then
+    local AC = NS.Systems and NS.Systems.AddonConflict
+    if AC and AC.ResetConflicts then
+      AC.ResetConflicts()
+    else
+      print("|cff00ccff[HomeDecor]|r Conflict system not loaded.")
+    end
+    return
+  end
+
 end
 
 function Addon:OnInitialize()
@@ -356,6 +397,11 @@ function Addon:OnInitialize()
 end
 
 function Addon:OnEnable()
+  
+  if NS.Systems.EditMode and NS.Systems.EditMode.Init then
+    NS.Systems.EditMode.Init()
+  end
+
   RegisterAddonCompartment()
 
   if NS.UI and NS.UI.Options and NS.UI.Options.Ensure then
