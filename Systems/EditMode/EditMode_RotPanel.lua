@@ -241,6 +241,10 @@ local function buildPanel()
 	refreshRows()
 end
 
+function RP.GetTrackedDeg()
+	return { X = trackedDeg.X, Y = trackedDeg.Y, Z = trackedDeg.Z }
+end
+
 function RP.Show()
 	if not EM.On("rotPanel") then return end
 	if not EM.API.IsExpertMode() or not EM.API.IsExpertSelected() then return end

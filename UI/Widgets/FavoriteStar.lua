@@ -6,6 +6,7 @@ NS.UI.FavoriteStar = Star
 local ATLAS_ON  = "auctionhouse-icon-favorite"
 local ATLAS_OFF = "auctionhouse-icon-favorite-off"
 
+-- Listener support so the Tracker can refresh when favorites change
 local _listeners = {}
 
 function Star:RegisterListener(fn)
@@ -16,7 +17,10 @@ end
 
 local function NotifyListeners()
     for i = 1, #_listeners do
-        pcall(_listeners[i])
+        local ok, err = pcall(_listeners[i])
+        if not ok then
+            -- silently swallow errors so one bad listener can't break others
+        end
     end
 end
 

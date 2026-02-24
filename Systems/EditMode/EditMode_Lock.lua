@@ -34,8 +34,10 @@ function Lock.ToggleHovered()
 	if not info or not info.guid then return end
 	if Lock.Has(info.guid) then
 		Lock.Remove(info.guid)
+		print("|cffffd100HomeDecor|r Unlocked: " .. (info.name or "Unknown"))
 	else
 		Lock.Add(info.guid, info.name)
+		print("|cffffd100HomeDecor|r Locked: " .. (info.name or "Unknown"))
 	end
 	if EM.HUD then EM.HUD.Refresh() end
 end
@@ -58,7 +60,11 @@ local function ensurePopup()
 			if reason == "clicked" then EM.API.CancelEditing() end
 		end,
 		OnAlt = function(_, data)
-			if data then Lock.Remove(data) end
+			if data then
+				local name = data and store()[data] and store()[data].name or "Unknown"
+				Lock.Remove(data)
+				print("|cffffd100HomeDecor|r Unlocked: " .. name)
+			end
 		end,
 	}
 end

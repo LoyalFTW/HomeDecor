@@ -2,6 +2,10 @@ HomeDecor_Changelog = [[
 #HomeDecor
 
 Feb 24, 2026
+
+* Housing edit mode locking now will print
+  what item you have locked. 
+  
 * Added a quick bar built into the addon
   now you can access your items while in the
   housing edit mode. 

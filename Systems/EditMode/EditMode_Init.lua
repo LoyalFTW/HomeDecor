@@ -79,6 +79,7 @@ evFrame:SetScript("OnEvent", function(_, event, ...)
         EM.Lock.OnSelected(...)
         EM.HUD.Refresh()
     elseif event == "HOUSING_EXPERT_MODE_SELECTED_TARGET_CHANGED" then
+        EM.Lock.OnSelected(...)
         EM.RotPanel.OnSelection()
     elseif event == "HOUSING_DECOR_PLACE_SUCCESS" then
         EM.Batch.OnPlaced(...)
