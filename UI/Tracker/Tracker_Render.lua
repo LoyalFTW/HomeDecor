@@ -16,7 +16,7 @@ local Map = NS.Systems and NS.Systems.MapTracker
 local DecorCounts = NS.Systems and NS.Systems.DecorCounts
 local Collection = NS.Systems and NS.Systems.Collection
 local HousingBootstrap = NS.Systems and NS.Systems.HousingBootstrap
-local Viewer = NS.UI and NS.UI.Viewer
+local function GetViewer() return NS.UI and NS.UI.Viewer end
 local C_Timer = C_Timer
 
 local CreateFrame = CreateFrame
@@ -44,6 +44,7 @@ local function ResolveVendorTitle(vendor, frame)
   local id = tonumber((src and src.id) or vendor.npcID or vendor.id)
   if not id then return nil end
 
+  local Viewer = GetViewer()
   local Data = Viewer and Viewer.Data
   if Data and Data.ResolveVendorTitle then
     t = CleanVendorTitle(Data.ResolveVendorTitle(vendor))
@@ -134,14 +135,6 @@ local function FetchZoneVendors()
   return vendors
 end
 
-local function _trimTitle(s)
-  if type(s) ~= "string" then return nil end
-  s = s:gsub("^%s+", ""):gsub("%s+$", "")
-  if s == "" then return nil end
-  if s:match("^%d+$") then return nil end
-  return s
-end
-
 local function SetArrow(tex, open)
   if tex and tex.SetRotation then
     tex:SetRotation(open and -1.5708 or 0)
@@ -162,6 +155,22 @@ function Render:Attach(_, ctx)
   local content = ctx.content
 
   Rows:InitPools(frame, content)
+
+  if not frame.__hdFavListener then
+    frame.__hdFavListener = true
+    local Star = NS.UI and NS.UI.FavoriteStar
+    if Star and Star.RegisterListener then
+      Star:RegisterListener(function()
+        if frame and frame._activeTab == "saved"
+          and frame.RequestRefresh
+          and frame.IsShown and frame:IsShown()
+          and not frame._collapsed
+        then
+          frame:RequestRefresh("favorites")
+        end
+      end)
+    end
+  end
 
   if NPCNames and NPCNames.RegisterListener and not frame._npcNamesListenerInstalled then
     frame._npcNamesListenerInstalled = true
@@ -233,7 +242,160 @@ function Render:Attach(_, ctx)
     end
   end
 
+  local function RefreshSavedItems()
+    if frame._collapsed then return end
+
+    Rows:ReleaseAll(frame)
+    if frame._SyncContentWidth then frame:_SyncContentWidth() end
+
+    overall.zone:SetText("")
+    overall.count:SetText("")
+    if overall.bar then overall.bar:Hide() end
+
+    local search = GetViewer() and GetViewer().Search
+    local profile = NS.db and NS.db.profile
+    local items = {}
+
+    if search and search.CollectAllFavorites then
+      items = search.CollectAllFavorites(profile) or {}
+    else
+      local favDB = NS.db and NS.db.profile and NS.db.profile.favorites
+      if favDB then
+        for id, v in pairs(favDB) do
+          if v then
+            items[#items + 1] = { id = id, title = "" }
+          end
+        end
+      end
+    end
+
+    if #items == 0 then
+      local vr = Rows:Acquire(frame, "vendor")
+      vr:SetPoint("TOPLEFT", 0, 0)
+      vr:SetPoint("TOPRIGHT", 0, 0)
+      vr.label:SetText(L["NO_SAVED_ITEMS"] or "No saved items yet.")
+      vr.count:SetText("")
+      if vr.bar then vr.bar:Hide() end
+      if vr.arrow then vr.arrow:Hide() end
+      content:SetHeight(max(1, (vr:GetHeight() or 34) + 8))
+    else
+      local savedCache = frame._collectedCache
+      wipe(savedCache)
+      local found, done = 0, 0
+      local y = 0
+
+      for _, it in ipairs(items) do
+        if IsValid(it) then
+          found = found + 1
+
+          local did = it.decorID or it.id or tostring(it)
+          local collected = savedCache[did]
+          if collected == nil then
+            collected = IsCollected and IsCollected(it) or false
+            savedCache[did] = collected
+          end
+
+          local ir = Rows:Acquire(frame, "item")
+          ir:SetPoint("TOPLEFT", 0, -y)
+          ir:SetPoint("TOPRIGHT", 0, -y)
+
+          local title = it.title
+          if (not title or title == "") and GetDecorName and it.decorID then
+            title = GetDecorName(it.decorID)
+          end
+          if not title or title == "" then
+            title = "Decor " .. tostring(it.decorID or "")
+          end
+          ir.title:SetText(title)
+
+          if ir.icon then
+            ir.icon:SetTexture((GetDecorIcon and GetDecorIcon(it.decorID)) or "Interface\\Icons\\INV_Misc_QuestionMark")
+          end
+
+          if collected then ir.check:Show() else ir.check:Hide() end
+
+          if ir.owned and DecorCounts then
+            local itemID = tonumber((it.source and it.source.itemID) or it.itemID or it.id)
+            local totalOwned = 0
+            if itemID and itemID > 0 then
+              totalOwned = (DecorCounts.GetBreakdownByItem and select(1, DecorCounts:GetBreakdownByItem(itemID))) or 0
+            end
+            if totalOwned and totalOwned > 0 then
+              ir.owned:SetText(tostring(totalOwned))
+              ir.owned:Show()
+            else
+              ir.owned:Hide()
+            end
+          elseif ir.owned then
+            ir.owned:Hide()
+          end
+
+          local aq, rep = nil, nil
+          if GetReqLines then aq, rep = GetReqLines(it) end
+          if aq then ir.reqAQ:SetText(aq); ir.reqAQ:Show() else ir.reqAQ:Hide() end
+          if rep then ir.reqRep:SetText(rep); ir.reqRep:Show() else ir.reqRep:Hide() end
+
+          local fac = ItemFaction(it)
+          if fac == "Alliance" then
+            ir.faction:SetTexture(ir._texAlliance)
+            ir.faction:Show()
+          elseif fac == "Horde" then
+            ir.faction:SetTexture(ir._texHorde)
+            ir.faction:Show()
+          else
+            ir.faction:Hide()
+          end
+
+          if IA and IA.Bind then
+            IA:Bind(ir, it, it._navVendor or it.vendor)
+          end
+
+          y = y + (ir:GetHeight() or 54) + 8
+          if collected then done = done + 1 end
+        end
+      end
+
+      overall.count:SetText(found > 0 and (done .. " / " .. found) or "")
+      if overall.bar and found > 0 then
+        overall.bar:SetProgress(done, found)
+        overall.bar:Show()
+      elseif overall.bar then
+        overall.bar:Hide()
+      end
+
+      content:SetHeight(max(1, y))
+    end
+
+    if frame._SyncBarsToWidth then frame:_SyncBarsToWidth() end
+    if frame._ApplyPanelsAlpha then frame:_ApplyPanelsAlpha(frame._bgAlpha, false) end
+  end
+
   function frame:Refresh()
+    local activeTab = frame._activeTab or "tracker"
+
+    if activeTab == "tracker" then
+      ctx.trackRow:Show()
+      overall:Show()
+      if ctx.scrollAnchor then
+        ctx.scrollAnchor:ClearAllPoints()
+        ctx.scrollAnchor:SetPoint("TOPLEFT", overall, "BOTTOMLEFT", 0, -6)
+        ctx.scrollAnchor:SetPoint("TOPRIGHT", overall, "BOTTOMRIGHT", 0, -6)
+      end
+    else
+      ctx.trackRow:Hide()
+      overall:Hide()
+      if ctx.scrollAnchor then
+        ctx.scrollAnchor:ClearAllPoints()
+        ctx.scrollAnchor:SetPoint("TOPLEFT", ctx.tabBar, "BOTTOMLEFT", 0, -6)
+        ctx.scrollAnchor:SetPoint("TOPRIGHT", ctx.tabBar, "BOTTOMRIGHT", 0, -6)
+      end
+    end
+
+    if activeTab == "saved" then
+      RefreshSavedItems()
+      return
+    end
+
     local tracking = trackCB:GetChecked() and true or false
     local zoneName, zoneMapID = tracking and GetZone() or ((GetRealZoneText and GetRealZoneText()) or ""), nil
 

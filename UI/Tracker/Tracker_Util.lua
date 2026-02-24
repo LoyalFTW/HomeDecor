@@ -305,11 +305,9 @@ function U.GetAQAndRepLines(it)
   if not repLine then
     local rn = GetRepNameFromReq(req)
     if rn ~= nil then
-      if rn ~= "" then
-        repLine = "|cffb0b0b0Reputation: " .. rn .. "|r"
-      else
-        repLine = "|cffb0b0b0Reputation required|r"
-      end
+      local icon = "|TInterface\\Icons\\Achievement_Reputation_01:14:14:0:0:64:64:4:60:4:60|t "
+      local txt = (rn ~= "") and rn or "Reputation required"
+      repLine = icon .. "|cffff2020" .. txt .. "|r"
     end
   end
 

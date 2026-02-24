@@ -335,9 +335,72 @@ function UI:CreateFrame()
     if b then b:Hide() end
   end)
 
+  local tabBar = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+  tabBar:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -6)
+  tabBar:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -6)
+  tabBar:SetHeight(28)
+
+  if Controls and Controls.Backdrop then
+    Controls:Backdrop(tabBar, T.panel, T.border)
+  end
+
+  local function MakeTab(parent, label)
+    local btn = CreateFrame("Button", nil, parent, "BackdropTemplate")
+    btn:SetHeight(24)
+    if Controls and Controls.Backdrop then
+      Controls:Backdrop(btn, T.panel, T.border)
+    end
+    local fs = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    fs:SetAllPoints()
+    fs:SetJustifyH("CENTER")
+    fs:SetText(label)
+    btn.label = fs
+    return btn
+  end
+
+  local tabTracker = MakeTab(tabBar, L["TRACKER_TITLE"] or "Tracker")
+  tabTracker:SetPoint("TOPLEFT", tabBar, "TOPLEFT", 4, -2)
+  tabTracker:SetWidth(((tabBar:GetWidth() or 310) / 2) - 6)
+
+  local tabSaved = MakeTab(tabBar, L["SAVED_ITEMS"] or "Saved Items")
+  tabSaved:SetPoint("TOPLEFT", tabTracker, "TOPRIGHT", 4, 0)
+  tabSaved:SetPoint("TOPRIGHT", tabBar, "TOPRIGHT", -4, -2)
+
+  frame._activeTab = "tracker"
+
+  local function SetActiveTab(which)
+    frame._activeTab = which
+    local TC = GetThemeColors()
+    local accent = TC.accent or { 1, 0.82, 0.2, 1 }
+    local normal = TC.text or { 0.9, 0.9, 0.9, 1 }
+    if which == "tracker" then
+      tabTracker.label:SetTextColor(unpack(accent))
+      tabSaved.label:SetTextColor(unpack(normal))
+    else
+      tabTracker.label:SetTextColor(unpack(normal))
+      tabSaved.label:SetTextColor(unpack(accent))
+    end
+  end
+
+  SetActiveTab("tracker")
+
+  tabTracker:SetScript("OnClick", function()
+    if frame._activeTab == "tracker" then return end
+    SetActiveTab("tracker")
+    frame:RequestRefresh("tab")
+  end)
+
+  tabSaved:SetScript("OnClick", function()
+    if frame._activeTab == "saved" then return end
+    SetActiveTab("saved")
+    frame:RequestRefresh("tab")
+  end)
+
+  frame._SetActiveTab = SetActiveTab
+
   local trackRow = CreateFrame("Frame", nil, frame, "BackdropTemplate")
-  trackRow:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -6)
-  trackRow:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -6)
+  trackRow:SetPoint("TOPLEFT", tabBar, "BOTTOMLEFT", 0, -6)
+  trackRow:SetPoint("TOPRIGHT", tabBar, "BOTTOMRIGHT", 0, -6)
   trackRow:SetHeight(30)
 
   if Controls and Controls.Backdrop then
@@ -383,11 +446,16 @@ function UI:CreateFrame()
     overallRow.bar:SetPoint("BOTTOMRIGHT", overallRow, "BOTTOMRIGHT", -12, 6)
   end
 
+  local scrollAnchor = CreateFrame("Frame", nil, frame)
+  scrollAnchor:SetHeight(1)
+  scrollAnchor:SetPoint("TOPLEFT", overallRow, "BOTTOMLEFT", 0, -6)
+  scrollAnchor:SetPoint("TOPRIGHT", overallRow, "BOTTOMRIGHT", 0, -6)
+
   local scroll = CreateFrame("ScrollFrame", nil, frame, "ScrollFrameTemplate")
   if Controls and Controls.SkinScrollFrame then
     Controls:SkinScrollFrame(scroll)
   end
-  scroll:SetPoint("TOPLEFT", overallRow, "BOTTOMLEFT", 6, -6)
+  scroll:SetPoint("TOPLEFT", scrollAnchor, "TOPLEFT", 6, 0)
   scroll:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -24, 12)
 
   local content = CreateFrame("Frame", nil, scroll)
@@ -515,6 +583,7 @@ function UI:CreateFrame()
 
       trackRow:Hide()
       overallRow:Hide()
+      tabBar:Hide()
       scroll:Hide()
       resizeGrip:Hide()
 
@@ -527,6 +596,7 @@ function UI:CreateFrame()
 
     trackRow:Show()
     overallRow:Show()
+    tabBar:Show()
     scroll:Show()
     resizeGrip:Show()
 
@@ -580,6 +650,7 @@ function UI:CreateFrame()
     if Rows and Rows.SetPanelAlpha then
       Rows:SetPanelAlpha(frame, frame._bgAlpha)
       Rows:SetPanelAlpha(header, frame._bgAlpha)
+      Rows:SetPanelAlpha(tabBar, frame._bgAlpha)
       Rows:SetPanelAlpha(trackRow, frame._bgAlpha)
       Rows:SetPanelAlpha(overallRow, frame._bgAlpha)
       Rows:SetPanelAlpha(settings, frame._bgAlpha)
@@ -677,8 +748,12 @@ function UI:CreateFrame()
     frame = frame,
     header = header,
     settings = settings,
+    tabBar = tabBar,
+    tabTracker = tabTracker,
+    tabSaved = tabSaved,
     trackRow = trackRow,
     overallRow = overallRow,
+    scrollAnchor = scrollAnchor,
     scroll = scroll,
     content = content,
     resize = resizeGrip,
