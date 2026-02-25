@@ -159,9 +159,14 @@ eventFrame:SetScript("OnEvent", function(_, event, decorID)
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
-
         wipe(decorCache)
-        NotifyChanged(-1)
+        if C_Timer and C_Timer.After then
+            C_Timer.After(0.5, function()
+                NotifyChanged(-1)
+            end)
+        else
+            NotifyChanged(-1)
+        end
         return
     end
 end)

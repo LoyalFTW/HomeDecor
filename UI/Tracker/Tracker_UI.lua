@@ -687,12 +687,17 @@ function UI:CreateFrame()
   frame._SetCollapsed = SetCollapsed
 
   function frame:RequestRefresh(reason)
-    if self._collapsed or self._pendingRefresh then return end
+    if self._collapsed then return end
+    if self._pendingTimer then
+      self._pendingTimer:Cancel()
+      self._pendingTimer = nil
+    end
     self._pendingRefresh = true
     local delay = (reason == "toggle" and 0) or 0.08
-    C_Timer.After(delay, function()
+    self._pendingTimer = C_Timer.NewTimer(delay, function()
       if not frame then return end
       frame._pendingRefresh = false
+      frame._pendingTimer = nil
       if not frame:IsShown() or frame._collapsed then return end
       if frame.Refresh then frame:Refresh(reason) end
       if frame._ApplyPanelsAlpha then frame._ApplyPanelsAlpha((GetTrackerDB() and GetTrackerDB().alpha) or frame._bgAlpha or 1, false) end
