@@ -74,6 +74,14 @@ function DC:HideAll()
 end
 
 function DC:Refresh()
+  local db = NS.db
+  local prof = db and db.profile
+  local vendor = prof and prof.vendor
+  if not vendor or vendor.showOwnedCount == false then
+    self:HideAll()
+    return
+  end
+
   if not MerchantFrame or not MerchantFrame:IsShown() then return end
 
   local DecorCounts = NS.Systems and NS.Systems.DecorCounts
