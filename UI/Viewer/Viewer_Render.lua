@@ -275,6 +275,12 @@ local function BuildFlatResults(ui, db, scopeKey)
     end
 
     table.sort(out, function(a, b)
+        local sortMode = (db and db.ui and db.ui.sortMode) or "expAsc"
+        local ra = D and D.EXPANSION_RANK and (D.EXPANSION_RANK[a._expansion or ""] or 999) or 999
+        local rb = D and D.EXPANSION_RANK and (D.EXPANSION_RANK[b._expansion or ""] or 999) or 999
+        if ra ~= rb then
+            if sortMode == "expDesc" then return ra > rb else return ra < rb end
+        end
         return tostring(a.title or ""):lower() < tostring(b.title or ""):lower()
     end)
 
@@ -877,12 +883,16 @@ local function RebuildEntries(f, content)
         return
     end
 
-    local expOrder = D and D.GetExpansionOrder and D.GetExpansionOrder(data) or {}
+    local sortMode = ui.sortMode or "expAsc"
+    local expReverse = (sortMode == "expDesc")
+    local expOrder = D and D.GetExpansionOrder and D.GetExpansionOrder(data, expReverse) or {}
     for _, exp in ipairs(expOrder) do
         local zones = D and D.NormalizeExpansionNode and D.NormalizeExpansionNode(data[exp]) or {}
         local eC, eT = 0, 0
 
-        for _, items in pairs(zones) do
+        local zoneList = D and D.GetZoneOrder and D.GetZoneOrder(zones) or {}
+        for _, zone in ipairs(zoneList) do
+            local items = zones[zone]
             local c, t = CountItems(items)
             eC, eT = eC + c, eT + t
         end
@@ -893,7 +903,8 @@ local function RebuildEntries(f, content)
         addHeader(12, 44, exp, eC, eT, expOpen, "exp", { key = eKey })
 
         if expOpen then
-            for zone, items in pairs(zones) do
+            for _, zone in ipairs(zoneList) do
+                local items = zones[zone]
                 local zC, zT = CountItems(items)
                 local zKey = D and D.KeyZone and D.KeyZone(cat, exp, zone) or (cat .. ":" .. tostring(exp) .. ":" .. tostring(zone))
                 local zoneOpen = HeaderCtrl and HeaderCtrl.IsOpen and HeaderCtrl:IsOpen("zone", zKey) or false
@@ -1017,6 +1028,11 @@ function Render:Create(parent)
     f:SetAllPoints()
     f._suspendRender = false
 
+    f:SetScript("OnShow", function(self)
+        GridCache = {}
+        if self.Render then self:Render(true) end
+    end)
+
     f:SetScript("OnSizeChanged", function(self, width, height)
         if self._suspendRender then return end
         GridCache = {}
@@ -1053,24 +1069,19 @@ function Render:Create(parent)
         if f.UpdateVisible then f:UpdateVisible() end
     end)
 
-    if Collection and Collection.OnChange then
-        local lastFull = 0
-        Collection:OnChange(function(payload)
+    if Collection and Collection.RegisterListener then
+        Collection:RegisterListener(function(decorID)
             if not f or not f:IsShown() then return end
-            local now = GetTime and GetTime() or 0
 
-            if payload and payload.decorID and f.RefreshDecor then
-                f:RefreshDecor(payload.decorID)
+            if decorID and decorID ~= -1 and f.RefreshDecor then
+                f:RefreshDecor(decorID)
             end
 
-            if (now - lastFull) > 1.0 then
-                lastFull = now
-                C_Timer.After(0.35, function()
-                    if f and f:IsShown() and f.RequestRender then
-                        f:RequestRender(true)
-                    end
-                end)
-            end
+            C_Timer.After(0, function()
+                if f and f:IsShown() and f.RequestRender then
+                    f:RequestRender(true)
+                end
+            end)
         end)
     end
 

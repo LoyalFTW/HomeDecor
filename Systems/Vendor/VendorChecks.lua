@@ -33,9 +33,11 @@ end
 local function DoRefresh()
   local CM = NS.UI and NS.UI.VendorCheckMarks
   local DC = NS.UI and NS.UI.VendorDecorCounters
+  local Col = NS.Systems and NS.Systems.Collection
 
   if CM and CM.Refresh then pcall(CM.Refresh, CM) end
   if DC and DC.Refresh then pcall(DC.Refresh, DC) end
+  if Col and Col.ClearCache then pcall(Col.ClearCache, Col) end
 end
 
 local function QueueRefresh()

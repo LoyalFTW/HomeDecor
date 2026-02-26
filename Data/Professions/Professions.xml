@@ -1,8 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
-    <!-- ===================================== -->
     <!-- Alchemy                             -->
-    <!-- ===================================== -->
     <Script file="Alchemy/Classic.lua"/>
     <Script file="Alchemy/Outland.lua"/>
     <Script file="Alchemy/Northrend.lua"/>
@@ -16,9 +14,7 @@
     <Script file="Alchemy/Khaz Algar.lua"/>
     <Script file="Alchemy/Midnight.lua"/>
 
-    <!-- ===================================== -->
     <!-- Blacksmithing                       -->
-    <!-- ===================================== -->
     <Script file="Blacksmithing/Classic.lua"/>
     <Script file="Blacksmithing/Outland.lua"/>
     <Script file="Blacksmithing/Northrend.lua"/>
@@ -32,9 +28,7 @@
     <Script file="Blacksmithing/Khaz Algar.lua"/>
     <Script file="Blacksmithing/Midnight.lua"/>
 
-    <!-- ===================================== -->
     <!-- Cooking                             -->
-    <!-- ===================================== -->
     <Script file="Cooking/Pandaria.lua"/>
     <Script file="Cooking/Draenor.lua"/>
     <Script file="Cooking/Kul Tiran.lua"/>
@@ -42,9 +36,7 @@
     <Script file="Cooking/Dragon Isles.lua"/>
     <Script file="Cooking/Khaz Algar.lua"/>
 
-    <!-- ===================================== -->
     <!-- Enchanting                          -->
-    <!-- ===================================== -->
     <Script file="Enchanting/Classic.lua"/>
     <Script file="Enchanting/Outland.lua"/>
     <Script file="Enchanting/Northrend.lua"/>
@@ -58,9 +50,7 @@
     <Script file="Enchanting/Khaz Algar.lua"/>
     <Script file="Enchanting/Midnight.lua"/>
 
-    <!-- ===================================== -->
     <!-- Engineering                         -->
-    <!-- ===================================== -->
     <Script file="Engineering/Classic.lua"/>
     <Script file="Engineering/Outland.lua"/>
     <Script file="Engineering/Northrend.lua"/>
@@ -74,9 +64,7 @@
     <Script file="Engineering/Khaz Algar.lua"/>
     <Script file="Engineering/Midnight.lua"/>
 
-    <!-- ===================================== -->
     <!-- Inscription                         -->
-    <!-- ===================================== -->
     <Script file="Inscription/Classic.lua"/>
     <Script file="Inscription/Outland.lua"/>
     <Script file="Inscription/Northrend.lua"/>
@@ -90,9 +78,7 @@
     <Script file="Inscription/Khaz Algar.lua"/>
     <Script file="Inscription/Midnight.lua"/>
 
-    <!-- ===================================== -->
     <!-- Jewelcrafting                       -->
-    <!-- ===================================== -->
     <Script file="Jewelcrafting/Classic.lua"/>
     <Script file="Jewelcrafting/Outland.lua"/>
     <Script file="Jewelcrafting/Northrend.lua"/>
@@ -106,11 +92,10 @@
     <Script file="Jewelcrafting/Khaz Algar.lua"/>
     <Script file="Jewelcrafting/Midnight.lua"/>
 
-    <!-- ===================================== -->
     <!-- Leatherworking                      -->
-    <!-- ===================================== -->
     <Script file="Leatherworking/Classic.lua"/>
     <Script file="Leatherworking/Outland.lua"/>
+	<Script file="Leatherworking/Northrend.lua"/>
     <Script file="Leatherworking/Cataclysm.lua"/>
     <Script file="Leatherworking/Pandaria.lua"/>
     <Script file="Leatherworking/Draenor.lua"/>
@@ -121,9 +106,7 @@
     <Script file="Leatherworking/Khaz Algar.lua"/>
     <Script file="Leatherworking/Midnight.lua"/>
 
-    <!-- ===================================== -->
     <!-- Tailoring                           -->
-    <!-- ===================================== -->
     <Script file="Tailoring/Classic.lua"/>
     <Script file="Tailoring/Outland.lua"/>
     <Script file="Tailoring/Northrend.lua"/>

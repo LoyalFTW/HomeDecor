@@ -15,16 +15,16 @@ Data.TEX_HORDE = "Interface\\Icons\\INV_BannerPVP_01"
 
 local EXPANSION_RANK = {
   Classic = 1,
-  BurningCrusade = 2, ["Burning Crusade"] = 2, Outland = 2,
-  Wrath = 3, ["Wrath of the Lich King"] = 3, Northrend = 3,
+  BurningCrusade = 2, Outland = 2,
+  Wrath = 3, Northrend = 3,
   Cataclysm = 4, Cata = 4,
-  Pandaria = 5, MistsOfPandaria = 5, ["Mists of Pandaria"] = 5, Pandaren = 5,
-  WarlordsOfDraenor = 6, ["Warlords of Draenor"] = 6, Draenor = 6,
+  Pandaria = 5, MistsOfPandaria = 5, Pandaren = 5,
+  Warlords = 6, WarlordsOfDraenor = 6, Draenor = 6,
   Legion = 7,
-  BattleForAzeroth = 8, ["Battle for Azeroth"] = 8, Kul = 8, KulTiras = 8, Zandalar = 8,
-  Shadowlands = 9,
+  BattleForAzeroth = 8, Kul = 8, KulTiras = 8, ["Kul Tiran"] = 8, Zandalar = 8,
+  Shadowlands = 9,t
   Dragonflight = 10, Dragon = 10, DragonIsles = 10, ["Dragon Isles"] = 10,
-  WarWithin = 11, TheWarWithin = 11, ["The War Within"] = 11, Khaz = 11, KhazAlgar = 11, ["Khaz Algar"] = 11,
+  WarWithin = 11, TheWarWithin = 11, Khaz = 11, KhazAlgar = 11, ["Khaz Algar"] = 11,
   Midnight = 12,
 }
 
@@ -33,17 +33,37 @@ local function ExpansionRank(name)
   return EXPANSION_RANK[name] or 999
 end
 
-function Data.GetExpansionOrder(t)
+function Data.GetExpansionOrder(t, reverse)
   local order = {}
   if type(t) ~= "table" then return order end
   for k in pairs(t) do order[#order + 1] = k end
   table.sort(order, function(a, b)
     local ra, rb = ExpansionRank(a), ExpansionRank(b)
-    if ra ~= rb then return ra < rb end
-    return tostring(a) < tostring(b)
+    if ra ~= rb then
+      if reverse then return ra > rb else return ra < rb end
+    end
+    if reverse then return tostring(a) > tostring(b) else return tostring(a) < tostring(b) end
   end)
   return order
 end
+
+function Data.GetZoneOrder(expNode)
+  local zones = {}
+  if type(expNode) ~= "table" then return zones end
+  for k in pairs(expNode) do
+    if type(expNode[k]) == "table" then
+      zones[#zones + 1] = k
+    end
+  end
+  table.sort(zones, function(a, b)
+    local ra, rb = ExpansionRank(a), ExpansionRank(b)
+    if ra ~= rb then return ra < rb end
+    return tostring(a):lower() < tostring(b):lower()
+  end)
+  return zones
+end
+
+Data.EXPANSION_RANK = EXPANSION_RANK
 
 local DecorIconCache, DecorNameCache = {}, {}
 local AchTitleCache, QuestTitleCache = {}, {}

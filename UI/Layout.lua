@@ -39,6 +39,7 @@ local function getDB()
   if not ui.activeCategory then ui.activeCategory = "Achievements" end
   if not ui.expanded then ui.expanded = {} end
   if ui.search == nil then ui.search = "" end
+  if not ui.sortMode then ui.sortMode = "expAsc" end
 
   profile.filters = profile.filters or {}
   if FiltersSys and FiltersSys.EnsureDefaults then
@@ -893,6 +894,7 @@ function L:CreateShell()
   local UpdateTopTabs
   local SelectCategory
   local setSearchUI
+  local UpdateSortVisibility
   local decorPricingBtn
   local altProfsTopBtn
   local endeavorsTopBtn
@@ -971,14 +973,21 @@ function L:CreateShell()
 
     UI.activeCategory = categoryName
     db.ui.activeCategory = categoryName
+    UI.search = ""
+    db.ui.search = ""
+    UI._searchNorm = ""
+    UI._searchLast = ""
+    UI._searchTokens = UI._searchTokens or {}
+    for i = #UI._searchTokens, 1, -1 do UI._searchTokens[i] = nil end
+    if FiltersSys and FiltersSys.PrepareSearch then FiltersSys:PrepareSearch(UI) end
 
     if categoryName ~= "Vendors" then
-      local f = db.filters
-      if f then
-        if f.availableRepOnly or f.questsCompleted or f.achievementCompleted then
-          f.availableRepOnly = false
-          f.questsCompleted = false
-          f.achievementCompleted = false
+      local filters = db.filters
+      if filters then
+        if filters.availableRepOnly or filters.questsCompleted or filters.achievementCompleted then
+          filters.availableRepOnly = false
+          filters.questsCompleted = false
+          filters.achievementCompleted = false
 
           if Filters then
             Filters.availableRepOnly = false
@@ -1020,6 +1029,8 @@ function L:CreateShell()
     if NS.UI and NS.UI.HeaderController and NS.UI.HeaderController.Reset then
       NS.UI.HeaderController:Reset()
     end
+
+    if UpdateSortVisibility then UpdateSortVisibility() end
   end
 
   for i = 1, #left.buttons do
@@ -1100,14 +1111,56 @@ function L:CreateShell()
     end
   end)
 
+  local SORT_CAT_EXCLUDED = {
+    ["Events"] = true,
+    ["Decor Pricing"] = true,
+    ["Alts Professions"] = true,
+    ["Endeavors"] = true,
+    ["Saved Items"] = true,
+  }
+
+  local SORT_OPTIONS = {
+    { value = "expAsc",  text = "Expansion: Old to New" },
+    { value = "expDesc", text = "Expansion: New to Old" },
+  }
+
+
+  local sortDropdown = Dropdown.Create(
+    bar,
+    "",
+    nil,
+    160,
+    function() return (db.ui and db.ui.sortMode) or "expAsc" end,
+    function(v)
+      db.ui.sortMode = v
+      local HeaderCtrl = NS.UI and NS.UI.HeaderController
+      if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
+      rerender()
+    end,
+    function() return SORT_OPTIONS end,
+    nil,
+    C, T
+  )
+
+  sortDropdown:SetWidth(160)
+  sortDropdown:SetPoint("RIGHT", header.viewToggle, "LEFT", -8, 0)
+  sortDropdown:SetPoint("TOP", bar, "TOP", 0, -6)
+  f.SortDropdown = sortDropdown
+
+  UpdateSortVisibility = function()
+    local cat = UI.activeCategory or ""
+    if SORT_CAT_EXCLUDED[cat] then
+      sortDropdown:Hide()
+    else
+      sortDropdown:Show()
+      if sortDropdown.ApplyText then sortDropdown:ApplyText() end
+    end
+  end
+
   local search = CreateFrame("EditBox", nil, bar, "BackdropTemplate")
   Backdrop(search, T.panel, T.border)
   search:SetPoint("LEFT", endeavorsTopBtn, "RIGHT", 8, 0)
-  if header.viewToggle and header.viewToggle.GetLeft then
-    search:SetPoint("RIGHT", header.viewToggle, "LEFT", -8, 0)
-  else
-    search:SetPoint("RIGHT", -8, 0)
-  end
+  search:SetPoint("RIGHT", sortDropdown, "LEFT", -8, 0)
   search:SetHeight(24)
   search:SetAutoFocus(false)
   search:SetFontObject(GameFontHighlightSmall)
@@ -1276,6 +1329,7 @@ function L:CreateShell()
   f:HookScript("OnShow", function()
     EnsureTicker()
     if UpdateTopTabs then UpdateTopTabs() end
+    if UpdateSortVisibility then UpdateSortVisibility() end
   end)
 
   f:HookScript("OnHide", function()
@@ -1284,6 +1338,7 @@ function L:CreateShell()
 
   EnsureTicker()
   if UpdateTopTabs then UpdateTopTabs() end
+  if UpdateSortVisibility then UpdateSortVisibility() end
 
   return f
 end

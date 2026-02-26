@@ -99,8 +99,8 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       id=85946,
       type="vendor",
       faction="Alliance",
-      zone="Stormshield, Ashran",
-      worldmap="622:4440:7520"
+      zone="Stormshield",
+      worldmap="622:4449:7483"
     },
     items={
       {decorID=12203, source={type="vendor", itemID=258743, currency="8", currencytype="gold"}, requirements={rep="true"}},
@@ -237,7 +237,7 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       type="vendor",
       faction="Neutral",
       zone="Talador",
-      worldmap="535:7040:5740"
+      worldmap="535:7041:5754"
     },
     items={
       {decorID=12202, source={type="vendor", itemID=258742, currency="10", currencytype="gold"}, requirements={quest={id=33582}}},

@@ -26,4 +26,8 @@
 	
 	<!-- WW -->
     <Script file="WarWithin/KhazAlgar.lua"/>
+	
+	<!-- Midnight -->
+	<Script file="Midnight/QuelThalas.lua"/>
+	<Script file="Midnight/Arcantina.lua"/>
 </Ui>

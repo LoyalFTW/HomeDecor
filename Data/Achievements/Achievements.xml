@@ -29,7 +29,8 @@
     <Script file="WarWithin/KhazAlgar.lua"/>
 	
 	<!-- Midnight -->
-    <!-- <Script file="Midnight/All.lua"/> -->
+	<Script file="Midnight/QuelThalas.lua"/>
+	<Script file="Midnight/VoidStorm.lua"/>
 	
 	<!-- PVP -->
     <!-- <Script file="PVP/All.lua"/> -->

@@ -19,4 +19,6 @@ NS.Data.Quests["Warlords"]["Draenor"] = {
   { decorID=12201, source={ type="quest" } },
   { decorID=12202, title="Scroll of the Adherent",  source={type="quest", itemID=1263927}, requirements={quest={id=33582, title="Kura's Vengeance"}, rep="true"}},
   { decorID=12205, source={ type="quest" } },
-  { decorID=12209, source={ type="quest" } }}
+  { decorID=12209, source={ type="quest" } },
+  { decorID=12208, source={ type="quest" } },
+}

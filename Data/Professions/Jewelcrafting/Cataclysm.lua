@@ -8,4 +8,5 @@ NS.Data.Professions["Jewelcrafting"] = NS.Data.Professions["Jewelcrafting"] or {
 NS.Data.Professions["Jewelcrafting"]["Cataclysm"] = {
   {decorID=5342, decorType="Wall Lights", source={type="profession", skillID=1261305, itemID=249143}},
   {decorID=11496, decorType="Wall Lights", source={type="profession", skillID=1262357, itemID=257406}},
+  {decorID=11899, decorType="Tables and Desks", source={type="profession", skillID=1263577, itemID=258211}},
 }
