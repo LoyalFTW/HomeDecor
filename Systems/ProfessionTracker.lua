@@ -21,6 +21,8 @@ local PROFESSION_SKILL_LINES = {
 }
 
 local EXPANSION_NAMES = {
+    ["Midnight"] = "Mid",
+    ["Quel'Thalas"] = "Mid",
     ["Dragon Isles"] = "DF",
     ["Khaz Algar"] = "TWW",
     ["Shadowlands"] = "SL",
@@ -43,7 +45,7 @@ PT.PROFESSION_ORDER = {
 }
 
 PT.EXPANSION_ORDER = {
-    "TWW", "DF", "SL", "BfA", "Legion", "WoD",
+    "Mid", "TWW", "DF", "SL", "BfA", "Legion", "WoD",
     "MoP", "Cata", "WotLK", "TBC", "Classic"
 }
 

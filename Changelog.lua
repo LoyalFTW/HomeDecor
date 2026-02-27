@@ -1,17 +1,9 @@
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Feb 24, 2026
-* Added a quick bar built into the addon
-  now you can access your items while in the
-  housing edit mode. 
+Feb 27, 2026
+* Updated the scanners to actually have Midnight 
+stuff in them and show them properly for professions. 
 
-* Added lots of options for copy/drag/batch copy
-  delete etc into the edit mode as well
-
-* Addon conflict dialog shows up the moment you open the 
-  housing editor if another addon is already handling editing 
-  features. So if you wish to disable mine you can. Also options
-  menu so you can turn it back on if you want and keybind mode
   
 ]]

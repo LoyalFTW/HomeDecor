@@ -17,6 +17,8 @@ local SKILL_LINE_TO_NAME = {
 }
 
 local EXPANSION_NAME_MAP = {
+    ["Midnight"]         = "Midnight",
+    ["Quel'Thalas"]      = "Midnight",
     ["Dragon Isles"]     = "Dragon Isles",
     ["Khaz Algar"]       = "Khaz Algar",
     ["Shadowlands"]      = "Shadowlands",
