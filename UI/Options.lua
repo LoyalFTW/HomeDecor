@@ -539,6 +539,7 @@ function Options:Ensure()
 
   if Settings and Settings.RegisterCanvasLayoutSubcategory then
     local vendorCategory = Settings.RegisterCanvasLayoutSubcategory(panel.category, vendorPanel, vendorPanel.name)
+    Settings.RegisterAddOnCategory(vendorCategory)
     vendorPanel.category = vendorCategory
     if panel.category then
       panel.category.collapsed = true
@@ -852,6 +853,7 @@ function Options:Ensure()
 
   if Settings and Settings.RegisterCanvasLayoutSubcategory then
     local lumberCategory = Settings.RegisterCanvasLayoutSubcategory(panel.category, lumberPanel, lumberPanel.name)
+    Settings.RegisterAddOnCategory(lumberCategory)
     lumberPanel.category = lumberCategory
   else
     lumberPanel.parent = panel
@@ -1480,6 +1482,7 @@ function Options:Ensure()
 
   if Settings and Settings.RegisterCanvasLayoutSubcategory then
     local editorCategory = Settings.RegisterCanvasLayoutSubcategory(panel.category, editorPanel, editorPanel.name)
+    Settings.RegisterAddOnCategory(editorCategory)
     editorPanel.category = editorCategory
   else
     editorPanel.parent = panel
