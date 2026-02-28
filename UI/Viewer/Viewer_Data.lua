@@ -15,6 +15,7 @@ Data.TEX_HORDE = "Interface\\Icons\\INV_BannerPVP_01"
 
 local EXPANSION_RANK = {
   Classic = 1,
+  Jewelcrafting = 1, Leatherworking = 1, Tailoring = 1,
   BurningCrusade = 2, Outland = 2,
   Wrath = 3, Northrend = 3,
   Cataclysm = 4, Cata = 4,
@@ -22,7 +23,7 @@ local EXPANSION_RANK = {
   Warlords = 6, WarlordsOfDraenor = 6, Draenor = 6,
   Legion = 7,
   BattleForAzeroth = 8, Kul = 8, KulTiras = 8, ["Kul Tiran"] = 8, Zandalar = 8,
-  Shadowlands = 9,t
+  Shadowlands = 9,
   Dragonflight = 10, Dragon = 10, DragonIsles = 10, ["Dragon Isles"] = 10,
   WarWithin = 11, TheWarWithin = 11, Khaz = 11, KhazAlgar = 11, ["Khaz Algar"] = 11,
   Midnight = 12,
