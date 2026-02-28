@@ -14,7 +14,10 @@ local type = _G.type
 
 local function GetNPCIDFromGUID(guid)
   if type(guid) ~= "string" then return nil end
-  local npcID = guid:match("Creature%-%d+%-%d+%-%d+%-%d+%-(%d+)%-%x+")
+  local ok, npcID = pcall(function()
+    return guid:match("Creature%-%d+%-%d+%-%d+%-%d+%-(%d+)%-%x+")
+  end)
+  if not ok then return nil end
   return npcID and tonumber(npcID) or nil
 end
 
@@ -63,11 +66,14 @@ end
 local function AppendVendorInfo(tooltip)
   if not IsEnabled() then return end
 
-  local unit, guid = tooltip:GetUnit()
+  local ok, unit, guid = pcall(function() return tooltip:GetUnit() end)
+  if not ok then return end
   if not unit and not guid then return end
 
   if not guid and unit then
-    guid = UnitGUID(unit)
+    local guidOk, guidVal = pcall(UnitGUID, unit)
+    if not guidOk then return end
+    guid = guidVal
   end
   if not guid then return end
 
