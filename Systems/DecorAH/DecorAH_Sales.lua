@@ -239,20 +239,23 @@ function Sales.SummarizeByItem(sales)
   for _, sale in ipairs(sales) do
     local itemID = sale.itemID
 
-    if not summary[itemID] then
-      summary[itemID] = {
-        itemID = itemID,
-        name = sale.name,
-        itemLink = sale.itemLink,
-        count = 0,
-        gold = 0,
-        sales = 0,
-      }
-    end
+    if not itemID then
+    else
+      if not summary[itemID] then
+        summary[itemID] = {
+          itemID = itemID,
+          name = sale.name,
+          itemLink = sale.itemLink,
+          count = 0,
+          gold = 0,
+          sales = 0,
+        }
+      end
 
-    summary[itemID].count = summary[itemID].count + (sale.count or 0)
-    summary[itemID].gold = summary[itemID].gold + (sale.gold or 0)
-    summary[itemID].sales = summary[itemID].sales + 1
+      summary[itemID].count = summary[itemID].count + (sale.count or 0)
+      summary[itemID].gold = summary[itemID].gold + (sale.gold or 0)
+      summary[itemID].sales = summary[itemID].sales + 1
+    end
   end
 
   for itemID, data in pairs(summary) do
