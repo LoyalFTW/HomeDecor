@@ -291,6 +291,7 @@ function R.AddMiniPinsForMap(mapID)
   end
 end
 
+
 function R.ShowZoneBadges(continentMapID)
   P.ClearBadges()
   local style, color, size = U.GetPinSettings()
@@ -372,6 +373,91 @@ function R.ShowZoneBadges(continentMapID)
       pcall(function()
         HBDPins:AddWorldMapIconMap(ADDON, frame, continentMapID, zoneCenter.x, zoneCenter.y, HBD_PINS_WORLDMAP_SHOW_CONTINENT)
       end)
+    end
+  end
+
+  for srcContinentID, destContinentID in pairs(D.continentZoneBadgesOnParent or {}) do
+    if destContinentID == continentMapID then
+      local excludedBySource = D.continentZoneBadgeExclusionsOnParent and D.continentZoneBadgeExclusionsOnParent[srcContinentID]
+      local excludedForDest = excludedBySource and excludedBySource[continentMapID]
+      for zoneMapID, continentID in pairs(D.zoneToContinent) do
+        if continentID == srcContinentID and not D.SPECIAL_ZONES[zoneMapID] then
+          local isExcluded = excludedForDest and excludedForDest[zoneMapID]
+          if not isExcluded then
+            local count
+            if hideCompleted then
+              count = 0
+              local vendorList = D.mapIndex[zoneMapID]
+              if vendorList then
+                for i = 1, #vendorList do
+                  if not IsVendorFullyCompleted(vendorList[i].id) then
+                    count = count + 1
+                  end
+                end
+              end
+            else
+              count = D.CountVendorsInZone(zoneMapID)
+            end
+            if count > 0 then
+              local zoneCenter = D.GetZoneCenterOnMap(zoneMapID, continentMapID)
+              if zoneCenter then
+                local zoneName = "Zone"
+                if C_Map and C_Map.GetMapInfo then
+                  local info = C_Map.GetMapInfo(zoneMapID)
+                  if info then zoneName = info.name end
+                end
+                local frame = P.EnsureBadgePool()
+                frame.badgeData = { mapID = zoneMapID, zoneName = zoneName, vendorCount = count }
+                frame:SetSize(PIN_SIZE_BADGE * size, PIN_SIZE_BADGE * size)
+                P.ApplyBadgeStyle(frame, style, color, size)
+                frame.count:SetText(tostring(count))
+                frame:SetScript("OnEnter", function(self)
+                  if not self.badgeData then return end
+                  local badgeData = self.badgeData
+                  SetWorldOwnerWithAnchor(self)
+                  GameTooltip:SetText((badgeData.vendorCount or 0) .. " Vendors", 1, 1, 1)
+                  GameTooltip:AddLine(" ")
+                  GameTooltip:AddLine(L["MAPPIN_LEFT_CLICK_ZONE_MAP"], 0.5, 0.5, 0.5)
+                  GameTooltip:AddLine(L["MAPPIN_RIGHT_CLICK_ALL_VENDORS"], 1, 0.82, 0)
+                  GameTooltip:Show()
+                end)
+                frame:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
+                frame:SetScript("OnClick", function(self, button)
+                  if not self.badgeData then return end
+                  if button == "LeftButton" and self.badgeData.mapID then
+                    if WorldMapFrame and type(WorldMapFrame.SetMapID) == "function" then
+                      WorldMapFrame:SetMapID(self.badgeData.mapID)
+                    end
+                  end
+                  if button == "RightButton" and self.badgeData.mapID then
+                    local vendors = {}
+                    local seenVendorIDs = {}
+                    local vendorList = D.mapIndex[self.badgeData.mapID]
+                    if vendorList and #vendorList > 0 then
+                      for i = 1, #vendorList do
+                        local vendor = vendorList[i]
+                        if not seenVendorIDs[vendor.id] then
+                          seenVendorIDs[vendor.id] = true
+                          vendors[#vendors + 1] = { id = vendor.id, data = vendor }
+                        end
+                      end
+                    end
+                    if #vendors > 0 then
+                      local MapPopup = NS.UI and NS.UI.MapPopup
+                      if MapPopup and MapPopup.ShowMultiple then MapPopup:ShowMultiple(vendors) end
+                    end
+                  end
+                end)
+                frame:Show()
+                P.usedBadges[frame] = true
+                pcall(function()
+                  HBDPins:AddWorldMapIconMap(ADDON, frame, continentMapID, zoneCenter.x, zoneCenter.y, HBD_PINS_WORLDMAP_SHOW_CONTINENT)
+                end)
+              end
+            end
+          end
+        end
+      end
     end
   end
 end

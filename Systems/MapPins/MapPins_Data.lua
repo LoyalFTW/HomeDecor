@@ -21,7 +21,24 @@ D.SPECIAL_ZONES = { [2352] = true, [2351] = true }
 D.CONTINENT_IDS = {
   [619] = true, [875] = true, [876] = true, [1978] = true, [2274] = true,
   [13] = true, [12] = true, [101] = true, [113] = true, [948] = true,
-  [905] = true, [424] = true, [572] = true,
+  [905] = true, [424] = true, [572] = true, [2537] = true,
+}
+
+D.continentZoneBadgesOnParent = {
+  [2537] = 13,
+}
+
+D.continentZoneBadgeExclusionsOnParent = {
+  [2537] = {
+    [13] = {
+      [2405] = true,
+      [15958] = true,
+      [2444] = true,
+      [2694] = true,
+      [2576] = true,
+      [2413] = true,
+    },
+  },
 }
 
 function D.BuildIndex()
