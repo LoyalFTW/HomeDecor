@@ -226,7 +226,7 @@ local function PopulateRow(row, yOffset, data)
   row:ClearAllPoints()
   row:SetPoint("TOPLEFT", 10, yOffset)
 
-  local tex = C_Item.GetItemIconByID(data.itemID)
+  local tex = data.itemID and C_Item.GetItemIconByID(data.itemID) or nil
   row.icon:SetTexture(tex or "Interface\\Icons\\INV_Misc_QuestionMark")
 
   row.nameText:SetText(data.name or L["UNKNOWN"])

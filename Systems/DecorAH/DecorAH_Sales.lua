@@ -386,6 +386,9 @@ DetectAndRecordCollections = function(oldSnapshot, newSnapshot)
       local itemID = LookupItemIDByName(itemName)
 
       for _ = 1, collectedCount do
+        if not itemID then
+          break
+        end
         local success = Sales.RecordSale(itemID, nil, 1, data.money, nil, itemName)
         if success then
           recordedCount = recordedCount + 1
