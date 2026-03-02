@@ -180,4 +180,4 @@ function History.GetStorageSize()
   return (count * 50) / 1024
 end
 
-return GH
+return History
