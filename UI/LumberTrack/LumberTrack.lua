@@ -40,11 +40,13 @@ function LumberTrack:Create()
   sharedCtx = Render:Init({
     GetDB = GetDB,
     lumberIDs = db.lumberIDs or {},
-    compactMode = db.compactMode and true or false
+    compactMode = db.compactMode and true or false,
+    autoStartFarming = db.autoStartFarming and true or false,
   }) or {
     GetDB = GetDB,
     lumberIDs = db.lumberIDs or {},
-    compactMode = db.compactMode and true or false
+    compactMode = db.compactMode and true or false,
+    autoStartFarming = db.autoStartFarming and true or false,
   }
 
   local LumberList = NS.UI.LumberTrackLumberList

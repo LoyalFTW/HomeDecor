@@ -124,6 +124,8 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
     local checked = self:GetChecked() and true or false
     if db then db.autoStartFarming = checked end
     if sharedCtx then sharedCtx.autoStartFarming = checked end
+    local Render = NS.UI.LumberTrackRender
+    if Render and Render.Refresh then Render:Refresh(sharedCtx) end
   end)
   yOffset = yOffset - 35
 
