@@ -273,23 +273,15 @@ function PT:Initialize()
         self:ScanProfessions()
     end)
 
-    local eventFrame = CreateFrame("Frame")
-    eventFrame:RegisterEvent("TRADE_SKILL_SHOW")
-    eventFrame:RegisterEvent("TRADE_SKILL_LIST_UPDATE")
-    eventFrame:RegisterEvent("NEW_RECIPE_LEARNED")
-
-    eventFrame:SetScript("OnEvent", function(self, event, ...)
-        if event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_LIST_UPDATE" then
-            C_Timer.After(0.3, function()
-                PT:ScanProfessions()
-            end)
-        elseif event == "NEW_RECIPE_LEARNED" then
-            C_Timer.After(0.5, function()
-                PT:ScanProfessions()
-            end)
-        end
+    local isNewRecipe = false
+    local debouncedScan = NS.Debounce(0.35, function()
+        local delay = isNewRecipe and 0.5 or 0.3
+        isNewRecipe = false
+        C_Timer.After(delay, function() PT:ScanProfessions() end)
     end)
-
+    NS.RegisterEvent(PT, "TRADE_SKILL_SHOW",       function() debouncedScan() end)
+    NS.RegisterEvent(PT, "TRADE_SKILL_LIST_UPDATE", function() debouncedScan() end)
+    NS.RegisterEvent(PT, "NEW_RECIPE_LEARNED",      function() isNewRecipe = true; debouncedScan() end)
 end
 
 C_Timer.After(1, function()

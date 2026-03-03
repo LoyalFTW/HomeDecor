@@ -2,6 +2,7 @@ local ADDON, NS = ...
 NS.Systems = NS.Systems or {}
 local Endeavors = {}
 NS.Systems.Endeavors = Endeavors
+
 local COUPON_CURRENCY_ID       = 3363
 local SCALE_CHANGE_CUTOFF      = 1769620000
 local PRE_CAP_XP               = 1000
@@ -34,7 +35,6 @@ local state = {
     lastKnownActiveGUID  = nil,
     pendingTaskCompletions   = {},
     retryTimer               = nil,
-    refreshTimer             = nil,
     saveProgressTimer        = nil,
     couponRetryScheduled     = false,
     taskCompletionRetryGen   = 0,
@@ -480,12 +480,9 @@ function Endeavors:RefreshActivityLog()
     end
     if Endeavors.OnActivityLogReady then Endeavors.OnActivityLogReady() end
 end
+
 function Endeavors:QueueRefresh()
-    if state.refreshTimer then state.refreshTimer:Cancel() end
-    state.refreshTimer = C_Timer.NewTimer(REFRESH_DEBOUNCE_SEC, function()
-        state.refreshTimer = nil
-        self:FetchData()
-    end)
+    NS.SendMessage("HOMEDECOR_ENDEAVORS_REFRESH")
 end
 function Endeavors:GetViewingNeighborhoodGUID()
     local house = state.houseList[state.selectedHouseIndex]
@@ -723,138 +720,156 @@ function Endeavors:ExportLeaderboardCSV()
     end
     return table.concat(lines, "\n")
 end
-local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-eventFrame:RegisterEvent("NEIGHBORHOOD_INITIATIVE_UPDATED")
-eventFrame:RegisterEvent("INITIATIVE_TASKS_TRACKED_UPDATED")
-eventFrame:RegisterEvent("INITIATIVE_TASKS_TRACKED_LIST_CHANGED")
-eventFrame:RegisterEvent("INITIATIVE_TASK_COMPLETED")
-eventFrame:RegisterEvent("INITIATIVE_COMPLETED")
-eventFrame:RegisterEvent("PLAYER_HOUSE_LIST_UPDATED")
-eventFrame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
-pcall(function() eventFrame:RegisterEvent("INITIATIVE_ACTIVITY_LOG_UPDATED") end)
-eventFrame:SetScript("OnEvent", function(_, event, ...)
-    if event == "PLAYER_ENTERING_WORLD" then
-        local charName = UnitName("player")
-        if charName then DBMyChars()[charName] = true end
-        C_Timer.After(2, function()
-            if C_Housing and C_Housing.GetPlayerOwnedHouses then
-                C_Housing.GetPlayerOwnedHouses()
+
+function Endeavors:OnPlayerEnteringWorld()
+    local charName = UnitName("player")
+    if charName then DBMyChars()[charName] = true end
+    C_Timer.After(2, function()
+        if C_Housing and C_Housing.GetPlayerOwnedHouses then
+            C_Housing.GetPlayerOwnedHouses()
+        end
+    end)
+end
+
+function Endeavors:OnHouseListUpdated(event, houseInfoList)
+    state.houseList       = houseInfoList or {}
+    state.houseListLoaded = true
+    local recentManual = (GetTime() - state.lastManualSelectTime) < 2
+    if recentManual then return end
+    local selectedIndex, neighborhoodGUID = nil, nil
+    local activeGUID = C_NeighborhoodInitiative and
+                       C_NeighborhoodInitiative.GetActiveNeighborhood and
+                       C_NeighborhoodInitiative.GetActiveNeighborhood()
+    if activeGUID and houseInfoList then
+        for i, house in ipairs(houseInfoList) do
+            if house.neighborhoodGUID == activeGUID then
+                selectedIndex, neighborhoodGUID = i, activeGUID
+                break
             end
-        end)
-    elseif event == "PLAYER_HOUSE_LIST_UPDATED" then
-        local houseInfoList = ...
-        state.houseList      = houseInfoList or {}
-        state.houseListLoaded = true
-        local recentManual = (GetTime() - state.lastManualSelectTime) < 2
-        if recentManual then return end
-        local selectedIndex, neighborhoodGUID = nil, nil
-        local activeGUID = C_NeighborhoodInitiative and
-                           C_NeighborhoodInitiative.GetActiveNeighborhood and
-                           C_NeighborhoodInitiative.GetActiveNeighborhood()
-        if activeGUID and houseInfoList then
+        end
+    end
+    if not selectedIndex then
+        local savedGUID = DB().selectedHouseGUID
+        if savedGUID and houseInfoList then
             for i, house in ipairs(houseInfoList) do
-                if house.neighborhoodGUID == activeGUID then
-                    selectedIndex, neighborhoodGUID = i, activeGUID
+                if house.houseGUID == savedGUID then
+                    selectedIndex    = i
+                    neighborhoodGUID = house.neighborhoodGUID
                     break
                 end
             end
         end
-        if not selectedIndex then
-            local savedGUID = DB().selectedHouseGUID
-            if savedGUID and houseInfoList then
-                for i, house in ipairs(houseInfoList) do
-                    if house.houseGUID == savedGUID then
-                        selectedIndex    = i
-                        neighborhoodGUID = house.neighborhoodGUID
-                        break
-                    end
-                end
-            end
-        end
-        if not selectedIndex and houseInfoList and #houseInfoList > 0 then
-            selectedIndex    = 1
-            neighborhoodGUID = houseInfoList[1].neighborhoodGUID
-        end
-        if selectedIndex then
-            state.selectedHouseIndex = selectedIndex
-            state.currentHouseGUID   = houseInfoList[selectedIndex].houseGUID
-            DB().selectedHouseGUID   = state.currentHouseGUID
-            state.activeGUID         = state.currentHouseGUID
-            GetOrCreateContext(state.currentHouseGUID)
-        end
-        if neighborhoodGUID and C_NeighborhoodInitiative then
-            C_NeighborhoodInitiative.SetViewingNeighborhood(neighborhoodGUID)
-            C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo()
-            Endeavors:RequestActivityLog()
-        end
-        if Endeavors.OnHouseListUpdated then
-            Endeavors.OnHouseListUpdated(state.houseList, state.selectedHouseIndex)
-        end
-    elseif event == "NEIGHBORHOOD_INITIATIVE_UPDATED"
-        or event == "INITIATIVE_TASKS_TRACKED_UPDATED" then
-        Endeavors:QueueRefresh()
-    elseif event == "INITIATIVE_TASKS_TRACKED_LIST_CHANGED" then
-        if C_NeighborhoodInitiative and C_NeighborhoodInitiative.GetTrackedInitiativeTasks then
-            local tracked = C_NeighborhoodInitiative.GetTrackedInitiativeTasks()
-            if tracked and tracked.trackedIDs then
-                local trackedSet = {}
-                for _, id in ipairs(tracked.trackedIDs) do trackedSet[id] = true end
-                for _, task in ipairs(state.tasks) do
-                    task.tracked = trackedSet[task.id] or false
-                end
-            end
-        end
-        if Endeavors.OnDataReady then Endeavors.OnDataReady() end
-    elseif event == "INITIATIVE_TASK_COMPLETED" then
-        local taskName = ...
-        state.activityLogStale = true
-        table.insert(state.pendingTaskCompletions, {
-            taskName  = taskName,
-            timestamp = time(),
-        })
+    end
+    if not selectedIndex and houseInfoList and #houseInfoList > 0 then
+        selectedIndex    = 1
+        neighborhoodGUID = houseInfoList[1].neighborhoodGUID
+    end
+    if selectedIndex then
+        state.selectedHouseIndex = selectedIndex
+        state.currentHouseGUID   = houseInfoList[selectedIndex].houseGUID
+        DB().selectedHouseGUID   = state.currentHouseGUID
+        state.activeGUID         = state.currentHouseGUID
+        GetOrCreateContext(state.currentHouseGUID)
+    end
+    if neighborhoodGUID and C_NeighborhoodInitiative then
+        C_NeighborhoodInitiative.SetViewingNeighborhood(neighborhoodGUID)
+        C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo()
         Endeavors:RequestActivityLog()
-        state.taskCompletionRetryGen = state.taskCompletionRetryGen + 1
-        local retryGen = state.taskCompletionRetryGen
-        for _, delay in ipairs({ 30, 90, 240 }) do
-            C_Timer.After(delay, function()
-                if state.taskCompletionRetryGen ~= retryGen then return end
-                Endeavors:RequestActivityLog()
-                Endeavors:RefreshActivityLog()
-            end)
-        end
-        Endeavors:QueueRefresh()
-    elseif event == "INITIATIVE_COMPLETED" then
-        Endeavors:FetchData(true)
-    elseif event == "INITIATIVE_ACTIVITY_LOG_UPDATED" then
-        Endeavors:RefreshActivityLog()
-    elseif event == "CURRENCY_DISPLAY_UPDATE" then
-        local currencyID, quantity, totalQuantity = ...
-        if currencyID == COUPON_CURRENCY_ID and #state.pendingTaskCompletions > 0 then
-            local gains       = DBCouponGains()
-            local taskCoupons = DBTaskCoupons()
-            local completion = table.remove(state.pendingTaskCompletions)
-            if completion and quantity and quantity > 0 then
-                table.insert(gains, {
-                    taskName  = completion.taskName,
-                    amount    = quantity,
-                    character = UnitName("player") or "",
-                    timestamp = time(),
-                })
-                while #gains > 500 do table.remove(gains, 1) end
-                if completion.taskName then
-                    taskCoupons[completion.taskName] = taskCoupons[completion.taskName] or {}
-                    table.insert(taskCoupons[completion.taskName], {
-                        amount    = quantity,
-                        timestamp = time(),
-                    })
-                    local history = taskCoupons[completion.taskName]
-                    while #history > 20 do table.remove(history, 1) end
-                end
+    end
+    if Endeavors.OnHouseListUpdated_callback then
+        Endeavors.OnHouseListUpdated_callback(state.houseList, state.selectedHouseIndex)
+    end
+end
+
+function Endeavors:OnInitiativeUpdated()
+    Endeavors:QueueRefresh()
+end
+
+function Endeavors:OnTrackedListChanged()
+    if C_NeighborhoodInitiative and C_NeighborhoodInitiative.GetTrackedInitiativeTasks then
+        local tracked = C_NeighborhoodInitiative.GetTrackedInitiativeTasks()
+        if tracked and tracked.trackedIDs then
+            local trackedSet = {}
+            for _, id in ipairs(tracked.trackedIDs) do trackedSet[id] = true end
+            for _, task in ipairs(state.tasks) do
+                task.tracked = trackedSet[task.id] or false
             end
         end
     end
-end)
+    if Endeavors.OnDataReady then Endeavors.OnDataReady() end
+end
+
+function Endeavors:OnTaskCompleted(event, taskName)
+    state.activityLogStale = true
+    table.insert(state.pendingTaskCompletions, {
+        taskName  = taskName,
+        timestamp = time(),
+    })
+    Endeavors:RequestActivityLog()
+    state.taskCompletionRetryGen = state.taskCompletionRetryGen + 1
+    local retryGen = state.taskCompletionRetryGen
+    for _, delay in ipairs({ 30, 90, 240 }) do
+        C_Timer.After(delay, function()
+            if state.taskCompletionRetryGen ~= retryGen then return end
+            Endeavors:RequestActivityLog()
+            Endeavors:RefreshActivityLog()
+        end)
+    end
+    Endeavors:QueueRefresh()
+end
+
+function Endeavors:OnInitiativeCompleted()
+    Endeavors:FetchData(true)
+end
+
+function Endeavors:OnActivityLogUpdated()
+    Endeavors:RefreshActivityLog()
+end
+
+function Endeavors:OnCurrencyDisplayUpdate(event, currencyID, quantity)
+    if currencyID == COUPON_CURRENCY_ID and #state.pendingTaskCompletions > 0 then
+        local gains       = DBCouponGains()
+        local taskCoupons = DBTaskCoupons()
+        local completion = table.remove(state.pendingTaskCompletions)
+        if completion and quantity and quantity > 0 then
+            table.insert(gains, {
+                taskName  = completion.taskName,
+                amount    = quantity,
+                character = UnitName("player") or "",
+                timestamp = time(),
+            })
+            while #gains > 500 do table.remove(gains, 1) end
+            if completion.taskName then
+                taskCoupons[completion.taskName] = taskCoupons[completion.taskName] or {}
+                table.insert(taskCoupons[completion.taskName], {
+                    amount    = quantity,
+                    timestamp = time(),
+                })
+                local history = taskCoupons[completion.taskName]
+                while #history > 20 do table.remove(history, 1) end
+            end
+        end
+    end
+end
+
+NS.RegisterEvent(Endeavors, "PLAYER_ENTERING_WORLD",                function(...) Endeavors:OnPlayerEnteringWorld(...) end)
+NS.RegisterEvent(Endeavors, "PLAYER_HOUSE_LIST_UPDATED",            function(...) Endeavors:OnHouseListUpdated(...) end)
+NS.RegisterEvent(Endeavors, "NEIGHBORHOOD_INITIATIVE_UPDATED",      function(...) Endeavors:OnInitiativeUpdated(...) end)
+NS.RegisterEvent(Endeavors, "INITIATIVE_TASKS_TRACKED_UPDATED",     function(...) Endeavors:OnInitiativeUpdated(...) end)
+NS.RegisterEvent(Endeavors, "INITIATIVE_TASKS_TRACKED_LIST_CHANGED",function(...) Endeavors:OnTrackedListChanged(...) end)
+NS.RegisterEvent(Endeavors, "INITIATIVE_TASK_COMPLETED",            function(...) Endeavors:OnTaskCompleted(...) end)
+NS.RegisterEvent(Endeavors, "INITIATIVE_COMPLETED",                 function(...) Endeavors:OnInitiativeCompleted(...) end)
+NS.RegisterEvent(Endeavors, "CURRENCY_DISPLAY_UPDATE",              function(...) Endeavors:OnCurrencyDisplayUpdate(...) end)
+NS.SafeRegisterEvent(Endeavors, "INITIATIVE_ACTIVITY_LOG_UPDATED",  function(...) Endeavors:OnActivityLogUpdated(...) end)
+
+do
+    local debouncedFetch = NS.Debounce(REFRESH_DEBOUNCE_SEC, function()
+        Endeavors:FetchData()
+    end)
+    NS.OnMessage("HOMEDECOR_ENDEAVORS_REFRESH", debouncedFetch)
+end
+
+
 function Endeavors:Initialize()
 end
 return Endeavors

@@ -135,12 +135,9 @@ function VendorChecks:Enable()
   end
 end
 
-do
-  local f = CreateFrame("Frame")
-  f:RegisterEvent("PLAYER_LOGIN")
-  f:SetScript("OnEvent", function()
-    VendorChecks:Enable()
-  end)
-end
+NS.RegisterEvent(VendorChecks, "PLAYER_LOGIN", function()
+  NS.UnregisterEvent(VendorChecks, "PLAYER_LOGIN")
+  VendorChecks:Enable()
+end)
 
 return VendorChecks

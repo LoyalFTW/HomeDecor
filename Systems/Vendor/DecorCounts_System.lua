@@ -74,28 +74,15 @@ function DecorCounts:GetByItem(itemID)
 end
 
 do
-  local f = _G.CreateFrame("Frame")
-
-  local function SafeRegister(ev)
-    local ok = pcall(f.RegisterEvent, f, ev)
-    return ok
+  local clearCache = function() DecorCounts:ClearCache() end
+  local cacheEvents = {
+    "MERCHANT_CLOSED", "HOUSING_STORAGE_UPDATED", "HOUSING_STORAGE_ENTRY_UPDATED",
+    "HOUSE_DECOR_ADDED_TO_CHEST", "HOUSING_COLLECTION_UPDATED", "HOUSING_DECOR_ITEM_LEARNED",
+    "BAG_UPDATE_DELAYED", "QUEST_TURNED_IN", "ACHIEVEMENT_EARNED",
+  }
+  for _, ev in ipairs(cacheEvents) do
+    NS.SafeRegisterEvent(DecorCounts, ev, clearCache)
   end
-
-  SafeRegister("MERCHANT_CLOSED")
-  SafeRegister("HOUSING_STORAGE_UPDATED")
-  SafeRegister("HOUSING_STORAGE_ENTRY_UPDATED")
-  SafeRegister("HOUSE_DECOR_ADDED_TO_CHEST")
-
-  SafeRegister("HOUSING_COLLECTION_UPDATED")
-  SafeRegister("HOUSING_DECOR_ITEM_LEARNED")
-
-  SafeRegister("BAG_UPDATE_DELAYED")
-  SafeRegister("QUEST_TURNED_IN")
-  SafeRegister("ACHIEVEMENT_EARNED")
-
-  f:SetScript("OnEvent", function()
-    DecorCounts:ClearCache()
-  end)
 end
 
 return DecorCounts

@@ -177,25 +177,20 @@ local function ItemName(itemID)
   return nil
 end
 
-local itemLoadFrame = CreateFrame("Frame")
-local itemLoadDebounce = nil
-itemLoadFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
-itemLoadFrame:SetScript("OnEvent", function(_, _, itemID, success)
-  if success and pendingItemNames[itemID] then
-    pendingItemNames[itemID] = nil
-
+do
+  local debouncedItemRefresh = NS.Debounce(0.3, function()
     if frame and frame:IsShown() then
-      if itemLoadDebounce then itemLoadDebounce:Cancel() end
-      itemLoadDebounce = C_Timer.NewTimer(0.3, function()
-        itemLoadDebounce = nil
-        if frame and frame:IsShown() then
-          if invalidateDataRowsFn then invalidateDataRowsFn() end
-          if refreshTableFn then refreshTableFn() end
-        end
-      end)
+      if invalidateDataRowsFn then invalidateDataRowsFn() end
+      if refreshTableFn then refreshTableFn() end
     end
-  end
-end)
+  end)
+  NS.RegisterEvent(DH, "ITEM_DATA_LOAD_RESULT", function(itemID, success)
+    if success and pendingItemNames[itemID] then
+      pendingItemNames[itemID] = nil
+      debouncedItemRefresh()
+    end
+  end)
+end
 
 local reagentCache = {}
 
@@ -1613,11 +1608,8 @@ function DH:Create(parentFrame, embedded)
     ApplyCanvasScale()
   end
 
-  local ahEventFrame = CreateFrame("Frame")
-  ahEventFrame:RegisterEvent("AUCTION_HOUSE_SHOW")
-  ahEventFrame:SetScript("OnEvent", function()
+  NS.RegisterEvent(DH, "AUCTION_HOUSE_SHOW", function()
     if not Queue or not Auctionator then return end
-
     local materials = Queue.GetTotalMaterials()
     if materials and next(materials) then
       C_Timer.After(1.5, function()

@@ -403,49 +403,34 @@ end
 
 InitMailTracking = function()
   if mailFrame then return end
-  mailFrame = CreateFrame("Frame")
-  mailFrame:RegisterEvent("MAIL_SHOW")
-  mailFrame:RegisterEvent("MAIL_INBOX_UPDATE")
-  mailFrame:RegisterEvent("MAIL_CLOSED")
+  mailFrame = {}  
 
-  local isMailOpen = false
+  local isMailOpen    = false
   local snapshotReady = false
 
-  local pendingUpdate = false
-
-  mailFrame:SetScript("OnEvent", function(self, event, ...)
-    if event == "MAIL_SHOW" then
-      isMailOpen = true
-      snapshotReady = false
-      pendingUpdate = false
-      C_Timer.After(0.5, function()
-        if isMailOpen then
-          mailSnapshot = TakeMailSnapshot()
-          snapshotReady = true
-        end
-      end)
-
-    elseif event == "MAIL_INBOX_UPDATE" then
-      if not isMailOpen or not snapshotReady then return end
-      if not pendingUpdate then
-        pendingUpdate = true
-        C_Timer.After(0.3, function()
-          pendingUpdate = false
-          if not isMailOpen or not snapshotReady then return end
-          local newSnapshot = TakeMailSnapshot()
-          if mailSnapshot then
-            DetectAndRecordCollections(mailSnapshot, newSnapshot)
-          end
-          mailSnapshot = newSnapshot
-        end)
+  NS.RegisterEvent(Sales, "MAIL_SHOW", function()
+    isMailOpen    = true
+    snapshotReady = false
+    C_Timer.After(0.5, function()
+      if isMailOpen then
+        mailSnapshot  = TakeMailSnapshot()
+        snapshotReady = true
       end
+    end)
+  end)
 
-    elseif event == "MAIL_CLOSED" then
-      isMailOpen = false
-      snapshotReady = false
-      pendingUpdate = false
-      mailSnapshot = {}
-    end
+  local debouncedMailUpdate = NS.Debounce(0.3, function()
+    if not isMailOpen or not snapshotReady then return end
+    local newSnapshot = TakeMailSnapshot()
+    if mailSnapshot then DetectAndRecordCollections(mailSnapshot, newSnapshot) end
+    mailSnapshot = newSnapshot
+  end)
+  NS.RegisterEvent(Sales, "MAIL_INBOX_UPDATE", debouncedMailUpdate)
+
+  NS.RegisterEvent(Sales, "MAIL_CLOSED", function()
+    isMailOpen    = false
+    snapshotReady = false
+    mailSnapshot  = {}
   end)
 end
 function Sales.Initialize()

@@ -4,6 +4,7 @@ NS.Systems = NS.Systems or {}
 
 local VendorNPCTooltip = {}
 NS.Systems.VendorNPCTooltip = VendorNPCTooltip
+
 local L = NS.L
 
 local _G = _G
@@ -119,12 +120,9 @@ function VendorNPCTooltip:Enable()
   end
 end
 
-do
-  local f = _G.CreateFrame("Frame")
-  f:RegisterEvent("PLAYER_LOGIN")
-  f:SetScript("OnEvent", function()
-    VendorNPCTooltip:Enable()
-  end)
-end
+NS.RegisterEvent(VendorNPCTooltip, "PLAYER_LOGIN", function()
+  NS.UnregisterEvent(VendorNPCTooltip, "PLAYER_LOGIN")
+  VendorNPCTooltip:Enable()
+end)
 
 return VendorNPCTooltip

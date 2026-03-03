@@ -63,7 +63,8 @@ function PriceSource.GetItemPrice(itemID, forceSource)
 
   if IsCacheStale() then PriceSource.FlushPriceCache() end
 
-  local preferred = (forceSource == nil) and (db() and db().preferredSource) or forceSource
+  local dbProfile = db()
+  local preferred = (forceSource == nil) and (dbProfile and dbProfile.preferredSource) or forceSource
 
   if preferred == "TSM" then
     local p = GetTSMPrice(itemID)
@@ -159,13 +160,11 @@ function PriceSource.FormatGold(copper, full)
   return prefix .. ("%dc"):format(absCopper)
 end
 
-local tsmFrame = CreateFrame("Frame")
-tsmFrame:RegisterEvent("ADDON_LOADED")
-tsmFrame:SetScript("OnEvent", function(self, _, addonName)
+NS.RegisterEvent(PriceSource, "ADDON_LOADED", function(addonName)
   if addonName == "TradeSkillMaster" or addonName == "TSM_AppHelper" then
     PriceSource.FlushPriceCache()
-    self:UnregisterEvent("ADDON_LOADED")
+    NS.UnregisterEvent(PriceSource, "ADDON_LOADED")
   end
 end)
 
-return PS
+return PriceSource

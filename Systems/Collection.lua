@@ -142,33 +142,21 @@ function Collection:GetState(it)
     return self:IsCollected(it) and Collection.State.COLLECTED or Collection.State.NOT_COLLECTED
 end
 
-local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")
-eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-
-eventFrame:SetScript("OnEvent", function(_, event, decorID)
-    if event == "HOUSE_DECOR_ADDED_TO_CHEST" then
-        if decorID then
-            decorCache[decorID] = nil
-            NotifyChanged(decorID)
-        else
-            wipe(decorCache)
-            NotifyChanged(-1)
-        end
-        return
-    end
-
-    if event == "PLAYER_ENTERING_WORLD" then
+NS.RegisterEvent(Collection, "HOUSE_DECOR_ADDED_TO_CHEST", function(decorID)
+    if decorID then
+        decorCache[decorID] = nil
+        NotifyChanged(decorID)
+    else
         wipe(decorCache)
-        if C_Timer and C_Timer.After then
-            C_Timer.After(0.5, function()
-                NotifyChanged(-1)
-            end)
-        else
-            NotifyChanged(-1)
-        end
-        return
+        NotifyChanged(-1)
     end
+end)
+
+NS.RegisterEvent(Collection, "PLAYER_ENTERING_WORLD", function()
+    wipe(decorCache)
+    C_Timer.After(0.5, function()
+        NotifyChanged(-1)
+    end)
 end)
 
 return Collection

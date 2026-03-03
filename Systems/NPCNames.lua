@@ -28,6 +28,7 @@ local queuedByNpcId    = {}
 local pendingQueue     = {}
 
 local isPumping        = false
+local pendingHead      = 1   
 local listeners        = {}
 local callbacksByNpcId = {}
 
@@ -175,6 +176,10 @@ local function queueNpc(npcID)
   pendingQueue[#pendingQueue + 1] = npcID
 end
 
+local function pendingCount()
+  return #pendingQueue - pendingHead + 1
+end
+
 local function backoffDelay(npcID)
   local tries = attemptsByNpcId[npcID] or 1
   local delay = BASE_DELAY * (1.35 ^ (tries - 1))
@@ -194,10 +199,12 @@ local function pumpQueue()
     local budget = PER_TICK_BUDGET
     local retryList = {}
 
-    while budget > 0 and #pendingQueue > 0 do
+    while budget > 0 and pendingHead <= #pendingQueue do
       budget = budget - 1
 
-      local npcID = tremove(pendingQueue, 1)
+      local npcID = pendingQueue[pendingHead]
+      pendingQueue[pendingHead] = nil
+      pendingHead = pendingHead + 1
       queuedByNpcId[npcID] = nil
 
       local cached = cacheByNpcId[npcID]
@@ -209,7 +216,6 @@ local function pumpQueue()
         local name = resolveNow(npcID)
         if name then
           cacheByNpcId[npcID] = name
-    savePersisted(npcID, name)
           savePersisted(npcID, name)
           attemptsByNpcId[npcID] = nil
           fireResolved(npcID, name)
@@ -235,13 +241,13 @@ local function pumpQueue()
         for i = 1, #retryList do
           queueNpc(retryList[i])
         end
-        if #pendingQueue > 0 then pumpQueue() end
+        if pendingCount() > 0 then pumpQueue() end
       end)
 
       return
     end
 
-    if #pendingQueue > 0 then
+    if pendingCount() > 0 then
       pumpQueue()
     end
   end)
@@ -322,6 +328,7 @@ function NPCNames.ClearCache()
   for k in pairs(queuedByNpcId) do queuedByNpcId[k] = nil end
   for k in pairs(callbacksByNpcId) do callbacksByNpcId[k] = nil end
   for i = #pendingQueue, 1, -1 do pendingQueue[i] = nil end
+  pendingHead = 1
 end
 
 function NPCNames.PrefetchVendors(vendors)

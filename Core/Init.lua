@@ -37,10 +37,11 @@ NS.UI.Tooltips         = NS.UI.Tooltips          or {}
 
 local AceAddon = LibStub("AceAddon-3.0")
 local AceDB    = LibStub("AceDB-3.0")
+local AceConsole = LibStub("AceConsole-3.0")
 local LDB      = LibStub("LibDataBroker-1.1")
 local LDBIcon  = LibStub("LibDBIcon-1.0")
 
-local Addon = AceAddon:NewAddon(ADDON)
+local Addon = AceAddon:NewAddon(ADDON, "AceConsole-3.0")
 NS.Addon = Addon
 
 local defaults = {
@@ -288,7 +289,7 @@ end
 
 NS.UI.SetMinimapHidden = SetMinimapHidden
 
-local function HandleSlash(msg)
+function Addon:HandleSlash(msg)
   msg = tostring(msg or ""):lower():trim()
   local cmd, rest = msg:match("^(%S+)%s*(.*)$")
 
@@ -366,10 +367,6 @@ function Addon:OnInitialize()
   self.db = AceDB:New("HomeDecorDB", defaults)
   NS.db = self.db
 
-  if NS.Systems.Endeavors then
-    NS.Systems.Endeavors:Initialize()
-  end
-
   if self.db.profile and self.db.profile.favorites then
     local favs = self.db.profile.favorites
     local removed = 0
@@ -391,9 +388,8 @@ function Addon:OnInitialize()
     LDBIcon:Register(ADDON, minimapObject, self.db.profile.minimap)
   end
 
-  SLASH_HOMEDECOR1 = "/hd"
-  SLASH_HOMEDECOR2 = "/homedecor"
-  SlashCmdList["HOMEDECOR"] = HandleSlash
+  self:RegisterChatCommand("hd",        "HandleSlash")
+  self:RegisterChatCommand("homedecor", "HandleSlash")
 end
 
 function Addon:OnEnable()
@@ -444,20 +440,22 @@ function Addon:OnEnable()
       local seen = {}
       local batch = {}
       for _, expansions in pairs(profs) do
-        for _, list in pairs(expansions) do
-          if type(list) == "table" then
-            for _, entry in ipairs(list) do
-              local iid = entry.source and entry.source.itemID
-              if iid and not seen[iid] then
-                seen[iid] = true
-                batch[#batch + 1] = iid
-              end
+        if type(expansions) == "table" then
+          for _, list in pairs(expansions) do
+            if type(list) == "table" then
+              for _, entry in ipairs(list) do
+                local iid = entry.source and entry.source.itemID
+                if iid and not seen[iid] then
+                  seen[iid] = true
+                  batch[#batch + 1] = iid
+                end
 
-              if entry.reagents then
-                for _, r in ipairs(entry.reagents) do
-                  if r.itemID and not seen[r.itemID] then
-                    seen[r.itemID] = true
-                    batch[#batch + 1] = r.itemID
+                if entry.reagents then
+                  for _, r in ipairs(entry.reagents) do
+                    if r.itemID and not seen[r.itemID] then
+                      seen[r.itemID] = true
+                      batch[#batch + 1] = r.itemID
+                    end
                   end
                 end
               end

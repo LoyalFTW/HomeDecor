@@ -4,6 +4,7 @@ NS.Systems = NS.Systems or {}
 NS.Systems.ReputationAlts = NS.Systems.ReputationAlts or {}
 local RA = NS.Systems.ReputationAlts
 
+
 local type = type
 local pairs = pairs
 local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
@@ -268,15 +269,9 @@ function RA:WarmupCurrentCharacter()
   end
 end
 
-local f = CreateFrame("Frame")
-f:RegisterEvent("PLAYER_ENTERING_WORLD")
-f:SetScript("OnEvent", function()
+NS.RegisterEvent(RA, "PLAYER_ENTERING_WORLD", function()
   if RA and RA.WarmupCurrentCharacter then
-    if C_Timer and C_Timer.After then
-      C_Timer.After(3.0, function() RA:WarmupCurrentCharacter() end)
-    else
-      RA:WarmupCurrentCharacter()
-    end
+    C_Timer.After(3.0, function() RA:WarmupCurrentCharacter() end)
   end
 end)
 

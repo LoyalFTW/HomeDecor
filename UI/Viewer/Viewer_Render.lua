@@ -1439,8 +1439,6 @@ end
 
                     if TT and TT.Attach then TT:Attach(fr, it) end
 
-                    local db = U and U.DB and U.DB()
-                    local ui = (db and db.ui) or {}
                     local showDropsBadge = (ui.activeCategory == "Drops") or ((it and it.source and it.source.type) == "drop")
                     if showDropsBadge and DropPanel and DropPanel.AttachBadge then
                         DropPanel:AttachBadge(fr, it, "tile")
@@ -1599,8 +1597,6 @@ end
 
                     if TT and TT.Attach then TT:Attach(fr, it) end
 
-                    local db = U and U.DB and U.DB()
-                    local ui = (db and db.ui) or {}
                     local showDropsBadge = (ui.activeCategory == "Drops") or ((it and it.source and it.source.type) == "drop")
                     if showDropsBadge and DropPanel and DropPanel.AttachBadge then
                         DropPanel:AttachBadge(fr, it, "list")

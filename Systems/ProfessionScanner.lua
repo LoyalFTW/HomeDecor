@@ -356,12 +356,10 @@ function PS:Initialize()
         ScanOnLogin(charKey)
     end)
 
-    local f = CreateFrame("Frame")
-    f:RegisterEvent("TRADE_SKILL_SHOW")
-    f:RegisterEvent("TRADE_SKILL_LIST_UPDATE")
-    f:RegisterEvent("NEW_RECIPE_LEARNED")
-    f:SetScript("OnEvent", function(_, event)
-        local delay = (event == "NEW_RECIPE_LEARNED") and 0.5 or 0.3
+    local isNewRecipe = false
+    local debouncedScan = NS.Debounce(0.35, function()
+        local delay = isNewRecipe and 0.5 or 0.3
+        isNewRecipe = false
         C_Timer.After(delay, function()
             ScanOpenProfession(GetCharKey())
 
@@ -385,7 +383,11 @@ function PS:Initialize()
                 NS.UI.AltsProfessions:OnScanComplete()
             end
         end)
-    end)
+    end)  
+
+    NS.RegisterEvent(PS, "TRADE_SKILL_SHOW",       function() debouncedScan() end)
+    NS.RegisterEvent(PS, "TRADE_SKILL_LIST_UPDATE", function() debouncedScan() end)
+    NS.RegisterEvent(PS, "NEW_RECIPE_LEARNED",      function() isNewRecipe = true; debouncedScan() end)
 end
 
 function PS:WireAliases()
