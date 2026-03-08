@@ -112,6 +112,10 @@ L["OPT_TRACKER_HEADER"]            = "Tracker"
 L["OPT_HIGHLIGHT_ZONE"]            = "Highlight saved items when entering zone"
 L["OPT_HIGHLIGHT_ZONE_TIP"]        = "When enabled, saved items will be highlighted when you enter a new zone"
 
+L["OPT_BROWSER_HEADER"]            = "Browser"
+L["OPT_COMPACT_MODE"]              = "Open in compact mode"
+L["OPT_COMPACT_MODE_TIP"]         = "When enabled, the minimap button and slash command open the compact list view instead of the full browser"
+
 L["OPT_VENDOR_SUBTITLE"]           = "Control what HomeDecor overlays on the vendor window."
 L["OPT_SHOW_CHECKMARK"]            = "Show collected checkmark"
 L["OPT_SHOW_CHECKMARK_TIP"]        = "Show a checkmark on vendor items you already own in your housing storage"

@@ -152,5 +152,6 @@ UI\Viewer\Viewer_Search.lua
 UI\Viewer\Viewer_Frames.lua
 UI\Viewer\Viewer_Render.lua
 
+UI\CompactMode.lua
 UI\MainFrame.lua
 UI\WorldMapButton.lua

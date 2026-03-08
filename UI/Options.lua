@@ -61,6 +61,8 @@ local function ensureProfile()
   if prof.lumberTrack.autoGoal == nil then prof.lumberTrack.autoGoal = false end
   if prof.lumberTrack.accountWide == nil then prof.lumberTrack.accountWide = false end
   if prof.lumberTrack.autoStartFarming == nil then prof.lumberTrack.autoStartFarming = false end
+  prof.ui = prof.ui or {}
+  if prof.ui.compactMode == nil then prof.ui.compactMode = false end
   return prof
 end
 
@@ -350,6 +352,15 @@ function Options:Ensure()
   local cbShowFavoritesOnZone = mkCheckbox(panel, L("OPT_HIGHLIGHT_ZONE"),
     L("OPT_HIGHLIGHT_ZONE_TIP"))
   cbShowFavoritesOnZone:SetPoint("TOPLEFT", 32, y)
+  y = y - 34
+
+  local browserHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  browserHeader:SetPoint("TOPLEFT", 16, y)
+  browserHeader:SetText(L("OPT_BROWSER_HEADER"))
+  y = y - 24
+
+  local cbCompactMode = mkCheckbox(panel, L("OPT_COMPACT_MODE"), L("OPT_COMPACT_MODE_TIP"))
+  cbCompactMode:SetPoint("TOPLEFT", 32, y)
 
   local function syncFromDB()
     local prof = ensureProfile()
@@ -361,6 +372,7 @@ function Options:Ensure()
 
     local tracker = prof.tracker or {}
     cbShowFavoritesOnZone:SetChecked(tracker.showFavoritesOnZoneEnter ~= false)
+    cbCompactMode:SetChecked(bool(prof.ui and prof.ui.compactMode))
 
     if prof.mapPins.pinStyle == "dot" then
       _G.UIDropDownMenu_SetText(ddPinStyle, L("OPT_PIN_DOT"))
@@ -428,6 +440,21 @@ function Options:Ensure()
     if not prof then return end
     prof.tracker = prof.tracker or {}
     prof.tracker.showFavoritesOnZoneEnter = self:GetChecked() and true or false
+  end)
+
+  cbCompactMode:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.ui = prof.ui or {}
+    prof.ui.compactMode = val
+    if val then
+      local MF = NS.UI and NS.UI.MainFrame
+      if MF and MF:IsShown() then MF:Hide() end
+    else
+      local CM = NS.UI and NS.UI.CompactMode
+      if CM and CM.frame and CM.frame:IsShown() then CM.frame:Hide() end
+    end
   end)
 
   panel:SetScript("OnShow", syncFromDB)

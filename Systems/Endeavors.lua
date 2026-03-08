@@ -819,7 +819,7 @@ function Endeavors:OnTaskCompleted(event, taskName)
 end
 
 function Endeavors:OnInitiativeCompleted()
-    Endeavors:FetchData()
+    Endeavors:FetchData(true)
 end
 
 function Endeavors:OnActivityLogUpdated()

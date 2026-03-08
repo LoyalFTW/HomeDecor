@@ -113,6 +113,10 @@ L["OPT_TRACKER_HEADER"]            = "Tracker"
 L["OPT_HIGHLIGHT_ZONE"]            = "Mettre en évidence les objets sauvegardés en entrant dans la zone"
 L["OPT_HIGHLIGHT_ZONE_TIP"]        = "Si activé, les objets sauvegardés seront mis en évidence lors de l'entrée dans une nouvelle zone"
 
+L["OPT_BROWSER_HEADER"]            = "Navigateur"
+L["OPT_COMPACT_MODE"]              = "Ouvrir en mode compact"
+L["OPT_COMPACT_MODE_TIP"]         = "Si activé, le bouton de minicarte et la commande slash ouvrent la vue liste compacte au lieu du navigateur complet"
+
 L["OPT_VENDOR_SUBTITLE"]           = "Contrôle ce que HomeDecor affiche en superposition sur la fenêtre du marchand."
 L["OPT_SHOW_CHECKMARK"]            = "Afficher la coche collecté"
 L["OPT_SHOW_CHECKMARK_TIP"]        = "Affiche une coche sur les articles du marchand déjà possédés dans votre stockage immobilier"

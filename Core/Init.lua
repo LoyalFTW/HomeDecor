@@ -51,6 +51,7 @@ local defaults = {
       viewMode = "Icon",
       activeCategory = "Achievements",
       search = "",
+      compactMode = false,
     },
 
     filters = {

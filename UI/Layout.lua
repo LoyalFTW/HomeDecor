@@ -40,6 +40,7 @@ local function getDB()
   if not ui.expanded then ui.expanded = {} end
   if ui.search == nil then ui.search = "" end
   if not ui.sortMode then ui.sortMode = "expAsc" end
+  if ui.compactMode == nil then ui.compactMode = false end
 
   profile.filters = profile.filters or {}
   if FiltersSys and FiltersSys.EnsureDefaults then
@@ -252,7 +253,7 @@ local function dockScale(frame, header)
     value:SetPoint("LEFT", (slider or label), "RIGHT", 8, 0)
   end
 
-  local rightEdge = header.trackersBtn or header.closeBtn or header
+  local rightEdge = header.compactBtn or header.trackersBtn or header.closeBtn or header
   group:ClearAllPoints()
   group:SetPoint("LEFT", header.controls, "LEFT", 10, 0)
   group:SetPoint("RIGHT", rightEdge, "LEFT", -12, 0)
@@ -501,6 +502,41 @@ function L:CreateShell()
     self:SetScript("OnUpdate", nil)
     self._hideTimer = nil
   end)
+
+  local compactBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  header.compactBtn = compactBtn
+  Backdrop(compactBtn, T.panel, T.border)
+  compactBtn:SetSize(72, 20)
+  compactBtn:SetPoint("RIGHT", trackersBtn, "LEFT", -6, 0)
+  Hover(compactBtn, T.panel, T.hover)
+
+  local compactText = NewFS(compactBtn, "GameFontNormal")
+  compactBtn.text = compactText
+  compactText:SetPoint("CENTER", 0, 0)
+  compactText:SetText("Compact")
+  compactText:SetTextColor(unpack(ACCENT))
+  compactBtn:SetFrameLevel(header:GetFrameLevel() + 6)
+  compactText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
+  compactText:SetShadowColor(0, 0, 0, 0)
+  compactText:SetShadowOffset(0, 0)
+  compactText:SetDrawLayer("OVERLAY", 7)
+
+  compactBtn:SetScript("OnClick", function()
+    local CM = NS.UI and NS.UI.CompactMode
+    if CM then
+      CM:Show()
+    end
+    f:Hide()
+    local db2 = NS.db and NS.db.profile
+    if db2 and db2.ui then db2.ui.compactMode = true end
+  end)
+  compactBtn:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+    GameTooltip:SetText("Compact View", 1, 1, 1)
+    GameTooltip:AddLine("Switch to a small, text-only list view.", 0.7, 0.7, 0.7, true)
+    GameTooltip:Show()
+  end)
+  compactBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
   header.viewToggle = C:Segmented(
     header, { "Icon", "List" },

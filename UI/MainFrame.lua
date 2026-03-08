@@ -47,6 +47,13 @@ function UI:CreateMainFrame()
 end
 
 function UI:ToggleMainFrame()
+  local db = NS.db and NS.db.profile
+  if db and db.ui and db.ui.compactMode then
+    local CM = self.CompactMode
+    if CM and CM.Toggle then CM:Toggle() end
+    return
+  end
+
   if not self.MainFrame then
     self:CreateMainFrame()
   end
