@@ -22,6 +22,9 @@
     <!-- The War Within -->
     <Script file="TheWarWithin/KhazAlgar.lua"/>
 
+    <!-- Midnight -->
+    <Script file="Midnight/QuelThalas.lua"/>
+
     <!-- Global decorID -> mob list mapping (built automatically at runtime) -->
     <Script file="DropSources.lua"/>
 

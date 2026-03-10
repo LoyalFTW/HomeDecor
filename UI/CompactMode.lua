@@ -394,6 +394,37 @@ local function CreateRow(parent)
     tagFS:SetFont(STANDARD_TEXT_FONT, 10, "")
     row._tagFS = tagFS
 
+    local locBtn = CreateFrame("Button", nil, row)
+    locBtn:SetSize(22, ROW_H)
+    locBtn:SetPoint("RIGHT", row, "RIGHT", -98, 0)
+    locBtn:SetHighlightTexture("Interface\\Buttons\\UI-Listbox-Highlight2")
+    local locFS = locBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    locFS:SetAllPoints()
+    locFS:SetJustifyH("CENTER")
+    locFS:SetFont(STANDARD_TEXT_FONT, 9, "OUTLINE")
+    locFS:SetText("Loc")
+    locFS:SetTextColor(1, 0.82, 0, 0.85)
+    locBtn:SetScript("OnEnter", function(self)
+        locFS:SetTextColor(1, 1, 1, 1)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:ClearLines()
+        GameTooltip:AddLine("Drop Locations", 1, 0.82, 0)
+        GameTooltip:AddLine("Click to see where this item drops from.", 0.8, 0.8, 0.8, true)
+        GameTooltip:Show()
+    end)
+    locBtn:SetScript("OnLeave", function(self)
+        locFS:SetTextColor(1, 0.82, 0, 0.85)
+        GameTooltip:Hide()
+    end)
+    locBtn:SetScript("OnClick", function(self)
+        local DP = NS.UI and NS.UI.DropPanel
+        if DP and DP.ShowForItem and self._item then
+            DP:ShowForItem(self._item, row)
+        end
+    end)
+    locBtn:Hide()
+    row._locBtn = locBtn
+
     row:Hide()
     return row
 end
@@ -1058,6 +1089,7 @@ function CM:_Build()
                 row._chk:Hide()
                 row._dot:Hide()
                 row._accent:Hide()
+                if row._locBtn then row._locBtn:Hide() end
 
                 local vname  = (d.title ~= "" and d.title)
                                or (d.npcID and ("NPC #" .. d.npcID))
@@ -1075,6 +1107,13 @@ function CM:_Build()
                 row._tagFS:SetText(tagStr)
                 row._tagFS:SetTextColor(accent[1], accent[2], accent[3], 0.60)
             else
+                if row._lastKind ~= "item" then
+                    row._lastKind = "item"
+                    row:SetScript("OnClick", rowClick)
+                    row.__hdTTScripts = nil
+                    row._lastItem = nil
+                end
+
                 local TT = NS.UI and NS.UI.Tooltips
                 if TT and TT.Attach and row._lastItem ~= d.item then
                     row._lastItem = d.item
@@ -1095,11 +1134,6 @@ function CM:_Build()
                     C2:Backdrop(row, row._isEven and rowAlt or rowBg, border)
                 end
 
-                if row._lastKind ~= "item" then
-                    row._lastKind = "item"
-                    row:SetScript("OnClick", rowClick)
-                end
-
                 if d.collected then
                     row._chk:Show()
                     row._dot:Hide()
@@ -1114,13 +1148,26 @@ function CM:_Build()
                     row._nameFS:SetTextColor(textCol[1], textCol[2], textCol[3], textCol[4] or 0.95)
                 end
 
+                local isDrop = d.item and d.item.source and d.item.source.type == "drop"
+                local DP = NS.UI and NS.UI.DropPanel
+                local hasLoc = isDrop and DP and (DP.GetCount and DP:GetCount(d.item) > 0)
+
                 local nameLeft = isVendor and 28 or 22
                 row._nameFS:ClearAllPoints()
                 row._nameFS:SetPoint("LEFT",  row, "LEFT",  nameLeft, 0)
-                row._nameFS:SetPoint("RIGHT", row, "RIGHT", -98, 0)
+                row._nameFS:SetPoint("RIGHT", row, "RIGHT", hasLoc and -122 or -98, 0)
                 local displayName = d.name
                 if not displayName or displayName == "" then displayName = "..." end
                 row._nameFS:SetText(displayName)
+
+                if row._locBtn then
+                    if hasLoc then
+                        row._locBtn._item = d.item
+                        row._locBtn:Show()
+                    else
+                        row._locBtn:Hide()
+                    end
+                end
 
                 local expS = GetExpShort(d.exp)
                 local tag

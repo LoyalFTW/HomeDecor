@@ -70,7 +70,7 @@ end
 
 local function showItem(itemID)
   itemID = tonumber(itemID)
-  if not itemID then return false end
+  if not itemID or itemID == 0 then return false end
   GameTooltip:SetHyperlink("item:" .. itemID)
   return true
 end
