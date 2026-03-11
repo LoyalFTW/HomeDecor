@@ -101,6 +101,7 @@ local defaults = {
       hideZero = false,
       showIcons = true,
       compactMode = false,
+      hideInInstance = false,
       alpha = 0.7,
       goal = 1000,
       search = "",

@@ -45,7 +45,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   local settings = CreateFrame("Frame", nil, parent, "BackdropTemplate")
   settings:SetFrameStrata("DIALOG")
   settings:SetFrameLevel(parent:GetFrameLevel() + 20)
-  settings:SetSize(280, 455)
+  settings:SetSize(280, 490)
   settings:SetPoint("CENTER", parent, "CENTER", 0, 0)
   settings:Hide()
   Utils.CreateBackdrop(settings, T.panel, T.border)
@@ -142,6 +142,15 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   end)
   yOffset = yOffset - 35
 
+  local hideInInstanceCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_HIDE_IN_INSTANCE"],
+    L["LUMBER_HIDE_IN_INSTANCE_TIP"])
+  hideInInstanceCB:SetChecked((db and db.hideInInstance) and true or false)
+  hideInInstanceCB:SetScript("OnClick", function(self)
+    local checked = self:GetChecked() and true or false
+    if db then db.hideInInstance = checked end
+  end)
+  yOffset = yOffset - 35
+
   local goalLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   goalLabel:SetPoint("TOPLEFT", 20, yOffset)
   goalLabel:SetText(L["LUMBER_GOAL_AMOUNT"])
@@ -235,6 +244,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   settings.hideCB = hideCB
   settings.autoFarmCB = autoFarmCB
   settings.accountWideCB = accountWideCB
+  settings.hideInInstanceCB = hideInInstanceCB
   settings.goalInput = goalInput
   settings.goalLabel = goalLabel
   settings.autoGoalCB = autoGoalCB
@@ -267,6 +277,11 @@ function Settings:RefreshPanel(settingsPanel, sharedCtx)
 
   if settingsPanel.accountWideCB and AccountWide then
     settingsPanel.accountWideCB:SetChecked(AccountWide:IsEnabled())
+  end
+
+  if settingsPanel.hideInInstanceCB then
+    local d = Utils.GetDB()
+    settingsPanel.hideInInstanceCB:SetChecked((d and d.hideInInstance) and true or false)
   end
 end
 

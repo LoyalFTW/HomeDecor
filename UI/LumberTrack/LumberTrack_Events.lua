@@ -124,6 +124,19 @@ function Events:Attach(LumberTrack, ctx)
   frame:SetScript("OnEvent", function(_, event, a1)
     if event == "PLAYER_ENTERING_WORLD" then
       ResetFarmingSession(ctx)
+      local db = Utils.GetDB()
+      if db and db.hideInInstance then
+        local inInstance = IsInInstance and IsInInstance()
+        local LumberList = NS.UI.LumberTrackLumberList
+        local FarmingStats = NS.UI.LumberTrackFarmingStats
+        if inInstance then
+          if LumberList and LumberList.frame then LumberList.frame:Hide() end
+          if FarmingStats and FarmingStats.frame then FarmingStats.frame:Hide() end
+        else
+          if LumberList and LumberList.frame and db.lumberListOpen then LumberList.frame:Show() end
+          if FarmingStats and FarmingStats.frame and db.farmingStatsOpen then FarmingStats.frame:Show() end
+        end
+      end
       QueueRefresh(0.25)
 
     elseif event == "BANKFRAME_OPENED" then

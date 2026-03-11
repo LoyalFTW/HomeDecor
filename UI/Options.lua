@@ -61,6 +61,7 @@ local function ensureProfile()
   if prof.lumberTrack.autoGoal == nil then prof.lumberTrack.autoGoal = false end
   if prof.lumberTrack.accountWide == nil then prof.lumberTrack.accountWide = false end
   if prof.lumberTrack.autoStartFarming == nil then prof.lumberTrack.autoStartFarming = false end
+  if prof.lumberTrack.hideInInstance == nil then prof.lumberTrack.hideInInstance = false end
   prof.ui = prof.ui or {}
   if prof.ui.compactMode == nil then prof.ui.compactMode = false end
   return prof
@@ -615,6 +616,12 @@ function Options:Ensure()
   cbLumberCompact:SetPoint("TOPLEFT", 32, ly)
   ly = ly - 34
 
+  local cbLumberHideInInstance = mkCheckbox(lumberPanel,
+    L("LUMBER_HIDE_IN_INSTANCE"),
+    L("LUMBER_HIDE_IN_INSTANCE_TIP"))
+  cbLumberHideInInstance:SetPoint("TOPLEFT", 32, ly)
+  ly = ly - 34
+
   local lumberAlphaSlider = mkSlider(lumberPanel,
     L("TRANSPARENCY_COLON"), 0, 1, 0.05)
   lumberAlphaSlider:SetSize(200, 16)
@@ -730,6 +737,9 @@ function Options:Ensure()
 
     cbLumberCompact:SetChecked(bool(lt.compactMode))
     cbLumberCompact.value = bool(lt.compactMode)
+
+    cbLumberHideInInstance:SetChecked(bool(lt.hideInInstance))
+    cbLumberHideInInstance.value = bool(lt.hideInInstance)
 
     cbLumberAutoFarm:SetChecked(bool(lt.autoStartFarming))
     cbLumberAutoFarm.value = bool(lt.autoStartFarming)
@@ -861,6 +871,16 @@ function Options:Ensure()
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.autoStartFarming = val
     end
+  end)
+
+  cbLumberHideInInstance:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    local val = self:GetChecked() and true or false
+    prof.lumberTrack.hideInInstance = val
+    self.value = val
+    local db = NS.LT and NS.LT.Utils and NS.LT.Utils.GetDB and NS.LT.Utils.GetDB()
+    if db then db.hideInInstance = val end
   end)
 
   cbLumberAccountWide:SetScript("OnClick", function(self)
