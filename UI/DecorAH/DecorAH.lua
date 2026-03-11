@@ -404,6 +404,8 @@ local function ApplyFiltersAndSort(filterProf, filterExp, filterLumber, filterSe
       av, bv = a.expansion or "", b.expansion or ""
     elseif key == "lumberType" then
       av, bv = a.lumberTypeName or "", b.lumberTypeName or ""
+    elseif key == "crafter" then
+      av, bv = a.crafter or "", b.crafter or ""
     elseif key == "cost" then
       av, bv = a.cost or 0, b.cost or 0
     elseif key == "sell" then
@@ -856,7 +858,7 @@ local function CreateHeaderRow(parent, y)
         sortRev = not sortRev
       else
         sortCol = self.colKey
-        sortRev = (self.colKey == "name" or self.colKey == "profession" or self.colKey == "expansion" or self.colKey == "lumberType") and false or true
+        sortRev = (self.colKey == "name" or self.colKey == "profession" or self.colKey == "expansion" or self.colKey == "lumberType" or self.colKey == "crafter") and false or true
       end
       for _, b in ipairs(headerButtons) do
         if b and b.UpdateSortIndicator then b:UpdateSortIndicator() end
