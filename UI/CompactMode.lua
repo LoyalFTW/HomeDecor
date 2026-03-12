@@ -116,6 +116,166 @@ local function GetDecorName(decorID)
     return nil
 end
 
+local function GetItemIcon(itemID)
+    if not itemID then return nil end
+    if _G.C_Item and _G.C_Item.GetItemIconByID then
+        local ok, icon = pcall(_G.C_Item.GetItemIconByID, itemID)
+        if ok and icon then return icon end
+    end
+    if _G.GetItemIcon then
+        local ok, icon = pcall(_G.GetItemIcon, itemID)
+        if ok and icon then return icon end
+    end
+    return nil
+end
+
+local function GetEntryIcon(entry)
+    if not entry then return "Interface\\Icons\\INV_Misc_QuestionMark" end
+
+    local item = entry.item or entry
+    local src = item and item.source
+    local itemID = item and (item.itemID or item.vendorItemID or item.id or (src and src.itemID))
+    local icon = GetItemIcon(itemID)
+    if icon then return icon end
+
+    local VD = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
+    if VD and VD.GetDecorIcon then
+        icon = VD.GetDecorIcon(entry.decorID or (item and item.decorID))
+        if icon then return icon end
+    end
+
+    return "Interface\\Icons\\INV_Misc_QuestionMark"
+end
+
+local function GetPreviewSourceText(entry)
+    if not entry then return "" end
+
+    local item = entry.item or entry
+    local src = item and item.source or {}
+    local parts = {}
+
+    if src.type == "vendor" then
+        parts[#parts + 1] = "Vendor"
+    elseif src.type == "drop" then
+        parts[#parts + 1] = "Drop"
+    elseif src.type == "quest" then
+        parts[#parts + 1] = "Quest"
+    elseif src.type == "achievement" then
+        parts[#parts + 1] = "Achievement"
+    elseif src.type == "profession" then
+        parts[#parts + 1] = "Profession"
+    elseif src.type == "pvp" then
+        parts[#parts + 1] = "PvP"
+    end
+
+    local zone = src.zone or entry.zone
+    if zone and zone ~= "" then
+        parts[#parts + 1] = zone
+    end
+
+    local rawExp = entry.exp or item._expansion
+    local exp = (rawExp and rawExp ~= "") and (EXP_SHORT[rawExp] or rawExp:sub(1, 4)) or ""
+    if exp and exp ~= "" then
+        parts[#parts + 1] = exp
+    end
+
+    return table.concat(parts, "  •  ")
+end
+
+local function GetPreviewSummaryText(entry)
+    if not entry then return "" end
+
+    local item = entry.item or entry
+    local src = item and item.source or {}
+    local parts = {}
+
+    if src.type == "vendor" then
+        parts[#parts + 1] = "Vendor"
+    elseif src.type == "drop" then
+        parts[#parts + 1] = "Drop"
+    elseif src.type == "quest" then
+        parts[#parts + 1] = "Quest"
+    elseif src.type == "achievement" then
+        parts[#parts + 1] = "Achievement"
+    elseif src.type == "profession" then
+        parts[#parts + 1] = "Profession"
+    elseif src.type == "pvp" then
+        parts[#parts + 1] = "PvP"
+    end
+
+    local zone = src.zone or entry.zone
+    if zone and zone ~= "" then
+        parts[#parts + 1] = zone
+    end
+
+    local rawExp = entry.exp or item._expansion
+    local exp = (rawExp and rawExp ~= "") and (EXP_SHORT[rawExp] or rawExp:sub(1, 4)) or ""
+    if exp and exp ~= "" then
+        parts[#parts + 1] = exp
+    end
+
+    return table.concat(parts, "  |  ")
+end
+
+local function GetPreviewCostText(entry)
+    if not entry then return nil end
+
+    local item = entry.item or entry
+    local src = item and item.source or {}
+    local currencyAmount = tonumber(src.currency or src.currencyText or src.costText)
+    local currencyTypeID = src.currencytype or src.currencyType or src.currencyID
+    local goldCost = tonumber(src.cost)
+
+    if currencyAmount and currencyTypeID then
+        if tostring(currencyTypeID) == "gold" then
+            return "Cost: " .. tostring(currencyAmount) .. "g"
+        end
+
+        local currencyName = nil
+        if type(currencyTypeID) == "string" and not tonumber(currencyTypeID) then
+            currencyName = currencyTypeID
+        elseif _G.C_CurrencyInfo and _G.C_CurrencyInfo.GetCurrencyInfo then
+            local ok, info = pcall(_G.C_CurrencyInfo.GetCurrencyInfo, tonumber(currencyTypeID))
+            if ok and info and info.name then
+                currencyName = info.name
+            end
+        end
+
+        return "Cost: " .. tostring(currencyAmount) .. " " .. (currencyName or "Currency")
+    end
+
+    if goldCost and goldCost > 0 then
+        return "Cost: " .. tostring(goldCost) .. "g"
+    end
+
+    return nil
+end
+
+local function GetPreviewRequirementText(entry)
+    if not entry then return nil end
+
+    local item = entry.item or entry
+    local R = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Requirements
+    if not R then return nil end
+
+    local parts = {}
+    if R.GetRequirementLink and R.BuildReqDisplay then
+        local req = R.GetRequirementLink(item)
+        if req then
+            parts[#parts + 1] = R.BuildReqDisplay(req, false)
+        end
+    end
+    if R.GetRepRequirement and R.BuildRepDisplay then
+        local rep = R.GetRepRequirement(item)
+        if rep then
+            parts[#parts + 1] = R.BuildRepDisplay(rep, false)
+        end
+    end
+
+    if #parts == 0 then return nil end
+    return table.concat(parts, "\n")
+end
+
 local function IsCollected(it)
     if not it then return false end
     local Col = NS.Systems and NS.Systems.Collection
@@ -378,8 +538,22 @@ local function CreateRow(parent)
     dot:Hide()
     row._dot = dot
 
+    local iconBG = CreateFrame("Frame", nil, row, "BackdropTemplate")
+    iconBG:SetSize(18, 18)
+    iconBG:SetPoint("LEFT", row, "LEFT", 22, 0)
+    Bd(iconBG, { 0.03, 0.03, 0.04, 0.95 }, { 0.18, 0.18, 0.20, 1 })
+    row._iconBG = iconBG
+
+    local icon = iconBG:CreateTexture(nil, "ARTWORK")
+    icon:SetPoint("TOPLEFT", 1, -1)
+    icon:SetPoint("BOTTOMRIGHT", -1, 1)
+    icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+    if icon.SetTexCoord then icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
+    icon:Hide()
+    row._icon = icon
+
     local nameFS = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    nameFS:SetPoint("LEFT",  row, "LEFT",  22, 0)
+    nameFS:SetPoint("LEFT",  row, "LEFT",  46, 0)
     nameFS:SetPoint("RIGHT", row, "RIGHT", -98, 0)
     nameFS:SetJustifyH("LEFT")
     nameFS:SetWordWrap(false)
@@ -501,7 +675,22 @@ function CM:_Build()
     hdr:EnableMouse(true)
     hdr:RegisterForDrag("LeftButton")
     hdr:SetScript("OnDragStart", function() frame:StartMoving() end)
-    hdr:SetScript("OnDragStop",  function() frame:StopMovingOrSizing() end)
+    hdr:SetScript("OnDragStop",  function()
+        frame:StopMovingOrSizing()
+        local pfFrame = frame._previewFrame
+        if pfFrame and pfFrame:IsShown() then
+            pfFrame:ClearAllPoints()
+            local uiW = UIParent:GetWidth() or 1280
+            local fl  = frame:GetLeft() or 0
+            local fw  = frame:GetWidth() or MIN_W
+            local pw  = pfFrame:GetWidth() or 360
+            if (fl + fw + 12 + pw) <= uiW then
+                pfFrame:SetPoint("TOPLEFT", frame, "TOPRIGHT", 12, 0)
+            else
+                pfFrame:SetPoint("TOPRIGHT", frame, "TOPLEFT", -12, 0)
+            end
+        end
+    end)
 
     local titleFS = FS(hdr, "GameFontNormalLarge")
     titleFS:SetPoint("LEFT", 10, 0)
@@ -905,24 +1094,188 @@ function CM:_Build()
     local previewCurrentDecorID = nil
     local previewCurrentItem    = nil
 
-    local function EnsurePreviewFrameReady()
-        if _G.HousingModelPreviewFrame then return true end
-        if _G.HousingMicroButton then
-            _G.HousingMicroButton:Click()
-            C_Timer.After(0, function()
-                if _G.HousingDashboardFrame and _G.HousingDashboardFrame:IsShown() then
-                    HideUIPanel(_G.HousingDashboardFrame)
-                end
-            end)
+    local previewFrame = CreateFrame("Frame", "HomeDecorCompactPreviewFrame", UIParent, "BackdropTemplate")
+    Bd(previewFrame, panel, border)
+    previewFrame:SetSize(360, 500)
+    previewFrame:SetFrameStrata("DIALOG")
+    previewFrame:SetFrameLevel(frame:GetFrameLevel() + 5)
+    previewFrame:SetClampedToScreen(true)
+    previewFrame:Hide()
+    frame._previewFrame = previewFrame
+
+    local previewHdr = CreateFrame("Frame", nil, previewFrame, "BackdropTemplate")
+    Bd(previewHdr, header, border)
+    previewHdr:SetPoint("TOPLEFT", 6, -6)
+    previewHdr:SetPoint("TOPRIGHT", -6, -6)
+    previewHdr:SetHeight(30)
+
+    local previewTitle = FS(previewHdr, "GameFontNormal")
+    previewTitle:SetPoint("LEFT", 10, 0)
+    previewTitle:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
+    previewTitle:SetTextColor(accent[1], accent[2], accent[3], 1)
+    previewTitle:SetText("Decor Preview")
+
+    local previewClose = CreateFrame("Button", nil, previewHdr, "BackdropTemplate")
+    Bd(previewClose, panel, border)
+    previewClose:SetSize(22, 22)
+    previewClose:SetPoint("RIGHT", -5, 0)
+    Hov(previewClose, panel, hover)
+    local previewCloseX = previewClose:CreateTexture(nil, "OVERLAY")
+    previewCloseX:SetSize(12, 12)
+    previewCloseX:SetPoint("CENTER")
+    previewCloseX:SetTexture("Interface\\Buttons\\UI-StopButton")
+    previewCloseX:SetVertexColor(accent[1], accent[2], accent[3], 1)
+    previewClose:SetScript("OnClick", function()
+        previewFrame:Hide()
+        previewCurrentDecorID = nil
+        previewCurrentItem = nil
+    end)
+
+    local previewInfo = CreateFrame("Frame", nil, previewFrame, "BackdropTemplate")
+    Bd(previewInfo, rowBg, border)
+    previewInfo:SetPoint("BOTTOMLEFT", previewFrame, "BOTTOMLEFT", 6, 6)
+    previewInfo:SetPoint("BOTTOMRIGHT", previewFrame, "BOTTOMRIGHT", -6, 6)
+    previewInfo:SetHeight(94)
+
+    local previewIconBG = CreateFrame("Frame", nil, previewInfo, "BackdropTemplate")
+    Bd(previewIconBG, panel, border)
+    previewIconBG:SetSize(48, 48)
+    previewIconBG:SetPoint("TOPLEFT", 10, -10)
+
+    local previewIcon = previewIconBG:CreateTexture(nil, "ARTWORK")
+    previewIcon:SetPoint("TOPLEFT", 2, -2)
+    previewIcon:SetPoint("BOTTOMRIGHT", -2, 2)
+    previewIcon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+    if previewIcon.SetTexCoord then previewIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
+
+    local previewName = FS(previewInfo, "GameFontNormalLarge")
+    previewName:SetPoint("TOPLEFT", previewIconBG, "TOPRIGHT", 10, -8)
+    previewName:SetPoint("TOPRIGHT", -10, -8)
+    previewName:SetJustifyH("LEFT")
+    previewName:SetWordWrap(false)
+    previewName:SetMaxLines(1)
+    previewName:SetTextColor(textCol[1], textCol[2], textCol[3], 1)
+
+    local previewMeta = FS(previewInfo, "GameFontHighlightSmall")
+    previewMeta:SetPoint("TOPLEFT", previewName, "BOTTOMLEFT", 0, -4)
+    previewMeta:SetPoint("TOPRIGHT", -10, -4)
+    previewMeta:SetJustifyH("LEFT")
+    previewMeta:SetWordWrap(false)
+    previewMeta:SetMaxLines(1)
+    previewMeta:SetTextColor(muted[1], muted[2], muted[3], 1)
+
+    local previewDetails = FS(previewInfo, "GameFontHighlightSmall")
+    previewDetails:SetPoint("TOPLEFT", previewMeta, "BOTTOMLEFT", 0, -8)
+    previewDetails:SetPoint("TOPRIGHT", -10, -4)
+    previewDetails:SetJustifyH("LEFT")
+    previewDetails:SetWordWrap(false)
+    previewDetails:SetMaxLines(1)
+    previewDetails:SetTextColor(textCol[1], textCol[2], textCol[3], 0.9)
+
+    local previewModelHost = CreateFrame("Frame", nil, previewFrame, "BackdropTemplate")
+    Bd(previewModelHost, { 0.03, 0.03, 0.04, 0.98 }, border)
+    previewModelHost:SetPoint("TOPLEFT", previewHdr, "BOTTOMLEFT", 0, -4)
+    previewModelHost:SetPoint("TOPRIGHT", previewHdr, "BOTTOMRIGHT", 0, -4)
+    previewModelHost:SetPoint("BOTTOMLEFT", previewInfo, "TOPLEFT", 0, 6)
+    previewModelHost:SetPoint("BOTTOMRIGHT", previewInfo, "TOPRIGHT", 0, 6)
+    previewModelHost:SetClipsChildren(true)
+
+    local previewFallback = FS(previewModelHost, "GameFontHighlight")
+    previewFallback:SetPoint("CENTER")
+    previewFallback:SetTextColor(muted[1], muted[2], muted[3], 0.9)
+    previewFallback:SetText("Loading decor preview...")
+
+    local previewScene = CreateFrame("ModelScene", nil, previewModelHost, "PanningModelSceneMixinTemplate")
+    previewScene:SetPoint("TOPLEFT", 10, -34)
+    previewScene:SetPoint("BOTTOMRIGHT", -10, 26)
+    previewScene:Hide()
+
+    local previewControls = nil
+    do
+        local ok, ctrl = pcall(CreateFrame, "Frame", nil, previewModelHost, "ModelSceneControlFrameTemplate")
+        if ok and ctrl then
+            ctrl:SetPoint("BOTTOM", previewModelHost, "BOTTOM", 0, 6)
+            pcall(ctrl.SetModelScene, ctrl, previewScene)
+            ctrl:Hide()
+            previewControls = ctrl
         end
-        return _G.HousingModelPreviewFrame ~= nil
+    end
+
+    local corbelL = previewModelHost:CreateTexture(nil, "OVERLAY")
+    corbelL:SetSize(66, 50)
+    corbelL:SetPoint("BOTTOMLEFT", -2, -2)
+    corbelL:SetAtlas("catalog-corbel-bottom-left")
+
+    local corbelR = previewModelHost:CreateTexture(nil, "OVERLAY")
+    corbelR:SetSize(66, 50)
+    corbelR:SetPoint("BOTTOMRIGHT", 2, -2)
+    corbelR:SetAtlas("catalog-corbel-bottom-right")
+
+    local function LayoutPreviewFrame()
+        if not previewFrame then return end
+        previewFrame:ClearAllPoints()
+
+        local uiW = UIParent:GetWidth() or 1280
+        local fl  = frame:GetLeft() or 0
+        local fw  = frame:GetWidth() or MIN_W
+        local pw  = previewFrame:GetWidth() or 360
+
+        if (fl + fw + 12 + pw) <= uiW then
+            previewFrame:SetPoint("TOPLEFT", frame, "TOPRIGHT", 12, 0)
+        else
+            previewFrame:SetPoint("TOPRIGHT", frame, "TOPLEFT", -12, 0)
+        end
+    end
+
+    local function GetDefaultSceneID()
+        if Constants and Constants.HousingCatalogConsts and Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT then
+            return Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT
+        end
+        return 859
+    end
+
+    local function ClearCustomPreviewModel()
+        previewScene:Hide()
+        if previewControls then previewControls:Hide() end
+        previewFallback:Show()
+    end
+
+    local function AttachPreviewModel(infoObj)
+        if not (previewScene and infoObj and infoObj.asset) then
+            ClearCustomPreviewModel()
+            previewFallback:SetText("Preview unavailable for this decor.")
+            return false
+        end
+
+        previewFallback:Hide()
+
+        local sceneID = infoObj.uiModelSceneID or GetDefaultSceneID()
+        local ok = pcall(function()
+            previewScene:TransitionToModelSceneID(sceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true)
+        end)
+        if not ok then
+            ClearCustomPreviewModel()
+            previewFallback:SetText("Preview unavailable for this decor.")
+            return false
+        end
+
+        local actor = previewScene.GetActorByTag and previewScene:GetActorByTag("decor")
+        if not actor then
+            ClearCustomPreviewModel()
+            previewFallback:SetText("Preview unavailable for this decor.")
+            return false
+        end
+
+        actor:SetPreferModelCollisionBounds(true)
+        actor:SetModelByFileID(infoObj.asset)
+        previewScene:Show()
+        if previewControls then previewControls:Show() end
+        return true
     end
 
     local ShowPreview = function(d)
-        local pf = _G.HousingModelPreviewFrame
-       
-        if previewCurrentDecorID == d.decorID and pf and pf:IsShown() then
-            pf:Hide()
+        if previewCurrentDecorID == d.decorID and previewFrame:IsShown() then
+            previewFrame:Hide()
             previewCurrentDecorID = nil
             previewCurrentItem    = nil
             return
@@ -934,29 +1287,6 @@ function CM:_Build()
         local ok, infoObj = pcall(
             C_HousingCatalog.GetCatalogEntryInfoByRecordID, entryType, d.decorID, true)
         if not (ok and infoObj) then return end
-
-        if not EnsurePreviewFrameReady() then return end
-        pf = _G.HousingModelPreviewFrame
-        if not pf then return end
-
-        pf:SetMovable(true)
-        pf:EnableMouse(true)
-        pf:SetClampedToScreen(true)
-
-        if not pf:IsShown() then
-            pf:ClearAllPoints()
-            local uiW = UIParent:GetWidth() or 1280
-            local fl  = frame:GetLeft() or 0
-            local fw  = frame:GetWidth() or MIN_W
-            if (fl + fw + 10 + 350) <= uiW then
-                pf:SetPoint("TOPLEFT", frame, "TOPRIGHT", 10, 0)
-            else
-                pf:SetPoint("TOPRIGHT", frame, "TOPLEFT", -10, 0)
-            end
-        end
-
-        pf:Show()
-        if pf.ShowCatalogEntryInfo then pf:ShowCatalogEntryInfo(infoObj) end
 
         local VD    = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
         local item  = d.item
@@ -973,6 +1303,33 @@ function CM:_Build()
         if stype == "vendor" and VD and VD.HydrateFromDecorIndex then
             VD.HydrateFromDecorIndex(enriched)
         end
+
+        previewName:SetText((d.name and d.name ~= "" and d.name) or GetDecorName(d.decorID) or ("Decor #" .. tostring(d.decorID)))
+        previewMeta:SetText(GetPreviewSummaryText(d))
+        do
+            local detailLines = {}
+            local costText = GetPreviewCostText(d)
+            local reqText = GetPreviewRequirementText(d)
+            if costText then detailLines[#detailLines + 1] = costText end
+            if reqText and reqText ~= "" then
+                reqText = tostring(reqText):gsub("\r", " "):gsub("\n.*", "")
+                detailLines[#detailLines + 1] = reqText
+            end
+            previewDetails:SetText(#detailLines > 0 and table.concat(detailLines, "  |  ") or "")
+        end
+        previewIcon:SetTexture(GetEntryIcon(d))
+        previewFallback:SetText("Loading decor preview...")
+
+        LayoutPreviewFrame()
+        previewFrame:Show()
+
+        if AttachPreviewModel(infoObj) then
+            previewFallback:Hide()
+        else
+            previewFallback:Show()
+            previewFallback:SetText("Preview unavailable for this decor.")
+        end
+
         previewCurrentItem = enriched
     end
 
@@ -1089,6 +1446,8 @@ function CM:_Build()
                 row._chk:Hide()
                 row._dot:Hide()
                 row._accent:Hide()
+                if row._icon then row._icon:Hide() end
+                if row._iconBG then row._iconBG:Hide() end
                 if row._locBtn then row._locBtn:Hide() end
 
                 local vname  = (d.title ~= "" and d.title)
@@ -1152,7 +1511,13 @@ function CM:_Build()
                 local DP = NS.UI and NS.UI.DropPanel
                 local hasLoc = isDrop and DP and (DP.GetCount and DP:GetCount(d.item) > 0)
 
-                local nameLeft = isVendor and 28 or 22
+                if row._icon and row._iconBG then
+                    row._icon:SetTexture(GetEntryIcon(d))
+                    row._icon:Show()
+                    row._iconBG:Show()
+                end
+
+                local nameLeft = isVendor and 52 or 46
                 row._nameFS:ClearAllPoints()
                 row._nameFS:SetPoint("LEFT",  row, "LEFT",  nameLeft, 0)
                 row._nameFS:SetPoint("RIGHT", row, "RIGHT", hasLoc and -122 or -98, 0)
@@ -1280,8 +1645,9 @@ function CM:_Build()
     end
 
     frame:SetScript("OnHide", function()
-        local pf = _G.HousingModelPreviewFrame
-        if pf and pf:IsShown() then pf:Hide() end
+        if previewFrame then previewFrame:Hide() end
+        if previewScene then previewScene:Hide() end
+        if previewControls then previewControls:Hide() end
         previewCurrentDecorID = nil
         previewCurrentItem    = nil
     end)
@@ -1300,6 +1666,9 @@ function CM:_Build()
         LayoutTabs()
         LayoutFilterBtns()
         LayoutExpBtns()
+        if previewFrame and previewFrame:IsShown() then
+            LayoutPreviewFrame()
+        end
     end)
 
     frame:SetScript("OnMouseWheel", function(_, delta)
