@@ -29,7 +29,13 @@ local EXPANSIONS = {
   "Draenor", "Legion", "Kul Tiran", "Shadowlands", "Dragon Isles", "Khaz Algar", "Midnight",
 }
 
+local EXPANSION_TABS = {
+  "All", "Classic", "Outland", "Northrend", "Cataclysm", "Pandaria",
+  "Draenor", "Legion", "Kul Tiran", "Shadowlands", "Dragon Isles", "Khaz Algar", "Midnight",
+}
+
 local EXPANSION_ABBREV = {
+  All           = "All",
   Classic       = "Classic",  Outland        = "TBC",   Northrend      = "WotLK",
   Cataclysm     = "Cata",     Pandaria        = "MoP",   Draenor        = "WoD",
   Legion        = "Legion",   ["Kul Tiran"]  = "BfA",   Shadowlands    = "SL",
@@ -156,8 +162,9 @@ local function GetProfessionItems(profName, expansion)
 
   local crafters = GetSkillCrafters()
 
-  for _, list in ipairs(lists) do
-    for _, d in ipairs(list) do
+  for _, info in ipairs(lists) do
+    local itemExpansion = info.expansion
+    for _, d in ipairs(info.entries) do
       if d.decorID and d.source and d.source.itemID and not seen[d.decorID] then
         seen[d.decorID] = true
         local itemID  = d.source.itemID
@@ -191,6 +198,7 @@ local function GetProfessionItems(profName, expansion)
           skillID     = skillID,
           decorID     = d.decorID,
           name        = d.title or name or "Unknown",
+          expansion   = itemExpansion,
           quality     = quality or 1,
           marketPrice = mkt,
           craftCost   = cost,
@@ -236,6 +244,33 @@ local function TotalProfit(profName)
   local result = found and total or false
   profitCache[profName] = result
   return result or nil
+end
+
+local function GetTrainerEntries(profName, expansion)
+  local trainerData = NS.Data and NS.Data.Trainers
+  local professionData = trainerData and trainerData[profName]
+  if not professionData then return {} end
+
+  local out, seen = {}, {}
+  local function AddEntries(expName)
+    local entries = professionData[expName]
+    if type(entries) ~= "table" then return end
+    for _, entry in ipairs(entries) do
+      local src = entry and entry.source
+      local key = src and ((src.id or "?") .. "|" .. (src.worldmap or "?") .. "|" .. (src.note or "?"))
+      if key and not seen[key] then
+        seen[key] = true
+        out[#out + 1] = entry
+      end
+    end
+  end
+
+  AddEntries(expansion)
+  for _, alt in ipairs(EXPANSION_ALT_KEYS[expansion] or {}) do
+    AddEntries(alt)
+  end
+
+  return out
 end
 
 local function FilterItems(items)
@@ -546,7 +581,7 @@ function SmartProfs:BuildDetailPanel()
   self.noLearnedMsg = noLearnedMsg
 
   self.expansionTabs = {}
-  for i, expansion in ipairs(EXPANSIONS) do
+  for i, expansion in ipairs(EXPANSION_TABS) do
     local tab = CreateFrame("Button", nil, dc, BackdropTemplateMixin and "BackdropTemplate")
     tab:SetSize(TAB_W, 18)
     tab:SetScript("OnClick", function()
@@ -837,7 +872,7 @@ function SmartProfs:RefreshDetailPanel()
   local dc = self.detailContent
 
   local tabStripW  = self.rightPanel and self.rightPanel:GetWidth() or 400
-  local totalTabW  = #EXPANSIONS * (TAB_W + 2)
+  local totalTabW  = #EXPANSION_TABS * (TAB_W + 2)
   local tabOffsetX = (tabStripW - totalTabW) / 2
   local tabY = -4
 
@@ -973,10 +1008,8 @@ function SmartProfs:RefreshDetailPanel()
       end
 
       if card.trainerBtn then
-        local entries = NS.Data and NS.Data.Trainers
-                     and NS.Data.Trainers[selectedProfession]
-                     and NS.Data.Trainers[selectedProfession][selectedExpansion]
-                     or {}
+        local trainerExpansion = item.expansion or selectedExpansion
+        local entries = GetTrainerEntries(selectedProfession, trainerExpansion)
         if #entries > 0 then
           local NPCNames    = NS.Systems and NS.Systems.NPCNames
           local trainerList = {}
