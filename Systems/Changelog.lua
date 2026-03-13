@@ -6,6 +6,18 @@ local CLog = NS.Systems.Changelog
 
 CLog.CURRENT_VERSION = C_AddOns.GetAddOnMetadata(ADDON, "Version") or ""
 
+local AUTO_POPUP_IMPORTANCE = {
+  major = true,
+}
+
+local function NormalizeImportance(value)
+  local normalized = type(value) == "string" and value:lower() or ""
+  if normalized == "major" or normalized == "minor" or normalized == "silent" then
+    return normalized
+  end
+  return "major"
+end
+
 local function Ensure()
   if not NS.db or not NS.db.profile then return nil end
   local p = NS.db.profile
@@ -28,8 +40,25 @@ end
 
 function CLog:IsNewVersion()
   local s = Ensure()
-  if not s or not s.autoOpen then return false end
+  if not s then return false end
   return s.lastSeenVersion ~= self.CURRENT_VERSION
+end
+
+function CLog:GetMeta()
+  local meta = _G.HomeDecor_ChangelogMeta
+  if type(meta) ~= "table" then return {} end
+  return meta
+end
+
+function CLog:GetImportance()
+  local meta = self:GetMeta()
+  return NormalizeImportance(meta.importance)
+end
+
+function CLog:ShouldAutoPopup()
+  local s = Ensure()
+  if not s or not s.autoOpen or not self:IsNewVersion() then return false end
+  return AUTO_POPUP_IMPORTANCE[self:GetImportance()] == true
 end
 
 function CLog:MarkSeen()
@@ -43,6 +72,10 @@ end
 
 function CLog:TryAutoPopup()
   if not self:IsNewVersion() then return end
+  if not self:ShouldAutoPopup() then
+    self:MarkSeen()
+    return
+  end
   if NS.UI and NS.UI.ShowChangelogPopup then
     NS.UI:ShowChangelogPopup(false)
   end

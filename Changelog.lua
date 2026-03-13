@@ -1,3 +1,7 @@
+HomeDecor_ChangelogMeta = {
+  importance = "silent", -- Major / Silent
+}
+
 HomeDecor_Changelog = [[
 #HomeDecor
 
