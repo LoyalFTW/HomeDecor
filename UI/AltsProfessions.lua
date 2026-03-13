@@ -154,9 +154,23 @@ local function GetProfessionItems(profName, expansion)
   if not profData then itemListCache[key] = items; return items end
 
   local lists = {}
-  if profData[expansion] then tinsert(lists, profData[expansion]) end
-  for _, alt in ipairs(EXPANSION_ALT_KEYS[expansion] or {}) do
-    if profData[alt] then tinsert(lists, profData[alt]) end
+  local function AddExpansionLists(expName)
+    if profData[expName] then
+      tinsert(lists, { expansion = expName, entries = profData[expName] })
+    end
+    for _, alt in ipairs(EXPANSION_ALT_KEYS[expName] or {}) do
+      if profData[alt] then
+        tinsert(lists, { expansion = expName, entries = profData[alt] })
+      end
+    end
+  end
+
+  if expansion == "All" then
+    for _, expName in ipairs(EXPANSIONS) do
+      AddExpansionLists(expName)
+    end
+  else
+    AddExpansionLists(expansion)
   end
   if #lists == 0 then itemListCache[key] = items; return items end
 
