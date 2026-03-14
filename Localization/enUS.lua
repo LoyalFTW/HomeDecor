@@ -1,4 +1,4 @@
-local ADDON, NS = ...
+﻿local ADDON, NS = ...
 NS.L = NS.L or {}
 local L = NS.L
 
@@ -149,7 +149,7 @@ L["LUMBER_TOTAL_ZERO"]             = "Lumber Total: 0"
 L["LUMBER_GOAL_AMOUNT"]            = "Goal Amount:"
 L["LUMBER_HIGHLIGHT_SAVED"]        = "Highlight Saved Items:"
 L["LUMBER_COMPACT_MODE"]           = "Compact Mode"
-L["LUMBER_COMPACT_TIP"]            = "Shows a condensed single-line list — fits more items with less screen space"
+L["LUMBER_COMPACT_TIP"]            = "Shows a condensed single-line list â€” fits more items with less screen space"
 L["LUMBER_TOGGLE_COMPACT"]         = "Toggle compact single-line view"
 L["LUMBER_SHOW_ICONS"]             = "Show Icons"
 L["LUMBER_HIDE_ZERO"]              = "Hide Items with 0"
@@ -339,8 +339,6 @@ L["TRACKER_TITLE"]                  = "DecorTracker"
 
 L["LUMBER_FARMING_STATS_TITLE"]     = "Farming Stats"
 
-L["ZONE"]                           = "Zone"
-
 L["FILTER_TAB_FILTERS"]             = "Filters"
 L["FILTER_TAB_COMPLETED"]           = "Completed"
 L["FILTER_HIDE_COMPLETED_ROW"]      = "Hide Completed"
@@ -371,7 +369,7 @@ L["MAP_PANEL_TOOLTIP_ANCHOR_SECTION"] = "Tooltip Position"
 L["MAP_PANEL_TOOLTIP_ANCHOR"]         = "Anchor"
 
 L["LUMBER_SHOW_ICONS_TIP"]          = ""
-L["LUMBER_COMPACT_MODE_TIP"]        = "Shows a condensed single-line list — fits more items with less screen space"
+L["LUMBER_COMPACT_MODE_TIP"]        = "Shows a condensed single-line list â€” fits more items with less screen space"
 L["LUMBER_AUTO_FARM_TIP_LONG"]      = "Automatically start farming stats when you loot lumber"
 L["LUMBER_ACCOUNT_WIDE_TIP_LONG"]   = "Combines lumber counts from all characters.\n\nHover over rows to see per-character breakdown."
 L["LUMBER_AUTO_CALC_GOALS_TIP_LONG"]= "Automatically calculates goals based on housing decor recipes you haven't crafted yet"
@@ -380,7 +378,6 @@ L["CURRENCY_FALLBACK"]              = "Currency"
 L["DECOR_HASH_PREFIX"]              = "Decor #"
 L["DYEABLE_LABEL"]                  = "Dyeable"
 L["DYEABLE_CLASS_LABEL"]            = "Dyeable - "
-L["UNCATEGORIZED"]                  = "Uncategorized"
 L["NO_ITEMS_MATCH_SEARCH"]          = "No items match your search"
 L["NO_ACTIVE_EVENTS_TITLE"]         = "No active events"
 
@@ -430,43 +427,7 @@ L["ALTS_LEGEND_CLOSE"]              = "Close (<50)"
 
 L["FILTER_ALL"]                     = "All"
 
-L["LUMBER_HIDE_ZERO"]               = "Hide Items with 0"
-
 L["EVENTS_PLACEHOLDER_BODY"]        = "Event items will appear here while active"
-
-L["WAYPOINT"]                       = "Waypoint"
-
-L["UNCATEGORIZED"]                  = "Uncategorized"
-
-L["FILTER_ALTS_REP_HINT"]           = "Login to Alts once to update Reputations you have completed"
-L["FILTER_ALTS_QUEST_HINT"]         = "Login to Alts once to update quests you've completed on any character"
-L["FILTER_ACH_COMPLETED_HINT"]      = "Show only items from achievements you've completed"
-
-L["ALL_FACTIONS"]                   = "All Factions"
-L["ALL_EXPANSIONS"]                 = "All Expansions"
-L["ALL_ZONES"]                      = "All Zones"
-L["ALL_CATEGORIES"]                 = "All Categories"
-L["ALL_SUBCATEGORIES"]              = "All Subcategories"
-
-L["OPT_PIN_HOUSE"]                  = "House Icon"
-L["OPT_PIN_DOT"]                    = "Dot"
-
-L["VENDOR"]                         = "Vendor"
-L["FACTION"]                        = "Faction"
-L["REQUIRES"]                       = "Requires"
-
-L["HINT_EXPAND_COLLAPSE"]           = "Left Click: Expand/Collapse"
-L["HINT_VENDOR_LOCATION"]           = "Right Click: Vendor Location"
-L["HINT_ALT_WOWHEAD"]               = "Alt + Click: Wowhead Link"
-L["HINT_VIEW_ITEM"]                 = "Left Click: View Item"
-L["HINT_CTRL_ACHIEVEMENT"]          = "Ctrl + Click: View Achievement"
-L["HINT_CLICK_WOWHEAD"]             = "Click: Wowhead Link"
-
-L["LUMBER_SHOW_ICONS"]              = "Show Icons"
-L["LUMBER_COMPACT_MODE"]            = "Compact Mode"
-L["LUMBER_AUTO_FARM"]               = "Auto Farm Mode"
-L["LUMBER_ACCOUNT_WIDE"]            = "Account Wide"
-L["LUMBER_AUTO_CALC_GOALS"]         = "Auto-Calculate Goals"
 
 L["PROF_TIP_TITLE"]                = "Professions Tip"
 L["PROF_TIP_MESSAGE"]              = "Please make sure to go on all alts that have professions and open the Professions window for the addon to record everything."

@@ -1,9 +1,8 @@
-local ADDON, NS = ...
+﻿local ADDON, NS = ...
 if GetLocale() ~= "ruRU" then return end
 -- Translator ZamestoTV (v12.0.75)
 NS.L = NS.L or {}
 local L = NS.L
-
 L["ADDON_NAME"]                     = "HomeDecor"
 L["SETTINGS"]                       = "Настройки"
 L["COMMUNITY"]                      = "Сообщество"
@@ -27,13 +26,11 @@ L["PANEL_TRANSPARENCY"]             = "Прозрачность панели"
 L["WAYPOINT"]                       = "Точка пути"
 L["SUPPORT_DISCORD"]                = "Дискорд поддержки:"
 L["AUTO_OPEN"]                      = "Открывать автоматически"
-
 L["NO_ITEMS_FOUND"]                 = "Предметы не найдены"
 L["NO_VENDORS"]                     = "Нет торговцев"
 L["NO_ACTIVE_EVENTS"]               = "Нет активных событий"
 L["ALL_COLLECTED"]                  = "Всё собрано"
 L["COLLECTED"]                      = "Собрано"
-
 L["VENDOR"]                         = "Торговец"
 L["VENDORS"]                        = "Торговцы"
 L["VENDOR_SUFFIX"]                  = " торговцев"
@@ -47,7 +44,7 @@ L["DROPS_FROM"]                     = "Добывается с:"
 L["TAG_ACHIEVEMENT"]                = "[Достижение]"
 L["TAG_DROP"]                       = "[Добыча]"
 L["TAG_PROFESSION"]                 = "[Профессия]"
-L["TAG_PVP"]                        = "[PvP]"
+L["TAG_PVP"]                     = "[PvP]"
 L["TAG_QUEST"]                      = "[Задание]"
 L["TAG_VENDOR_ITEM"]                = "[Предмет у торговца]"
 L["DYEABLE"]                        = "Можно перекрасить"
@@ -58,7 +55,7 @@ L["ALL"]                            = "Все"
 L["ACHIEVEMENTS"]                   = "Достижения"
 L["DROPS"]                          = "Добыча"
 L["PROFESSIONS"]                    = "Профессии"
-L["PVP"]                            = "PvP"
+L["PVP"]                     = "PvP"
 L["QUESTS"]                         = "Задания"
 L["UNCATEGORIZED"]                  = "Без категории"
 L["CATEGORY"]                       = "Категория"
@@ -70,13 +67,11 @@ L["ALL_EXPANSIONS"]                 = "Все дополнения"
 L["ALL_ZONES"]                      = "Все зоны"
 L["ALL_FACTIONS"]                   = "Все фракции"
 L["COMPLETED"]                      = "Завершено"
-
 L["ITEM_PREFIX"]                    = "Предмет "
 L["DECOR_PREFIX"]                   = "Декор "
 L["VENDOR_PREFIX"]                  = "Торговец "
 L["QUEST_PREFIX"]                   = "Задание "
 L["ACHIEVEMENT_PREFIX"]             = "Достижение "
-
 L["HINT_VIEW_ITEM"]                 = "ЛКМ: Посмотреть предмет"
 L["HINT_EXPAND_COLLAPSE"]           = "ЛКМ: Развернуть/Свернуть"
 L["HINT_VENDOR_LOCATION"]           = "ПКМ: Местоположение торговца"
@@ -88,13 +83,11 @@ L["HINT_CLICK_MAP"]                 = "ЛКМ: Открыть карту"
 L["HINT_CTRL_COPY"]                 = "Ctrl+C - скопировать, затем вставить в браузер."
 L["HINT_CTRL_WOWHEAD"]              = "Используйте Ctrl+ЛКМ для открытия правильной ссылки Wowhead."
 L["TREASURE_HUNT_WARNING"]          = "Существует много версий задания «Охота за предметами декора»."
-
 L["REQ_REPUTATION"]                 = "Требуется репутация"
 L["REQ_QUEST"]                      = "Требуется задание"
 L["REQ_NONE_QUEST_ACH"]             = "Не требуется задание или достижение"
 L["REQ_NONE_REPUTATION"]            = "Репутация не требуется"
 L["WOWHEAD_LINKS"]                  = "Ссылки Wowhead"
-
 L["OPT_SUBTITLE"]                   = "Настройки качества жизни для аддона."
 L["OPT_SHOW_MINIMAP_BTN"]           = "Показывать кнопку у миникарты"
 L["OPT_MINIMAP"]                    = "Миникарта"
@@ -113,11 +106,9 @@ L["OPT_PIN_SIZE"]                   = "Размер метки"
 L["OPT_TRACKER_HEADER"]             = "Трекер"
 L["OPT_HIGHLIGHT_ZONE"]             = "Подсвечивать сохранённые предметы при входе в зону"
 L["OPT_HIGHLIGHT_ZONE_TIP"]         = "При включении сохранённые предметы будут подсвечиваться при входе в новую зону"
-
 L["OPT_BROWSER_HEADER"]             = "Браузер"
 L["OPT_COMPACT_MODE"]               = "Открывать в компактном режиме"
 L["OPT_COMPACT_MODE_TIP"]           = "При включении кнопка миникарты и команда /hd открывают компактный список вместо полного браузера"
-
 L["OPT_VENDOR_SUBTITLE"]            = "Что HomeDecor накладывает на окно торговца."
 L["OPT_SHOW_CHECKMARK"]             = "Показывать галочку собранного"
 L["OPT_SHOW_CHECKMARK_TIP"]         = "Показывает галочку на предметах торговца, которые уже есть в вашем хранилище"
@@ -125,7 +116,6 @@ L["OPT_SHOW_OWNED_COUNT"]           = "Показывать количество
 L["OPT_SHOW_OWNED_COUNT_TIP"]       = "Показывает число на предметах торговца - сколько штук есть в хранилище"
 L["OPT_VENDOR_TOOLTIP"]             = "Показывать информацию в подсказке НИП торговца"
 L["OPT_VENDOR_TOOLTIP_TIP"]         = "Показывает информацию HomeDecor в подсказке при наведении на НИП торговца"
-
 L["MAP_TRACKER_SETTINGS"]           = "Настройки карты и трекера"
 L["MAP_PINS_HEADER"]                = "Метки на карте"
 L["MAP_SHOW_MINIMAP"]               = "Показывать на миникарте"
@@ -136,16 +126,13 @@ L["MAP_PIN_STYLE_HEADER"]           = "Внешний вид меток"
 L["MAP_STYLE"]                      = "Стиль"
 L["MAP_COLOR"]                      = "Цвет"
 L["MAP_SIZE"]                       = "Размер"
-
 L["TRACK_CURRENT_ZONE"]             = "Отслеживать текущую зону"
 L["HIDE_COMPLETED"]                 = "Скрывать завершённые:"
 L["HIGHLIGHT_SAVED"]                = "Подсвечивать сохранённые предметы:"
-
 L["FILTER_HIDE_COMPLETED"]          = "Скрывать завершённые"
 L["FILTER_ALTS_REP_HINT"]           = "Зайдите один раз на всех альтах, чтобы обновить репутации"
 L["FILTER_ALTS_QUEST_HINT"]         = "Зайдите один раз на всех альтах, чтобы обновить выполненные задания"
 L["FILTER_ACH_COMPLETED_HINT"]      = "Показывать только предметы из завершённых достижений"
-
 L["LUMBER_TOTAL"]                   = "Всего древесины: "
 L["LUMBER_TOTAL_ZERO"]              = "Всего древесины: 0"
 L["LUMBER_GOAL_AMOUNT"]             = "Цель:"
@@ -174,53 +161,42 @@ L["LUMBER_STAT_SESSION"]            = "СЕССИЯ"
 L["LUMBER_STAT_TOTAL"]              = "ВСЕГО"
 L["LUMBER_STAT_BAGS"]               = "В СУМКАХ"
 L["LUMBER_STAT_COLLECTING"]         = "СОБИРАЕТСЯ"
-
 L["LDB_LEFT_CLICK"]                 = "ЛКМ: Открыть"
 L["LDB_RIGHT_CLICK"]                = "ПКМ: Настройки"
 L["LDB_TOGGLE_TIP"]                 = "Клик - переключить HomeDecor"
-
 L["SLASH_HEADER"]                   = "Команды HomeDecor:"
 L["SLASH_HD"]                       = "/hd                 - переключить HomeDecor"
 L["SLASH_MINIMAP"]                  = "/hd minimap [show|hide] - показать/скрыть кнопку миникарты"
 L["SLASH_PINS"]                     = "/hd pins [minimap|worldmap] - вкл/выкл метки торговцев"
 L["SLASH_OPTIONS"]                  = "/hd options          - открыть настройки"
 L["SLASH_CHANGELOG"]                = "/hd changelog       - показать «Что нового»"
-
 L["JOIN_DISCORD"]                   = "Присоединиться к нашему Discord"
 L["SUPPORT_BUYMEACOFFEE"]           = "Поддержать разработку (BuyMeACoffee)"
 L["DONATE_PAYPAL"]                  = "Пожертвовать через PayPal"
 L["SHARE_HOMEDECOR"]                = "Поделиться HomeDecor с друзьями"
-
 L["ITEM_LINK"]                      = "Ссылка на предмет"
 L["QUEST_LINK"]                     = "Ссылка на задание"
 L["ACHIEVEMENT_LINK"]               = "Ссылка на достижение"
-
 L["VIEW_ICON"]                      = "Иконки"
 L["VIEW_LIST"]                      = "Список"
-
 L["DYEABLE_CLASS"]                  = "Можно перекрасить - "
-
 L["GOAL_MANUAL_PREFIX"]             = "Ручная цель: "
 L["GOAL_MANUAL_SUB"]                = "(Установлено в настройках)"
 L["GOAL_AUTO_PREFIX"]               = "Авто-цель: "
 L["GOAL_AUTO_SUB"]                  = "На основе неизученных рецептов декора жилья"
 L["GOAL_AUTO_COMPLETE"]             = "Все известные рецепты декора жилья с этой древесиной изучены"
-
 L["EVENT_ITEMS_PLACEHOLDER"]        = "Предметы события будут отображаться здесь, пока оно активно"
-
 L["UNKNOWN"]                        = "Неизвестно"
-
-L["EXP_CLASSIC"]                    = "Classic"
-L["EXP_TBC"]                        = "Burning Crusade"
-L["EXP_WOTLK"]                      = "Wrath of the Lich King"
-L["EXP_MOP"]                        = "Mists of Pandaria"
-L["EXP_WOD"]                        = "Warlords of Draenor"
+L["EXP_CLASSIC"]                     = "Classic"
+L["EXP_TBC"]                     = "Burning Crusade"
+L["EXP_WOTLK"]                     = "Wrath of the Lich King"
+L["EXP_MOP"]                     = "Mists of Pandaria"
+L["EXP_WOD"]                     = "Warlords of Draenor"
 L["EXP_LEGION"]                     = "Legion"
-L["EXP_BFA"]                        = "Battle for Azeroth"
-L["EXP_SHADOWLANDS"]                = "Shadowlands"
-L["EXP_DRAGONFLIGHT"]               = "Dragonflight"
-L["EXP_TWW"]                        = "The War Within"
-
+L["EXP_BFA"]                     = "Battle for Azeroth"
+L["EXP_SHADOWLANDS"]                     = "Shadowlands"
+L["EXP_DRAGONFLIGHT"]                     = "Dragonflight"
+L["EXP_TWW"]                     = "The War Within"
 L["ZONE_EASTERN_KINGDOMS"]          = "Восточные Королевства"
 L["ZONE_KALIMDOR"]                  = "Калимдор"
 L["ZONE_OUTLAND"]                   = "Запределье"
@@ -236,12 +212,9 @@ L["ZONE_DRAGON_ISLES"]              = "Драконьи острова"
 L["ZONE_KHAZ_ALGAR"]                = "Каз Алгар"
 L["ZONE_FOUNDERS_POINT"]            = "Лагерь Основателя"
 L["ZONE_RAZORSHORE"]                = "Берега Колючего Ветра"
-
 L["ERR_MAPOPUP_FAILED"]             = "HomeDecor: Не удалось создать фрейм MapPopup"
 L["ERR_MAPOPUPUI_UNAVAILABLE"]      = "HomeDecor: MapPopupUI недоступен"
-
 L["MORE_ITEMS"]                     = "ещё..."
-
 L["DECOR_PRICING"]                  = "Цены на декор"
 L["DECOR_AH_CRAFTING_QUEUE"]        = "Очередь крафта"
 L["DECOR_AH_CLEAR"]                 = "Очистить"
@@ -253,7 +226,7 @@ L["DECOR_AH_COST_COLON"]            = "Стоимость:"
 L["DECOR_AH_EXPORT_LIST"]           = "Экспорт списка"
 L["DECOR_AH_EXPORT"]                = "Экспорт"
 L["DECOR_AH_IMPORT"]                = "Импорт"
-L["DECOR_AH_AUCTIONATOR"]           = "Auctionator"
+L["DECOR_AH_AUCTIONATOR"]                     = "Auctionator"
 L["DECOR_AH_REMOVE"]                = "Удалить"
 L["DECOR_AH_UNKNOWN_ITEM"]          = "Неизвестный предмет"
 L["DECOR_AH_PROFIT_PREFIX"]         = "Прибыль: "
@@ -301,24 +274,19 @@ L["DECOR_AH_CLOSE"]                 = "Закрыть"
 L["DECOR_AH_IMPORT_TITLE"]          = "Импорт списка покупок"
 L["DECOR_AH_PASTE_LIST"]            = "Вставьте список TSM/Auctionator:"
 L["DECOR_AH_CANCEL"]                = "Отмена"
-
 L["DECOR_AH_JUST_SCANNED"]          = "Только что просканировано"
 L["DECOR_AH_SCANNED_MIN_AGO"]       = "Сканировано %d мин назад"
 L["DECOR_AH_SCANNED_HOURS_AGO"]     = "Сканировано %d ч назад"
 L["DECOR_AH_QUEUE_COUNT"]           = "Очередь (%d)"
-
 L["DROPS_LABEL"]                    = "Добыча"
 L["DROPS_FROM_PANEL"]               = "Добывается с"
-
 L["MAPPIN_LEFT_CLICK_SET_WP"]       = "ЛКМ: Установить точку пути"
 L["MAPPIN_LEFT_CLICK_CLEAR_WP"]     = "ЛКМ: Убрать точку пути"
 L["MAPPIN_RIGHT_CLICK_VENDOR_ITEMS"]= "ПКМ: Показать товары торговца"
 L["MAPPIN_NPC_ID"]                  = "ID НИП: "
 L["MAPPIN_LEFT_CLICK_ZONE_MAP"]     = "ЛКМ: Открыть карту зоны"
 L["MAPPIN_RIGHT_CLICK_ALL_VENDORS"] = "ПКМ: Показать всех торговцев"
-
 L["MAP_POPUP_VENDORS"]              = "Торговцы"
-
 L["ALTS_PROFESSIONS"]               = "Профессии альтов"
 L["ALTS_CLICK_CELL_HINT"]           = "ЛКМ по любой ячейке - посмотреть альтов и рецепты"
 L["ALTS_YOUR_ALTS"]                 = "ВАШИ АЛЬТЫ"
@@ -334,20 +302,14 @@ L["ALTS_MKT"]                       = "Рынок:"
 L["ALTS_COST"]                      = "Стоимость:"
 L["ALTS_FIND_TRAINER"]              = "Найти тренера"
 L["ALTS_TRAINER_LOCATIONS_TIP"]     = "Места тренеров"
-
 L["TRACKER_TITLE"]                  = "Трекер декора"
-
 L["LUMBER_FARMING_STATS_TITLE"]     = "Статистика фарма"
-
-L["ZONE"]                           = "Зона"
-
 L["FILTER_TAB_FILTERS"]             = "Фильтры"
 L["FILTER_TAB_COMPLETED"]           = "Завершённые"
 L["FILTER_HIDE_COMPLETED_ROW"]      = "Скрывать завершённые"
 L["FILTER_REPUTATION_ROW"]          = "Репутация"
 L["FILTER_QUESTS_ROW"]              = "Задания"
 L["FILTER_ACHIEVEMENT_ROW"]         = "Достижение"
-
 L["FILTER_HIDE_PVP_ROW"]            = "Скрывать PvP предметы"
 L["FILTER_HIDE_PVP_HINT"]           = "Скрывает PvP предметы из других категорий"
 L["FILTER_FACTION_ROW"]             = "Фракция"
@@ -357,7 +319,6 @@ L["FILTER_CATEGORY_ROW"]            = "Категория"
 L["FILTER_SUBCATEGORY_ROW"]         = "Подкатегория"
 L["FILTER_ALLIANCE"]                = "Альянс"
 L["FILTER_HORDE"]                   = "Орда"
-
 L["MAP_PANEL_MAP_PINS"]             = "Метки на карте"
 L["MAP_PANEL_VENDOR_TRACKER"]       = "Трекер торговцев"
 L["MAP_PANEL_PIN_APPEARANCE"]       = "Внешний вид меток"
@@ -369,26 +330,20 @@ L["MAP_PANEL_STYLE"]                = "Стиль"
 L["MAP_PANEL_COLOR"]                = "Цвет"
 L["MAP_PANEL_TOOLTIP_ANCHOR_SECTION"] = "Положение подсказки"
 L["MAP_PANEL_TOOLTIP_ANCHOR"]       = "Привязка"
-
-L["LUMBER_SHOW_ICONS_TIP"]          = ""
+L["LUMBER_SHOW_ICONS_TIP"]                     = ""
 L["LUMBER_COMPACT_MODE_TIP"]        = "Показывает сжатый однострочный список - больше предметов на экране"
 L["LUMBER_AUTO_FARM_TIP_LONG"]      = "Автоматически включает статистику фарма при поднятии древесины"
 L["LUMBER_ACCOUNT_WIDE_TIP_LONG"]   = "Суммирует древесину со всех персонажей.\n\nНаведите на строку - увидите разбивку по персонажам."
 L["LUMBER_AUTO_CALC_GOALS_TIP_LONG"]= "Автоматически рассчитывает цели на основе неизученных рецептов декора жилья"
-
 L["CURRENCY_FALLBACK"]              = "Валюта"
 L["DECOR_HASH_PREFIX"]              = "Декор #"
 L["DYEABLE_LABEL"]                  = "Можно перекрасить"
 L["DYEABLE_CLASS_LABEL"]            = "Можно перекрасить - "
-L["UNCATEGORIZED"]                  = "Без категории"
 L["NO_ITEMS_MATCH_SEARCH"]          = "Нет предметов по вашему запросу"
 L["NO_ACTIVE_EVENTS_TITLE"]         = "Нет активных событий"
-
 L["REQ_REPUTATION_TEXT"]            = "Требуется репутация"
 L["REQ_QUEST_TEXT"]                 = "Требуется задание"
-
 L["CLASS_HALL_HEADER"]              = "Оплот класса"
-
 L["ALTS_FILTER_ALL_ITEMS"]          = "Все предметы"
 L["ALTS_FILTER_WITH_PRICE"]         = "С ценами"
 L["ALTS_FILTER_PROFITABLE"]         = "Только прибыльные"
@@ -407,71 +362,25 @@ L["ALTS_TAB_ITEM_TRACKER"]          = "Трекер предметов"
 L["ALTS_LEGEND_READY"]              = "Готово"
 L["ALTS_LEGEND_FAR"]                = "Далеко"
 L["ALTS_LEGEND_NONE"]               = "Нет"
-
 L["EVENTS_ENDS_IN"]                 = "Заканчивается через "
-
 L["DECOR_AH_NO_ITEMS_FOUND"]        = "Предметы не найдены"
 L["DECOR_AH_NO_ITEMS_MATCH"]        = "Нет подходящих предметов"
 L["DECOR_AH_KNOWN_ONLY"]            = "Только изученные"
 L["DECOR_AH_ALT_PROFESSIONS"]       = "Профессии альтов"
 L["DECOR_AH_FORMAT_TEXT"]           = "Текст"
-L["DECOR_AH_FORMAT_TSM"]            = "TSM"
-L["DECOR_AH_FORMAT_AUCTIONATOR"]    = "Auctionator"
-
+L["DECOR_AH_FORMAT_TSM"]                     = "TSM"
+L["DECOR_AH_FORMAT_AUCTIONATOR"]                     = "Auctionator"
 L["SALES_CONFIRM_CLEAR"]            = "Очистить"
 L["SALES_CONFIRM_CANCEL"]           = "Отмена"
-
 L["MAP_POPUP_CLASS_HALL"]           = "Оплот класса"
-
 L["LUMBER_WARBAND_BANK_LABEL"]      = "Банк отряда"
-
 L["ALTS_CLOSE_SKL"]                 = "БЛИЗКО (<50 нав)"
 L["ALTS_LEGEND_CLOSE"]              = "Близко (<50)"
-
 L["FILTER_ALL"]                     = "Все"
-
-L["LUMBER_HIDE_ZERO"]               = "Скрывать с 0"
-
 L["EVENTS_PLACEHOLDER_BODY"]        = "Предметы события будут отображаться здесь, пока оно активно"
-
-L["WAYPOINT"]                       = "Точка пути"
-
-L["UNCATEGORIZED"]                  = "Без категории"
-
-L["FILTER_ALTS_REP_HINT"]           = "Зайдите один раз на всех альтах, чтобы обновить репутации"
-L["FILTER_ALTS_QUEST_HINT"]         = "Зайдите один раз на всех альтах, чтобы обновить выполненные задания"
-L["FILTER_ACH_COMPLETED_HINT"]      = "Показывать только предметы из завершённых достижений"
-
-L["ALL_FACTIONS"]                   = "Все фракции"
-L["ALL_EXPANSIONS"]                 = "Все дополнения"
-L["ALL_ZONES"]                      = "Все зоны"
-L["ALL_CATEGORIES"]                 = "Все категории"
-L["ALL_SUBCATEGORIES"]              = "Все подкатегории"
-
-L["OPT_PIN_HOUSE"]                  = "Иконка дома"
-L["OPT_PIN_DOT"]                    = "Точка"
-
-L["VENDOR"]                         = "Торговец"
-L["FACTION"]                        = "Фракция"
-L["REQUIRES"]                       = "Требуется"
-
-L["HINT_EXPAND_COLLAPSE"]           = "ЛКМ: Развернуть/Свернуть"
-L["HINT_VENDOR_LOCATION"]           = "ПКМ: Местоположение торговца"
-L["HINT_ALT_WOWHEAD"]               = "Alt + ЛКМ: Ссылка на Wowhead"
-L["HINT_VIEW_ITEM"]                 = "ЛКМ: Посмотреть предмет"
-L["HINT_CTRL_ACHIEVEMENT"]          = "Ctrl + ЛКМ: Посмотреть достижение"
-L["HINT_CLICK_WOWHEAD"]             = "ЛКМ: Ссылка на Wowhead"
-
-L["LUMBER_SHOW_ICONS"]              = "Показывать иконки"
-L["LUMBER_COMPACT_MODE"]            = "Компактный режим"
-L["LUMBER_AUTO_FARM"]               = "Режим автофарма"
-L["LUMBER_ACCOUNT_WIDE"]            = "По всему аккаунту"
-L["LUMBER_AUTO_CALC_GOALS"]         = "Авто-расчёт целей"
-
 L["PROF_TIP_TITLE"]                 = "Совет по профессиям"
 L["PROF_TIP_MESSAGE"]               = "Пожалуйста, откройте окно профессий на всех альтах, у которых есть профессии - аддон запишет все данные."
 L["PROF_TIP_OK"]                    = "Понял!"
-
 L["CONFLICT_TITLE"]                 = "Конфликт функций редактирования"
 L["CONFLICT_LINE1"]                 = "Другой аддон предоставляет пересекающиеся функции редактирования."
 L["CONFLICT_LINE2"]                 = "Отключить функции редактирования HomeDecor?"
@@ -484,7 +393,6 @@ L["CONFLICT_MSG_KEPT"]              = "Функции редактировани
 L["CONFLICT_MSG_LATER"]             = "Решите позже в настройках или командой |cffffff00/homedecor conflict|r."
 L["CONFLICT_NOT_READY"]             = "SavedVariables ещё не готовы."
 L["CONFLICT_RESET"]                 = "Настройки конфликта сброшены. Повторное сканирование..."
-
 L["OPT_EDITOR_PANEL_NAME"]          = "Редактор жилья"
 L["OPT_EDITOR_SUBTITLE"]            = "Настройка функций и горячих клавиш HomeDecor для редактора жилья."
 L["OPT_EDITOR_GENERAL"]             = "Общие"
@@ -529,3 +437,5 @@ L["ANCHOR_RIGHT"]                   = "Справа"
 L["ANCHOR_MIDDLE"]                  = "По центру"
 L["ANCHOR_BOTTOM"]                  = "Снизу"
 L["ANCHOR_CURSOR"]                  = "У курсора"
+L["LUMBER_HIDE_IN_INSTANCE"]        = "Скрывать в инстансах"
+L["LUMBER_HIDE_IN_INSTANCE_TIP"]    = "Автоматически скрывает Трекер древесины и окно статистики фарма при входе в подземелье, рейд или PvP-инстанс"
