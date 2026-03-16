@@ -14,6 +14,7 @@ local Textures = (Theme and Theme.textures) or nil
 
 local FiltersSys = NS.Systems and NS.Systems.Filters
 local GlobalIndex = NS.Systems and NS.Systems.GlobalIndex
+local Collection = NS.Systems and NS.Systems.Collection
 
 local CreateFrame = CreateFrame
 local UIParent = UIParent
@@ -566,6 +567,16 @@ function L:CreateShell()
       btn.text:SetText(format("%s (%d / %d)", cname, collected, total))
     else
       btn.text:SetText(cname)
+    end
+  end
+
+  local function RefreshCategoryTexts()
+    for i = 1, #left.buttons do
+      local btn = left.buttons[i]
+      local cname = btn and btn._category
+      if cname and cname ~= "Saved Items" and applyCategoryText then
+        applyCategoryText(btn, cname)
+      end
     end
   end
 
@@ -1375,6 +1386,16 @@ function L:CreateShell()
   EnsureTicker()
   if UpdateTopTabs then UpdateTopTabs() end
   if UpdateSortVisibility then UpdateSortVisibility() end
+
+  if Collection and Collection.RegisterListener and not f._hdCategoryCountsListener then
+    f._hdCategoryCountsListener = true
+    Collection:RegisterListener(function()
+      C_Timer.After(0, function()
+        if not f or not left or not left.buttons then return end
+        RefreshCategoryTexts()
+      end)
+    end)
+  end
 
   return f
 end

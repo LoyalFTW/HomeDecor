@@ -22,18 +22,22 @@ end)
 
 function NS.RegisterEvent(obj, event, func)
     if not handlers[event] then
+        local ok, err = pcall(eventFrame.RegisterEvent, eventFrame, event)
+        if not ok then
+            return false, err
+        end
         handlers[event] = {}
-        eventFrame:RegisterEvent(event)
     end
 
     local list = handlers[event]
     for i = 1, #list do
         if list[i].obj == obj then
             list[i].func = func  
-            return
+            return true
         end
     end
     list[#list + 1] = { obj = obj, func = func }
+    return true
 end
 
 function NS.UnregisterEvent(obj, event)
@@ -51,9 +55,11 @@ function NS.UnregisterEvent(obj, event)
 end
 
 function NS.SafeRegisterEvent(obj, event, func)
-    local ok, err = pcall(NS.RegisterEvent, obj, event, func)
+    local ok, registered, err = pcall(NS.RegisterEvent, obj, event, func)
     if not ok then
+        return false, registered
     end
+    return registered, err
 end
 
 function NS.Debounce(delay, func)

@@ -99,6 +99,13 @@ function GI:Build()
     self._built = true
 end
 
+function GI:Invalidate(rebuildNow)
+    self._built = false
+    if rebuildNow then
+        self:Build()
+    end
+end
+
 function GI:Ensure()
     if not self._built then self:Build() end
 end
@@ -107,6 +114,12 @@ function GI:GetCounts(cat)
     self:Ensure()
     cat = NormalizeCategory(cat)
     return (self.collected[cat] or 0), (self.counts[cat] or 0)
+end
+
+if Collection and Collection.RegisterListener then
+    Collection:RegisterListener(function()
+        GI:Invalidate(false)
+    end)
 end
 
 return GI

@@ -11,8 +11,14 @@ Collection.State = {
 
 local decorCache = {}
 local listeners = {}
+local NotifyChanged
 
-local function NotifyChanged(decorID)
+local function ClearAllCacheAndNotify()
+    wipe(decorCache)
+    NotifyChanged(-1)
+end
+
+function NotifyChanged(decorID)
     for i = 1, #listeners do
         local fn = listeners[i]
         if fn then
@@ -31,8 +37,7 @@ function Collection:ClearCache(decorID)
         decorCache[decorID] = nil
         NotifyChanged(decorID)
     else
-        wipe(decorCache)
-        NotifyChanged(-1)
+        ClearAllCacheAndNotify()
     end
 end
 
@@ -147,9 +152,16 @@ NS.RegisterEvent(Collection, "HOUSE_DECOR_ADDED_TO_CHEST", function(decorID)
         decorCache[decorID] = nil
         NotifyChanged(decorID)
     else
-        wipe(decorCache)
-        NotifyChanged(-1)
+        ClearAllCacheAndNotify()
     end
+end)
+
+NS.SafeRegisterEvent(Collection, "HOUSING_COLLECTION_UPDATED", function()
+    ClearAllCacheAndNotify()
+end)
+
+NS.SafeRegisterEvent(Collection, "HOUSING_DECOR_ITEM_LEARNED", function()
+    ClearAllCacheAndNotify()
 end)
 
 NS.RegisterEvent(Collection, "PLAYER_ENTERING_WORLD", function()
