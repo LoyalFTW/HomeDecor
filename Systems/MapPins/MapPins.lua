@@ -149,7 +149,7 @@ function MapPins:Enable()
             local deltaY = waypoint.y - playerY
             distance = ((deltaX * deltaX + deltaY * deltaY) ^ 0.5) * 10000
           end
-          local clearYards = U and MapPinsUtil.WAYPOINT_CLEAR_YARDS or 25
+          local clearYards = MapPinsUtil and MapPinsUtil.WAYPOINT_CLEAR_YARDS or 25
           if distance and distance <= clearYards then
             MapPins:ClearUserWaypoint()
             MapPins.RefreshTooltip()
