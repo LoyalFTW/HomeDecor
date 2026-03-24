@@ -10,6 +10,18 @@ local CreateFrame = CreateFrame
 local unpack = _G.unpack or table.unpack
 local GameTooltip = GameTooltip
 
+local function RefreshAll(sharedCtx)
+  local Render = NS.UI.LumberTrackRender
+  if Render and Render.Refresh then
+    Render:Refresh(sharedCtx)
+  end
+
+  local GatherTrack = NS.UI.GatherTrack
+  if GatherTrack and GatherTrack.RefreshAll then
+    GatherTrack:RefreshAll(sharedCtx)
+  end
+end
+
 local function CreateCheckbox(parent, x, y, label, tooltipText)
   local cb = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
   cb:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
@@ -36,6 +48,41 @@ local function CreateCheckbox(parent, x, y, label, tooltipText)
   return cb
 end
 
+local function CreateSectionLabel(parent, x, y, text, accent)
+  local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+  label:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
+  label:SetText(text)
+  label:SetTextColor(unpack(accent or { 1, 0.82, 0.2, 1 }))
+
+  local line = parent:CreateTexture(nil, "ARTWORK")
+  line:SetPoint("LEFT", label, "RIGHT", 8, 0)
+  line:SetPoint("RIGHT", parent, "RIGHT", -16, 0)
+  line:SetHeight(1)
+  line:SetColorTexture(1, 1, 1, 0.12)
+
+  return label, line
+end
+
+local function CreateCard(parent, x, y, width, height, title, theme)
+  local card = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+  card:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
+  card:SetSize(width, height)
+  Utils.CreateBackdrop(card, theme.row or { 0.12, 0.12, 0.14, 1 }, theme.border)
+
+  card.title = card:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+  card.title:SetPoint("TOPLEFT", 10, -8)
+  card.title:SetText(title)
+  card.title:SetTextColor(unpack(theme.accent or { 1, 0.82, 0.2, 1 }))
+
+  card.line = card:CreateTexture(nil, "ARTWORK")
+  card.line:SetPoint("TOPLEFT", card, "TOPLEFT", 10, -24)
+  card.line:SetPoint("TOPRIGHT", card, "TOPRIGHT", -10, -24)
+  card.line:SetHeight(1)
+  card.line:SetColorTexture(1, 1, 1, 0.10)
+
+  return card
+end
+
 function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   if not parent then return nil end
 
@@ -45,47 +92,125 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   local settings = CreateFrame("Frame", nil, parent, "BackdropTemplate")
   settings:SetFrameStrata("DIALOG")
   settings:SetFrameLevel(parent:GetFrameLevel() + 20)
-  settings:SetSize(280, 490)
+  settings:SetSize(382, 340)
   settings:SetPoint("CENTER", parent, "CENTER", 0, 0)
   settings:Hide()
+  settings:EnableMouse(true)
   Utils.CreateBackdrop(settings, T.panel, T.border)
 
-  local title = settings:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-  title:SetPoint("TOP", 0, -16)
-  title:SetText(L["SETTINGS"])
+  local header = CreateFrame("Frame", nil, settings, "BackdropTemplate")
+  header:SetPoint("TOPLEFT", 8, -8)
+  header:SetPoint("TOPRIGHT", -8, -8)
+  header:SetHeight(26)
+  Utils.CreateBackdrop(header, T.row or { 0.12, 0.12, 0.14, 1 }, T.border)
+
+  local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+  title:SetPoint("LEFT", 10, 0)
+  title:SetText("Gather Options")
   title:SetTextColor(unpack(T.accent or {1, 0.82, 0.2, 1}))
 
-  local yOffset = -50
+  local closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  closeBtn:SetSize(18, 18)
+  closeBtn:SetPoint("RIGHT", -4, 0)
+  Utils.CreateBackdrop(closeBtn, T.row or { 0.12, 0.12, 0.14, 1 }, T.border)
+  closeBtn.txt = closeBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  closeBtn.txt:SetPoint("CENTER")
+  closeBtn.txt:SetText("x")
+  closeBtn:SetScript("OnClick", function()
+    settings:Hide()
+  end)
 
-  local iconsCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_SHOW_ICONS"])
+  local doneBtn = CreateFrame("Button", nil, settings, "BackdropTemplate")
+  doneBtn:SetSize(52, 18)
+  doneBtn:SetPoint("BOTTOMRIGHT", -10, 10)
+  Utils.CreateBackdrop(doneBtn, T.row or { 0.12, 0.12, 0.14, 1 }, T.border)
+  doneBtn.txt = doneBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  doneBtn.txt:SetPoint("CENTER")
+  doneBtn.txt:SetText("Done")
+  doneBtn:SetScript("OnClick", function()
+    settings:Hide()
+  end)
+
+  settings:SetScript("OnMouseDown", function(_, button)
+    if button == "RightButton" then
+      settings:Hide()
+    end
+  end)
+
+  local body = CreateFrame("Frame", nil, settings)
+  body:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -12)
+  body:SetPoint("BOTTOMRIGHT", settings, "BOTTOMRIGHT", -16, 38)
+  settings.body = body
+
+  local leftX, rightX = 0, 170
+  local topY = 0
+
+  local displayCard = CreateCard(body, leftX, topY, 158, 72, "Display", T)
+  local materialCard = CreateCard(body, leftX, -82, 158, 110, "Materials", T)
+  local behaviorCard = CreateCard(body, rightX, topY, 168, 146, "Behavior", T)
+  local goalsCard = CreateCard(body, leftX, -202, 158, 78, "Goal", T)
+  local appearanceCard = CreateCard(body, rightX, -156, 168, 76, "Appearance", T)
+
+  local iconsCB = CreateCheckbox(displayCard, 10, -30, L["LUMBER_SHOW_ICONS"])
   iconsCB:SetChecked(sharedCtx and sharedCtx.showIcons ~= false or true)
   iconsCB:SetScript("OnClick", function(self)
     if sharedCtx then
       sharedCtx.showIcons = self:GetChecked() and true or false
       if db then db.showIcons = sharedCtx.showIcons end
-      local Render = NS.UI.LumberTrackRender
-      if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+      RefreshAll(sharedCtx)
       local Rows = NS.UI.LumberTrackRows
       if Rows and Rows.Reflow then
         C_Timer.After(0.1, function() Rows:Reflow(sharedCtx) end)
       end
     end
   end)
-  yOffset = yOffset - 35
+  iconsCB.label:SetWidth(112)
 
-  local hideCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_HIDE_ZERO"])
+  local hideCB = CreateCheckbox(displayCard, 10, -52, L["LUMBER_HIDE_ZERO"])
   hideCB:SetChecked(sharedCtx and sharedCtx.hideZero and true or false)
   hideCB:SetScript("OnClick", function(self)
     if sharedCtx then
       sharedCtx.hideZero = self:GetChecked() and true or false
       if db then db.hideZero = sharedCtx.hideZero end
-      local Render = NS.UI.LumberTrackRender
-      if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+      RefreshAll(sharedCtx)
     end
   end)
-  yOffset = yOffset - 35
+  hideCB.label:SetWidth(112)
 
-  local compactCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_COMPACT_MODE"],
+  local trackLumberCB = CreateCheckbox(materialCard, 10, -30, L["LUMBER_TRACK_LUMBER"] or "Track Lumber",
+    L["LUMBER_TRACK_LUMBER_TIP"] or "Show lumber in the tracker.")
+  trackLumberCB:SetChecked(sharedCtx and sharedCtx.trackLumber ~= false or (db and db.trackLumber ~= false))
+  trackLumberCB:SetScript("OnClick", function(self)
+    local checked = self:GetChecked() and true or false
+    if sharedCtx then sharedCtx.trackLumber = checked end
+    if db then db.trackLumber = checked end
+    RefreshAll(sharedCtx)
+  end)
+  trackLumberCB.label:SetWidth(112)
+
+  local trackOreCB = CreateCheckbox(materialCard, 10, -52, L["LUMBER_TRACK_ORE"] or "Track Ore",
+    L["LUMBER_TRACK_ORE_TIP"] or "Show mining ore and stone in the tracker.")
+  trackOreCB:SetChecked(sharedCtx and sharedCtx.trackOre and true or false)
+  trackOreCB:SetScript("OnClick", function(self)
+    local checked = self:GetChecked() and true or false
+    if sharedCtx then sharedCtx.trackOre = checked end
+    if db then db.trackOre = checked end
+    RefreshAll(sharedCtx)
+  end)
+  trackOreCB.label:SetWidth(112)
+
+  local trackHerbsCB = CreateCheckbox(materialCard, 10, -74, L["LUMBER_TRACK_HERBS"] or "Track Herbs",
+    L["LUMBER_TRACK_HERBS_TIP"] or "Show herbs in the tracker.")
+  trackHerbsCB:SetChecked(sharedCtx and sharedCtx.trackHerbs and true or false)
+  trackHerbsCB:SetScript("OnClick", function(self)
+    local checked = self:GetChecked() and true or false
+    if sharedCtx then sharedCtx.trackHerbs = checked end
+    if db then db.trackHerbs = checked end
+    RefreshAll(sharedCtx)
+  end)
+  trackHerbsCB.label:SetWidth(112)
+
+  local compactCB = CreateCheckbox(behaviorCard, 10, -30, L["LUMBER_COMPACT_MODE"],
     L["LUMBER_COMPACT_TIP"])
   compactCB:SetChecked(sharedCtx and sharedCtx.compactMode and true or false)
   compactCB:SetScript("OnClick", function(self)
@@ -110,26 +235,24 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
           LumberList.compactBtn.icon:SetVertexColor(0.6, 0.6, 0.6, 1)
         end
       end
-      local Render = NS.UI.LumberTrackRender
-      if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+      RefreshAll(sharedCtx)
     end
   end)
   settings.compactCB = compactCB
-  yOffset = yOffset - 35
+  compactCB.label:SetWidth(120)
 
-  local autoFarmCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_AUTO_FARM"],
+  local autoFarmCB = CreateCheckbox(behaviorCard, 10, -52, L["LUMBER_AUTO_FARM"],
     L["LUMBER_AUTO_FARM_TIP"])
   autoFarmCB:SetChecked((db and db.autoStartFarming) and true or false)
   autoFarmCB:SetScript("OnClick", function(self)
     local checked = self:GetChecked() and true or false
     if db then db.autoStartFarming = checked end
     if sharedCtx then sharedCtx.autoStartFarming = checked end
-    local Render = NS.UI.LumberTrackRender
-    if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+    RefreshAll(sharedCtx)
   end)
-  yOffset = yOffset - 35
+  autoFarmCB.label:SetWidth(120)
 
-  local accountWideCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_ACCOUNT_WIDE"],
+  local accountWideCB = CreateCheckbox(behaviorCard, 10, -74, L["LUMBER_ACCOUNT_WIDE"],
     "Combines lumber counts from all characters.\n\nHover over rows to see per-character breakdown.")
   local AccountWide = NS.UI.LumberTrackAccountWide
   accountWideCB:SetChecked(AccountWide and AccountWide:IsEnabled() or false)
@@ -137,27 +260,28 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
     local checked = self:GetChecked() and true or false
     if AccountWide then AccountWide:SetEnabled(checked) end
     if db then db.accountWide = checked end
-    local Render = NS.UI.LumberTrackRender
-    if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+    RefreshAll(sharedCtx)
   end)
-  yOffset = yOffset - 35
+  accountWideCB.label:SetWidth(120)
 
-  local hideInInstanceCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_HIDE_IN_INSTANCE"],
+  local hideInInstanceCB = CreateCheckbox(behaviorCard, 10, -96, L["LUMBER_HIDE_IN_INSTANCE"],
     L["LUMBER_HIDE_IN_INSTANCE_TIP"])
   hideInInstanceCB:SetChecked((db and db.hideInInstance) and true or false)
   hideInInstanceCB:SetScript("OnClick", function(self)
     local checked = self:GetChecked() and true or false
     if db then db.hideInInstance = checked end
+    if sharedCtx then sharedCtx.hideInInstance = checked end
+    RefreshAll(sharedCtx)
   end)
-  yOffset = yOffset - 35
+  hideInInstanceCB.label:SetWidth(120)
 
-  local goalLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  goalLabel:SetPoint("TOPLEFT", 20, yOffset)
+  local goalLabel = goalsCard:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  goalLabel:SetPoint("TOPLEFT", 10, -34)
   goalLabel:SetText(L["LUMBER_GOAL_AMOUNT"])
 
-  local goalInput = CreateFrame("EditBox", nil, settings, "BackdropTemplate")
-  goalInput:SetPoint("LEFT", goalLabel, "RIGHT", 8, 0)
-  goalInput:SetSize(80, 26)
+  local goalInput = CreateFrame("EditBox", nil, goalsCard, "BackdropTemplate")
+  goalInput:SetPoint("TOPRIGHT", -10, -28)
+  goalInput:SetSize(58, 22)
   goalInput:SetAutoFocus(false)
   goalInput:SetFontObject(GameFontHighlight)
   goalInput:SetTextInsets(8, 8, 0, 0)
@@ -175,14 +299,12 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
     if sharedCtx then
       sharedCtx.goal = val
       if db then db.goal = val end
-      local Render = NS.UI.LumberTrackRender
-      if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+      RefreshAll(sharedCtx)
     end
     self:ClearFocus()
   end)
-  yOffset = yOffset - 35
 
-  local autoGoalCB = CreateCheckbox(settings, 20, yOffset, L["LUMBER_AUTO_CALC_GOALS"],
+  local autoGoalCB = CreateCheckbox(goalsCard, 10, -56, L["LUMBER_AUTO_CALC_GOALS"],
     L["LUMBER_AUTO_CALC_GOALS_TIP"])
   autoGoalCB:SetChecked((db and db.autoGoal) and true or false)
   autoGoalCB:SetScript("OnClick", function(self)
@@ -196,30 +318,28 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
       goalInput:Show()
       goalLabel:SetTextColor(1, 1, 1, 1)
     end
-    local Render = NS.UI.LumberTrackRender
-    if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+    RefreshAll(sharedCtx)
   end)
+  autoGoalCB.label:SetWidth(112)
 
   if (db and db.autoGoal) then
     goalInput:Hide()
     goalLabel:SetTextColor(0.5, 0.5, 0.5, 1)
   end
-  yOffset = yOffset - 35
 
-  local alphaLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  alphaLabel:SetPoint("TOPLEFT", 20, yOffset)
+  local alphaLabel = appearanceCard:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  alphaLabel:SetPoint("TOPLEFT", 10, -34)
   alphaLabel:SetText(L["TRANSPARENCY_COLON"])
-  yOffset = yOffset - 30
 
-  local slider = CreateFrame("Slider", nil, settings, "OptionsSliderTemplate")
-  slider:SetPoint("TOPLEFT", 20, yOffset)
-  slider:SetWidth(200)
+  local slider = CreateFrame("Slider", nil, appearanceCard, "OptionsSliderTemplate")
+  slider:SetPoint("TOPLEFT", 10, -50)
+  slider:SetWidth(118)
   slider:SetMinMaxValues(0, 1)
   slider:SetValue(parent._bgAlpha or 0.7)
   slider:SetValueStep(0.05)
 
-  local alphaValue = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  alphaValue:SetPoint("LEFT", slider, "RIGHT", 8, 0)
+  local alphaValue = appearanceCard:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  alphaValue:SetPoint("LEFT", slider, "RIGHT", 6, 0)
   alphaValue:SetText(string.format("%.0f%%", (parent._bgAlpha or 0.7) * 100))
 
   slider:SetScript("OnValueChanged", function(self, value)
@@ -242,6 +362,9 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
 
   settings.iconsCB = iconsCB
   settings.hideCB = hideCB
+  settings.trackLumberCB = trackLumberCB
+  settings.trackOreCB = trackOreCB
+  settings.trackHerbsCB = trackHerbsCB
   settings.autoFarmCB = autoFarmCB
   settings.accountWideCB = accountWideCB
   settings.hideInInstanceCB = hideInInstanceCB
@@ -249,6 +372,8 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   settings.goalLabel = goalLabel
   settings.autoGoalCB = autoGoalCB
   settings.slider = slider
+  settings.closeBtn = closeBtn
+  settings.doneBtn = doneBtn
 
   return settings
 end
@@ -267,6 +392,18 @@ function Settings:RefreshPanel(settingsPanel, sharedCtx)
     settingsPanel.hideCB:SetChecked(sharedCtx and sharedCtx.hideZero and true or false)
   end
 
+  if settingsPanel.trackLumberCB then
+    settingsPanel.trackLumberCB:SetChecked(sharedCtx and sharedCtx.trackLumber ~= false or (db and db.trackLumber ~= false))
+  end
+
+  if settingsPanel.trackOreCB then
+    settingsPanel.trackOreCB:SetChecked(sharedCtx and sharedCtx.trackOre and true or false)
+  end
+
+  if settingsPanel.trackHerbsCB then
+    settingsPanel.trackHerbsCB:SetChecked(sharedCtx and sharedCtx.trackHerbs and true or false)
+  end
+
   if settingsPanel.compactCB then
     settingsPanel.compactCB:SetChecked(sharedCtx and sharedCtx.compactMode and true or false)
   end
@@ -282,6 +419,25 @@ function Settings:RefreshPanel(settingsPanel, sharedCtx)
   if settingsPanel.hideInInstanceCB then
     local d = Utils.GetDB()
     settingsPanel.hideInInstanceCB:SetChecked((d and d.hideInInstance) and true or false)
+  end
+
+  if settingsPanel.goalInput then
+    local goalVal = (sharedCtx and tonumber(sharedCtx.goal)) or (db and tonumber(db.goal)) or 1000
+    settingsPanel.goalInput:SetText(tostring(goalVal))
+  end
+
+  if settingsPanel.autoGoalCB then
+    local autoGoal = (db and db.autoGoal) and true or false
+    settingsPanel.autoGoalCB:SetChecked(autoGoal)
+    if settingsPanel.goalInput and settingsPanel.goalLabel then
+      settingsPanel.goalInput:SetShown(not autoGoal)
+      settingsPanel.goalLabel:SetTextColor(autoGoal and 0.5 or 1, autoGoal and 0.5 or 1, autoGoal and 0.5 or 1, 1)
+    end
+  end
+
+  if settingsPanel.slider then
+    local alpha = (db and tonumber(db.alpha)) or 0.7
+    settingsPanel.slider:SetValue(alpha)
   end
 end
 

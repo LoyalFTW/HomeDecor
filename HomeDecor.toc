@@ -139,10 +139,14 @@ UI\LumberTrack\LumberTrack_Rate.lua
 UI\LumberTrack\LumberTrack_Farming.lua
 UI\LumberTrack\LumberTrack_Rows.lua
 UI\LumberTrack\LumberTrack_LumberList.lua
-UI\LumberTrack\LumberTrack_FarmingStats.lua
 UI\LumberTrack\LumberTrack_Render.lua
 UI\LumberTrack\LumberTrack_Events.lua
 UI\LumberTrack\LumberTrack.lua
+UI\GatherTrack\GatherTrack_Util.lua
+UI\GatherTrack\GatherTrack_Farming.lua
+UI\GatherTrack\GatherTrack_FarmingPanels.lua
+UI\GatherTrack\GatherTrack_Panels.lua
+UI\GatherTrack\GatherTrack.lua
 
 UI\Viewer\Viewer.lua
 UI\Viewer\Viewer_Util.lua

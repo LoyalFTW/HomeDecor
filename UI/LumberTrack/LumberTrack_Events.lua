@@ -128,13 +128,10 @@ function Events:Attach(LumberTrack, ctx)
       if db and db.hideInInstance then
         local inInstance = IsInInstance and IsInInstance()
         local LumberList = NS.UI.LumberTrackLumberList
-        local FarmingStats = NS.UI.LumberTrackFarmingStats
         if inInstance then
           if LumberList and LumberList.frame then LumberList.frame:Hide() end
-          if FarmingStats and FarmingStats.frame then FarmingStats.frame:Hide() end
         else
           if LumberList and LumberList.frame and db.lumberListOpen then LumberList.frame:Show() end
-          if FarmingStats and FarmingStats.frame and db.farmingStatsOpen then FarmingStats.frame:Show() end
         end
       end
       QueueRefresh(0.25)
@@ -214,34 +211,17 @@ function Events:Attach(LumberTrack, ctx)
         end
       end
 
-      if hasGain and gainItemID and ctx.farming and ctx.farming.active then
-        local currentPrimaryLumber = ctx.farming.primaryLumberID
-        if currentPrimaryLumber and gainItemID ~= currentPrimaryLumber then
-          ResetFarmingSession(ctx)
-          if Rate then
-            for itemID, count in pairs(ctx.counts or {}) do
-              if not Rate.data[itemID] then
-                Rate:InitItem(itemID)
-              end
-              if itemID == gainItemID then
-                Rate.data[itemID].lastCount = count - gainAmount
-              else
-                Rate.data[itemID].lastCount = count
-              end
-            end
-          end
-          if Farming and ctx.frame and ctx.frame._mode == "farming" then
-            Farming:Start(ctx, gainAmount, gainItemID)
-          end
+      if hasGain and gainItemID and ctx and ctx.meta and ctx.meta[gainItemID] and Utils and Utils.GetTrackedGatheringKind then
+        local meta = ctx.meta[gainItemID]
+        local kind = Utils.GetTrackedGatheringKind(meta.name, meta.classID, meta.subclassID)
+        if kind then
+          ctx.recentByKind = ctx.recentByKind or {}
+          ctx.recentByKind[kind] = gainItemID
         end
       end
 
       local db = ctx.GetDB and ctx.GetDB()
       if db and db.autoStartFarming and hasGain and not IsSuppressed() then
-        local FarmingStats = NS.UI.LumberTrackFarmingStats
-        if FarmingStats and FarmingStats.Show and not db.userClosedFarmingStats then
-          FarmingStats:Show()
-        end
         if Farming and ctx.farming and not ctx.farming.active then
           Farming:Start(ctx, gainAmount, gainItemID)
         end

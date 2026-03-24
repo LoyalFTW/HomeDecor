@@ -10,6 +10,10 @@ local string_format = string.format
 local string_gsub = string.gsub
 local string_lower = string.lower
 
+local ITEM_CLASS_TRADEGOODS = (Enum and Enum.ItemClass and Enum.ItemClass.Tradegoods) or 7
+local ITEM_SUBCLASS_METAL_STONE = (Enum and Enum.ItemTradegoodsSubclass and Enum.ItemTradegoodsSubclass.MetalAndStone) or 7
+local ITEM_SUBCLASS_HERB = (Enum and Enum.ItemTradegoodsSubclass and Enum.ItemTradegoodsSubclass.Herb) or 9
+
 function Utils.GetTheme()
   return NS.UI and NS.UI.Theme and NS.UI.Theme.colors or {}
 end
@@ -42,6 +46,52 @@ function Utils.IsLumberName(name)
   return lowerName:find("lumber", 1, true)
       or lowerName:find("timber", 1, true)
       or lowerName:find("plank", 1, true)
+end
+
+function Utils.GetTrackedGatheringKind(name, classID, subclassID)
+  if Utils.IsLumberName(name) then
+    return "lumber"
+  end
+
+  if classID == ITEM_CLASS_TRADEGOODS then
+    if subclassID == ITEM_SUBCLASS_METAL_STONE then
+      return "ore"
+    end
+    if subclassID == ITEM_SUBCLASS_HERB then
+      return "herb"
+    end
+  end
+
+  local lowerName = Utils.SafeLower(name)
+  if lowerName == "" then
+    return nil
+  end
+
+  if lowerName:find("%f[%a]ore%f[%A]") then
+    return "ore"
+  end
+  if lowerName:find("%f[%a]herb%f[%A]") then
+    return "herb"
+  end
+
+  return nil
+end
+
+function Utils.IsTrackedGatheringItem(name, classID, subclassID)
+  return Utils.GetTrackedGatheringKind(name, classID, subclassID) ~= nil
+end
+
+function Utils.IsGatheringKindEnabled(kind, settings)
+  if kind == "lumber" then
+    return not settings or settings.trackLumber ~= false
+  end
+  if kind == "ore" then
+    return settings and settings.trackOre and true or false
+  end
+  if kind == "herb" then
+    return settings and settings.trackHerbs and true or false
+  end
+  return false
 end
 
 function Utils.FormatNumber(num)

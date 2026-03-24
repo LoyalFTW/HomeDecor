@@ -1,19 +1,18 @@
 HomeDecor_ChangelogMeta = {
-  importance = "silent", -- Major / Silent
+  importance = "Major", -- Major / Silent
 }
 
 HomeDecor_Changelog = [[
 #HomeDecor
 
-March 13, 2026
+March 23, 2026
 
-* Added an All section that will orginize 
-properly on the alts profession tab
+Introduce a new Gather Tracker feature with UI, farming sessions, and panels.
 
-March 12, 2026
-
-* Updated how the preview looks
-in compact mode.
+* Added new GatherTrack module
+* Updated HomeDecor.toc to include the new GatherTrack files.
+* Minor updates to existing UI modules (Layout, LumberTrack files, Options) 
+to integrate the new gather tracker and its settings.
 
   
 ]]

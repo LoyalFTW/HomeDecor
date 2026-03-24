@@ -268,11 +268,11 @@ function LumberList:Create(sharedCtx)
   end)
   startFarmingBtn:SetScript("OnClick", function()
     local Farming = NS.UI.LumberTrackFarming
-    local FarmingStats = NS.UI.LumberTrackFarmingStats
     if Farming and sharedCtx then
       Farming:Start(sharedCtx, 0)
-      if FarmingStats and FarmingStats.Show then
-        FarmingStats:Show()
+      local FP = NS.UI and NS.UI.GatherTrackFarmingPanels
+      if FP and FP.Show then
+        FP:Show("lumber")
       end
     end
   end)

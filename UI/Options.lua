@@ -55,6 +55,9 @@ local function ensureProfile()
   if prof.lumberTrack.hideZero == nil then prof.lumberTrack.hideZero = false end
   if prof.lumberTrack.showIcons == nil then prof.lumberTrack.showIcons = true end
   if prof.lumberTrack.compactMode == nil then prof.lumberTrack.compactMode = false end
+  if prof.lumberTrack.trackLumber == nil then prof.lumberTrack.trackLumber = true end
+  if prof.lumberTrack.trackOre == nil then prof.lumberTrack.trackOre = false end
+  if prof.lumberTrack.trackHerbs == nil then prof.lumberTrack.trackHerbs = false end
   if prof.lumberTrack.alpha == nil then prof.lumberTrack.alpha = 0.7 end
   if prof.lumberTrack.goal == nil then prof.lumberTrack.goal = 1000 end
   if prof.lumberTrack.search == nil then prof.lumberTrack.search = "" end
@@ -62,6 +65,7 @@ local function ensureProfile()
   if prof.lumberTrack.accountWide == nil then prof.lumberTrack.accountWide = false end
   if prof.lumberTrack.autoStartFarming == nil then prof.lumberTrack.autoStartFarming = false end
   if prof.lumberTrack.hideInInstance == nil then prof.lumberTrack.hideInInstance = false end
+  prof.lumberTrack.gatherMini = prof.lumberTrack.gatherMini or {}
   prof.ui = prof.ui or {}
   if prof.ui.compactMode == nil then prof.ui.compactMode = false end
   return prof
@@ -598,6 +602,49 @@ function Options:Ensure()
   lumberDisplayHeader:SetText(L("OPT_LUMBER_DISPLAY"))
   ly = ly - 24
 
+  local gatherLaunchHeader = lumberPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  gatherLaunchHeader:SetPoint("TOPLEFT", 16, ly)
+  gatherLaunchHeader:SetText(L("OPT_GATHER_MINI_TRACKERS") or "Materials")
+  ly = ly - 26
+
+  local btnOpenLumberMini = CreateFrame("Button", nil, lumberPanel, "UIPanelButtonTemplate")
+  btnOpenLumberMini:SetSize(110, 22)
+  btnOpenLumberMini:SetPoint("TOPLEFT", 32, ly)
+  btnOpenLumberMini:SetText(L("OPT_GATHER_OPEN_LUMBER") or "Open Lumber")
+
+  local btnOpenOreMini = CreateFrame("Button", nil, lumberPanel, "UIPanelButtonTemplate")
+  btnOpenOreMini:SetSize(110, 22)
+  btnOpenOreMini:SetPoint("LEFT", btnOpenLumberMini, "RIGHT", 6, 0)
+  btnOpenOreMini:SetText(L("OPT_GATHER_OPEN_ORE") or "Open Ore")
+
+  local btnOpenHerbMini = CreateFrame("Button", nil, lumberPanel, "UIPanelButtonTemplate")
+  btnOpenHerbMini:SetSize(110, 22)
+  btnOpenHerbMini:SetPoint("LEFT", btnOpenOreMini, "RIGHT", 6, 0)
+  btnOpenHerbMini:SetText(L("OPT_GATHER_OPEN_HERB") or "Open Herbs")
+  ly = ly - 30
+
+  local btnOpenAllMini = CreateFrame("Button", nil, lumberPanel, "UIPanelButtonTemplate")
+  btnOpenAllMini:SetSize(180, 22)
+  btnOpenAllMini:SetPoint("TOPLEFT", 32, ly)
+  btnOpenAllMini:SetText(L("OPT_GATHER_OPEN_ALL") or "Open All Materials")
+  ly = ly - 34
+
+  local btnFarmLumberMini = CreateFrame("Button", nil, lumberPanel, "UIPanelButtonTemplate")
+  btnFarmLumberMini:SetSize(110, 22)
+  btnFarmLumberMini:SetPoint("TOPLEFT", 32, ly)
+  btnFarmLumberMini:SetText(L("OPT_GATHER_FARM_LUMBER") or "Farm Lumber")
+
+  local btnFarmOreMini = CreateFrame("Button", nil, lumberPanel, "UIPanelButtonTemplate")
+  btnFarmOreMini:SetSize(110, 22)
+  btnFarmOreMini:SetPoint("LEFT", btnFarmLumberMini, "RIGHT", 6, 0)
+  btnFarmOreMini:SetText(L("OPT_GATHER_FARM_ORE") or "Farm Ore")
+
+  local btnFarmHerbMini = CreateFrame("Button", nil, lumberPanel, "UIPanelButtonTemplate")
+  btnFarmHerbMini:SetSize(110, 22)
+  btnFarmHerbMini:SetPoint("LEFT", btnFarmOreMini, "RIGHT", 6, 0)
+  btnFarmHerbMini:SetText(L("OPT_GATHER_FARM_HERB") or "Farm Herbs")
+  ly = ly - 34
+
   local cbLumberShowIcons = mkCheckbox(lumberPanel,
     L("LUMBER_SHOW_ICONS"),
     L("OPT_LUMBER_SHOW_ICONS_TIP"))
@@ -896,6 +943,55 @@ function Options:Ensure()
       local Render = NS.UI.LumberTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
+  end)
+
+  btnOpenLumberMini:SetScript("OnClick", function()
+    local GT = NS.UI and NS.UI.GatherTrack
+    if GT and GT.Toggle then GT:Toggle("lumber") end
+  end)
+
+  btnOpenOreMini:SetScript("OnClick", function()
+    local prof = ensureProfile()
+    if prof then prof.lumberTrack.trackOre = true end
+    local GT = NS.UI and NS.UI.GatherTrack
+    if GT and GT.Toggle then GT:Toggle("ore") end
+  end)
+
+  btnOpenHerbMini:SetScript("OnClick", function()
+    local prof = ensureProfile()
+    if prof then prof.lumberTrack.trackHerbs = true end
+    local GT = NS.UI and NS.UI.GatherTrack
+    if GT and GT.Toggle then GT:Toggle("herb") end
+  end)
+
+  btnOpenAllMini:SetScript("OnClick", function()
+    local prof = ensureProfile()
+    if prof then
+      prof.lumberTrack.trackLumber = true
+      prof.lumberTrack.trackOre = true
+      prof.lumberTrack.trackHerbs = true
+    end
+    local GT = NS.UI and NS.UI.GatherTrack
+    if GT and GT.ToggleAll then GT:ToggleAll() end
+  end)
+
+  btnFarmLumberMini:SetScript("OnClick", function()
+    local FP = NS.UI and NS.UI.GatherTrackFarmingPanels
+    if FP and FP.Toggle then FP:Toggle("lumber") end
+  end)
+
+  btnFarmOreMini:SetScript("OnClick", function()
+    local prof = ensureProfile()
+    if prof then prof.lumberTrack.trackOre = true end
+    local FP = NS.UI and NS.UI.GatherTrackFarmingPanels
+    if FP and FP.Toggle then FP:Toggle("ore") end
+  end)
+
+  btnFarmHerbMini:SetScript("OnClick", function()
+    local prof = ensureProfile()
+    if prof then prof.lumberTrack.trackHerbs = true end
+    local FP = NS.UI and NS.UI.GatherTrackFarmingPanels
+    if FP and FP.Toggle then FP:Toggle("herb") end
   end)
 
   if Settings and Settings.RegisterCanvasLayoutSubcategory then

@@ -17,33 +17,39 @@ local MAX_META_CACHE = 150
 
 local function GetItemMeta(itemID)
   if not itemID then return nil end
-  local name, link, rarity, level, minLevel, itype, subtype, stack, equip, icon = GetItemInfo(itemID)
-  if name and icon then return name, icon end
+  local name, link, rarity, level, minLevel, itype, subtype, stack, equip, icon, sellPrice, classID, subclassID = GetItemInfo(itemID)
+  if name and icon then return name, icon, classID, subclassID end
   if not name and C_Item and C_Item.RequestLoadItemDataByID then
     pcall(C_Item.RequestLoadItemDataByID, itemID)
   end
-  local name2, link2, r2, l2, ml2, t2, st2, s2, e2, icon2 = GetItemInfoInstant(itemID)
-  return name or name2, icon2
+  local itemID2, itemType2, itemSubType2, itemEquipLoc2, icon2, classID2, subclassID2 = GetItemInfoInstant(itemID)
+  return name, icon or icon2, classID or classID2, subclassID or subclassID2
 end
 
-local function GetBagLumberCounts(metaCache, lumberIDs)
+local function GetBagLumberCounts(metaCache, lumberIDs, trackingSettings)
   local counts, total = {}, 0
   metaCache = metaCache or {}
   lumberIDs = type(lumberIDs) == "table" and lumberIDs or nil
 
   local function consider(itemID, stackCount)
     if not itemID or itemID <= 0 then return end
-    if lumberIDs and not lumberIDs[itemID] then return end
 
     local m = metaCache[itemID]
     local name, icon = m and m.name, m and m.icon
+    local classID, subclassID = m and m.classID, m and m.subclassID
 
     if not name then
-      name, icon = GetItemMeta(itemID)
-      metaCache[itemID] = { name = name, icon = icon }
+      name, icon, classID, subclassID = GetItemMeta(itemID)
+      metaCache[itemID] = {
+        name = name,
+        icon = icon,
+        classID = classID,
+        subclassID = subclassID,
+      }
     end
 
-    if (lumberIDs and lumberIDs[itemID]) or (name and Utils.IsLumberName(name)) then
+    local kind = Utils.GetTrackedGatheringKind(name, classID, subclassID)
+    if kind and Utils.IsGatheringKindEnabled(kind, trackingSettings) then
       local c = tonumber(stackCount) or 1
       counts[itemID] = (counts[itemID] or 0) + c
       total = total + c
@@ -79,18 +85,54 @@ local function GetBagLumberCounts(metaCache, lumberIDs)
   return counts, total
 end
 
+local function FilterCountsByTracking(ctx, counts)
+  local filtered = {}
+  local total = 0
+
+  for itemID, count in pairs(counts or {}) do
+    local meta = ctx.meta and ctx.meta[itemID]
+    local name = meta and meta.name
+    local classID = meta and meta.classID
+    local subclassID = meta and meta.subclassID
+    local icon = meta and meta.icon
+
+    if not meta or (not name and not classID and not subclassID) then
+      name, icon, classID, subclassID = GetItemMeta(itemID)
+      ctx.meta[itemID] = {
+        name = name,
+        icon = icon or (ctx.meta[itemID] and ctx.meta[itemID].icon),
+        classID = classID,
+        subclassID = subclassID,
+      }
+    end
+
+    local kind = Utils.GetTrackedGatheringKind(name, classID, subclassID)
+    if kind and Utils.IsGatheringKindEnabled(kind, ctx) then
+      local n = tonumber(count) or 0
+      filtered[itemID] = n
+      total = total + n
+    end
+  end
+
+  return filtered, total
+end
+
 function R:Init(ctx)
   ctx = ctx or {}
   ctx.rows = ctx.rows or {}
   ctx.list = ctx.list or {}
   ctx.counts = ctx.counts or {}
   ctx.meta = ctx.meta or {}
+  ctx.recentByKind = ctx.recentByKind or {}
   ctx.total = 0
   ctx.goal = tonumber(ctx.goal) or 1000
   ctx.showIcons = ctx.showIcons ~= false
   ctx.hideZero = ctx.hideZero and true or false
   ctx.search = type(ctx.search)=="string" and ctx.search or ""
   ctx.alpha = tonumber(ctx.alpha) or 0.7
+  ctx.trackLumber = ctx.trackLumber ~= false
+  ctx.trackOre = ctx.trackOre and true or false
+  ctx.trackHerbs = ctx.trackHerbs and true or false
 
   if type(ctx.lumberIDs)~="table" then
     ctx.lumberIDs = {}
@@ -108,13 +150,24 @@ end
 local function GetMeta(ctx, itemID)
   local m = ctx.meta[itemID]
   if m then return m.name, m.icon end
-  local name, icon = GetItemMeta(itemID)
-  if name or icon then ctx.meta[itemID]={ name = name, icon = icon } end
+  local name, icon, classID, subclassID = GetItemMeta(itemID)
+  if name or icon or classID or subclassID then
+    ctx.meta[itemID] = {
+      name = name,
+      icon = icon,
+      classID = classID,
+      subclassID = subclassID,
+    }
+  end
   return name, icon
 end
 
 function R:Recount(ctx)
-  local counts, total = GetBagLumberCounts(ctx.meta, ctx.lumberIDs)
+  local counts, total = GetBagLumberCounts(ctx.meta, ctx.lumberIDs, {
+    trackLumber = ctx.trackLumber ~= false,
+    trackOre = ctx.trackOre and true or false,
+    trackHerbs = ctx.trackHerbs and true or false,
+  })
   local bagCounts = counts or {}
 
   local AccountWide = NS.UI.LumberTrackAccountWide
@@ -152,7 +205,7 @@ function R:Recount(ctx)
     else
       ctx.counts = bagCounts
     end
-    ctx.total = AccountWide:GetTotalCount(counts) or 0
+    ctx.counts, ctx.total = FilterCountsByTracking(ctx, ctx.counts)
   else
     ctx.counts = bagCounts
     ctx.total = total or 0
@@ -298,6 +351,11 @@ function R:Refresh(ctx)
 
   local Rate = NS.UI.LumberTrackRate
   if Rate and Rate.UpdateAll then Rate:UpdateAll() end
+
+  local GatherTrack = NS.UI and NS.UI.GatherTrack
+  if GatherTrack and GatherTrack.RefreshAll then
+    GatherTrack:RefreshAll(ctx)
+  end
 end
 
 function R:OnItemInfo(ctx, itemID)

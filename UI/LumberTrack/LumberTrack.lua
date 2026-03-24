@@ -6,12 +6,6 @@ NS.UI.LumberTrack = LumberTrack
 
 local Utils = NS.LT.Utils
 
-local DEFAULT_LUMBER = {
-  [245586] = true, [242691] = true, [251762] = true, [251764] = true, [251763] = true,
-  [251766] = true, [251767] = true, [251768] = true, [251772] = true, [251773] = true,
-  [256963] = true, [248012] = true
-}
-
 local sharedCtx = nil
 
 local function GetDB()
@@ -20,14 +14,14 @@ end
 
 local function InitializeDefaults(db)
   db.lumberIDs = db.lumberIDs or {}
-  for id in pairs(DEFAULT_LUMBER) do
-    db.lumberIDs[id] = true
-  end
 
   if db.showIcons == nil then db.showIcons = true end
   if db.goal == nil then db.goal = 1000 end
   if db.alpha == nil then db.alpha = 0.7 end
   if db.compactMode == nil then db.compactMode = false end
+  if db.trackLumber == nil then db.trackLumber = true end
+  if db.trackOre == nil then db.trackOre = false end
+  if db.trackHerbs == nil then db.trackHerbs = false end
 end
 
 function LumberTrack:Create()
@@ -42,18 +36,21 @@ function LumberTrack:Create()
     lumberIDs = db.lumberIDs or {},
     compactMode = db.compactMode and true or false,
     autoStartFarming = db.autoStartFarming and true or false,
+    trackLumber = db.trackLumber ~= false,
+    trackOre = db.trackOre and true or false,
+    trackHerbs = db.trackHerbs and true or false,
   }) or {
     GetDB = GetDB,
     lumberIDs = db.lumberIDs or {},
     compactMode = db.compactMode and true or false,
     autoStartFarming = db.autoStartFarming and true or false,
+    trackLumber = db.trackLumber ~= false,
+    trackOre = db.trackOre and true or false,
+    trackHerbs = db.trackHerbs and true or false,
   }
 
   local LumberList = NS.UI.LumberTrackLumberList
   if LumberList then LumberList:Create(sharedCtx) end
-
-  local FarmingStats = NS.UI.LumberTrackFarmingStats
-  if FarmingStats then FarmingStats:Create(sharedCtx) end
 
   local Events = NS.UI.LumberTrackEvents
   if Events then
@@ -65,7 +62,13 @@ function LumberTrack:Create()
   if Render then Render:Refresh(sharedCtx) end
 
   if db.lumberListOpen and LumberList then LumberList:Show() end
-  if db.farmingStatsOpen and FarmingStats then FarmingStats:Show() end
+  if NS.UI and NS.UI.GatherTrack and NS.UI.GatherTrack.RestoreOpenPanels then
+    NS.UI.GatherTrack:RestoreOpenPanels()
+  end
+end
+
+function LumberTrack:GetSharedCtx()
+  return sharedCtx
 end
 
 function LumberTrack:Toggle()
@@ -81,9 +84,10 @@ function LumberTrack:ToggleLumberList()
 end
 
 function LumberTrack:ToggleFarmingStats()
-  if not sharedCtx then self:Create() end
-  local FarmingStats = NS.UI.LumberTrackFarmingStats
-  if FarmingStats then FarmingStats:Toggle() end
+  local FP = NS.UI and NS.UI.GatherTrackFarmingPanels
+  if FP and FP.Toggle then
+    FP:Toggle("lumber")
+  end
 end
 
 return LumberTrack
