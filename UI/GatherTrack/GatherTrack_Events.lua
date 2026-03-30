@@ -252,7 +252,7 @@ function Events:Attach(GatherTrack, ctx)
           end
 
           if GatherFarmingPanels and GatherFarmingPanels.Show then
-            GatherFarmingPanels:Show(primaryGainKind)
+            GatherFarmingPanels:Show(primaryGainKind, true)
           end
         end
       end

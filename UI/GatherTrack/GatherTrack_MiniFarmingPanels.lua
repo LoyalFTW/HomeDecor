@@ -105,6 +105,7 @@ local function ensureDB()
   if s.x == nil then s.x = 0 end
   if s.y == nil then s.y = -180 end
   if s.open == nil then s.open = false end
+  if s.userClosed == nil then s.userClosed = false end
   return s
 end
 
@@ -260,7 +261,11 @@ function Panels:Create()
   close.txt = close:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   close.txt:SetPoint("CENTER")
   close.txt:SetText("x")
-  close:SetScript("OnClick", function() frame:Hide(); db.open = false end)
+  close:SetScript("OnClick", function()
+    frame:Hide()
+    db.open = false
+    db.userClosed = true
+  end)
 
   frame.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   frame.title:SetPoint("LEFT", collapseBtn, "RIGHT", 4, 0)
@@ -612,16 +617,27 @@ function Panels:Refresh(kind, ctx)
   end
 end
 
-function Panels:Show(kind)
+function Panels:Show(kind, autoOpened)
   local frame = self:Create()
   local db = ensureDB()
+  local trackDB = GTUtil.GetDB()
+  local autoFarmEnabled = trackDB and trackDB.autoStartFarming and true or false
+  if autoOpened and db.userClosed and not autoFarmEnabled then
+    return
+  end
   if GTUtil.ShouldHideInInstance() then
-    db.open = true
+    if not autoOpened then
+      db.open = true
+      db.userClosed = false
+    end
     return
   end
   frame:Show()
   frame:Raise()
-  db.open = true
+  if not autoOpened then
+    db.open = true
+    db.userClosed = false
+  end
   self:Refresh(kind, GTUtil.GetSharedCtx())
 end
 
@@ -630,15 +646,17 @@ function Panels:Toggle(kind)
   if frame:IsShown() then
     hideAuxiliaryPanels(frame)
     frame:Hide()
-    ensureDB().open = false
+    local db = ensureDB()
+    db.open = false
+    db.userClosed = true
   else
-    self:Show(kind)
+    self:Show(kind, false)
   end
 end
 
 function Panels:RestoreOpen()
   if ensureDB().open then
-    self:Show()
+    self:Show(nil, false)
   end
 end
 

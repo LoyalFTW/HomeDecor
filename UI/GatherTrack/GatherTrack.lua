@@ -34,6 +34,8 @@ function GatherTrack:Create()
   sharedCtx = Render:Init({
     GetDB = GetDB,
     lumberIDs = db.lumberIDs or {},
+    showIcons = db.showIcons ~= false,
+    hideZero = db.hideZero and true or false,
     compactMode = db.compactMode and true or false,
     autoStartFarming = db.autoStartFarming and true or false,
     trackLumber = db.trackLumber ~= false,
@@ -42,6 +44,8 @@ function GatherTrack:Create()
   }) or {
     GetDB = GetDB,
     lumberIDs = db.lumberIDs or {},
+    showIcons = db.showIcons ~= false,
+    hideZero = db.hideZero and true or false,
     compactMode = db.compactMode and true or false,
     autoStartFarming = db.autoStartFarming and true or false,
     trackLumber = db.trackLumber ~= false,
@@ -49,8 +53,8 @@ function GatherTrack:Create()
     trackHerbs = db.trackHerbs and true or false,
   }
 
-  local LumberList = NS.UI.GatherTrackLumberList
-  if LumberList then LumberList:Create(sharedCtx) end
+  local GatherList = NS.UI.GatherTrackList
+  if GatherList then GatherList:Create(sharedCtx) end
 
   local Events = NS.UI.GatherTrackEvents
   if Events then
@@ -61,9 +65,9 @@ function GatherTrack:Create()
 
   if Render then Render:Refresh(sharedCtx) end
 
-  if db.lumberListOpen and LumberList then LumberList:Show() end
-  if NS.UI and NS.UI.GatherTrackGather and NS.UI.GatherTrackGather.RestoreOpenPanels then
-    NS.UI.GatherTrackGather:RestoreOpenPanels()
+  if db.lumberListOpen and GatherList then GatherList:Show() end
+  if NS.UI and NS.UI.GatherTrackMini and NS.UI.GatherTrackMini.RestoreOpenPanels then
+    NS.UI.GatherTrackMini:RestoreOpenPanels()
   end
 end
 
@@ -73,21 +77,37 @@ end
 
 function GatherTrack:Toggle()
   if not sharedCtx then self:Create() end
-  local LumberList = NS.UI.GatherTrackLumberList
-  if LumberList then LumberList:Toggle() end
+  local GatherMini = NS.UI.GatherTrackMini
+  if GatherMini and GatherMini.ToggleAll then
+    GatherMini:ToggleAll()
+    return
+  end
+  local GatherList = NS.UI.GatherTrackList
+  if GatherList then GatherList:Toggle() end
 end
 
 function GatherTrack:ToggleLumberList()
   if not sharedCtx then self:Create() end
-  local LumberList = NS.UI.GatherTrackLumberList
-  if LumberList then LumberList:Toggle() end
+  local GatherList = NS.UI.GatherTrackList
+  if GatherList then GatherList:Toggle() end
 end
 
 function GatherTrack:ToggleFarmingStats()
-  local FP = NS.UI and NS.UI.GatherTrackGatherFarmingPanels
+  local FP = NS.UI and NS.UI.GatherTrackMiniFarmingPanels
   if FP and FP.Toggle then
     FP:Toggle("lumber")
   end
+end
+
+function GatherTrack:ToggleAll()
+  if not sharedCtx then self:Create() end
+  local GatherMini = NS.UI.GatherTrackMini
+  if GatherMini and GatherMini.ToggleAll then
+    GatherMini:ToggleAll()
+    return
+  end
+  local GatherList = NS.UI.GatherTrackList
+  if GatherList then GatherList:Show() end
 end
 
 return GatherTrack

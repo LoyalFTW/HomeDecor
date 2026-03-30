@@ -13,6 +13,20 @@ local CreateFrame = CreateFrame
 local unpack = unpack or table.unpack
 
 local ORDER = { "lumber", "ore", "herb" }
+local NORMAL_MIN_WIDTH = 340
+local NORMAL_MIN_HEIGHT = 320
+local NORMAL_MAX_WIDTH = 700
+local NORMAL_MAX_HEIGHT = 900
+local COMPACT_MIN_WIDTH = 300
+local COMPACT_MIN_HEIGHT = 190
+local COMPACT_MAX_WIDTH = 520
+local COMPACT_MAX_HEIGHT = 520
+local COMPACT_DEFAULT_WIDTH = 360
+local COMPACT_DEFAULT_HEIGHT = 250
+
+local function IsCompact(ctx)
+  return ctx and ctx.compactMode and true or false
+end
 
 local function CreateBackdrop(frame, bg, border)
   if LTUtils and LTUtils.CreateBackdrop then
@@ -48,8 +62,73 @@ local function ensureDB()
   if s.relPoint == nil then s.relPoint = "CENTER" end
   if s.x == nil then s.x = 0 end
   if s.y == nil then s.y = 60 end
+  if s.compactWidth == nil then s.compactWidth = COMPACT_DEFAULT_WIDTH end
+  if s.compactHeight == nil then s.compactHeight = COMPACT_DEFAULT_HEIGHT end
   if s.open == nil then s.open = false end
   return s
+end
+
+local function GetSizeForMode(db, compactMode)
+  if compactMode then
+    local width = math.max(COMPACT_MIN_WIDTH, math.min(COMPACT_MAX_WIDTH, tonumber(db.compactWidth) or COMPACT_DEFAULT_WIDTH))
+    local height = math.max(COMPACT_MIN_HEIGHT, math.min(COMPACT_MAX_HEIGHT, tonumber(db.compactHeight) or COMPACT_DEFAULT_HEIGHT))
+    return width, height
+  end
+
+  local width = math.max(NORMAL_MIN_WIDTH, math.min(NORMAL_MAX_WIDTH, tonumber(db.width) or 430))
+  local height = math.max(NORMAL_MIN_HEIGHT, math.min(NORMAL_MAX_HEIGHT, tonumber(db.height) or 540))
+  return width, height
+end
+
+local function ApplyFrameMode(frame, db, compactMode)
+  if not frame or not db then return end
+
+  local minW = compactMode and COMPACT_MIN_WIDTH or NORMAL_MIN_WIDTH
+  local minH = compactMode and COMPACT_MIN_HEIGHT or NORMAL_MIN_HEIGHT
+  local maxW = compactMode and COMPACT_MAX_WIDTH or NORMAL_MAX_WIDTH
+  local maxH = compactMode and COMPACT_MAX_HEIGHT or NORMAL_MAX_HEIGHT
+  local width, height = GetSizeForMode(db, compactMode)
+
+  frame:SetResizeBounds(minW, minH, maxW, maxH)
+  frame:SetSize(width, height)
+end
+
+local function ApplyModeLayout(frame, compactMode)
+  if not frame or not frame.header or not frame.summary or not frame.scroll or not frame.subtitle then
+    return
+  end
+
+  compactMode = compactMode and true or false
+
+  if compactMode then
+    frame.header:SetHeight(24)
+    frame.subtitle:ClearAllPoints()
+    frame.subtitle:SetPoint("TOPLEFT", frame.header, "BOTTOMLEFT", 4, -4)
+    frame.subtitle:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -24)
+
+    frame.summary:ClearAllPoints()
+    frame.summary:SetPoint("TOPLEFT", frame.header, "BOTTOMLEFT", 0, -4)
+    frame.summary:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -28)
+    frame.summary:SetHeight(1)
+
+    frame.scroll:ClearAllPoints()
+    frame.scroll:SetPoint("TOPLEFT", frame.header, "BOTTOMLEFT", 0, -6)
+    frame.scroll:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -28, 10)
+  else
+    frame.header:SetHeight(28)
+    frame.subtitle:ClearAllPoints()
+    frame.subtitle:SetPoint("TOPLEFT", frame.header, "BOTTOMLEFT", 4, -10)
+    frame.subtitle:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -38)
+
+    frame.summary:ClearAllPoints()
+    frame.summary:SetPoint("TOPLEFT", frame.subtitle, "BOTTOMLEFT", 0, -10)
+    frame.summary:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -64)
+    frame.summary:SetHeight(42)
+
+    frame.scroll:ClearAllPoints()
+    frame.scroll:SetPoint("TOPLEFT", frame.summary, "BOTTOMLEFT", 0, -10)
+    frame.scroll:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -28, 40)
+  end
 end
 
 local function createRow(parent)
@@ -81,6 +160,48 @@ local function createRow(parent)
     if GameTooltip then GameTooltip:Hide() end
   end)
   return row
+end
+
+local function applyRowLayout(row, compactMode, showIcons)
+  if not row then return end
+
+  compactMode = compactMode and true or false
+  showIcons = showIcons ~= false
+
+  row:SetHeight(compactMode and 18 or 24)
+  row.icon:SetShown(showIcons)
+
+  if compactMode then
+    row.icon:SetSize(12, 12)
+    row.icon:ClearAllPoints()
+    row.icon:SetPoint("LEFT", 6, 0)
+    row.name:SetFontObject("GameFontNormalSmall")
+    row.count:SetFontObject("GameFontNormalSmall")
+    row.count:ClearAllPoints()
+    row.count:SetPoint("RIGHT", row, "RIGHT", -6, 0)
+    row.name:ClearAllPoints()
+    if showIcons then
+      row.name:SetPoint("LEFT", row.icon, "RIGHT", 4, 0)
+    else
+      row.name:SetPoint("LEFT", row, "LEFT", 6, 0)
+    end
+    row.name:SetPoint("RIGHT", row.count, "LEFT", -4, 0)
+  else
+    row.icon:SetSize(16, 16)
+    row.icon:ClearAllPoints()
+    row.icon:SetPoint("LEFT", 8, 0)
+    row.name:SetFontObject("GameFontHighlightSmall")
+    row.count:SetFontObject("GameFontNormalSmall")
+    row.count:ClearAllPoints()
+    row.count:SetPoint("RIGHT", row, "RIGHT", -8, 0)
+    row.name:ClearAllPoints()
+    if showIcons then
+      row.name:SetPoint("LEFT", row.icon, "RIGHT", 6, 0)
+    else
+      row.name:SetPoint("LEFT", row, "LEFT", 8, 0)
+    end
+    row.name:SetPoint("RIGHT", row.count, "LEFT", -6, 0)
+  end
 end
 
 local function createSection(parent, kind)
@@ -157,12 +278,13 @@ function Panels:Create()
   frame:SetClampedToScreen(true)
   frame:EnableMouse(true)
   frame:Hide()
-  frame:SetResizeBounds(340, 320, 700, 900)
+  frame:SetResizeBounds(NORMAL_MIN_WIDTH, NORMAL_MIN_HEIGHT, NORMAL_MAX_WIDTH, NORMAL_MAX_HEIGHT)
   CreateBackdrop(frame, { 0.06, 0.07, 0.09, db.alpha or 0.95 }, { 0.22, 0.24, 0.28, 0.85 })
   frame._bg = { 0.06, 0.07, 0.09, 0.95 }
   frame._border = { 0.22, 0.24, 0.28, 0.85 }
 
   local header = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+  frame.header = header
   header:SetPoint("TOPLEFT", 6, -6)
   header:SetPoint("TOPRIGHT", -6, -6)
   header:SetHeight(28)
@@ -363,6 +485,8 @@ function Panels:Create()
 
   local function applyCollapsed()
     local collapsed = db.collapsed and true or false
+    local compactMode = IsCompact(GTUtil.GetSharedCtx())
+    ApplyModeLayout(frame, compactMode)
     frame.subtitle:SetShown(not collapsed)
     summary:SetShown(not collapsed)
     scroll:SetShown(not collapsed)
@@ -371,12 +495,18 @@ function Panels:Create()
     if collapsed then
       hideAuxiliaryPanels(frame)
     end
-    frame:SetHeight(collapsed and collapsedHeight or (db.height or expandedHeight))
+    if collapsed then
+      frame:SetHeight(collapsedHeight)
+    else
+      ApplyFrameMode(frame, db, compactMode)
+    end
     collapseBtn.icon:SetRotation(collapsed and 0 or -1.5708)
   end
 
   local function layout()
-    local innerWidth = math.max(320, frame:GetWidth() - 20)
+    local compactMode = IsCompact(GTUtil.GetSharedCtx())
+    ApplyModeLayout(frame, compactMode)
+    local innerWidth = math.max(compactMode and 260 or 320, frame:GetWidth() - 20)
     local summaryGap = 8
     local cardWidth = math.floor((innerWidth - (summaryGap * 2)) / 3)
     local visibleSummaryCards = {}
@@ -391,7 +521,7 @@ function Panels:Create()
     cardWidth = math.floor((innerWidth - (summaryGap * math.max(0, visibleCount - 1))) / visibleCount)
     for _, card in ipairs(visibleSummaryCards) do
       card:ClearAllPoints()
-      card:SetHeight(42)
+      card:SetHeight(compactMode and 32 or 42)
       if prevCard then
         card:SetPoint("TOPLEFT", prevCard, "TOPRIGHT", summaryGap, 0)
       else
@@ -405,7 +535,7 @@ function Panels:Create()
     end
 
     local y = 0
-    local sectionWidth = math.max(300, content:GetWidth() or innerWidth)
+    local sectionWidth = math.max(compactMode and 250 or 300, content:GetWidth() or innerWidth)
     for _, kind in ipairs(ORDER) do
       local section = frame.sections[kind]
       if section:IsShown() then
@@ -454,8 +584,14 @@ function Panels:Create()
   end)
   resizeGrip:SetScript("OnDragStop", function()
     frame:StopMovingOrSizing()
-    db.width = frame:GetWidth()
-    db.height = math.max(collapsedHeight, frame:GetHeight())
+    local compactMode = IsCompact(GTUtil.GetSharedCtx())
+    if compactMode then
+      db.compactWidth = frame:GetWidth()
+      db.compactHeight = math.max(collapsedHeight, frame:GetHeight())
+    else
+      db.width = frame:GetWidth()
+      db.height = math.max(collapsedHeight, frame:GetHeight())
+    end
     syncContentWidth()
     layout()
     Panels:Refresh(nil, GTUtil.GetSharedCtx())
@@ -494,6 +630,9 @@ function Panels:Refresh(_, ctx)
   local frame = self:Create()
   local db = ensureDB()
   ctx = ctx or GTUtil.GetSharedCtx()
+  local compactMode = IsCompact(ctx)
+  local showIcons = ctx and ctx.showIcons ~= false
+  ApplyModeLayout(frame, compactMode)
   if GTUtil.ShouldHideInInstance() then
     if frame:IsShown() then
       hideAuxiliaryPanels(frame)
@@ -504,6 +643,10 @@ function Panels:Refresh(_, ctx)
 
   local grandTotal = 0
   local visibleCount = 0
+
+  if not db.collapsed then
+    ApplyFrameMode(frame, db, compactMode)
+  end
 
   for _, kind in ipairs(ORDER) do
     local items = GTUtil.BuildListForKind(ctx, kind)
@@ -520,6 +663,7 @@ function Panels:Refresh(_, ctx)
       frame.summaryCards[kind].value:SetText(LTUtils.FormatNumberCompact(total))
       section.title:SetText(info.title)
       section.total:SetText(LTUtils.FormatNumberCompact(total))
+      section.header:SetHeight(compactMode and 22 or 26)
       if items[1] then
         section.sub:SetText((items[1].name or info.title) .. " leading in bags")
         section.footer:SetText("Top stack: " .. (items[1].name or "") .. " x" .. LTUtils.FormatNumberCompact(items[1].count or 0))
@@ -527,6 +671,8 @@ function Panels:Refresh(_, ctx)
         section.sub:SetText("No materials tracked yet")
         section.footer:SetText("Top stack: -")
       end
+      section.sub:SetShown(not compactMode)
+      section.footer:SetShown(not compactMode)
     else
       for i = 1, #section.rows do
         section.rows[i]:Hide()
@@ -535,8 +681,11 @@ function Panels:Refresh(_, ctx)
     end
 
     if enabled then
-      local y = 58
-      for i = 1, math.min(#items, 8) do
+      local startY = compactMode and 36 or 58
+      local rowStep = compactMode and 18 or 24
+      local maxRows = compactMode and 5 or 8
+      local y = startY
+      for i = 1, math.min(#items, maxRows) do
         local row = section.rows[i]
         if not row then
           row = createRow(section)
@@ -547,33 +696,37 @@ function Panels:Refresh(_, ctx)
         row.icon:SetTexture(item.icon or "Interface\\Icons\\INV_Misc_QuestionMark")
         row.name:SetText(item.name or ("Item " .. tostring(item.itemID)))
         row.count:SetText(LTUtils.FormatNumberCompact(item.count or 0))
+        applyRowLayout(row, compactMode, showIcons)
         row:ClearAllPoints()
         row:SetPoint("TOPLEFT", section, "TOPLEFT", 8, -y)
         row:SetPoint("TOPRIGHT", section, "TOPRIGHT", -8, -y)
         row:Show()
-        y = y + 24
+        y = y + rowStep
       end
-      for i = math.min(#items, 8) + 1, #section.rows do
+      for i = math.min(#items, maxRows) + 1, #section.rows do
         section.rows[i]:Hide()
       end
 
       if #items == 0 then
         section.empty:ClearAllPoints()
-        section.empty:SetPoint("TOPLEFT", section, "TOPLEFT", 10, -62)
+        section.empty:SetPoint("TOPLEFT", section, "TOPLEFT", 10, compactMode and -40 or -62)
         section.empty:Show()
-        y = 88
+        y = compactMode and 60 or 88
       else
         section.empty:Hide()
       end
 
-      section.currentHeight = math.max(118, y + 30)
+      section.currentHeight = compactMode and math.max(62, y + 8) or math.max(118, y + 30)
       section:SetHeight(section.currentHeight)
     end
   end
 
-  frame.summary:SetShown((not db.collapsed) and visibleCount > 0)
-  frame.footer:SetShown((not db.collapsed) and visibleCount > 0)
-  frame.subtitle:SetShown(not db.collapsed)
+  frame.summary:SetShown((not db.collapsed) and visibleCount > 0 and not compactMode)
+  frame.footer:SetShown((not db.collapsed) and visibleCount > 0 and not compactMode)
+  frame.subtitle:SetShown((not db.collapsed) and not compactMode)
+  if frame.title then
+    frame.title:SetText("Gather Tracker")
+  end
   frame.subtitle:SetText(visibleCount > 0 and "One tracker for lumber, ore, and herbs." or "Enable a material in settings to track it here.")
   frame.footer.value:SetText(LTUtils.FormatNumberCompact(grandTotal))
   if frame._layout then

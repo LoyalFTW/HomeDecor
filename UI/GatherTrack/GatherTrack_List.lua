@@ -152,7 +152,12 @@ function LumberList:Create(sharedCtx)
     end
     UpdateCompactBtnAppearance()
     local Render = NS.UI.GatherTrackRender
-    if Render and Render.Refresh then Render:Refresh(sharedCtx) end
+    if Render and Render.Refresh then
+      Render:Refresh(sharedCtx)
+    end
+    if Settings and Settings.RefreshPanel and self.settings then
+      Settings:RefreshPanel(self.settings, sharedCtx)
+    end
   end)
   self.compactBtn = compactBtn
   UpdateCompactBtnAppearance()

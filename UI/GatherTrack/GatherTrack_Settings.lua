@@ -22,6 +22,42 @@ local function RefreshAll(sharedCtx)
   end
 end
 
+local function ApplyCompactMode(sharedCtx, enabled)
+  if not sharedCtx then return end
+
+  local db = Utils.GetDB()
+  local newVal = enabled and true or false
+  sharedCtx.compactMode = newVal
+  if db then db.compactMode = newVal end
+
+  if sharedCtx.rows then
+    for i, row in pairs(sharedCtx.rows) do
+      if row then
+        row:Hide()
+        row:SetParent(nil)
+      end
+      sharedCtx.rows[i] = nil
+    end
+  end
+
+  local LumberList = NS.UI.GatherTrackList
+  if LumberList and LumberList.compactBtn then
+    local Tx = Utils.GetTheme()
+    if newVal then
+      LumberList.compactBtn:SetBackdropBorderColor(unpack(Tx.accentBright or Tx.accent))
+      LumberList.compactBtn.icon:SetVertexColor(unpack(Tx.accent))
+    else
+      LumberList.compactBtn:SetBackdropBorderColor(unpack(Tx.border))
+      LumberList.compactBtn.icon:SetVertexColor(0.6, 0.6, 0.6, 1)
+    end
+  end
+
+  local Render = NS.UI.GatherTrackRender
+  if Render and Render.Refresh then
+    Render:Refresh(sharedCtx)
+  end
+end
+
 local function CreateCheckbox(parent, x, y, label, tooltipText)
   local cb = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
   cb:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
@@ -83,11 +119,13 @@ local function CreateCard(parent, x, y, width, height, title, theme)
   return card
 end
 
-function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
+function Settings:CreatePanel(parent, sharedCtx, onAlphaChange, options)
   if not parent then return nil end
 
   local db = Utils.GetDB()
   local T = Utils.GetTheme()
+  options = options or {}
+  local showCompactOption = options.showCompact ~= false
 
   local settings = CreateFrame("Frame", nil, parent, "BackdropTemplate")
   settings:SetFrameStrata("DIALOG")
@@ -95,6 +133,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   settings:SetSize(382, 340)
   settings:SetPoint("CENTER", parent, "CENTER", 0, 0)
   settings:Hide()
+  settings:SetMovable(true)
   settings:EnableMouse(true)
   Utils.CreateBackdrop(settings, T.panel, T.border)
 
@@ -103,6 +142,14 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   header:SetPoint("TOPRIGHT", -8, -8)
   header:SetHeight(26)
   Utils.CreateBackdrop(header, T.row or { 0.12, 0.12, 0.14, 1 }, T.border)
+  header:EnableMouse(true)
+  header:RegisterForDrag("LeftButton")
+  header:SetScript("OnDragStart", function()
+    settings:StartMoving()
+  end)
+  header:SetScript("OnDragStop", function()
+    settings:StopMovingOrSizing()
+  end)
 
   local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   title:SetPoint("LEFT", 10, 0)
@@ -147,7 +194,8 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
 
   local displayCard = CreateCard(body, leftX, topY, 158, 72, "Display", T)
   local materialCard = CreateCard(body, leftX, -82, 158, 110, "Materials", T)
-  local behaviorCard = CreateCard(body, rightX, topY, 168, 146, "Behavior", T)
+  local behaviorCardHeight = showCompactOption and 146 or 124
+  local behaviorCard = CreateCard(body, rightX, topY, 168, behaviorCardHeight, "Behavior", T)
   local goalsCard = CreateCard(body, leftX, -202, 158, 78, "Goal", T)
   local appearanceCard = CreateCard(body, rightX, -156, 168, 76, "Appearance", T)
 
@@ -158,10 +206,6 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
       sharedCtx.showIcons = self:GetChecked() and true or false
       if db then db.showIcons = sharedCtx.showIcons end
       RefreshAll(sharedCtx)
-      local Rows = NS.UI.GatherTrackRows
-      if Rows and Rows.Reflow then
-        C_Timer.After(0.1, function() Rows:Reflow(sharedCtx) end)
-      end
     end
   end)
   iconsCB.label:SetWidth(112)
@@ -210,38 +254,24 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   end)
   trackHerbsCB.label:SetWidth(112)
 
-  local compactCB = CreateCheckbox(behaviorCard, 10, -30, L["LUMBER_COMPACT_MODE"],
-    L["LUMBER_COMPACT_TIP"])
-  compactCB:SetChecked(sharedCtx and sharedCtx.compactMode and true or false)
-  compactCB:SetScript("OnClick", function(self)
-    if sharedCtx then
-      local newVal = self:GetChecked() and true or false
-      sharedCtx.compactMode = newVal
-      if db then db.compactMode = newVal end
-      if sharedCtx.rows then
-        for i, row in pairs(sharedCtx.rows) do
-          if row then row:Hide(); row:SetParent(nil) end
-          sharedCtx.rows[i] = nil
-        end
-      end
-      local LumberList = NS.UI.GatherTrackList
-      if LumberList and LumberList.compactBtn then
-        local Tx = Utils.GetTheme()
-        if newVal then
-          LumberList.compactBtn:SetBackdropBorderColor(unpack(Tx.accentBright or Tx.accent))
-          LumberList.compactBtn.icon:SetVertexColor(unpack(Tx.accent))
-        else
-          LumberList.compactBtn:SetBackdropBorderColor(unpack(Tx.border))
-          LumberList.compactBtn.icon:SetVertexColor(0.6, 0.6, 0.6, 1)
-        end
-      end
-      RefreshAll(sharedCtx)
-    end
-  end)
-  settings.compactCB = compactCB
-  compactCB.label:SetWidth(120)
+  local compactYOffset = -30
+  local autoFarmYOffset = showCompactOption and -52 or -30
+  local accountWideYOffset = showCompactOption and -74 or -52
+  local hideInInstanceYOffset = showCompactOption and -96 or -74
 
-  local autoFarmCB = CreateCheckbox(behaviorCard, 10, -52, L["LUMBER_AUTO_FARM"],
+  local compactCB
+  if showCompactOption then
+    compactCB = CreateCheckbox(behaviorCard, 10, compactYOffset, L["LUMBER_COMPACT_MODE"],
+      L["LUMBER_COMPACT_TIP"])
+    compactCB:SetChecked(sharedCtx and sharedCtx.compactMode and true or false)
+    compactCB:SetScript("OnClick", function(self)
+      ApplyCompactMode(sharedCtx, self:GetChecked())
+    end)
+    settings.compactCB = compactCB
+    compactCB.label:SetWidth(120)
+  end
+
+  local autoFarmCB = CreateCheckbox(behaviorCard, 10, autoFarmYOffset, L["LUMBER_AUTO_FARM"],
     L["LUMBER_AUTO_FARM_TIP"])
   autoFarmCB:SetChecked((db and db.autoStartFarming) and true or false)
   autoFarmCB:SetScript("OnClick", function(self)
@@ -252,7 +282,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   end)
   autoFarmCB.label:SetWidth(120)
 
-  local accountWideCB = CreateCheckbox(behaviorCard, 10, -74, L["LUMBER_ACCOUNT_WIDE"],
+  local accountWideCB = CreateCheckbox(behaviorCard, 10, accountWideYOffset, L["LUMBER_ACCOUNT_WIDE"],
     "Combines lumber counts from all characters.\n\nHover over rows to see per-character breakdown.")
   local AccountWide = NS.UI.GatherTrackAccountWide
   accountWideCB:SetChecked(AccountWide and AccountWide:IsEnabled() or false)
@@ -264,7 +294,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
   end)
   accountWideCB.label:SetWidth(120)
 
-  local hideInInstanceCB = CreateCheckbox(behaviorCard, 10, -96, L["LUMBER_HIDE_IN_INSTANCE"],
+  local hideInInstanceCB = CreateCheckbox(behaviorCard, 10, hideInInstanceYOffset, L["LUMBER_HIDE_IN_INSTANCE"],
     L["LUMBER_HIDE_IN_INSTANCE_TIP"])
   hideInInstanceCB:SetChecked((db and db.hideInInstance) and true or false)
   hideInInstanceCB:SetScript("OnClick", function(self)
@@ -385,11 +415,11 @@ function Settings:RefreshPanel(settingsPanel, sharedCtx)
   local AccountWide = NS.UI.GatherTrackAccountWide
 
   if settingsPanel.iconsCB then
-    settingsPanel.iconsCB:SetChecked(sharedCtx and sharedCtx.showIcons ~= false or true)
+    settingsPanel.iconsCB:SetChecked(sharedCtx and sharedCtx.showIcons ~= false or (db and db.showIcons ~= false) or true)
   end
 
   if settingsPanel.hideCB then
-    settingsPanel.hideCB:SetChecked(sharedCtx and sharedCtx.hideZero and true or false)
+    settingsPanel.hideCB:SetChecked(sharedCtx and sharedCtx.hideZero and true or (db and db.hideZero and true or false))
   end
 
   if settingsPanel.trackLumberCB then

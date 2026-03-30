@@ -504,6 +504,10 @@ function Addon:OnEnable()
     NS.UI.LumberTrack:Create()
   end
 
+  if prof and prof.gatherTrack and NS.UI and NS.UI.GatherTrack and NS.UI.GatherTrack.Create then
+    NS.UI.GatherTrack:Create()
+  end
+
   if NS.UI and NS.UI.MinimapVendor then
     pcall(function()
       NS.UI.MinimapVendor:Create()
