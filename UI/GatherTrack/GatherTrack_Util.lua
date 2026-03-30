@@ -1,194 +1,145 @@
 local ADDON, NS = ...
-NS.UI = NS.UI or {}
 
-local Util = {}
-NS.UI.GatherTrackUtil = Util
+NS.GT = NS.GT or {}
+NS.GT.Utils = {}
+local Utils = NS.GT.Utils
 
-local LTUtils = NS.LT and NS.LT.Utils
-local C_Item = C_Item
-local GetItemInfo = GetItemInfo
-local GetItemInfoInstant = GetItemInfoInstant
+local unpack = _G.unpack or table.unpack
+local math_floor = math.floor
+local string_format = string.format
+local string_gsub = string.gsub
+local string_lower = string.lower
 
-Util.KINDS = {
-  lumber = { key = "lumber", title = "Lumber", accent = { 0.86, 0.67, 0.25, 1 } },
-  ore = { key = "ore", title = "Ore", accent = { 0.67, 0.78, 0.88, 1 } },
-  herb = { key = "herb", title = "Herbs", accent = { 0.48, 0.84, 0.58, 1 } },
-}
+local ITEM_CLASS_TRADEGOODS = (Enum and Enum.ItemClass and Enum.ItemClass.Tradegoods) or 7
+local ITEM_SUBCLASS_METAL_STONE = (Enum and Enum.ItemTradegoodsSubclass and Enum.ItemTradegoodsSubclass.MetalAndStone) or 7
+local ITEM_SUBCLASS_HERB = (Enum and Enum.ItemTradegoodsSubclass and Enum.ItemTradegoodsSubclass.Herb) or 9
 
-function Util.GetDB()
+function Utils.GetTheme()
+  return NS.UI and NS.UI.Theme and NS.UI.Theme.colors or {}
+end
+
+function Utils.CreateBackdrop(frame, bgColor, borderColor)
+  if not frame then return end
+  frame:SetBackdrop({
+    bgFile = "Interface/Buttons/WHITE8x8",
+    edgeFile = "Interface/Buttons/WHITE8x8",
+    edgeSize = 1,
+  })
+  if bgColor then frame:SetBackdropColor(unpack(bgColor)) end
+  if borderColor then frame:SetBackdropBorderColor(unpack(borderColor)) end
+end
+
+function Utils.Clamp(value, min, max)
+  value = tonumber(value) or min
+  if value < min then return min end
+  if value > max then return max end
+  return value
+end
+
+function Utils.SafeLower(str)
+  return type(str) == "string" and string_lower(str) or ""
+end
+
+function Utils.IsLumberName(name)
+  local lowerName = Utils.SafeLower(name)
+  if lowerName == "" then return false end
+  return lowerName:find("lumber", 1, true)
+      or lowerName:find("timber", 1, true)
+      or lowerName:find("plank", 1, true)
+end
+
+function Utils.GetTrackedGatheringKind(name, classID, subclassID)
+  if Utils.IsLumberName(name) then
+    return "lumber"
+  end
+
+  if classID == ITEM_CLASS_TRADEGOODS then
+    if subclassID == ITEM_SUBCLASS_METAL_STONE then
+      return "ore"
+    end
+    if subclassID == ITEM_SUBCLASS_HERB then
+      return "herb"
+    end
+  end
+
+  local lowerName = Utils.SafeLower(name)
+  if lowerName == "" then
+    return nil
+  end
+
+  if lowerName:find("%f[%a]ore%f[%A]") then
+    return "ore"
+  end
+  if lowerName:find("%f[%a]herb%f[%A]") then
+    return "herb"
+  end
+
+  return nil
+end
+
+function Utils.IsTrackedGatheringItem(name, classID, subclassID)
+  return Utils.GetTrackedGatheringKind(name, classID, subclassID) ~= nil
+end
+
+function Utils.IsGatheringKindEnabled(kind, settings)
+  if kind == "lumber" then
+    return not settings or settings.trackLumber ~= false
+  end
+  if kind == "ore" then
+    return settings and settings.trackOre and true or false
+  end
+  if kind == "herb" then
+    return settings and settings.trackHerbs and true or false
+  end
+  return false
+end
+
+function Utils.FormatNumber(num)
+  num = tonumber(num) or 0
+  if num >= 10000 then
+    return string_format("%.1fk", num / 1000)
+  elseif num >= 1000 then
+    local formatted = tostring(num)
+    local k
+    while true do
+      formatted, k = string_gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+      if k == 0 then break end
+    end
+    return formatted
+  else
+    return tostring(math_floor(num))
+  end
+end
+
+function Utils.FormatNumberCompact(num)
+  num = tonumber(num) or 0
+  if num >= 1000 then
+    return string_format("%.1fk", num / 1000)
+  else
+    return tostring(math_floor(num))
+  end
+end
+
+function Utils.Wipe(tbl)
+  if not tbl then return end
+  for k in pairs(tbl) do tbl[k] = nil end
+end
+
+function Utils.GetDB()
   local addon = NS.Addon
   local prof = addon and addon.db and addon.db.profile
-  prof = prof or {}
-  prof.lumberTrack = prof.lumberTrack or {}
-  prof.lumberTrack.gatherMini = prof.lumberTrack.gatherMini or {}
-  return prof.lumberTrack
+  return prof and prof.gatherTrack or {}
 end
 
-function Util.GetSharedCtx()
-  local LT = NS.UI and NS.UI.LumberTrack
-  if LT and LT.GetSharedCtx then
-    return LT:GetSharedCtx()
-  end
+function Utils.FormatTime(seconds)
+  seconds = tonumber(seconds) or 0
+  local minutes = math_floor(seconds / 60)
+  local secs = math_floor(seconds % 60)
+  return string_format("%d:%02d", minutes, secs)
 end
 
-function Util.EnsurePanelDB(kind)
-  local db = Util.GetDB()
-  db.gatherMini = db.gatherMini or {}
-  db.gatherMini[kind] = db.gatherMini[kind] or {}
-  local panelDB = db.gatherMini[kind]
-
-  if panelDB.width == nil then panelDB.width = 280 end
-  if panelDB.height == nil then panelDB.height = 300 end
-  if panelDB.collapsed == nil then panelDB.collapsed = false end
-  if panelDB.alpha == nil then panelDB.alpha = 0.95 end
-  if panelDB.point == nil then panelDB.point = "CENTER" end
-  if panelDB.relPoint == nil then panelDB.relPoint = "CENTER" end
-
-  if panelDB.x == nil or panelDB.y == nil then
-    if kind == "lumber" then
-      panelDB.x, panelDB.y = -270, 60
-    elseif kind == "ore" then
-      panelDB.x, panelDB.y = 0, 60
-    else
-      panelDB.x, panelDB.y = 270, 60
-    end
-  end
-
-  if panelDB.open == nil then panelDB.open = false end
-  return panelDB
+function Utils.GetTime()
+  return (time or GetTime)()
 end
 
-function Util.GetKindInfo(kind)
-  return Util.KINDS[kind] or Util.KINDS.lumber
-end
-
-function Util.IsKindEnabled(ctx, kind)
-  if kind == "lumber" then
-    return not ctx or ctx.trackLumber ~= false
-  elseif kind == "ore" then
-    return ctx and ctx.trackOre and true or false
-  elseif kind == "herb" then
-    return ctx and ctx.trackHerbs and true or false
-  end
-  return false
-end
-
-function Util.GetEnabledKinds(ctx)
-  local enabled = {}
-  for kind in pairs(Util.KINDS) do
-    if Util.IsKindEnabled(ctx, kind) then
-      enabled[#enabled + 1] = kind
-    end
-  end
-
-  table.sort(enabled, function(a, b)
-    local order = {
-      lumber = 1,
-      ore = 2,
-      herb = 3,
-    }
-    return (order[a] or 99) < (order[b] or 99)
-  end)
-
-  return enabled
-end
-
-function Util.ShouldHideInInstance()
-  local db = Util.GetDB()
-  if not (db and db.hideInInstance) then
-    return false
-  end
-
-  if type(IsInInstance) == "function" then
-    local inInstance = IsInInstance()
-    return inInstance and true or false
-  end
-
-  return false
-end
-
-function Util.GetDisplayTitle(kind)
-  local info = Util.GetKindInfo(kind)
-  return info.title .. " Materials"
-end
-
-function Util.EnsureItemMeta(ctx, itemID)
-  if not ctx or not itemID then return nil end
-  ctx.meta = ctx.meta or {}
-
-  local meta = ctx.meta[itemID]
-  if meta and meta.name and meta.icon then
-    return meta
-  end
-
-  local name, _, _, _, _, _, _, _, _, icon, _, classID, subclassID = GetItemInfo(itemID)
-  if (not name or not icon) and C_Item and C_Item.RequestLoadItemDataByID then
-    pcall(C_Item.RequestLoadItemDataByID, itemID)
-  end
-
-  local _, _, _, _, icon2, classID2, subclassID2 = GetItemInfoInstant(itemID)
-  meta = meta or {}
-  meta.name = meta.name or name or ("Item " .. tostring(itemID))
-  meta.icon = meta.icon or icon or icon2 or "Interface\\Icons\\INV_Misc_QuestionMark"
-  meta.classID = meta.classID or classID or classID2
-  meta.subclassID = meta.subclassID or subclassID or subclassID2
-  ctx.meta[itemID] = meta
-  return meta
-end
-
-function Util.BuildListForKind(ctx, kind)
-  local items = {}
-  if not ctx or not ctx.counts then
-    return items
-  end
-
-  for itemID, count in pairs(ctx.counts) do
-    local meta = Util.EnsureItemMeta(ctx, itemID)
-    local itemKind = meta and LTUtils and LTUtils.GetTrackedGatheringKind and LTUtils.GetTrackedGatheringKind(meta.name, meta.classID, meta.subclassID)
-    if itemKind == kind then
-      items[#items + 1] = {
-        itemID = itemID,
-        count = tonumber(count) or 0,
-        name = (meta and meta.name) or ("Item " .. tostring(itemID)),
-        icon = meta and meta.icon,
-      }
-    end
-  end
-
-  local recentItemID = ctx.recentByKind and ctx.recentByKind[kind]
-
-  table.sort(items, function(a, b)
-    if recentItemID then
-      local aRecent = a.itemID == recentItemID
-      local bRecent = b.itemID == recentItemID
-      if aRecent ~= bRecent then
-        return aRecent
-      end
-    end
-    if a.count ~= b.count then return a.count > b.count end
-    if a.name ~= b.name then return a.name < b.name end
-    return a.itemID < b.itemID
-  end)
-
-  return items
-end
-
-function Util.GetTotalForKind(ctx, kind)
-  local total = 0
-  for _, item in ipairs(Util.BuildListForKind(ctx, kind)) do
-    total = total + (tonumber(item.count) or 0)
-  end
-  return total
-end
-
-function Util.GetTopItemsForKind(ctx, kind, maxItems)
-  local items = Util.BuildListForKind(ctx, kind)
-  local top = {}
-  maxItems = maxItems or 5
-  for i = 1, math.min(#items, maxItems) do
-    top[#top + 1] = items[i]
-  end
-  return top
-end
-
-return Util
+return Utils

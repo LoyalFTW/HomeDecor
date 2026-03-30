@@ -2,10 +2,10 @@ local ADDON, NS = ...
 local L = NS.L
 NS.UI = NS.UI or {}
 
-local Rows = NS.UI.LumberTrackRows or {}
-NS.UI.LumberTrackRows = Rows
+local Rows = NS.UI.GatherTrackRows or {}
+NS.UI.GatherTrackRows = Rows
 
-local Utils = NS.LT.Utils
+local Utils = NS.GT.Utils
 
 local ROW_HEIGHT = 68
 local ROW_HEIGHT_NO_ICON = 50
@@ -171,7 +171,7 @@ local function NewLumberRow(parent)
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
       GameTooltip:SetItemByID(self.itemID)
 
-      local AccountWide = NS.UI.LumberTrackAccountWide
+      local AccountWide = NS.UI.GatherTrackAccountWide
       if AccountWide then
         local breakdown = AccountWide:GetCharacterBreakdown(self.itemID)
         if breakdown and #breakdown > 0 then
@@ -188,7 +188,7 @@ local function NewLumberRow(parent)
         end
       end
 
-      local Goals = NS.UI.LumberTrackGoals
+      local Goals = NS.UI.GatherTrackGoals
       if Goals and Goals.GetGoalTooltip and self._ctx then
         local goalInfo = Goals:GetGoalTooltip(self.itemID, self._ctx)
         if goalInfo then
@@ -287,7 +287,7 @@ local function NewCompactRow(parent)
     if self.itemID and GameTooltip then
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
       GameTooltip:SetItemByID(self.itemID)
-      local AccountWide = NS.UI.LumberTrackAccountWide
+      local AccountWide = NS.UI.GatherTrackAccountWide
       if AccountWide then
         local breakdown = AccountWide:GetCharacterBreakdown(self.itemID)
         if breakdown and #breakdown > 0 then
@@ -337,7 +337,7 @@ function Rows:SetCompactRowData(row, ctx, itemID, currentCount, itemName, iconTe
   end
 
   local v = tonumber(currentCount) or 0
-  local Goals = NS.UI.LumberTrackGoals
+  local Goals = NS.UI.GatherTrackGoals
   local goalVal = 1000
   if Goals and Goals.GetGoal then
     goalVal = Goals:GetGoal(itemID, ctx)
@@ -503,11 +503,11 @@ function Rows:SetRowData(row, ctx, itemID, currentCount, itemName, iconTexture)
   end
 
   if row.rate then
-    local Rate = NS.UI.LumberTrackRate
+    local Rate = NS.UI.GatherTrackRate
     if Rate then
       local ratePerMin = Rate:GetRate(itemID)
       if ratePerMin > 0 then
-        row.rate:SetFormattedText("↑ +%d/min", ratePerMin)
+        row.rate:SetFormattedText("â†‘ +%d/min", ratePerMin)
         row.rate:SetTextColor(unpack(T.success))
         row.rate:Show()
       else
@@ -519,7 +519,7 @@ function Rows:SetRowData(row, ctx, itemID, currentCount, itemName, iconTexture)
   end
 
   local v = tonumber(currentCount) or 0
-  local Goals = NS.UI.LumberTrackGoals
+  local Goals = NS.UI.GatherTrackGoals
   local goalVal = 1000
 
   if Goals and Goals.GetGoal then

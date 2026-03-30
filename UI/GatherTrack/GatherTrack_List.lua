@@ -2,11 +2,11 @@ local ADDON, NS = ...
 local L = NS.L
 NS.UI = NS.UI or {}
 
-local LumberList = NS.UI.LumberTrackLumberList or {}
-NS.UI.LumberTrackLumberList = LumberList
+local LumberList = NS.UI.GatherTrackList or {}
+NS.UI.GatherTrackList = LumberList
 
-local Utils = NS.LT.Utils
-local Settings = NS.UI.LumberTrackSettings
+local Utils = NS.GT.Utils
+local Settings = NS.UI.GatherTrackSettings
 local CreateFrame = CreateFrame
 local unpack = unpack or table.unpack
 
@@ -14,7 +14,7 @@ function LumberList:Create(sharedCtx)
   if self.frame then return end
   local db = Utils.GetDB()
 
-  local AccountWide = NS.UI.LumberTrackAccountWide
+  local AccountWide = NS.UI.GatherTrackAccountWide
   if AccountWide and db.accountWide ~= nil then
     AccountWide:SetEnabled(db.accountWide)
   end
@@ -151,7 +151,7 @@ function LumberList:Create(sharedCtx)
       end
     end
     UpdateCompactBtnAppearance()
-    local Render = NS.UI.LumberTrackRender
+    local Render = NS.UI.GatherTrackRender
     if Render and Render.Refresh then Render:Refresh(sharedCtx) end
   end)
   self.compactBtn = compactBtn
@@ -195,7 +195,7 @@ function LumberList:Create(sharedCtx)
     local text = self:GetText():lower()
     if sharedCtx then
       sharedCtx.search = text
-      local Render = NS.UI.LumberTrackRender
+      local Render = NS.UI.GatherTrackRender
       if Render and Render.Refresh then
         Render:Refresh(sharedCtx)
       end
@@ -267,10 +267,10 @@ function LumberList:Create(sharedCtx)
     self:SetBackdropBorderColor(unpack(T.border))
   end)
   startFarmingBtn:SetScript("OnClick", function()
-    local Farming = NS.UI.LumberTrackFarming
+    local Farming = NS.UI.GatherTrackFarming
     if Farming and sharedCtx then
       Farming:Start(sharedCtx, 0)
-      local FP = NS.UI and NS.UI.GatherTrackFarmingPanels
+      local FP = NS.UI and NS.UI.GatherTrackMiniFarmingPanels
       if FP and FP.Show then
         FP:Show("lumber")
       end
@@ -355,7 +355,7 @@ function LumberList:Create(sharedCtx)
       db.lumberListWidth = ww
       db.lumberListHeight = hh
     end
-    local Rows = NS.UI.LumberTrackRows
+    local Rows = NS.UI.GatherTrackRows
     if Rows and Rows.Reflow and sharedCtx then
       C_Timer.After(0.1, function()
         Rows:Reflow(sharedCtx)
@@ -377,7 +377,7 @@ function LumberList:Create(sharedCtx)
     frame:SetSize(targetW, targetH)
   end
   if sharedCtx then
-    local Render = NS.UI.LumberTrackRender
+    local Render = NS.UI.GatherTrackRender
     if Render and Render.Refresh then
       Render:Refresh(sharedCtx)
     end
@@ -429,7 +429,7 @@ function LumberList:Show()
   self.frame:Show()
   self.frame:Raise()
   if self.sharedCtx then
-    local Render = NS.UI.LumberTrackRender
+    local Render = NS.UI.GatherTrackRender
     if Render and Render.Refresh then
       Render:Refresh(self.sharedCtx)
     end

@@ -2,7 +2,7 @@ local ADDON, NS = ...
 NS.UI = NS.UI or {}
 
 local AW = {}
-NS.UI.LumberTrackAccountWide = AW
+NS.UI.GatherTrackAccountWide = AW
 
 local warbandDataLoaded = false
 
@@ -24,14 +24,14 @@ local function GetAccountDB()
     addon.db.global = {}
   end
 
-  if not addon.db.global.lumberTrackAccount then
-    addon.db.global.lumberTrackAccount = {
+  if not addon.db.global.gatherTrackAccount then
+    addon.db.global.gatherTrackAccount = {
       characterData = {},
       accountWide = false,
     }
   end
 
-  return addon.db.global.lumberTrackAccount
+  return addon.db.global.gatherTrackAccount
 end
 
 function AW:GetCharacterKey()

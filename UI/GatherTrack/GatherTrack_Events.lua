@@ -2,19 +2,19 @@ local ADDON, NS = ...
 local L = NS.L
 NS.UI = NS.UI or {}
 
-local Events = NS.UI.LumberTrackEvents or {}
-NS.UI.LumberTrackEvents = Events
+local Events = NS.UI.GatherTrackEvents or {}
+NS.UI.GatherTrackEvents = Events
 
-local Utils = NS.LT.Utils
+local Utils = NS.GT.Utils
 
-local Render = NS.UI.LumberTrackRender
+local Render = NS.UI.GatherTrackRender
 local oldCountsCache = {}
 local lastCleanupTime = 0
 local CLEANUP_INTERVAL = 60
 
 local function ResetFarmingSession(ctx)
-  local Farming = NS.UI.LumberTrackFarming
-  local Rate = NS.UI.LumberTrackRate
+  local Farming = NS.UI.GatherTrackFarming
+  local Rate = NS.UI.GatherTrackRate
   if not ctx then return end
 
   if Farming then
@@ -50,7 +50,7 @@ local function ResetFarmingSession(ctx)
   end
 end
 
-function Events:Attach(LumberTrack, ctx)
+function Events:Attach(GatherTrack, ctx)
   local frame = ctx and ctx.frame
   if not frame or frame._lumberEventsAttached then return end
   frame._lumberEventsAttached = true
@@ -127,7 +127,7 @@ function Events:Attach(LumberTrack, ctx)
       local db = Utils.GetDB()
       if db and db.hideInInstance then
         local inInstance = IsInInstance and IsInInstance()
-        local LumberList = NS.UI.LumberTrackLumberList
+        local LumberList = NS.UI.GatherTrackList
         if inInstance then
           if LumberList and LumberList.frame then LumberList.frame:Hide() end
         else
@@ -137,7 +137,7 @@ function Events:Attach(LumberTrack, ctx)
       QueueRefresh(0.25)
 
     elseif event == "BANKFRAME_OPENED" then
-      local AccountWide = NS.UI.LumberTrackAccountWide
+      local AccountWide = NS.UI.GatherTrackAccountWide
       if AccountWide and AccountWide.SetWarbandDataLoaded then
         AccountWide:SetWarbandDataLoaded()
       end
@@ -161,7 +161,7 @@ function Events:Attach(LumberTrack, ctx)
         or event == "ACCOUNT_BANK_SLOTS_CHANGED" then
       if event == "ACCOUNT_BANK_SLOTS_CHANGED" then
         SetSuppressed(5)
-        local AccountWide = NS.UI.LumberTrackAccountWide
+        local AccountWide = NS.UI.GatherTrackAccountWide
         if AccountWide and AccountWide.SetWarbandDataLoaded then
           AccountWide:SetWarbandDataLoaded()
         end
@@ -169,8 +169,10 @@ function Events:Attach(LumberTrack, ctx)
       QueueRecount()
 
     elseif event == "BAG_UPDATE" then
-      local Rate = NS.UI.LumberTrackRate
-      local Farming = NS.UI.LumberTrackFarming
+      local Rate = NS.UI.GatherTrackRate
+      local Farming = NS.UI.GatherTrackFarming
+      local GatherFarming = NS.UI and NS.UI.GatherTrackMiniFarming
+      local GatherFarmingPanels = NS.UI and NS.UI.GatherTrackMiniFarmingPanels
 
       if Rate and not Rate.data then
         Rate.data = {}
@@ -197,11 +199,16 @@ function Events:Attach(LumberTrack, ctx)
       end
 
       local hasGain, gainItemID, gainAmount = false, nil, 0
+      local gainedItems = {}
       if Rate and Rate.data and ctx.counts then
         for itemID, newCount in pairs(ctx.counts) do
           local data = Rate.data[itemID]
           if data and data.lastCount and newCount > data.lastCount then
             local gained = newCount - data.lastCount
+            gainedItems[#gainedItems + 1] = {
+              itemID = itemID,
+              amount = gained,
+            }
             if gained > gainAmount then
               hasGain = true
               gainItemID = itemID
@@ -211,19 +218,51 @@ function Events:Attach(LumberTrack, ctx)
         end
       end
 
-      if hasGain and gainItemID and ctx and ctx.meta and ctx.meta[gainItemID] and Utils and Utils.GetTrackedGatheringKind then
-        local meta = ctx.meta[gainItemID]
-        local kind = Utils.GetTrackedGatheringKind(meta.name, meta.classID, meta.subclassID)
-        if kind then
-          ctx.recentByKind = ctx.recentByKind or {}
-          ctx.recentByKind[kind] = gainItemID
+      local primaryGainKind = nil
+      for _, gain in ipairs(gainedItems) do
+        local itemID = gain.itemID
+        local amount = gain.amount
+        local meta = ctx and ctx.meta and ctx.meta[itemID]
+        if itemID and amount and amount > 0 and meta and Utils and Utils.GetTrackedGatheringKind then
+          local gainKind = Utils.GetTrackedGatheringKind(meta.name, meta.classID, meta.subclassID)
+          if gainKind then
+            ctx.recentByKind = ctx.recentByKind or {}
+            ctx.recentByKind[gainKind] = itemID
+            gain.kind = gainKind
+            if itemID == gainItemID then
+              primaryGainKind = gainKind
+            end
+          end
         end
       end
 
       local db = ctx.GetDB and ctx.GetDB()
-      if db and db.autoStartFarming and hasGain and not IsSuppressed() then
-        if Farming and ctx.farming and not ctx.farming.active then
-          Farming:Start(ctx, gainAmount, gainItemID)
+      if db and db.autoStartFarming and hasGain and primaryGainKind and not IsSuppressed() then
+        local isEnabled = Utils and Utils.IsGatheringKindEnabled and Utils.IsGatheringKindEnabled(primaryGainKind, ctx)
+        if isEnabled then
+          if GatherFarming and GatherFarming.EnsureSession and GatherFarming.Start then
+            local session = GatherFarming:EnsureSession(primaryGainKind)
+            if session then
+              if not session.active then
+                GatherFarming:Start(primaryGainKind, ctx)
+              elseif session.paused and GatherFarming.TogglePause then
+                GatherFarming:TogglePause(primaryGainKind)
+              end
+            end
+          end
+
+          if GatherFarmingPanels and GatherFarmingPanels.Show then
+            GatherFarmingPanels:Show(primaryGainKind)
+          end
+        end
+      end
+
+      if GatherFarming and GatherFarming.RecordGain then
+        for _, gain in ipairs(gainedItems) do
+          local gainKind = gain.kind
+          if gainKind and Utils and Utils.IsGatheringKindEnabled and Utils.IsGatheringKindEnabled(gainKind, ctx) then
+            GatherFarming:RecordGain(gainKind, gain.itemID, gain.amount, ctx)
+          end
         end
       end
 
@@ -279,7 +318,7 @@ function Events:Attach(LumberTrack, ctx)
       end
 
       if ctx.bagCounter then
-        local Counter = NS.UI.LumberTrackCounter
+        local Counter = NS.UI.GatherTrackCounter
         if Counter and Counter.SetCount then
           Counter:SetCount(ctx.bagCounter, ctx.total or 0)
         end

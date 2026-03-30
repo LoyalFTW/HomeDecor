@@ -1,8 +1,8 @@
 local ADDON, NS = ...
 NS.UI = NS.UI or {}
 
-local Goals = NS.UI.LumberTrackGoals or {}
-NS.UI.LumberTrackGoals = Goals
+local Goals = NS.UI.GatherTrackGoals or {}
+NS.UI.GatherTrackGoals = Goals
 
 local cachedGoals = {}
 local cacheValid = false
@@ -140,7 +140,7 @@ function Goals:ClearReagentCache()
 end
 function Goals:RefreshGoals(ctx)
   self:InvalidateCache()
-  local Render = NS.UI.LumberTrackRender
+  local Render = NS.UI.GatherTrackRender
   if Render and Render.Refresh then
     Render:Refresh(ctx)
   end

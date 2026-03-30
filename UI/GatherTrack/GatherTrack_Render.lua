@@ -3,16 +3,16 @@ local L = NS.L
 NS.UI = NS.UI or {}
 
 local R = {}
-NS.UI.LumberTrackRender = R
+NS.UI.GatherTrackRender = R
 
-local Utils = NS.LT.Utils
+local Utils = NS.GT.Utils
 
 local C_Container = C_Container
 local C_Item = C_Item
 local GetItemInfo = GetItemInfo
 local GetItemInfoInstant = GetItemInfoInstant
 
-local Rows = NS.UI.LumberTrackRows
+local Rows = NS.UI.GatherTrackRows
 local MAX_META_CACHE = 150
 
 local function GetItemMeta(itemID)
@@ -169,8 +169,9 @@ function R:Recount(ctx)
     trackHerbs = ctx.trackHerbs and true or false,
   })
   local bagCounts = counts or {}
+  ctx.bagCounts = bagCounts
 
-  local AccountWide = NS.UI.LumberTrackAccountWide
+  local AccountWide = NS.UI.GatherTrackAccountWide
 
   if AccountWide and AccountWide.ScanWarbandBank then
     local warbandCounts = AccountWide:ScanWarbandBank(ctx.lumberIDs)
@@ -187,7 +188,7 @@ function R:Recount(ctx)
   if AccountWide and AccountWide.IsEnabled and AccountWide:IsEnabled() then
     if AccountWide.SaveCharacterLumber then
       local db = NS.Addon and NS.Addon.db and NS.Addon.db.global
-      local accountDB = db and db.lumberTrackAccount
+      local accountDB = db and db.gatherTrackAccount
       local charKey = AccountWide:GetCharacterKey()
       if accountDB and accountDB.characterData and accountDB.characterData[charKey] then
         for itemID in pairs(accountDB.characterData[charKey]) do
@@ -343,16 +344,16 @@ function R:Refresh(ctx)
 
   if ctx.totalText then ctx.totalText:SetText(L["LUMBER_TOTAL"]..tostring(ctx.total or 0)) end
 
-  local Farming = NS.UI.LumberTrackFarming
+  local Farming = NS.UI.GatherTrackFarming
   if Farming and ctx.farming and ctx.farming.active then
     Farming:Update(ctx)
     if ctx.farmingStatsUpdate then ctx.farmingStatsUpdate() end
   end
 
-  local Rate = NS.UI.LumberTrackRate
+  local Rate = NS.UI.GatherTrackRate
   if Rate and Rate.UpdateAll then Rate:UpdateAll() end
 
-  local GatherTrack = NS.UI and NS.UI.GatherTrack
+  local GatherTrack = NS.UI and NS.UI.GatherTrackMini
   if GatherTrack and GatherTrack.RefreshAll then
     GatherTrack:RefreshAll(ctx)
   end

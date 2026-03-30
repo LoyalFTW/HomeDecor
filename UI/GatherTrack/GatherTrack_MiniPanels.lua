@@ -2,12 +2,12 @@ local ADDON, NS = ...
 NS.UI = NS.UI or {}
 
 local Panels = {}
-NS.UI.GatherTrackPanels = Panels
+NS.UI.GatherTrackMiniPanels = Panels
 
-local GTUtil = NS.UI.GatherTrackUtil
-local LTUtils = NS.LT and NS.LT.Utils
-local FarmingPanels = NS.UI.GatherTrackFarmingPanels
-local LegacySettings = NS.UI.LumberTrackSettings
+local GTUtil = NS.UI.GatherTrackMiniUtil
+local LTUtils = NS.GT and NS.GT.Utils
+local FarmingPanels = NS.UI.GatherTrackMiniFarmingPanels
+local LegacySettings = NS.UI.GatherTrackSettings
 
 local CreateFrame = CreateFrame
 local unpack = unpack or table.unpack

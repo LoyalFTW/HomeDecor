@@ -2,8 +2,8 @@ local ADDON, NS = ...
 NS.UI = NS.UI or {}
 
 local R = {}
-NS.UI.LumberTrackRate = R
-local Utils = NS.LT.Utils
+NS.UI.GatherTrackRate = R
+local Utils = NS.GT.Utils
 
 local time = Utils.GetTime
 

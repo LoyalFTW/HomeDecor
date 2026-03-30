@@ -2,11 +2,11 @@ local ADDON, NS = ...
 NS.UI = NS.UI or {}
 
 local Panels = {}
-NS.UI.GatherTrackFarmingPanels = Panels
+NS.UI.GatherTrackMiniFarmingPanels = Panels
 
-local GTUtil = NS.UI.GatherTrackUtil
-local Farming = NS.UI.GatherTrackFarming
-local LTUtils = NS.LT and NS.LT.Utils
+local GTUtil = NS.UI.GatherTrackMiniUtil
+local Farming = NS.UI.GatherTrackMiniFarming
+local LTUtils = NS.GT and NS.GT.Utils
 local CreateFrame = CreateFrame
 local unpack = unpack or table.unpack
 
@@ -16,12 +16,41 @@ local MIN_FRAME_HEIGHT = 196
 local MAX_FRAME_WIDTH = 320
 local MAX_FRAME_HEIGHT = 360
 
-local function AddBreakdownTooltip(itemID, owner)
+local function FormatWholeNumber(value)
+  value = tonumber(value) or 0
+  return tostring(math.floor(value + 0.0001))
+end
+
+local function FormatRate(value, active, totalGained)
+  value = tonumber(value) or 0
+  totalGained = tonumber(totalGained) or 0
+  return FormatWholeNumber(value)
+end
+
+local function AddBreakdownTooltip(itemID, owner, stats)
   if not itemID or not GameTooltip then return end
   GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
   GameTooltip:SetItemByID(itemID)
 
-  local AccountWide = NS.UI and NS.UI.LumberTrackAccountWide
+  stats = stats or {}
+  local bagCount = tonumber(stats.focusBagCount) or 0
+  local overallCount = tonumber(stats.focusOverallCount) or 0
+  local sessionCount = tonumber(stats.focusSessionCount) or 0
+  local recentAmount = tonumber(stats.focusRecentAmount) or 0
+  local perHour = tonumber(stats.focusPerHour) or 0
+
+  GameTooltip:AddLine(" ")
+  if recentAmount > 0 then
+    GameTooltip:AddDoubleLine("Just Gathered", "+" .. FormatWholeNumber(recentAmount), 0.82, 0.88, 0.95, 1, 1, 1)
+  end
+  GameTooltip:AddDoubleLine("Session", FormatWholeNumber(sessionCount), 0.82, 0.88, 0.95, 1, 1, 1)
+  GameTooltip:AddDoubleLine("Bags", FormatWholeNumber(bagCount), 0.82, 0.88, 0.95, 1, 1, 1)
+  if overallCount > 0 then
+    GameTooltip:AddDoubleLine("Overall", FormatWholeNumber(overallCount), 0.82, 0.88, 0.95, 1, 1, 1)
+  end
+  GameTooltip:AddDoubleLine("Per Hour", FormatWholeNumber(perHour), 0.82, 0.88, 0.95, 1, 1, 1)
+
+  local AccountWide = NS.UI and NS.UI.GatherTrackAccountWide
   if AccountWide and AccountWide.GetCharacterBreakdown then
     local breakdown = AccountWide:GetCharacterBreakdown(itemID)
     if breakdown and #breakdown > 0 then
@@ -112,11 +141,11 @@ local function makeRow(parent)
   row.text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   row.text:SetPoint("TOPLEFT", 0, 0)
   row.text:SetPoint("TOPRIGHT", 0, 0)
-  row.text:SetJustifyH("LEFT")
+  row.text:SetJustifyH("CENTER")
   row.text:SetWordWrap(false)
   row:SetScript("OnEnter", function(self)
     if self.itemID then
-      AddBreakdownTooltip(self.itemID, self)
+      AddBreakdownTooltip(self.itemID, self, self.stats)
     end
   end)
   row:SetScript("OnLeave", function()
@@ -144,7 +173,7 @@ local function createCard(parent, kind)
   card.pill.text:SetText(info.title:sub(1, 1))
 
   card.total = makeStat(card, "G")
-  card.bags = makeStat(card, "B")
+  card.focus = makeStat(card, "B")
   card.rate = makeStat(card, "H")
 
   card.materialsLine = card:CreateTexture(nil, "ARTWORK")
@@ -384,12 +413,12 @@ function Panels:Create()
       card.total:SetPoint("TOPLEFT", card, "TOPLEFT", statsLeft, topY)
       card.total:SetWidth(statWidth)
       card.total:SetHeight(16)
-      card.bags:ClearAllPoints()
-      card.bags:SetPoint("TOPLEFT", card.total, "TOPRIGHT", gap2, 0)
-      card.bags:SetWidth(statWidth)
-      card.bags:SetHeight(16)
+      card.focus:ClearAllPoints()
+      card.focus:SetPoint("TOPLEFT", card.total, "TOPRIGHT", gap2, 0)
+      card.focus:SetWidth(statWidth)
+      card.focus:SetHeight(16)
       card.rate:ClearAllPoints()
-      card.rate:SetPoint("TOPLEFT", card.bags, "TOPRIGHT", gap2, 0)
+      card.rate:SetPoint("TOPLEFT", card.focus, "TOPRIGHT", gap2, 0)
       card.rate:SetWidth(statWidth)
       card.rate:SetHeight(16)
 
@@ -490,13 +519,6 @@ function Panels:Create()
   frame:HookScript("OnHide", function()
     hideAuxiliaryPanels(frame)
   end)
-  frame:SetScript("OnUpdate", function(self, elapsed)
-    self._tick = (self._tick or 0) + elapsed
-    if self._tick < 0.5 then return end
-    self._tick = 0
-    Panels:Refresh(nil, GTUtil.GetSharedCtx())
-  end)
-
   frame._layout = layout
 
   applyCollapsed()
@@ -541,19 +563,37 @@ function Panels:Refresh(kind, ctx)
       end
     end
     if enabled then
-      card.total.value:SetText(LTUtils.FormatNumberCompact(stats.totalGained or 0))
-      card.bags.value:SetText(LTUtils.FormatNumberCompact(stats.totalBags or 0))
-      card.rate.value:SetText(LTUtils.FormatNumberCompact(math.floor(stats.perHour or 0)))
-
       local topItems = stats.topItems or {}
       local firstItem = topItems[1]
       local row = card.rows[1]
-      if firstItem then
-        row.itemID = firstItem.itemID
-        row.text:SetText((firstItem.name or "-") .. "  x" .. LTUtils.FormatNumberCompact(firstItem.count or 0))
+      local focusItemID = stats.focusItemID or (firstItem and firstItem.itemID) or nil
+      local focusItem = nil
+      if focusItemID then
+        for _, item in ipairs(topItems) do
+          if item.itemID == focusItemID then
+            focusItem = item
+            break
+          end
+        end
+      end
+      focusItem = focusItem or firstItem
+
+      card.total.value:SetText(FormatWholeNumber(stats.focusSessionCount or 0))
+      card.focus.value:SetText(FormatWholeNumber(stats.focusBagCount or 0))
+      card.rate.value:SetText(FormatRate(stats.focusPerHour, session.active, stats.focusSessionCount))
+
+      if focusItem then
+        row.itemID = focusItem.itemID
+        row.stats = stats
+        local rowText = (focusItem.name or "-")
+        if gatherKind == "lumber" then
+          rowText = rowText:gsub(" Lumber$", "")
+        end
+        row.text:SetText(rowText)
         row:Show()
       else
         row.itemID = nil
+        row.stats = nil
         row.text:SetText("-")
         row:Show()
       end

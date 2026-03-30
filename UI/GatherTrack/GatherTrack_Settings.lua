@@ -3,20 +3,20 @@ local L = NS.L
 NS.UI = NS.UI or {}
 
 local Settings = {}
-NS.UI.LumberTrackSettings = Settings
-local Utils = NS.LT.Utils
+NS.UI.GatherTrackSettings = Settings
+local Utils = NS.GT.Utils
 
 local CreateFrame = CreateFrame
 local unpack = _G.unpack or table.unpack
 local GameTooltip = GameTooltip
 
 local function RefreshAll(sharedCtx)
-  local Render = NS.UI.LumberTrackRender
+  local Render = NS.UI.GatherTrackRender
   if Render and Render.Refresh then
     Render:Refresh(sharedCtx)
   end
 
-  local GatherTrack = NS.UI.GatherTrack
+  local GatherTrack = NS.UI.GatherTrackMini
   if GatherTrack and GatherTrack.RefreshAll then
     GatherTrack:RefreshAll(sharedCtx)
   end
@@ -158,7 +158,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
       sharedCtx.showIcons = self:GetChecked() and true or false
       if db then db.showIcons = sharedCtx.showIcons end
       RefreshAll(sharedCtx)
-      local Rows = NS.UI.LumberTrackRows
+      local Rows = NS.UI.GatherTrackRows
       if Rows and Rows.Reflow then
         C_Timer.After(0.1, function() Rows:Reflow(sharedCtx) end)
       end
@@ -224,7 +224,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
           sharedCtx.rows[i] = nil
         end
       end
-      local LumberList = NS.UI.LumberTrackLumberList
+      local LumberList = NS.UI.GatherTrackList
       if LumberList and LumberList.compactBtn then
         local Tx = Utils.GetTheme()
         if newVal then
@@ -254,7 +254,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
 
   local accountWideCB = CreateCheckbox(behaviorCard, 10, -74, L["LUMBER_ACCOUNT_WIDE"],
     "Combines lumber counts from all characters.\n\nHover over rows to see per-character breakdown.")
-  local AccountWide = NS.UI.LumberTrackAccountWide
+  local AccountWide = NS.UI.GatherTrackAccountWide
   accountWideCB:SetChecked(AccountWide and AccountWide:IsEnabled() or false)
   accountWideCB:SetScript("OnClick", function(self)
     local checked = self:GetChecked() and true or false
@@ -350,7 +350,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange)
     local showBackgrounds = value >= 0.3
     if sharedCtx then
       sharedCtx.showRowBackgrounds = showBackgrounds
-      local Rows = NS.UI.LumberTrackRows
+      local Rows = NS.UI.GatherTrackRows
       if Rows and Rows.UpdateRowTransparency then
         Rows:UpdateRowTransparency(sharedCtx)
       end
@@ -382,7 +382,7 @@ function Settings:RefreshPanel(settingsPanel, sharedCtx)
   if not settingsPanel then return end
 
   local db = Utils.GetDB()
-  local AccountWide = NS.UI.LumberTrackAccountWide
+  local AccountWide = NS.UI.GatherTrackAccountWide
 
   if settingsPanel.iconsCB then
     settingsPanel.iconsCB:SetChecked(sharedCtx and sharedCtx.showIcons ~= false or true)
