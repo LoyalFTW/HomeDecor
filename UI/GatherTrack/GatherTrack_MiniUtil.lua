@@ -128,7 +128,7 @@ function Util.EnsureItemMeta(ctx, itemID)
 
   local _, _, _, _, icon2, classID2, subclassID2 = GetItemInfoInstant(itemID)
   meta = meta or {}
-  meta.name = meta.name or name or ("Item " .. tostring(itemID))
+  meta.name = meta.name or name or (LTUtils and LTUtils.GetKnownLumberName and LTUtils.GetKnownLumberName(itemID)) or ("Item " .. tostring(itemID))
   meta.icon = meta.icon or icon or icon2 or "Interface\\Icons\\INV_Misc_QuestionMark"
   meta.classID = meta.classID or classID or classID2
   meta.subclassID = meta.subclassID or subclassID or subclassID2
@@ -144,7 +144,7 @@ function Util.BuildListForKind(ctx, kind)
 
   for itemID, count in pairs(ctx.counts) do
     local meta = Util.EnsureItemMeta(ctx, itemID)
-    local itemKind = meta and LTUtils and LTUtils.GetTrackedGatheringKind and LTUtils.GetTrackedGatheringKind(meta.name, meta.classID, meta.subclassID)
+    local itemKind = meta and LTUtils and LTUtils.GetTrackedGatheringKind and LTUtils.GetTrackedGatheringKind(meta.name, meta.classID, meta.subclassID, itemID)
     if itemKind == kind then
       items[#items + 1] = {
         itemID = itemID,

@@ -18,11 +18,17 @@ local MAX_META_CACHE = 150
 local function GetItemMeta(itemID)
   if not itemID then return nil end
   local name, link, rarity, level, minLevel, itype, subtype, stack, equip, icon, sellPrice, classID, subclassID = GetItemInfo(itemID)
+  if not name and Utils.GetKnownLumberName then
+    name = Utils.GetKnownLumberName(itemID)
+  end
   if name and icon then return name, icon, classID, subclassID end
   if not name and C_Item and C_Item.RequestLoadItemDataByID then
     pcall(C_Item.RequestLoadItemDataByID, itemID)
   end
   local itemID2, itemType2, itemSubType2, itemEquipLoc2, icon2, classID2, subclassID2 = GetItemInfoInstant(itemID)
+  if not name and Utils.GetKnownLumberName then
+    name = Utils.GetKnownLumberName(itemID)
+  end
   return name, icon or icon2, classID or classID2, subclassID or subclassID2
 end
 
@@ -48,7 +54,7 @@ local function GetBagLumberCounts(metaCache, lumberIDs, trackingSettings)
       }
     end
 
-    local kind = Utils.GetTrackedGatheringKind(name, classID, subclassID)
+    local kind = Utils.GetTrackedGatheringKind(name, classID, subclassID, itemID)
     if kind and Utils.IsGatheringKindEnabled(kind, trackingSettings) then
       local c = tonumber(stackCount) or 1
       counts[itemID] = (counts[itemID] or 0) + c
@@ -106,7 +112,7 @@ local function FilterCountsByTracking(ctx, counts)
       }
     end
 
-    local kind = Utils.GetTrackedGatheringKind(name, classID, subclassID)
+    local kind = Utils.GetTrackedGatheringKind(name, classID, subclassID, itemID)
     if kind and Utils.IsGatheringKindEnabled(kind, ctx) then
       local n = tonumber(count) or 0
       filtered[itemID] = n
@@ -136,11 +142,18 @@ function R:Init(ctx)
 
   if type(ctx.lumberIDs)~="table" then
     ctx.lumberIDs = {}
-    local db = ctx.GetDB and ctx.GetDB()
+  end
+
+  local db = ctx.GetDB and ctx.GetDB()
+  if db and type(db.lumberIDs) == "table" then
+    for id in pairs(db.lumberIDs) do
+      ctx.lumberIDs[id] = true
+    end
+  end
+  if Utils.SeedKnownLumberIDs then
+    Utils.SeedKnownLumberIDs(ctx.lumberIDs)
     if db and type(db.lumberIDs) == "table" then
-      for id in pairs(db.lumberIDs) do
-        ctx.lumberIDs[id] = true
-      end
+      Utils.SeedKnownLumberIDs(db.lumberIDs)
     end
   end
 
@@ -213,13 +226,21 @@ function R:Recount(ctx)
   end
 
   if type(ctx.lumberIDs)~="table" then ctx.lumberIDs={} end
+  if Utils.SeedKnownLumberIDs then
+    Utils.SeedKnownLumberIDs(ctx.lumberIDs)
+  end
   for itemID in pairs(ctx.counts) do ctx.lumberIDs[itemID]=true end
   for itemID in pairs(ctx.lumberIDs) do
     if ctx.counts[itemID]==nil then ctx.counts[itemID]=0 end
   end
 
   local db = ctx and ctx.GetDB and ctx.GetDB()
-  if type(db)=="table" then db.lumberIDs = ctx.lumberIDs end
+  if type(db)=="table" then
+    db.lumberIDs = ctx.lumberIDs
+    if Utils.SeedKnownLumberIDs then
+      Utils.SeedKnownLumberIDs(db.lumberIDs)
+    end
+  end
   self:CleanMetaCache(ctx)
 end
 
@@ -242,7 +263,9 @@ end
 
 local function PassFilter(ctx, itemID, name, count)
   local c = tonumber(count) or 0
-  if ctx.hideZero and c <= 0 then return false end
+  if ctx.hideZero and c <= 0 and not (Utils.IsKnownLumberID and Utils.IsKnownLumberID(itemID)) then
+    return false
+  end
   local q = ctx.search
   if q and q~="" then
     local n = Utils.SafeLower(name or "")

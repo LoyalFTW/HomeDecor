@@ -13,6 +13,34 @@ local string_lower = string.lower
 local ITEM_CLASS_TRADEGOODS = (Enum and Enum.ItemClass and Enum.ItemClass.Tradegoods) or 7
 local ITEM_SUBCLASS_METAL_STONE = (Enum and Enum.ItemTradegoodsSubclass and Enum.ItemTradegoodsSubclass.MetalAndStone) or 7
 local ITEM_SUBCLASS_HERB = (Enum and Enum.ItemTradegoodsSubclass and Enum.ItemTradegoodsSubclass.Herb) or 9
+local KNOWN_LUMBER_IDS = {
+  [242691] = true, -- Olemba
+  [245586] = true, -- Ironwood
+  [248012] = true, -- Dornic Fir
+  [251762] = true, -- Coldwind
+  [251763] = true, -- Bamboo
+  [251764] = true, -- Ashwood
+  [251766] = true, -- Shadowmoon
+  [251767] = true, -- Fel-Touched
+  [251768] = true, -- Darkpine
+  [251772] = true, -- Arden
+  [251773] = true, -- Dragonpine
+  [256963] = true, -- Thalassian
+}
+local KNOWN_LUMBER_NAMES = {
+  [242691] = "Olemba",
+  [245586] = "Ironwood",
+  [248012] = "Dornic Fir",
+  [251762] = "Coldwind",
+  [251763] = "Bamboo",
+  [251764] = "Ashwood",
+  [251766] = "Shadowmoon",
+  [251767] = "Fel-Touched",
+  [251768] = "Darkpine",
+  [251772] = "Arden",
+  [251773] = "Dragonpine",
+  [256963] = "Thalassian",
+}
 
 function Utils.GetTheme()
   return NS.UI and NS.UI.Theme and NS.UI.Theme.colors or {}
@@ -48,7 +76,30 @@ function Utils.IsLumberName(name)
       or lowerName:find("plank", 1, true)
 end
 
-function Utils.GetTrackedGatheringKind(name, classID, subclassID)
+function Utils.GetKnownLumberIDs()
+  return KNOWN_LUMBER_IDS
+end
+
+function Utils.SeedKnownLumberIDs(target)
+  if type(target) ~= "table" then return target end
+  for itemID in pairs(KNOWN_LUMBER_IDS) do
+    target[itemID] = true
+  end
+  return target
+end
+
+function Utils.IsKnownLumberID(itemID)
+  return itemID and KNOWN_LUMBER_IDS[itemID] or false
+end
+
+function Utils.GetKnownLumberName(itemID)
+  return itemID and KNOWN_LUMBER_NAMES[itemID] or nil
+end
+
+function Utils.GetTrackedGatheringKind(name, classID, subclassID, itemID)
+  if Utils.IsKnownLumberID(itemID) then
+    return "lumber"
+  end
   if Utils.IsLumberName(name) then
     return "lumber"
   end

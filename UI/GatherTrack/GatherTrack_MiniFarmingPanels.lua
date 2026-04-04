@@ -15,6 +15,7 @@ local MIN_FRAME_WIDTH = 220
 local MIN_FRAME_HEIGHT = 196
 local MAX_FRAME_WIDTH = 320
 local MAX_FRAME_HEIGHT = 360
+local TIMER_REFRESH_INTERVAL = 0.2
 
 local function FormatWholeNumber(value)
   value = tonumber(value) or 0
@@ -192,6 +193,21 @@ local function hideAuxiliaryPanels(frame)
   if frame.settingsPopup and frame.settingsPopup:IsShown() then
     frame.settingsPopup:Hide()
   end
+end
+
+local function HasActiveSession()
+  if not Farming or not Farming.EnsureSession then
+    return false
+  end
+
+  for _, kind in ipairs(ORDER) do
+    local session = Farming:EnsureSession(kind)
+    if session and session.active then
+      return true
+    end
+  end
+
+  return false
 end
 
 function Panels:Create()
@@ -515,7 +531,21 @@ function Panels:Create()
   frame:SetScript("OnSizeChanged", function()
     layout()
   end)
+  frame:SetScript("OnUpdate", function(self, elapsed)
+    if not self:IsShown() then return end
+
+    self._timerElapsed = (self._timerElapsed or 0) + (elapsed or 0)
+    if self._timerElapsed < TIMER_REFRESH_INTERVAL then
+      return
+    end
+    self._timerElapsed = 0
+
+    if HasActiveSession() then
+      Panels:Refresh(nil, GTUtil.GetSharedCtx())
+    end
+  end)
   frame:HookScript("OnShow", function()
+    frame._timerElapsed = 0
     C_Timer.After(0, function()
       if not frame or not frame:IsShown() then return end
       layout()
