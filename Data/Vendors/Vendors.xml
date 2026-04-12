@@ -34,4 +34,7 @@
 	<Script file="Midnight/RazorShore.lua"/>
 	<Script file="Midnight/VoidStorm.lua"/>
 	
+	<Script file="LegacySourceMap.lua"/>
+	<Script file="DerivedRequirements.lua"/>
+	<Script file="DerivedRequirementOverrides.lua"/>
 </Ui>
