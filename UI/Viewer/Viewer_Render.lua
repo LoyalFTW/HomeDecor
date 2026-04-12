@@ -202,7 +202,17 @@ local function AddToFlat(out, seen, it)
     local id = it.decorID or (it.source and (it.source.id or it.source.itemID or it.source.itemId)) or it.itemID
     if not id then return end
 
-    local key = ((it.source and it.source.type) or "") .. ":" .. tostring(id)
+    local src = it.source or {}
+    local faction = it.faction or src.faction or ""
+    local questID = it.requirements and it.requirements.quest and (it.requirements.quest.id or it.requirements.quest)
+    local achievementID = it.requirements and it.requirements.achievement and (it.requirements.achievement.id or it.requirements.achievement)
+    local reqID = questID or achievementID or src.questID or src.achievementID or src.id or ""
+    local key = table.concat({
+        tostring(src.type or ""),
+        tostring(id),
+        tostring(faction),
+        tostring(reqID),
+    }, ":")
     if seen[key] then return end
 
     seen[key] = true

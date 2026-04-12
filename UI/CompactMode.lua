@@ -296,6 +296,27 @@ local function GetSrcTag(it)
     return (s and SRC_TAG[s.type or ""]) or ""
 end
 
+local function ItemVariantKey(it)
+    if type(it) ~= "table" then return nil end
+
+    local src = it.source or {}
+    local decorID = it.decorID or src.itemID or src.id or it.itemID
+    if not decorID then return nil end
+
+    local faction = it.faction or src.faction or ""
+    local questID = it.requirements and it.requirements.quest and (it.requirements.quest.id or it.requirements.quest)
+    local achievementID = it.requirements and it.requirements.achievement and (it.requirements.achievement.id or it.requirements.achievement)
+    local reqID = questID or achievementID or src.questID or src.achievementID or src.id or ""
+    local srcType = src.type or ""
+
+    return table.concat({
+        tostring(decorID),
+        tostring(srcType),
+        tostring(faction),
+        tostring(reqID),
+    }, ":")
+end
+
 local function GetExpShort(exp)
     if not exp or exp == "" then return "" end
     return EXP_SHORT[exp] or exp:sub(1, 4)
@@ -306,7 +327,7 @@ local function ScanNode(node, exp, out, seen)
 
     if node.decorID then
         local tag = GetSrcTag(node)
-        local key = tostring(node.decorID) .. ":" .. tag
+        local key = ItemVariantKey(node) or (tostring(node.decorID) .. ":" .. tag)
         if not seen[key] then
             seen[key] = true
             out[#out + 1] = {
