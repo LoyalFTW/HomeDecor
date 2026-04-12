@@ -50,6 +50,11 @@ local DEFAULTS = {
   hidePvpItems  = false,
 }
 
+local PVP_VENDOR_IDS = {
+  [254603] = true,
+  [254606] = true,
+}
+
 local Tax = {
   built = false,
   cats = {},
@@ -65,6 +70,37 @@ local function _apiReady()
   return _G.C_HousingCatalog
      and _G.C_HousingCatalog.SearchCatalogCategories
      and _G.C_HousingCatalog.GetCatalogCategoryInfo
+end
+
+local function IsPvPVendor(v)
+  if type(v) ~= "table" then return false end
+  local src = v.source or {}
+  local id = tonumber(src.id or v.npcID or v.id)
+  return id and PVP_VENDOR_IDS[id] == true or false
+end
+
+local function BuildPvPVendorData()
+  local out = {}
+  local vendors = NS.Data and NS.Data.Vendors
+  if type(vendors) ~= "table" then return out end
+
+  for expName, expTbl in pairs(vendors) do
+    if type(expTbl) == "table" then
+      for zoneName, zoneTbl in pairs(expTbl) do
+        if type(zoneTbl) == "table" then
+          for _, vendor in ipairs(zoneTbl) do
+            if IsPvPVendor(vendor) then
+              out[expName] = out[expName] or {}
+              out[expName][zoneName] = out[expName][zoneName] or {}
+              out[expName][zoneName][#out[expName][zoneName] + 1] = vendor
+            end
+          end
+        end
+      end
+    end
+  end
+
+  return out
 end
 
 local function _orderIndex(info)
@@ -347,6 +383,9 @@ end
 
 function Filters:GetActiveData(ui)
   local key = ui and CATEGORY_MAP[ui.activeCategory]
+  if key == "PvP" then
+    return BuildPvPVendorData()
+  end
   return key and NS.Data and NS.Data[key] or nil
 end
 
@@ -678,7 +717,7 @@ function Filters:Passes(it, ui, db)
     if fac ~= "Neutral" and not matchesValue(fac, f.faction) then return false end
   end
 
-  if f.expansion ~= "ALL" then
+  if f.expansion ~= "ALL" and st ~= "pvp" then
     local itExp = it._expansion or it.expansion or (it.source and it.source.expansion)
     if not matchesValue(itExp, f.expansion) then return false end
   end
@@ -799,17 +838,25 @@ function Filters:Passes(it, ui, db)
       if decorID then
         if not self.pvpDecorSet then
           self.pvpDecorSet = {}
-          local pvp = NS.Data and NS.Data.PVP
-          if type(pvp) == "table" then
-            local function walk(node)
-              if type(node) ~= "table" then return end
-              if node.decorID then
-                self.pvpDecorSet[node.decorID] = true
-                return
+          local vendors = NS.Data and NS.Data.Vendors
+          if type(vendors) == "table" then
+            for _, expTbl in pairs(vendors) do
+              if type(expTbl) == "table" then
+                for _, zoneTbl in pairs(expTbl) do
+                  if type(zoneTbl) == "table" then
+                    for _, vendor in ipairs(zoneTbl) do
+                      if IsPvPVendor(vendor) and type(vendor.items) == "table" then
+                        for _, node in ipairs(vendor.items) do
+                          if type(node) == "table" and node.decorID then
+                            self.pvpDecorSet[node.decorID] = true
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
               end
-              for _, v in pairs(node) do walk(v) end
             end
-            walk(pvp)
           end
         end
         if self.pvpDecorSet[decorID] then return false end

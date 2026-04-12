@@ -42,7 +42,7 @@ local ROW_H = 22
 local MIN_W, MAX_W = 320, 680
 local MIN_H, MAX_H = 300, 900
 
-local CATS = { "Achievements", "Quests", "Vendors", "Drops", "Professions", "PVP" }
+local CATS = { "Achievements", "Quests", "Vendors", "Drops", "Professions", "PvP" }
 
 local CAT_LABEL = {
     Achievements = "Achievements",
@@ -50,6 +50,7 @@ local CAT_LABEL = {
     Vendors      = "Vendors",
     Drops        = "Drops",
     Professions  = "Professions",
+    PvP          = "PvP",
     PVP          = "PvP",
 }
 

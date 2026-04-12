@@ -95,7 +95,7 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       worldmap="2112:3680:5060"
     },
     items={
-      {decorID=7835, source={type="vendor", itemID=250912, currency="600", currencytype=2003}},
+      {decorID=7835, source={type="vendor", itemID=250912, currency="600", currencytype=2003}, requirements={quest={id=76597}}},
     }
   },
 
@@ -111,7 +111,7 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       {decorID=5556, source={type="vendor", itemID=249545, currency="250", currencytype="gold"}},
       {decorID=5558, source={type="vendor", itemID=249547, currency="250", currencytype="gold"}},
       {decorID=5559, source={type="vendor", itemID=249548, currency="250", currencytype="gold"}},
-      {decorID=5560, source={type="vendor", itemID=249549, costs={{currency="300", currencytype="gold"},{currency="200", currencytype=2003}}}},
+      {decorID=5560, source={type="vendor", itemID=249549, costs={{currency="300", currencytype="gold"},{currency="200", currencytype=2003}}}, requirements={quest={id=72515}}},
       {decorID=5689, source={type="vendor", itemID=249824, currency="250", currencytype="gold"}},
     }
   },
@@ -223,7 +223,7 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       worldmap="2215:4280:5583"
     },
     items={
-      {decorID=14360, source={type="vendor", itemID=260583, currency="500", currencytype=2815}},
+      {decorID=14360, source={type="vendor", itemID=260583, currency="500", currencytype=2815}, requirements={quest={id=82141}}},
     }
   },
 

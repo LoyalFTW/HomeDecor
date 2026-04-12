@@ -101,7 +101,7 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       {decorID=1189, source={type="vendor", itemID=245521, currency="100", currencytype=1560}},
       {decorID=1191, source={type="vendor", itemID=245490, currency="600", currencytype=1560}, requirements={achievement={id=12733}}},
       {decorID=1192, source={type="vendor", itemID=245489, currency="150", currencytype=1560}, requirements={quest={id=47250}}},
-      {decorID=1193, source={type="vendor", itemID=245486, currency="150", currencytype=1560}},
+      {decorID=1193, source={type="vendor", itemID=245486, currency="150", currencytype=1560}, requirements={quest={id=47432}}},
       {decorID=1196, source={type="vendor", itemID=245493, currency="200", currencytype=1560}, requirements={quest={id=47741}}},
       {decorID=1197, source={type="vendor", itemID=243130, currency="300", currencytype=1560}},
       {decorID=1205, source={type="vendor", itemID=245485, currency="1000", currencytype=1560}, requirements={quest={id=50963}}},

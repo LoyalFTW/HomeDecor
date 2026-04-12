@@ -560,7 +560,7 @@ function L:CreateShell()
   left:SetPoint("BOTTOMLEFT", 8, 46)
   left:SetWidth(200)
 
-  local cats = { "Achievements", "Quests", "Vendors", "Drops", "Professions", "PVP" }
+  local cats = { "Achievements", "Quests", "Vendors", "Drops", "Professions", "PvP" }
   left.buttons = {}
 
   local function applyCategoryText(btn, cname)
@@ -1253,7 +1253,7 @@ function L:CreateShell()
     if q == "vendor" or q == "vendors" then return "Vendors" end
     if q == "drop" or q == "drops" then return "Drops" end
     if q == "profession" or q == "professions" then return "Professions" end
-    if q == "pvp" then return "PVP" end
+    if q == "pvp" then return "PvP" end
     return nil
   end
 

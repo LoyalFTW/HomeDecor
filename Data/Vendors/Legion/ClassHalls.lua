@@ -51,7 +51,7 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       worldmap="739:4456:4888"
     },
     items={
-      {decorID=4042, source={type="vendor", itemID=248011, currency="1500", currencytype=1220}},
+      {decorID=4042, source={type="vendor", itemID=248011, currency="1500", currencytype=1220}, requirements={achievement={id=42273}}},
       {decorID=5890, source={type="vendor", itemID=250125, currency="5000", currencytype=1220}, requirements={achievement={id=42290}}},
       {decorID=5892, source={type="vendor", itemID=250127, currency="3000", currencytype=1220}, requirements={achievement={id=60965}}},
     }

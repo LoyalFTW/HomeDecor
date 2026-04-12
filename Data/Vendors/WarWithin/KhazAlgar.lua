@@ -209,7 +209,7 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2472:4320:3480"
     },
     items={
-      {decorID=14359, source={type="vendor", itemID=260582, currency="500", currencytype=2815}},
+      {decorID=14359, source={type="vendor", itemID=260582, currency="500", currencytype=2815}, requirements={quest={id=86820}}},
     }
   },
 
@@ -274,13 +274,13 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2339:5284:6800"
     },
     items={
-      {decorID=1693, source={type="vendor", itemID=245259, currency="50", currencytype="gold"}},
+      {decorID=1693, source={type="vendor", itemID=245259, currency="50", currencytype="gold"}, requirements={quest={id=92577}}},
       {decorID=1861, source={type="vendor", itemID=245655, currency="10", currencytype=2003}},
-      {decorID=2330, source={type="vendor", itemID=246487, currency="75", currencytype="gold"}},
+      {decorID=2330, source={type="vendor", itemID=246487, currency="75", currencytype="gold"}, requirements={quest={id=92580}}},
       {decorID=2433, source={type="vendor", itemID=246601}},
       {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}},
-      {decorID=4029, source={type="vendor", itemID=247915, currency="100", currencytype="gold"}},
-      {decorID=4172, source={type="vendor", itemID=248116, currency="75", currencytype="gold"}},
+      {decorID=4029, source={type="vendor", itemID=247915, currency="100", currencytype="gold"}, requirements={quest={id=92581}}},
+      {decorID=4172, source={type="vendor", itemID=248116, currency="75", currencytype="gold"}, requirements={quest={id=92578}}},
       {decorID=5111, source={type="vendor", itemID=248934, currency="1500", currencytype="gold"}},
       {decorID=9242, source={type="vendor", itemID=253168, currency="20", currencytype="gold"}},
       {decorID=9247, source={type="vendor", itemID=253173, currency="20", currencytype="gold"}, requirements={quest={id=92572}}},

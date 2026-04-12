@@ -73,6 +73,16 @@ local function ingestCategory(self, catTbl, sourceType)
                             local src = it.source
                             if not src then src = {}; it.source = src end
                             if not src.type and sourceType then src.type = sourceType end
+                            if sourceType == "pvp" then
+                                if expName == "Alliance" or expName == "Horde" then
+                                    it.faction = it.faction or expName
+                                    src.faction = src.faction or expName
+                                end
+                                if zoneName then
+                                    it.zone = it.zone or zoneName
+                                    src.zone = src.zone or zoneName
+                                end
+                            end
                             upsert(self, it, expName, zoneName, nil)
                         end
                     end
@@ -134,7 +144,6 @@ function DecorIndex:Build()
     ingestCategory(self, D.Achievements, "achievement")
     ingestCategory(self, D.Drops, "drop")
     ingestCategory(self, D.Professions, "profession")
-    ingestCategory(self, D.PVP or D.PvP, "pvp")
 end
 
 return DecorIndex

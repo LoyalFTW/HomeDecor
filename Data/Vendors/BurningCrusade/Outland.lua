@@ -30,9 +30,9 @@ NS.Data.Vendors["BurningCrusade"]["Outland"] = {
       worldmap="499:5100:3000"
     },
     items={
-      {decorID=10913, source={type="vendor", itemID=255840, currency="8000", currencytype="gold"}},
-      {decorID=12263, source={type="vendor", itemID=259071, currency="4000", currencytype="gold"}},
-      {decorID=14815, source={type="vendor", itemID=263026, currency="500", currencytype="gold"}},
+      {decorID=10913, source={type="vendor", itemID=255840, currency="8000", currencytype="gold"}, requirements={rep="true"}},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="4000", currencytype="gold"}, requirements={rep="true"}},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="500", currencytype="gold"}, requirements={rep="true"}},
     }
   },
 
@@ -45,9 +45,9 @@ NS.Data.Vendors["BurningCrusade"]["Outland"] = {
       worldmap="503:5200:2780"
     },
     items={
-      {decorID=10913, source={type="vendor", itemID=255840, currency="8000", currencytype="gold"}},
-      {decorID=12263, source={type="vendor", itemID=259071, currency="4000", currencytype="gold"}},
-      {decorID=14815, source={type="vendor", itemID=263026, currency="500", currencytype="gold"}},
+      {decorID=10913, source={type="vendor", itemID=255840, currency="8000", currencytype="gold"}, requirements={rep="true"}},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="4000", currencytype="gold"}, requirements={rep="true"}},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="500", currencytype="gold"}, requirements={rep="true"}},
     }
   },
 
@@ -60,9 +60,9 @@ NS.Data.Vendors["BurningCrusade"]["Outland"] = {
       worldmap="503:5084:2913"
     },
     items={
-      {decorID=10913, source={type="vendor", itemID=255840, currency="8000", currencytype="gold"}},
-      {decorID=12263, source={type="vendor", itemID=259071, currency="4000", currencytype="gold"}},
-      {decorID=14815, source={type="vendor", itemID=263026, currency="500", currencytype="gold"}},
+      {decorID=10913, source={type="vendor", itemID=255840, currency="8000", currencytype="gold"}, requirements={rep="true"}},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="4000", currencytype="gold"}, requirements={rep="true"}},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="500", currencytype="gold"}, requirements={rep="true"}},
     }
   },
 
@@ -75,9 +75,9 @@ NS.Data.Vendors["BurningCrusade"]["Outland"] = {
       worldmap="500:5425:2513"
     },
     items={
-      {decorID=10913, source={type="vendor", itemID=255840, currency="8000", currencytype="gold"}},
-      {decorID=12263, source={type="vendor", itemID=259071, currency="4000", currencytype="gold"}},
-      {decorID=14815, source={type="vendor", itemID=263026, currency="500", currencytype="gold"}},
+      {decorID=10913, source={type="vendor", itemID=255840, currency="8000", currencytype="gold"}, requirements={rep="true"}},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="4000", currencytype="gold"}, requirements={rep="true"}},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="500", currencytype="gold"}, requirements={rep="true"}},
     }
   },
 

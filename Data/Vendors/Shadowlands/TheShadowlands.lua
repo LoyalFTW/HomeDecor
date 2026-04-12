@@ -17,7 +17,7 @@ NS.Data.Vendors["Shadowlands"]["TheShadowlands"] = {
     },
     items={
       {decorID=3869, source={type="vendor", itemID=247729, currency="240", currencytype="gold"}, requirements={quest={id=31230}}},
-      {decorID=15605, source={type="vendor", itemID=264362, currency="500", currencytype="gold"}},
+      {decorID=15605, source={type="vendor", itemID=264362, currency="500", currencytype="gold"}, requirements={quest={id=30000}}},
     }
   },
 

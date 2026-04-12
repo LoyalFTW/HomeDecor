@@ -392,6 +392,15 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       {decorID=11482, source={type="vendor", itemID=257392, currency="10", currencytype="gold"}},
       {decorID=14382, source={type="vendor", itemID=260701, currency="25", currencytype="gold"}},
       {decorID=14383, source={type="vendor", itemID=260702, currency="75", currencytype="gold"}},
+      {decorID=17863, source={type="vendor", itemID=266234, currency="150", currencytype="gold"}},
+      {decorID=17864, source={type="vendor", itemID=266235, currency="150", currencytype="gold"}},
+      {decorID=17865, source={type="vendor", itemID=266236, currency="150", currencytype="gold"}},
+      {decorID=17866, source={type="vendor", itemID=266237, currency="150", currencytype="gold"}},
+      {decorID=17867, source={type="vendor", itemID=266238, currency="150", currencytype="gold"}},
+      {decorID=17873, source={type="vendor", itemID=266244, currency="75", currencytype="gold"}},
+      {decorID=17874, source={type="vendor", itemID=266245, currency="75", currencytype="gold"}},
+      {decorID=17918, source={type="vendor", itemID=266443, currency="50", currencytype="gold"}},
+      {decorID=17919, source={type="vendor", itemID=266444, currency="75", currencytype="gold"}},
     }
   },
 

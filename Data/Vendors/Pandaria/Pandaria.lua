@@ -77,7 +77,7 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
     },
     items={
       {decorID=3869, source={type="vendor", itemID=247729, currency="240", currencytype="gold"}, requirements={quest={id=31230}}},
-      {decorID=15605, source={type="vendor", itemID=264362, currency="500", currencytype="gold"}},
+      {decorID=15605, source={type="vendor", itemID=264362, currency="500", currencytype="gold"}, requirements={quest={id=30000}}},
     }
   },
 
@@ -127,11 +127,11 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="590:4380:4740"
     },
     items={
-      {decorID=1318, source={type="vendor", itemID=245438, costs={{currency="240", currencytype="gold"},{currency="500", currencytype=824}}}},
+      {decorID=1318, source={type="vendor", itemID=245438, costs={{currency="240", currencytype="gold"},{currency="500", currencytype=824}}}, requirements={quest={id=33527}}},
       {decorID=1353, source={type="vendor", itemID=245443, costs={{currency="160", currencytype="gold"},{currency="300", currencytype=824}}}, requirements={quest={id=34586}}},
       {decorID=1407, source={type="vendor", itemID=244315, currency="1500", currencytype=824}, requirements={quest={id=36614}}},
       {decorID=1408, source={type="vendor", itemID=244316, costs={{currency="160", currencytype="gold"},{currency="300", currencytype=824}}}, requirements={quest={id=34192}}},
-      {decorID=1412, source={type="vendor", itemID=244320, costs={{currency="40", currencytype="gold"},{currency="100", currencytype=824}}}},
+      {decorID=1412, source={type="vendor", itemID=244320, costs={{currency="40", currencytype="gold"},{currency="100", currencytype=824}}}, requirements={quest={id=33470}}},
       {decorID=1443, source={type="vendor", itemID=244653, costs={{currency="160", currencytype="gold"},{currency="300", currencytype=824}}}, requirements={quest={id=36592}}},
     }
   },

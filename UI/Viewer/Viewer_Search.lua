@@ -209,7 +209,6 @@ local function BuildGlobalSearchResults(ui, db)
 
   Scan(data.Drops, "drop")
   Scan(data.Professions, "profession")
-  Scan(data.PvP or data.PVP, "pvp")
   Scan(data.SavedItems or data["Saved Items"], "saved")
 
   for _, it in pairs(bestByDecor) do

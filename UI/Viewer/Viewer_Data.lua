@@ -69,6 +69,10 @@ Data.EXPANSION_RANK = EXPANSION_RANK
 local DecorIconCache, DecorNameCache = {}, {}
 local AchTitleCache, QuestTitleCache = {}, {}
 local VendorPickCache = {}
+local PVP_VENDOR_IDS = {
+  [254603] = true,
+  [254606] = true,
+}
 
 local function CleanVendorTitle(s)
   if type(s) ~= "string" then return nil end
@@ -114,6 +118,37 @@ local function VendorFaction(v)
   if f == "Alliance" or f == "Horde" then return f end
   if f == "Neutral" then return "Neutral" end
   return nil
+end
+
+local function IsPvPVendor(v)
+  if type(v) ~= "table" then return false end
+  local src = v.source or {}
+  local id = tonumber(src.id or v.npcID or v.id)
+  return id and PVP_VENDOR_IDS[id] == true or false
+end
+
+local function BuildPvPVendorData()
+  local out = {}
+  local vendors = NS.Data and NS.Data.Vendors
+  if type(vendors) ~= "table" then return out end
+
+  for expName, expTbl in pairs(vendors) do
+    if type(expTbl) == "table" then
+      for zoneName, zoneTbl in pairs(expTbl) do
+        if type(zoneTbl) == "table" then
+          for _, vendor in ipairs(zoneTbl) do
+            if IsPvPVendor(vendor) then
+              out[expName] = out[expName] or {}
+              out[expName][zoneName] = out[expName][zoneName] or {}
+              out[expName][zoneName][#out[expName][zoneName] + 1] = vendor
+            end
+          end
+        end
+      end
+    end
+  end
+
+  return out
 end
 
 local function VendorKeyFromCtx(decorID, expName, zoneKey, desiredFaction)
@@ -483,6 +518,18 @@ function Data.HydrateFromDecorIndex(it, ui, db)
     it.itemID = it.itemID or itemID
     it.source.itemID = it.source.itemID or itemID
   end
+  if vitem.faction == "Alliance" or vitem.faction == "Horde" then
+    it.faction = it.faction or vitem.faction
+  end
+  if vitem.source and (vitem.source.faction == "Alliance" or vitem.source.faction == "Horde") then
+    it.source.faction = it.source.faction or vitem.source.faction
+  end
+  if vitem.zone then
+    it.zone = it.zone or vitem.zone
+  end
+  if vitem.source and vitem.source.zone then
+    it.source.zone = it.source.zone or vitem.source.zone
+  end
 
   local bestVendor = Data.PickDecorIndexVendor(entry, ui, db)
   local slim = Data.SlimVendor(bestVendor)
@@ -556,6 +603,14 @@ function Data.ResolveAchievementDecor(it)
   if item then
     resolved.title = item.title or resolved.title
     resolved.decorType = item.decorType or resolved.decorType
+    if item.faction == "Alliance" or item.faction == "Horde" then
+      resolved.faction = resolved.faction or item.faction
+      resolved.source.faction = resolved.source.faction or item.faction
+    end
+    if item.zone then
+      resolved.zone = resolved.zone or item.zone
+      resolved.source.zone = resolved.source.zone or item.zone
+    end
   end
 
   local desiredFaction = resolved.faction or (resolved.source and resolved.source.faction)
@@ -666,12 +721,12 @@ function Data.GetActiveData(ui)
   local key = Data.CATEGORY_MAP[ui.activeCategory]
   if not key or not NS.Data then return nil end
 
+  if key == "PvP" then
+    return BuildPvPVendorData()
+  end
+
   local t = NS.Data[key]
   if t ~= nil then return t end
-
-  if key == "PvP" then
-    return NS.Data.PvP or NS.Data.PVP or NS.Data.Pvp or NS.Data.pvp
-  end
   return nil
 end
 

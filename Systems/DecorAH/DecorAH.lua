@@ -347,6 +347,7 @@ local function BuildDataRows()
       reagents       = reagents,
     }
   end
+
 end
 
 local function InvalidateDataRows()
@@ -755,10 +756,11 @@ local function RefreshTable()
 
   if cachedFilteredDirty or not cachedFiltered then
     cachedFilteredDirty = false
+    local didRebuildData = dataRowsDirty
 
     BuildDataRows()
 
-    if History then
+    if didRebuildData and History then
       if not DecorAH._lastHistoryRecord then DecorAH._lastHistoryRecord = 0 end
       if time() - DecorAH._lastHistoryRecord > 3600 then
         History.RecordBulkSnapshot(dataRows)
@@ -766,7 +768,7 @@ local function RefreshTable()
       end
     end
 
-    if Favorites then
+    if didRebuildData and Favorites then
       local alerts = Favorites.CheckAlerts(dataRows)
       for _, alert in ipairs(alerts) do
       end

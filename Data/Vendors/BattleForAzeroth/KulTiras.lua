@@ -73,7 +73,7 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       {decorID=2433, source={type="vendor", itemID=246601}},
       {decorID=2435, source={type="vendor", itemID=246603}, requirements={achievement={id=13475}}},
       {decorID=2437, source={type="vendor", itemID=246605, currency="120", currencytype="gold"}, requirements={rep="true"}},
-      {decorID=2466, source={type="vendor", itemID=246701, currency="160", currencytype="gold"}},
+      {decorID=2466, source={type="vendor", itemID=246701, currency="160", currencytype="gold"}, requirements={quest={id=55651}}},
       {decorID=2467, source={type="vendor", itemID=246703}, requirements={quest={id=55736}}},
     }
   },
@@ -119,11 +119,11 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
     },
     items={
       {decorID=1900, source={type="vendor", itemID=245984, currency="350", currencytype=1560}, requirements={quest={id=50783}}},
-      {decorID=9043, source={type="vendor", itemID=252394, currency="550", currencytype=1560}},
+      {decorID=9043, source={type="vendor", itemID=252394, currency="550", currencytype=1560}, requirements={rep="true"}},
       {decorID=9044, source={type="vendor", itemID=252395, currency="450", currencytype=1560}, requirements={quest={id=51401}}},
-      {decorID=9045, source={type="vendor", itemID=252396, currency="125", currencytype=1560}},
-      {decorID=9047, source={type="vendor", itemID=252398, currency="200", currencytype=1560}},
-      {decorID=9139, source={type="vendor", itemID=252652, currency="800", currencytype=1560}},
+      {decorID=9045, source={type="vendor", itemID=252396, currency="125", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9047, source={type="vendor", itemID=252398, currency="200", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9139, source={type="vendor", itemID=252652, currency="800", currencytype=1560}, requirements={rep="true"}},
       {decorID=9142, source={type="vendor", itemID=252655, currency="175", currencytype=1560}, requirements={quest={id=50611}}},
     }
   },

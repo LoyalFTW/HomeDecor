@@ -11,10 +11,14 @@ GI.collected  = {}
 GI._built     = false
 
 local Collection = NS.Systems and NS.Systems.Collection
+local PVP_VENDOR_IDS = {
+    [254603] = true,
+    [254606] = true,
+}
 
 local function NormalizeCategory(cat)
     if cat == "Saved Items" then return "Saved Items" end
-    if cat == "PvP" then return "PVP" end
+    if cat == "PVP" then return "PvP" end
     return cat
 end
 
@@ -57,6 +61,24 @@ local function buildVendors()
     end
 end
 
+local function buildPvP()
+    local vendors = NS.Data and NS.Data.Vendors
+    if type(vendors) ~= "table" then return end
+    for _, exp in pairs(vendors) do
+        for _, zone in pairs(exp or {}) do
+            for _, vendor in ipairs(zone or {}) do
+                local src = vendor and vendor.source or {}
+                local id = tonumber(src.id or vendor.npcID or vendor.id)
+                if id and PVP_VENDOR_IDS[id] and type(vendor.items) == "table" then
+                    for _, it in ipairs(vendor.items) do
+                        AddToCategory("PvP", it.decorID)
+                    end
+                end
+            end
+        end
+    end
+end
+
 local function walkCategory(cat)
     local data = NS.Data and NS.Data[cat]
     if type(data) ~= "table" then return end
@@ -89,7 +111,7 @@ function GI:Build()
     walkCategory("Professions")
     walkCategory("Drops")
     walkCategory("Saved Items")
-    walkCategory("PVP")
+    buildPvP()
 
     for cat, set in pairs(self.byCategory) do
         self.counts[cat] = CountSet(set)

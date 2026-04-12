@@ -24,7 +24,6 @@ NS.Data.Quests        = NS.Data.Quests        or {}
 NS.Data.Drops         = NS.Data.Drops         or {}
 NS.Data.Professions   = NS.Data.Professions   or {}
 NS.Data.Prof_Reagents = NS.Data.Prof_Reagents or {}
-NS.Data.PVP           = NS.Data.PVP           or {}
 
 NS.Systems.DecorIndex   = NS.Systems.DecorIndex   or {}
 NS.Systems.VendorIndex = NS.Systems.VendorIndex  or {}
