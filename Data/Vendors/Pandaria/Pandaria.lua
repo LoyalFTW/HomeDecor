@@ -83,6 +83,20 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
 
   {
     source={
+      id=64032,
+      type="vendor",
+      faction="Alliance",
+      zone="Vale of Eternal Blossoms",
+      worldmap="1530:8520:6160"
+    },
+    items={
+      {decorID=3869, source={type="vendor", itemID=247729, currency="240", currencytype="gold"}, requirements={quest={id=31230}}},
+      {decorID=15605, source={type="vendor", itemID=264362, currency="500", currencytype="gold"}, requirements={quest={id=30000}}},
+    }
+  },
+
+  {
+    source={
       id=64605,
       type="vendor",
       faction="Horde",

@@ -43,24 +43,6 @@ local function addDerived(root, seen, expName, zoneName, decorID, sourceType, re
   }
 end
 
-local function mergeLegacyMap(root, seen, legacy, sourceType)
-  if type(legacy) ~= "table" then return end
-
-  for _, expName in ipairs(sortedKeys(legacy)) do
-    local expTbl = legacy[expName]
-    if type(expTbl) == "table" then
-      for _, zoneName in ipairs(sortedKeys(expTbl)) do
-        local ids = expTbl[zoneName]
-        if type(ids) == "table" then
-          for _, decorID in ipairs(ids) do
-            addDerived(root, seen, expName, zoneName, decorID, sourceType, nil, nil)
-          end
-        end
-      end
-    end
-  end
-end
-
 local function mergeOverrides(root, seen, overrides, sourceType)
   if type(overrides) ~= "table" then return end
 
@@ -103,10 +85,6 @@ local function buildDerivedFromVendors()
   local quests = {}
   local seenAchievementDecor = {}
   local seenQuestDecor = {}
-
-  local legacy = NS.Data and NS.Data.LegacySourceMap or {}
-  mergeLegacyMap(achievements, seenAchievementDecor, legacy.Achievements, "achievement")
-  mergeLegacyMap(quests, seenQuestDecor, legacy.Quests, "quest")
 
   for _, expName in ipairs(sortedKeys(vendors)) do
     local expTbl = vendors[expName]
