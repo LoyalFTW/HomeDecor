@@ -18,10 +18,12 @@ local activeWaypointRef = {}
 
 function MapPins:ClearUserWaypoint()
   MapPinsUtil.ClearUserWaypoint(activeWaypointRef)
+  self:UpdateWaypointMonitor()
 end
 
 function MapPins:SetUserWaypoint(mapID, x, y, npcID)
   MapPinsUtil.SetUserWaypoint(mapID, x, y, npcID, activeWaypointRef)
+  self:UpdateWaypointMonitor()
 end
 
 function MapPins:IsActiveWaypoint(mapID, x, y, npcID)
@@ -37,6 +39,85 @@ function MapPins.RefreshTooltip()
   local onEnter = owner.GetScript and owner:GetScript("OnEnter")
   if type(onEnter) ~= "function" then return end
   pcall(onEnter, owner)
+end
+
+function MapPins:UpdateWaypointMonitor()
+  local waypointFrame = self.waypointFrame
+  if not waypointFrame then return end
+
+  local waypoint = activeWaypointRef[1]
+  if not waypoint or not waypoint.mapID then
+    waypointFrame:SetScript("OnUpdate", nil)
+    waypointFrame.elapsed = 0
+    return
+  end
+
+  if waypointFrame:GetScript("OnUpdate") then return end
+
+  waypointFrame.elapsed = 0
+  waypointFrame:SetScript("OnUpdate", function(self, delta)
+    self.elapsed = self.elapsed + delta
+    if self.elapsed < 0.35 then return end
+    self.elapsed = 0
+
+    local activeWaypoint = activeWaypointRef[1]
+    if not activeWaypoint or not activeWaypoint.mapID then
+      self:SetScript("OnUpdate", nil)
+      return
+    end
+
+    if HBD and type(HBD.GetPlayerZonePosition) == "function" then
+      local playerX, playerY, playerMap = HBD:GetPlayerZonePosition(true)
+      if playerMap == activeWaypoint.mapID and playerX and playerY then
+        local distance
+        if type(HBD.GetZoneDistance) == "function" then
+          distance = select(1, HBD:GetZoneDistance(activeWaypoint.mapID, playerX, playerY, activeWaypoint.mapID, activeWaypoint.x, activeWaypoint.y))
+        end
+        if not distance then
+          local deltaX = activeWaypoint.x - playerX
+          local deltaY = activeWaypoint.y - playerY
+          distance = ((deltaX * deltaX + deltaY * deltaY) ^ 0.5) * 10000
+        end
+        local clearYards = MapPinsUtil and MapPinsUtil.WAYPOINT_CLEAR_YARDS or 25
+        if distance and distance <= clearYards then
+          MapPins:ClearUserWaypoint()
+          MapPins.RefreshTooltip()
+        end
+      end
+    end
+  end)
+end
+
+function MapPins:ScheduleEventRefresh(delay)
+  if self.eventTimer and self.eventTimer.Cancel then
+    self.eventTimer:Cancel()
+  end
+  self.eventTimer = nil
+
+  if not self.enabled or not C_Timer or not C_Timer.NewTimer then return end
+
+  local timerDelay = tonumber(delay) or 60
+  if timerDelay < 1 then timerDelay = 1 end
+
+  self.eventTimer = C_Timer.NewTimer(timerDelay, function()
+    if not MapPins.enabled then return end
+
+    local Ev = NS.Systems and NS.Systems.Events
+    if not Ev or not Ev.RecalcStatus then return end
+
+    local now = time and time() or 0
+    local _, newSig = Ev:RecalcStatus(now)
+    if newSig ~= MapPins.lastEventSig then
+      MapPins.lastEventSig = newSig
+      MapPins:RefreshCurrentZone()
+      MapPins:RefreshWorldMap()
+    end
+
+    local cache = Ev.cache and Ev.cache.status
+    local nextCheck = cache and cache.nextCheck
+    local nextDelay = (type(nextCheck) == "number" and nextCheck > now) and (nextCheck - now + 1) or 60
+    MapPins:ScheduleEventRefresh(nextDelay)
+  end)
 end
 
 local modifierFrame = CreateFrame("Frame")
@@ -131,34 +212,9 @@ function MapPins:Enable()
   if not self.waypointFrame then
     local waypointFrame = CreateFrame("Frame")
     waypointFrame.elapsed = 0
-    waypointFrame:SetScript("OnUpdate", function(self, delta)
-      self.elapsed = self.elapsed + delta
-      if self.elapsed < 0.35 then return end
-      self.elapsed = 0
-      local waypoint = activeWaypointRef[1]
-      if not waypoint or not waypoint.mapID then return end
-      if HBD and type(HBD.GetPlayerZonePosition) == "function" then
-        local playerX, playerY, playerMap = HBD:GetPlayerZonePosition(true)
-        if playerMap == waypoint.mapID and playerX and playerY then
-          local distance
-          if type(HBD.GetZoneDistance) == "function" then
-            distance = select(1, HBD:GetZoneDistance(waypoint.mapID, playerX, playerY, waypoint.mapID, waypoint.x, waypoint.y))
-          end
-          if not distance then
-            local deltaX = waypoint.x - playerX
-            local deltaY = waypoint.y - playerY
-            distance = ((deltaX * deltaX + deltaY * deltaY) ^ 0.5) * 10000
-          end
-          local clearYards = MapPinsUtil and MapPinsUtil.WAYPOINT_CLEAR_YARDS or 25
-          if distance and distance <= clearYards then
-            MapPins:ClearUserWaypoint()
-            MapPins.RefreshTooltip()
-          end
-        end
-      end
-    end)
     self.waypointFrame = waypointFrame
   end
+  self:UpdateWaypointMonitor()
 
   if not self.merchantFrame then
     local merchantFrame = CreateFrame("Frame")
@@ -172,32 +228,19 @@ function MapPins:Enable()
     self.merchantFrame = merchantFrame
   end
 
-  if not self.indoorTicker then
-    local lastKnownIndoors = IsIndoors and IsIndoors()
-    self.indoorTicker = C_Timer.NewTicker(1, function()
-      if not MapPins.enabled then return end
-      local indoors = IsIndoors and IsIndoors()
-      if indoors ~= lastKnownIndoors then
-        lastKnownIndoors = indoors
-        MapPins:RefreshCurrentZone()
-      end
-    end)
-  end
-
-  if not self.eventTicker then
+  do
     local Events = NS.Systems and NS.Systems.Events
-    local lastEventSig = Events and Events.RecalcStatus and select(2, Events:RecalcStatus(time()))
-    self.eventTicker = C_Timer.NewTicker(60, function()
-      if not MapPins.enabled then return end
-      local Ev = NS.Systems and NS.Systems.Events
-      if not Ev or not Ev.RecalcStatus then return end
-      local _, newSig = Ev:RecalcStatus(time())
-      if newSig ~= lastEventSig then
-        lastEventSig = newSig
-        MapPins:RefreshCurrentZone()
-        MapPins:RefreshWorldMap()
+    local now = time and time() or 0
+    local nextDelay = 60
+    if Events and Events.RecalcStatus then
+      local _, sig = Events:RecalcStatus(now)
+      self.lastEventSig = sig
+      local cache = Events.cache and Events.cache.status
+      if cache and type(cache.nextCheck) == "number" and cache.nextCheck > now then
+        nextDelay = cache.nextCheck - now + 1
       end
-    end)
+    end
+    self:ScheduleEventRefresh(nextDelay)
   end
 
   self:RefreshCurrentZone()
@@ -219,14 +262,11 @@ function MapPins:Disable()
     self.merchantFrame:UnregisterAllEvents()
     self.merchantFrame = nil
   end
-  if self.indoorTicker then
-    self.indoorTicker:Cancel()
-    self.indoorTicker = nil
+  if self.eventTimer then
+    self.eventTimer:Cancel()
+    self.eventTimer = nil
   end
-  if self.eventTicker then
-    self.eventTicker:Cancel()
-    self.eventTicker = nil
-  end
+  self.lastEventSig = nil
 end
 
 return MapPins

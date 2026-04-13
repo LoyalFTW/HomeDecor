@@ -950,6 +950,7 @@ function L:CreateShell()
   local decorPricingBtn
   local altProfsTopBtn
   local endeavorsTopBtn
+  local ScheduleEventStateRefresh
 
   UpdateTopTabs = function()
     local isPricingSelected = UI.activeCategory == "Decor Pricing"
@@ -1019,6 +1020,35 @@ function L:CreateShell()
       glow:SetAlpha(0)
       db.ui.eventsSeenSig = ""
     end
+  end
+
+  ScheduleEventStateRefresh = function()
+    if f.eventTimer and f.eventTimer.Cancel then
+      f.eventTimer:Cancel()
+    end
+    f.eventTimer = nil
+
+    if not f:IsShown() or not C_Timer or not C_Timer.NewTimer then return end
+
+    local EventsSysLocal = EventsSys or (NS.Systems and NS.Systems.Events)
+    local now = time and time() or 0
+    local delay = 60
+
+    if EventsSysLocal and EventsSysLocal.RecalcStatus then
+      EventsSysLocal:RecalcStatus(now)
+      local cache = EventsSysLocal.cache and EventsSysLocal.cache.status
+      if cache and type(cache.nextCheck) == "number" and cache.nextCheck > now then
+        delay = cache.nextCheck - now + 1
+      end
+    end
+
+    if delay < 1 then delay = 1 end
+
+    f.eventTimer = C_Timer.NewTimer(delay, function()
+      if not f or not f:IsShown() then return end
+      if UpdateTopTabs then UpdateTopTabs() end
+      ScheduleEventStateRefresh()
+    end)
   end
 
   SelectCategory = function(categoryName)
@@ -1364,31 +1394,23 @@ function L:CreateShell()
     NS.UI.HeaderController:Reset()
   end
 
-  local function EnsureTicker()
-    if f.eventTicker or not C_Timer or not C_Timer.NewTicker then return end
-    f.eventTicker = C_Timer.NewTicker(2, function()
-      if f:IsShown() and UpdateTopTabs then UpdateTopTabs() end
-    end)
-  end
-
   local function CancelTicker()
-    if f.eventTicker and f.eventTicker.Cancel then
-      f.eventTicker:Cancel()
+    if f.eventTimer and f.eventTimer.Cancel then
+      f.eventTimer:Cancel()
     end
-    f.eventTicker = nil
+    f.eventTimer = nil
   end
 
   f:HookScript("OnShow", function()
-    EnsureTicker()
     if UpdateTopTabs then UpdateTopTabs() end
     if UpdateSortVisibility then UpdateSortVisibility() end
+    if ScheduleEventStateRefresh then ScheduleEventStateRefresh() end
   end)
 
   f:HookScript("OnHide", function()
     CancelTicker()
   end)
 
-  EnsureTicker()
   if UpdateTopTabs then UpdateTopTabs() end
   if UpdateSortVisibility then UpdateSortVisibility() end
 

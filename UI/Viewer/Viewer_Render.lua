@@ -55,6 +55,7 @@ local GameTooltip = _G.GameTooltip
 local GetTime = _G.GetTime
 local C_HousingCatalog = _G.C_HousingCatalog
 local C_CurrencyInfo = _G.C_CurrencyInfo
+local time = _G.time
 
 local floor = math.floor
 local function Pixel(v) return v and floor(v + 0.5) or 0 end
@@ -1096,30 +1097,40 @@ function Render:Create(parent)
     end
 
     if C_Timer and C_Timer.NewTicker then
-        f._eventTimerTicker = C_Timer.NewTicker(60, function()
-            if not f or not f:IsShown() then return end
+        function f:ScheduleEventTimerRefresh()
+            if self._eventTimer and self._eventTimer.Cancel then
+                self._eventTimer:Cancel()
+            end
+            self._eventTimer = nil
+
+            if not self:IsShown() then return end
+
             local db = U and U.DB and U.DB()
-            if not db then return end
-            local ui = db.ui or {}
+            local ui = db and db.ui or {}
             if ui.activeCategory ~= "Events" then return end
 
-            for i = 1, #f._active do
-                local fr = f._active[i]
-                local e = fr and fr._entry
-                if e and e.kind == "header" and e.payload and e.payload.event and e.timerText then
-                    local Ev = Systems.Events
-                    if Ev and Ev.GetEventTimeText then
-                        local newTimerText = Ev:GetEventTimeText(e.payload.event, _G.time and _G.time() or 0)
-                        if newTimerText and newTimerText ~= e.timerText then
-                            if f.RequestRender then
-                                f:RequestRender(true)
-                            end
-                            break
-                        end
-                    end
+            local Ev = Systems.Events
+            local now = time and time() or 0
+            local delay = 60
+
+            if Ev and Ev.RecalcStatus then
+                Ev:RecalcStatus(now)
+                local cache = Ev.cache and Ev.cache.status
+                if cache and type(cache.nextCheck) == "number" and cache.nextCheck > now then
+                    delay = cache.nextCheck - now + 1
                 end
             end
-        end)
+
+            if delay < 1 then delay = 1 end
+
+            self._eventTimer = C_Timer.NewTimer(delay, function()
+                if not f or not f:IsShown() then return end
+                if f.RequestRender then
+                    f:RequestRender(true)
+                end
+                f:ScheduleEventTimerRefresh()
+            end)
+        end
     end
 
     f._poolHeader, f._poolList, f._poolTile, f._active = {}, {}, {}, {}
@@ -1162,6 +1173,19 @@ function Render:Create(parent)
         end
         wipeTable(self._active)
     end
+
+    f:HookScript("OnShow", function(self)
+        if self.ScheduleEventTimerRefresh then
+            self:ScheduleEventTimerRefresh()
+        end
+    end)
+
+    f:HookScript("OnHide", function(self)
+        if self._eventTimer and self._eventTimer.Cancel then
+            self._eventTimer:Cancel()
+        end
+        self._eventTimer = nil
+    end)
 
     function f:UpdateVisible()
         if self._suspendRender or not self.entries then return end
