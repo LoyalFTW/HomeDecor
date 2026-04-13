@@ -5,9 +5,15 @@ local AW = {}
 NS.UI.GatherTrackAccountWide = AW
 
 local warbandDataLoaded = false
+local lastWarbandScanAt = 0
+local lastBankScanAt = 0
+local cachedWarbandCounts = nil
+local SHARED_SCAN_THROTTLE = 2
 
 function AW:SetWarbandDataLoaded()
   warbandDataLoaded = true
+  lastWarbandScanAt = 0
+  cachedWarbandCounts = nil
 end
 
 local function GetCharacterKey()
@@ -48,6 +54,9 @@ function AW:SetEnabled(enabled)
   if db then
     db.accountWide = enabled and true or false
   end
+  lastWarbandScanAt = 0
+  lastBankScanAt = 0
+  cachedWarbandCounts = nil
 end
 
 function AW:SaveCharacterLumber(counts)
@@ -72,8 +81,14 @@ function AW:SaveCharacterLumber(counts)
   end
 end
 
-function AW:SaveCharacterBankLumber(lumberIDs)
+function AW:SaveCharacterBankLumber(lumberIDs, force)
   if not lumberIDs or not C_Item or not C_Item.GetItemCount then return end
+
+  local now = GetTime and GetTime() or 0
+  if not force and now > 0 and (now - lastBankScanAt) < SHARED_SCAN_THROTTLE then
+    return
+  end
+  lastBankScanAt = now
 
   local db = GetAccountDB()
   if not db then return end
@@ -123,7 +138,12 @@ function AW:GetWarbandCountForItem(itemID)
   return saved
 end
 
-function AW:ScanWarbandBank(lumberIDs)
+function AW:ScanWarbandBank(lumberIDs, force)
+  local now = GetTime and GetTime() or 0
+  if not force and cachedWarbandCounts and now > 0 and (now - lastWarbandScanAt) < SHARED_SCAN_THROTTLE then
+    return cachedWarbandCounts
+  end
+
   local counts = {}
   local db = GetAccountDB()
 
@@ -144,6 +164,8 @@ function AW:ScanWarbandBank(lumberIDs)
       counts[itemID] = amt
     end
   end
+  lastWarbandScanAt = now
+  cachedWarbandCounts = counts
   return counts
 end
 
@@ -157,6 +179,7 @@ function AW:SaveWarbandCounts(counts)
   local db = GetAccountDB()
   if not db then return end
   db.warbandCounts = counts or {}
+  cachedWarbandCounts = counts or {}
 end
 
 function AW:GetAggregatedCounts()

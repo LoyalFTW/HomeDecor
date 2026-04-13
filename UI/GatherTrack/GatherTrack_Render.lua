@@ -186,19 +186,23 @@ function R:Recount(ctx)
 
   local AccountWide = NS.UI.GatherTrackAccountWide
 
-  if AccountWide and AccountWide.ScanWarbandBank then
+  local accountWideEnabled = AccountWide and AccountWide.IsEnabled and AccountWide:IsEnabled()
+
+  if accountWideEnabled and AccountWide and AccountWide.ScanWarbandBank then
     local warbandCounts = AccountWide:ScanWarbandBank(ctx.lumberIDs)
     if AccountWide.SaveWarbandCounts then
       AccountWide:SaveWarbandCounts(warbandCounts)
     end
     ctx.warbandCounts = warbandCounts
+  else
+    ctx.warbandCounts = nil
   end
 
-  if AccountWide and AccountWide.SaveCharacterBankLumber then
+  if accountWideEnabled and AccountWide and AccountWide.SaveCharacterBankLumber then
     AccountWide:SaveCharacterBankLumber(ctx.lumberIDs)
   end
 
-  if AccountWide and AccountWide.IsEnabled and AccountWide:IsEnabled() then
+  if accountWideEnabled then
     if AccountWide.SaveCharacterLumber then
       local db = NS.Addon and NS.Addon.db and NS.Addon.db.global
       local accountDB = db and db.gatherTrackAccount
