@@ -499,6 +499,10 @@ function Addon:OnEnable()
     NS.UI.Tracker:Create()
   end
 
+  if prof and prof.lumberTrack and NS.UI and NS.UI.LumberTrack and NS.UI.LumberTrack.Create then
+    NS.UI.LumberTrack:Create()
+  end
+
   if prof and prof.gatherTrack and NS.UI and NS.UI.GatherTrack and NS.UI.GatherTrack.Create then
     NS.UI.GatherTrack:Create()
   end

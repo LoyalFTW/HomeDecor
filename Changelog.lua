@@ -1,5 +1,5 @@
 HomeDecor_ChangelogMeta = {
-  importance = "Silent", -- Major / Silent
+  importance = "silent", -- Major / Silent
 }
 
 HomeDecor_Changelog = [[

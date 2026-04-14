@@ -468,6 +468,9 @@ function L:CreateShell()
     local GT = (NS.UI and NS.UI.GatherTrack)
     if GT and GT.ToggleAll then
       GT:ToggleAll()
+    else
+      local LT = (NS.UI and NS.UI.LumberTrack) or NS.LumberTrack
+      if LT and LT.Toggle then LT:Toggle() end
     end
     trackersMenu:Hide()
   end)

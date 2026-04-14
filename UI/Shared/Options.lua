@@ -681,12 +681,12 @@ function Options:Ensure()
     value = math.floor(value * 20 + 0.5) / 20
     prof.lumberTrack.alpha = value
     self.valueText:SetText(string.format("%.0f%%", value * 100))
-    local LumberList = NS.UI and NS.UI.GatherTrackList
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
     if LumberList and LumberList.sharedCtx then
       local sharedCtx = LumberList.sharedCtx
       if sharedCtx.frame then sharedCtx.frame._bgAlpha = value end
       sharedCtx.showRowBackgrounds = value >= 0.3
-      local Rows = NS.UI.GatherTrackRows
+      local Rows = NS.UI.LumberTrackRows
       if Rows and Rows.UpdateRowTransparency then
         Rows:UpdateRowTransparency(sharedCtx)
       end
@@ -717,10 +717,10 @@ function Options:Ensure()
     local val = math.max(1, math.min(tonumber(self:GetText()) or 1000, 999999))
     self:SetText(tostring(val))
     prof.lumberTrack.goal = val
-    local LumberList = NS.UI and NS.UI.GatherTrackList
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.goal = val
-      local Render = NS.UI.GatherTrackRender
+      local Render = NS.UI.LumberTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
     self:ClearFocus()
@@ -759,7 +759,7 @@ function Options:Ensure()
     if not prof then return end
     local lt = prof.lumberTrack
 
-    local LumberList = NS.UI and NS.UI.GatherTrackList
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
     local sharedCtx  = LumberList and LumberList.sharedCtx
     if sharedCtx then
       lt.showIcons        = sharedCtx.showIcons ~= false
@@ -771,7 +771,7 @@ function Options:Ensure()
       if sharedCtx.frame and tonumber(sharedCtx.frame._bgAlpha) then
         lt.alpha = sharedCtx.frame._bgAlpha
       end
-      local AccountWide = NS.UI and NS.UI.GatherTrackAccountWide
+      local AccountWide = NS.UI and NS.UI.LumberTrackAccountWide
       if AccountWide then lt.accountWide = AccountWide:IsEnabled() end
     end
 
@@ -791,7 +791,7 @@ function Options:Ensure()
     cbLumberAutoFarm:SetChecked(bool(lt.autoStartFarming))
     cbLumberAutoFarm.value = bool(lt.autoStartFarming)
 
-    local AccountWide = NS.UI and NS.UI.GatherTrackAccountWide
+    local AccountWide = NS.UI and NS.UI.LumberTrackAccountWide
     local awEnabled = AccountWide and AccountWide:IsEnabled() or bool(lt.accountWide)
     cbLumberAccountWide:SetChecked(awEnabled)
     cbLumberAccountWide.value = awEnabled
@@ -834,10 +834,10 @@ function Options:Ensure()
     local val = self:GetChecked() and true or false
     prof.lumberTrack.showIcons = val
     self.value = val
-    local LumberList = NS.UI and NS.UI.GatherTrackList
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.showIcons = val
-      local Render = NS.UI.GatherTrackRender
+      local Render = NS.UI.LumberTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
   end)
@@ -848,10 +848,10 @@ function Options:Ensure()
     local val = self:GetChecked() and true or false
     prof.lumberTrack.hideZero = val
     self.value = val
-    local LumberList = NS.UI and NS.UI.GatherTrackList
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.hideZero = val
-      local Render = NS.UI.GatherTrackRender
+      local Render = NS.UI.LumberTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
   end)
@@ -862,7 +862,7 @@ function Options:Ensure()
     local val = self:GetChecked() and true or false
     prof.lumberTrack.compactMode = val
     self.value = val
-    local LumberList = NS.UI and NS.UI.GatherTrackList
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
     if LumberList and LumberList.sharedCtx then
       local sharedCtx = LumberList.sharedCtx
       sharedCtx.compactMode = val
@@ -873,7 +873,7 @@ function Options:Ensure()
         end
       end
       if LumberList.compactBtn then
-        local Tx = NS.GT and NS.GT.Utils and NS.GT.Utils.GetTheme and NS.GT.Utils.GetTheme() or {}
+        local Tx = NS.LT and NS.LT.Utils and NS.LT.Utils.GetTheme and NS.LT.Utils.GetTheme() or {}
         if val then
           LumberList.compactBtn:SetBackdropBorderColor(unpack(Tx.accentBright or Tx.accent or {1,0.82,0.2,1}))
           LumberList.compactBtn.icon:SetVertexColor(unpack(Tx.accent or {1,0.82,0.2,1}))
@@ -882,7 +882,7 @@ function Options:Ensure()
           LumberList.compactBtn.icon:SetVertexColor(0.6, 0.6, 0.6, 1)
         end
       end
-      local Render = NS.UI.GatherTrackRender
+      local Render = NS.UI.LumberTrackRender
       if Render and Render.Refresh then Render:Refresh(sharedCtx) end
     end
   end)
@@ -900,10 +900,10 @@ function Options:Ensure()
       lumberGoalInput:Enable()
       lumberGoalLabel:SetTextColor(1, 1, 1, 1)
     end
-    local LumberList = NS.UI and NS.UI.GatherTrackList
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.autoGoal = val
-      local Render = NS.UI.GatherTrackRender
+      local Render = NS.UI.LumberTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
   end)
@@ -914,7 +914,7 @@ function Options:Ensure()
     local val = self:GetChecked() and true or false
     prof.lumberTrack.autoStartFarming = val
     self.value = val
-    local LumberList = NS.UI and NS.UI.GatherTrackList
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.autoStartFarming = val
     end
@@ -926,7 +926,7 @@ function Options:Ensure()
     local val = self:GetChecked() and true or false
     prof.lumberTrack.hideInInstance = val
     self.value = val
-    local db = NS.GT and NS.GT.Utils and NS.GT.Utils.GetDB and NS.GT.Utils.GetDB()
+    local db = NS.LT and NS.LT.Utils and NS.LT.Utils.GetDB and NS.LT.Utils.GetDB()
     if db then db.hideInInstance = val end
   end)
 
@@ -936,11 +936,11 @@ function Options:Ensure()
     local val = self:GetChecked() and true or false
     prof.lumberTrack.accountWide = val
     self.value = val
-    local AccountWide = NS.UI and NS.UI.GatherTrackAccountWide
+    local AccountWide = NS.UI and NS.UI.LumberTrackAccountWide
     if AccountWide then AccountWide:SetEnabled(val) end
-    local LumberList = NS.UI and NS.UI.GatherTrackList
+    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
     if LumberList and LumberList.sharedCtx then
-      local Render = NS.UI.GatherTrackRender
+      local Render = NS.UI.LumberTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
   end)
