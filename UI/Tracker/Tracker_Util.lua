@@ -229,6 +229,7 @@ local function GetRequirementsTable(it)
   local decorID = it.decorID or (it.source and it.source.decorID)
   if not decorID then return end
 
+  if DecorIndex.Ensure then DecorIndex:Ensure() end
   local entry = DecorIndex[decorID]
   local item = entry and entry.item
   local ireq = item and item.requirements

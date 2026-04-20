@@ -7,6 +7,14 @@ NS.Systems.DecorIndex = DecorIndex
 local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
 local tonumber, type, pairs, ipairs = tonumber, type, pairs, ipairs
 
+local function clearIndex(self)
+    for k, v in pairs(self) do
+        if type(v) ~= "function" then
+            self[k] = nil
+        end
+    end
+end
+
 local function push(map, k, v)
     if not k then return end
     local t = map[k]
@@ -93,7 +101,7 @@ local function ingestCategory(self, catTbl, sourceType)
 end
 
 function DecorIndex:Build()
-    wipe(self)
+    clearIndex(self)
 
     self.byAchievement = {}
     self.byQuest = {}
@@ -144,6 +152,21 @@ function DecorIndex:Build()
     ingestCategory(self, D.Achievements, "achievement")
     ingestCategory(self, D.Drops, "drop")
     ingestCategory(self, D.Professions, "profession")
+
+    self._built = true
+end
+
+function DecorIndex:Invalidate(rebuildNow)
+    self._built = false
+    if rebuildNow then
+        self:Build()
+    end
+end
+
+function DecorIndex:Ensure()
+    if not self._built then
+        self:Build()
+    end
 end
 
 return DecorIndex

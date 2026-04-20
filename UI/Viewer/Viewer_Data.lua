@@ -69,10 +69,39 @@ Data.EXPANSION_RANK = EXPANSION_RANK
 local DecorIconCache, DecorNameCache = {}, {}
 local AchTitleCache, QuestTitleCache = {}, {}
 local VendorPickCache = {}
+local prefetchQueued = false
+local profItemPrefetchQueued = false
 local PVP_VENDOR_IDS = {
   [254603] = true,
   [254606] = true,
 }
+
+local function EnsureDecorIndex()
+  if DecorIndex and DecorIndex.Ensure then
+    DecorIndex:Ensure()
+  end
+  return DecorIndex
+end
+
+local function RequestAsyncRefresh()
+  if not NS.Debounce then
+    if View and View.instance and View.instance.RequestRender then
+      View.instance:RequestRender(true)
+    elseif NS.UI and NS.UI.Layout and NS.UI.Layout.Render then
+      NS.UI.Layout:Render()
+    end
+    return
+  end
+
+  View._asyncRefresh = View._asyncRefresh or NS.Debounce(0.1, function()
+    if View and View.instance and View.instance.RequestRender then
+      View.instance:RequestRender(true)
+    elseif NS.UI and NS.UI.Layout and NS.UI.Layout.Render then
+      NS.UI.Layout:Render()
+    end
+  end)
+  View._asyncRefresh()
+end
 
 local function CleanVendorTitle(s)
   if type(s) ~= "string" then return nil end
@@ -404,11 +433,7 @@ function Data.GetAchievementTitle(id)
       local name = select(2, GetAchievementInfo(id))
       if name and name ~= "" then
         AchTitleCache[id] = name
-        if View and View.instance and View.instance.Render then
-          View.instance:Render()
-        elseif NS.UI and NS.UI.Layout and NS.UI.Layout.Render then
-          NS.UI.Layout:Render()
-        end
+        RequestAsyncRefresh()
       else
         AchTitleCache[id] = false
       end
@@ -440,11 +465,7 @@ function Data.GetQuestTitle(id)
         local name = C_QuestLog.GetTitleForQuestID(id)
         if name and name ~= "" then
           QuestTitleCache[id] = name
-          if View and View.instance and View.instance.Render then
-            View.instance:Render()
-          elseif NS.UI and NS.UI.Layout and NS.UI.Layout.Render then
-            NS.UI.Layout:Render()
-          end
+          RequestAsyncRefresh()
         else
           QuestTitleCache[id] = false
         end
@@ -503,6 +524,7 @@ function Data.PickDecorIndexVendor(entry, ui, db)
 end
 
 function Data.HydrateFromDecorIndex(it, ui, db)
+  EnsureDecorIndex()
   if not DecorIndex or not it or not it.decorID then return it end
 
   local entry = DecorIndex[it.decorID]
@@ -583,6 +605,7 @@ function Data.AttachVendorCtx(it, vendor)
 end
 
 function Data.ResolveAchievementDecor(it)
+  EnsureDecorIndex()
   if not it or not it.decorID or not DecorIndex then return it end
 
   local st = it.source and it.source.type
@@ -731,22 +754,24 @@ function Data.GetActiveData(ui)
 end
 
 function Data.PrefetchQuestAndAchievementNames()
-  if not DecorIndex then return end
+  EnsureDecorIndex()
+  if not DecorIndex or prefetchQueued then return end
+  prefetchQueued = true
 
   local questIDs = {}
   local achIDs = {}
+  local questList = {}
+  local achList = {}
 
   for decorID, entry in pairs(DecorIndex) do
-    if entry.item and entry.item.requirements then
+    if type(decorID) == "number" and type(entry) == "table" and entry.item and entry.item.requirements then
       local req = entry.item.requirements
 
       if req.quest and req.quest.id then
         local id = tonumber(req.quest.id)
         if id and not questIDs[id] then
           questIDs[id] = true
-          if C_QuestLog and C_QuestLog.RequestLoadQuestByID then
-            C_QuestLog.RequestLoadQuestByID(id)
-          end
+          questList[#questList + 1] = id
         end
       end
 
@@ -754,20 +779,106 @@ function Data.PrefetchQuestAndAchievementNames()
         local id = tonumber(req.achievement.id)
         if id and not achIDs[id] then
           achIDs[id] = true
-          if GetAchievementInfo then
-            GetAchievementInfo(id)
-          end
+          achList[#achList + 1] = id
         end
       end
     end
   end
 
-  C_Timer.After(0.5, function()
-    for id in pairs(questIDs) do
+  local qIndex, aIndex = 1, 1
+  local CHUNK = 20
+
+  local function prefetchAchievements()
+    local limit = math.min(aIndex + CHUNK - 1, #achList)
+    for i = aIndex, limit do
+      local id = achList[i]
+      if GetAchievementInfo then
+        GetAchievementInfo(id)
+      end
+      Data.GetAchievementTitle(id)
+    end
+    aIndex = limit + 1
+    if aIndex <= #achList then
+      C_Timer.After(0.05, prefetchAchievements)
+    end
+  end
+
+  local function prefetchQuests()
+    local limit = math.min(qIndex + CHUNK - 1, #questList)
+    for i = qIndex, limit do
+      local id = questList[i]
+      if C_QuestLog and C_QuestLog.RequestLoadQuestByID then
+        C_QuestLog.RequestLoadQuestByID(id)
+      end
       Data.GetQuestTitle(id)
     end
-    for id in pairs(achIDs) do
-      Data.GetAchievementTitle(id)
+    qIndex = limit + 1
+    if qIndex <= #questList then
+      C_Timer.After(0.05, prefetchQuests)
+      return
+    end
+    if #achList > 0 then
+      C_Timer.After(0.1, prefetchAchievements)
+    end
+  end
+
+  if #questList > 0 then
+    C_Timer.After(0.1, prefetchQuests)
+  elseif #achList > 0 then
+    C_Timer.After(0.1, prefetchAchievements)
+  end
+end
+
+function Data.PrefetchProfessionItemData()
+  if profItemPrefetchQueued then return end
+  profItemPrefetchQueued = true
+
+  C_Timer.After(0.1, function()
+    if not (C_Item and C_Item.RequestLoadItemDataByID) then return end
+    local profs = NS.Data and NS.Data.Professions
+    if type(profs) ~= "table" then return end
+
+    local seen = {}
+    local batch = {}
+    for _, expansions in pairs(profs) do
+      if type(expansions) == "table" then
+        for _, list in pairs(expansions) do
+          if type(list) == "table" then
+            for _, entry in ipairs(list) do
+              local iid = entry.source and entry.source.itemID
+              if iid and not seen[iid] then
+                seen[iid] = true
+                batch[#batch + 1] = iid
+              end
+
+              if entry.reagents then
+                for _, r in ipairs(entry.reagents) do
+                  if r.itemID and not seen[r.itemID] then
+                    seen[r.itemID] = true
+                    batch[#batch + 1] = r.itemID
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+
+    local idx = 1
+    local CHUNK = 25
+    local function sendChunk()
+      local limit = math.min(idx + CHUNK - 1, #batch)
+      for i = idx, limit do
+        C_Item.RequestLoadItemDataByID(batch[i])
+      end
+      idx = limit + 1
+      if idx <= #batch then
+        C_Timer.After(0.08, sendChunk)
+      end
+    end
+    if #batch > 0 then
+      sendChunk()
     end
   end)
 end

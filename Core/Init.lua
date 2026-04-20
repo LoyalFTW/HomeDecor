@@ -409,76 +409,12 @@ function Addon:OnEnable()
     pcall(function() NS.Systems.ProfessionScanner:WireAliases() end)
   end
 
-  C_Timer.After(0, function()
-    if NS.Systems.DecorIndex then
-      NS.Systems.DecorIndex:Build()
-    end
-  end)
-
   if NS.Systems.AuctionScan and NS.Systems.AuctionScan.InitializeScanTracking then
     pcall(function() NS.Systems.AuctionScan.InitializeScanTracking() end)
   end
 
   if NS.DecorAH and NS.DecorAH.Initialize then
     pcall(function() NS.DecorAH:Initialize() end)
-  end
-
-  if not NS.prefetchDone then
-    NS.prefetchDone = true
-    C_Timer.After(2, function()
-      if NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
-         and NS.UI.Viewer.Data.PrefetchQuestAndAchievementNames then
-        pcall(function()
-          NS.UI.Viewer.Data.PrefetchQuestAndAchievementNames()
-        end)
-      end
-    end)
-
-    C_Timer.After(3, function()
-      if not (C_Item and C_Item.RequestLoadItemDataByID) then return end
-      local profs = NS.Data and NS.Data.Professions
-      if type(profs) ~= "table" then return end
-      local seen = {}
-      local batch = {}
-      for _, expansions in pairs(profs) do
-        if type(expansions) == "table" then
-          for _, list in pairs(expansions) do
-            if type(list) == "table" then
-              for _, entry in ipairs(list) do
-                local iid = entry.source and entry.source.itemID
-                if iid and not seen[iid] then
-                  seen[iid] = true
-                  batch[#batch + 1] = iid
-                end
-
-                if entry.reagents then
-                  for _, r in ipairs(entry.reagents) do
-                    if r.itemID and not seen[r.itemID] then
-                      seen[r.itemID] = true
-                      batch[#batch + 1] = r.itemID
-                    end
-                  end
-                end
-              end
-            end
-          end
-        end
-      end
-
-      local CHUNK = 30
-      local idx = 1
-      local function sendChunk()
-        local limit = math.min(idx + CHUNK - 1, #batch)
-        for i = idx, limit do
-          C_Item.RequestLoadItemDataByID(batch[i])
-        end
-        idx = limit + 1
-        if idx <= #batch then
-          C_Timer.After(0.1, sendChunk)
-        end
-      end
-      if #batch > 0 then sendChunk() end
-    end)
   end
 
   if NS.Systems.MapTracker and NS.Systems.MapTracker.Enable then
@@ -497,10 +433,6 @@ function Addon:OnEnable()
 
   if prof and prof.tracker and prof.tracker.open and NS.UI and NS.UI.Tracker and NS.UI.Tracker.Create then
     NS.UI.Tracker:Create()
-  end
-
-  if prof and prof.lumberTrack and NS.UI and NS.UI.LumberTrack and NS.UI.LumberTrack.Create then
-    NS.UI.LumberTrack:Create()
   end
 
   if prof and prof.gatherTrack and NS.UI and NS.UI.GatherTrack and NS.UI.GatherTrack.Create then

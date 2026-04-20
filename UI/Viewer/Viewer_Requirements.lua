@@ -14,6 +14,21 @@ local RepSys = NS.Systems and NS.Systems.Reputation
 
 local wowheadPopup
 
+local function EnsureDecorIndex()
+  if DecorIndex and DecorIndex.Ensure then
+    DecorIndex:Ensure()
+  end
+  return DecorIndex
+end
+
+local function RequestAsyncRefresh()
+  if View and View.instance and View.instance.RequestRender then
+    View.instance:RequestRender(true)
+  elseif NS.UI and NS.UI.Layout and NS.UI.Layout.Render then
+    NS.UI.Layout:Render()
+  end
+end
+
 local function BuildWowheadItemURL(itemID)
   if not itemID then return nil end
   return "https://www.wowhead.com/item=" .. tostring(itemID)
@@ -79,11 +94,7 @@ local function GetQuestTitleSafe(id)
         local title = C_QuestLog.GetTitleForQuestID(id)
         if title and title ~= "" then
           questNameCache[id] = title
-          if View and View.instance and View.instance.Render then
-            View.instance:Render()
-          elseif NS.UI and NS.UI.Layout and NS.UI.Layout.Render then
-            NS.UI.Layout:Render()
-          end
+          RequestAsyncRefresh()
         else
           questNameCache[id] = false
         end
@@ -125,6 +136,7 @@ local function GetRequirementLink(it)
 
   local r = it.requirements
   if not r and DecorIndex and it.decorID then
+    EnsureDecorIndex()
     local entry = DecorIndex[it.decorID]
     local item  = entry and entry.item
     r = item and item.requirements or nil
@@ -264,6 +276,7 @@ local function FindItemIDForReq(it)
   if s and s.itemID then return s.itemID end
   if it.itemID then return it.itemID end
   if DecorIndex and it.decorID then
+    EnsureDecorIndex()
     local entry = DecorIndex[it.decorID]
     if entry and entry.item and entry.item.source and entry.item.source.itemID then
       return entry.item.source.itemID
@@ -279,11 +292,7 @@ local function RequestRepRescanAfterLoad(itemID)
   if not item or item:IsItemEmpty() then return end
   item:ContinueOnItemLoad(function()
     repScanCache[itemID] = nil
-    if View and View.instance and View.instance.Render then
-      View.instance:Render()
-    elseif NS.UI and NS.UI.Layout and NS.UI.Layout.Render then
-      NS.UI.Layout:Render()
-    end
+    RequestAsyncRefresh()
   end)
 end
 
@@ -297,6 +306,7 @@ local function GetRepRequirement(it)
 
   local r = it.requirements
   if not r and DecorIndex and it.decorID then
+    EnsureDecorIndex()
     local entry = DecorIndex[it.decorID]
     local item  = entry and entry.item
     r = item and item.requirements or nil

@@ -1041,6 +1041,12 @@ function Render:Create(parent)
 
     f:SetScript("OnShow", function(self)
         GridCache = {}
+        if D and D.PrefetchQuestAndAchievementNames then
+            D.PrefetchQuestAndAchievementNames()
+        end
+        if D and D.PrefetchProfessionItemData then
+            D.PrefetchProfessionItemData()
+        end
         if self.Render then self:Render(true) end
     end)
 
@@ -1660,12 +1666,25 @@ end
 
     function f:RequestRender(full)
         if self._suspendRender then return end
-
         if full ~= false then
-            self:Render(true)
-        else
-            self:Render(false)
+            self._pendingFullRender = true
         end
+
+        if self._renderQueued then return end
+        self._renderQueued = true
+
+        C_Timer.After(0.05, function()
+            if not f then return end
+            f._renderQueued = nil
+            local wantsFull = f._pendingFullRender
+            f._pendingFullRender = nil
+            if f._suspendRender then return end
+            if wantsFull then
+                f:Render(true)
+            else
+                f:Render(false)
+            end
+        end)
     end
 
     function f:RefreshDecor(decorID)

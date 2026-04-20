@@ -213,8 +213,8 @@ function QA:WarmupCurrentCharacter()
   if scanJob and scanJob.running then return end
 
   local DI = NS.Systems and NS.Systems.DecorIndex
-  if DI and type(DI.Build) == "function" then
-    pcall(DI.Build, DI)
+  if DI and type(DI.Ensure) == "function" then
+    pcall(DI.Ensure, DI)
   end
 
   local list = BuildScanList()

@@ -572,6 +572,7 @@ function TT.AppendNpcMouseover(tooltip, npcID)
   local DI = NS.Systems and NS.Systems.DecorIndex
   npcID = tonumber(npcID)
   if not DI or not npcID then return end
+  if DI.Ensure then DI:Ensure() end
   local byNPC = DI.byNPC
   if type(byNPC) ~= "table" then return end
   local list = byNPC[npcID]

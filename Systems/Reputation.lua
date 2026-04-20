@@ -118,6 +118,7 @@ local function findItemID(it)
 
   local DI = NS.Systems and NS.Systems.DecorIndex
   if DI and it.decorID then
+    if DI.Ensure then DI:Ensure() end
     local e = DI[it.decorID]
     local item = e and e.item
     local src = item and item.source
@@ -218,6 +219,7 @@ function R.GetRequirement(it)
   if not req then
     local DI = NS.Systems and NS.Systems.DecorIndex
     if DI and it.decorID then
+      if DI.Ensure then DI:Ensure() end
       local e = DI[it.decorID]
       local item = e and e.item
       req = item and item.requirements or nil
