@@ -22,6 +22,7 @@ local function EnsureDecorIndex()
 end
 
 local function RequestAsyncRefresh()
+  View._renderDataEpoch = (View._renderDataEpoch or 0) + 1
   if View and View.instance and View.instance.RequestRender then
     View.instance:RequestRender(true)
   elseif NS.UI and NS.UI.Layout and NS.UI.Layout.Render then

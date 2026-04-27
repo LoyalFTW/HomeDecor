@@ -84,6 +84,7 @@ local function EnsureDecorIndex()
 end
 
 local function RequestAsyncRefresh()
+  View._renderDataEpoch = (View._renderDataEpoch or 0) + 1
   if not NS.Debounce then
     if View and View.instance and View.instance.RequestRender then
       View.instance:RequestRender(true)

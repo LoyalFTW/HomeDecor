@@ -612,35 +612,41 @@ function TT.AppendNpcMouseover(tooltip, npcID)
   end
 end
 
-local function handleNpcTooltip(tooltip)
+local function getNpcIDFromGUID(guid)
+  if type(guid) ~= "string" or not canAccess(guid) then return nil end
+  local unitType, _, _, _, _, npcID = strsplit("-", guid)
+  if unitType ~= "Creature" and unitType ~= "Vehicle" then return nil end
+  return tonumber(npcID)
+end
+
+local function getTooltipNPCID(tooltip, tooltipData)
+  if type(tooltipData) == "table" then
+    local npcID = getNpcIDFromGUID(tooltipData.guid)
+    if npcID then return npcID end
+  end
+
+  if tooltip and tooltip.GetTooltipData then
+    local ok, data = pcall(tooltip.GetTooltipData, tooltip)
+    if ok and type(data) == "table" then
+      local npcID = getNpcIDFromGUID(data.guid)
+      if npcID then return npcID end
+    end
+  end
+
+  return nil
+end
+
+local function handleNpcTooltip(tooltip, tooltipData)
   if not tooltip or tooltip:IsForbidden() then return end
-  local _, unit = tooltip:GetUnit()
-  if not canAccess(unit) then return end
-  local ok, exists = pcall(UnitExists, unit)
-  if not ok or not exists then return end
-  local ok2, guid = pcall(UnitGUID, unit)
-  if not ok2 or not canAccess(guid) then return end
-  local ok3, npcID = pcall(function() return tonumber((select(6, strsplit("-", guid)))) end)
-  if not ok3 or not npcID then return end
+  local npcID = getTooltipNPCID(tooltip, tooltipData)
+  if not npcID then return end
   TT.AppendNpcMouseover(tooltip, npcID)
 end
 
 if TooltipDataProcessor and Enum and Enum.TooltipDataType and TooltipDataProcessor.AddTooltipPostCall then
   TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, handleNpcTooltip)
 elseif GameTooltip then
-  GameTooltip:HookScript("OnShow", handleNpcTooltip)
+  GameTooltip:HookScript("OnTooltipSetUnit", handleNpcTooltip)
 end
-
-local mod = CreateFrame("Frame")
-mod:RegisterEvent("MODIFIER_STATE_CHANGED")
-mod:SetScript("OnEvent", function()
-  if not GameTooltip or not GameTooltip.IsShown or not GameTooltip:IsShown() then return end
-  local _, unit = GameTooltip.GetUnit and GameTooltip:GetUnit()
-  if unit then
-    pcall(GameTooltip.SetUnit, GameTooltip, unit)
-  elseif UnitExists and UnitExists("mouseover") then
-    pcall(GameTooltip.SetUnit, GameTooltip, "mouseover")
-  end
-end)
 
 return TT

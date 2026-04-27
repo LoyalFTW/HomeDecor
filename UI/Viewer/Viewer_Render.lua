@@ -330,6 +330,67 @@ local function CountItems(items, vendorCtx)
     return collected, total
 end
 
+local COUNT_NO_VENDOR = {}
+
+local function BuildCountSignature(ui, db)
+    local filters = (db and db.filters) or {}
+    local tokens = {
+        tostring(ui and ui.activeCategory or ""),
+        tostring(ui and ui.search or ""),
+        tostring(ui and ui._searchNorm or ""),
+        tostring(View and View._renderDataEpoch or 0),
+        tostring(filters.hideCollected),
+        tostring(filters.onlyCollected),
+        tostring(filters.expansion),
+        tostring(filters.zone),
+        tostring(filters.faction),
+        tostring(filters.category),
+        tostring(filters.subcategory),
+        tostring(filters.availableRepOnly),
+        tostring(filters.questsCompleted),
+        tostring(filters.achievementCompleted),
+        tostring(filters.hidePvpItems),
+    }
+    return table.concat(tokens, "\031")
+end
+
+local function EnsureCountCache(f, ui, db)
+    local signature = BuildCountSignature(ui, db)
+    if f._countCacheSignature ~= signature then
+        f._countCacheSignature = signature
+        f._countCache = setmetatable({}, { __mode = "k" })
+    elseif not f._countCache then
+        f._countCache = setmetatable({}, { __mode = "k" })
+    end
+    return f._countCache
+end
+
+local function GetCachedCounts(f, ui, db, items, vendorCtx)
+    if type(items) ~= "table" then
+        return 0, 0
+    end
+
+    local cache = EnsureCountCache(f, ui, db)
+    local byItems = cache[items]
+    if not byItems then
+        byItems = {}
+        cache[items] = byItems
+    end
+
+    local vendorKey = vendorCtx or COUNT_NO_VENDOR
+    local cached = byItems[vendorKey]
+    if cached then
+        return cached.collected or 0, cached.total or 0
+    end
+
+    local collected, total = CountItems(items, vendorCtx)
+    byItems[vendorKey] = {
+        collected = collected,
+        total = total,
+    }
+    return collected, total
+end
+
 local function FindFirstVisible(entries, y)
     if not entries then return 1 end
     local lo, hi = 1, #entries
@@ -904,7 +965,7 @@ local function RebuildEntries(f, content)
         local zoneList = D and D.GetZoneOrder and D.GetZoneOrder(zones) or {}
         for _, zone in ipairs(zoneList) do
             local items = zones[zone]
-            local c, t = CountItems(items)
+            local c, t = GetCachedCounts(f, ui, db, items, nil)
             eC, eT = eC + c, eT + t
         end
 
@@ -916,7 +977,7 @@ local function RebuildEntries(f, content)
         if expOpen then
             for _, zone in ipairs(zoneList) do
                 local items = zones[zone]
-                local zC, zT = CountItems(items)
+                local zC, zT = GetCachedCounts(f, ui, db, items, nil)
                 local zKey = D and D.KeyZone and D.KeyZone(cat, exp, zone) or (cat .. ":" .. tostring(exp) .. ":" .. tostring(zone))
                 local zoneOpen = HeaderCtrl and HeaderCtrl.IsOpen and HeaderCtrl:IsOpen("zone", zKey) or false
 
@@ -927,7 +988,7 @@ local function RebuildEntries(f, content)
 
                         for _, it in ipairs(items) do
                             if it.source and it.source.type == "vendor" and it.items then
-                                local vC, vT = CountItems(it.items, it)
+                                local vC, vT = GetCachedCounts(f, ui, db, it.items, it)
                                 local vendorKeyId = (it.source and it.source.id) or it.npcID or it.id or 0
                                 local vKey = D and D.KeyVendor and D.KeyVendor(cat, exp, zone, vendorKeyId) or tostring(vendorKeyId)
                                 local vTitle = (D and D.ResolveVendorTitle and D.ResolveVendorTitle(it)) or it.title
@@ -988,7 +1049,7 @@ local function RebuildEntries(f, content)
 
                         for _, it in ipairs(items) do
                             if it.source and it.source.type == "vendor" and it.items then
-                                local vC, vT = CountItems(it.items, it)
+                                local vC, vT = GetCachedCounts(f, ui, db, it.items, it)
                                 local vendorKeyId = (it.source and it.source.id) or it.npcID or it.id or 0
                                 local vKey = D and D.KeyVendor and D.KeyVendor(cat, exp, zone, vendorKeyId) or tostring(vendorKeyId)
                                 local vTitle = (D and D.ResolveVendorTitle and D.ResolveVendorTitle(it)) or it.title
@@ -1089,6 +1150,9 @@ function Render:Create(parent)
     if Collection and Collection.RegisterListener then
         Collection:RegisterListener(function(decorID)
             if not f or not f:IsShown() then return end
+
+            f._countCache = nil
+            f._countCacheSignature = nil
 
             if decorID and decorID ~= -1 and f.RefreshDecor then
                 f:RefreshDecor(decorID)

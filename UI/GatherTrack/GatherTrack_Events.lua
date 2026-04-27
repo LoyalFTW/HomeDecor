@@ -124,6 +124,8 @@ function Events:Attach(GatherTrack, ctx)
   frame:SetScript("OnEvent", function(_, event, a1)
     if event == "PLAYER_ENTERING_WORLD" then
       ResetFarmingSession(ctx)
+      ctx._gatherTrackLoginBaselinePending = true
+      SetSuppressed(8)
       local db = Utils.GetDB()
       if db and db.hideInInstance then
         local inInstance = IsInInstance and IsInInstance()
@@ -187,6 +189,35 @@ function Events:Attach(GatherTrack, ctx)
 
       if Render and Render.Recount then
         Render:Recount(ctx)
+      end
+
+      if ctx._gatherTrackLoginBaselinePending then
+        ctx._gatherTrackLoginBaselinePending = nil
+        if Rate and Rate.InitializeFromCounts and ctx.counts then
+          Rate:InitializeFromCounts(ctx.counts)
+        end
+        if Rate and Rate.mostRecentItemID then
+          Rate.mostRecentItemID = nil
+          Rate.mostRecentTime = 0
+        end
+        if GatherFarming and GatherFarming.sessions then
+          for _, session in pairs(GatherFarming.sessions) do
+            if type(session) == "table" then
+              session.recentItemID = nil
+              session.recentAmount = 0
+            end
+          end
+        end
+        if Render then
+          if Render.BuildList then
+            Render:BuildList(ctx)
+          end
+          if Render.LayoutRows then
+            Render:LayoutRows(ctx)
+          end
+        end
+        QueueRefresh(0.05)
+        return
       end
 
       if Rate and ctx.counts then
