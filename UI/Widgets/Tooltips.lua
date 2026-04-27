@@ -614,7 +614,7 @@ end
 
 local function handleNpcTooltip(tooltip)
   if not tooltip or tooltip:IsForbidden() then return end
-  local _, unit = tooltip:GetUnit()
+  local _, unit = tooltip:GetUnit(); if not unit or (issecretvalue and issecretvalue(unit)) then return end
   if not canAccess(unit) then return end
   local ok, exists = pcall(UnitExists, unit)
   if not ok or not exists then return end
