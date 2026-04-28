@@ -12,6 +12,7 @@ local Timer        = _G.C_Timer
 local CreateFrame = _G.CreateFrame
 local UIParent    = _G.UIParent
 local pcall       = _G.pcall
+local strtrim     = _G.strtrim
 local tonumber    = _G.tonumber
 local type        = _G.type
 local pairs       = _G.pairs
@@ -42,9 +43,9 @@ local function getPersistentCache()
   local db = NS and NS.DB
   if type(db) == "table" then
     local globalDB = db.global
-    if type(g) == "table" then
-      g.npcNames = g.npcNames or {}
-      persistentCache = g.npcNames
+    if type(globalDB) == "table" then
+      globalDB.npcNames = globalDB.npcNames or {}
+      persistentCache = globalDB.npcNames
       return persistentCache
     end
   end
@@ -78,7 +79,25 @@ local tooltipFrame
 
 local function trimText(text)
   if type(text) ~= "string" then return nil end
-  text = text:gsub("^%s+", ""):gsub("%s+$", "")
+
+  if strtrim then
+    local ok, trimmed = pcall(strtrim, text)
+    if ok then
+      text = trimmed
+    else
+      return text
+    end
+  else
+    local ok, trimmed = pcall(function(value)
+      return value:gsub("^%s+", ""):gsub("%s+$", "")
+    end, text)
+    if ok then
+      text = trimmed
+    else
+      return text
+    end
+  end
+
   if text == "" then return nil end
   return text
 end
