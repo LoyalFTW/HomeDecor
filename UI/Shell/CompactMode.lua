@@ -1209,14 +1209,14 @@ function CM:_Build()
 
     local previewScene = CreateFrame("ModelScene", nil, previewModelHost, "PanningModelSceneMixinTemplate")
     previewScene:SetPoint("TOPLEFT", 10, -34)
-    previewScene:SetPoint("BOTTOMRIGHT", -10, 26)
+    previewScene:SetPoint("BOTTOMRIGHT", -10, 10)
     previewScene:Hide()
 
     local previewControls = nil
     do
         local ok, ctrl = pcall(CreateFrame, "Frame", nil, previewModelHost, "ModelSceneControlFrameTemplate")
         if ok and ctrl then
-            ctrl:SetPoint("BOTTOM", previewModelHost, "BOTTOM", 0, 6)
+            ctrl:SetPoint("BOTTOM", previewModelHost, "BOTTOM", 0, 12)
             pcall(ctrl.SetModelScene, ctrl, previewScene)
             ctrl:Hide()
             previewControls = ctrl
@@ -1227,11 +1227,13 @@ function CM:_Build()
     corbelL:SetSize(66, 50)
     corbelL:SetPoint("BOTTOMLEFT", -2, -2)
     corbelL:SetAtlas("catalog-corbel-bottom-left")
+    corbelL:Hide()
 
     local corbelR = previewModelHost:CreateTexture(nil, "OVERLAY")
     corbelR:SetSize(66, 50)
     corbelR:SetPoint("BOTTOMRIGHT", 2, -2)
     corbelR:SetAtlas("catalog-corbel-bottom-right")
+    corbelR:Hide()
 
     local function LayoutPreviewFrame()
         if not previewFrame then return end

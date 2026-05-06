@@ -39,7 +39,7 @@ function UI:CreateMainFrame()
     end
   end
 
-  frame.view = View:Create(frame.Right)
+  frame.view = View:Create(frame.RightContent or frame.Right)
 
   frame:SetScript("OnShow", function()
     if frame.view and frame.view.Render then frame.view:Render() end

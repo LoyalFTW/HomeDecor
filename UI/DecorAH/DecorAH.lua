@@ -161,15 +161,24 @@ local function NewFS(parent, template)
 end
 
 local pendingItemNames = {}
+local itemNameCache = {}
 local invalidateDataRowsFn
 local refreshTableFn
 
 local function ItemName(itemID)
   if not itemID then return "?" end
+  local cached = itemNameCache[itemID]
+  if cached and cached ~= "" then return cached end
   local name = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(itemID)
-  if name and name ~= "" then return name end
+  if name and name ~= "" then
+    itemNameCache[itemID] = name
+    return name
+  end
   name = GetItemInfo(itemID)
-  if name and name ~= "" then return name end
+  if name and name ~= "" then
+    itemNameCache[itemID] = name
+    return name
+  end
   if C_Item and C_Item.RequestLoadItemDataByID then
     C_Item.RequestLoadItemDataByID(itemID)
     pendingItemNames[itemID] = true
@@ -182,9 +191,16 @@ itemLoadFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
 itemLoadFrame:SetScript("OnEvent", function(_, _, itemID, success)
   if success and pendingItemNames[itemID] then
     pendingItemNames[itemID] = nil
-    if frame and frame:IsShown() then
-      if invalidateDataRowsFn then invalidateDataRowsFn() end
-      if refreshTableFn then refreshTableFn() end
+    local resolvedName = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(itemID)
+    if (not resolvedName or resolvedName == "") and GetItemInfo then
+      resolvedName = GetItemInfo(itemID)
+    end
+    if resolvedName and resolvedName ~= "" then
+      itemNameCache[itemID] = resolvedName
+    end
+    if invalidateDataRowsFn then invalidateDataRowsFn() end
+    if frame and frame:IsShown() and refreshTableFn then
+      refreshTableFn()
     end
   end
 end)
@@ -287,7 +303,12 @@ local function BuildDataRows()
     local profit = sell ~= nil and (sell - cost) or nil
     local margin = (sell and sell > 0 and profit ~= nil) and ((profit / sell) * 100) or nil
     local ppl    = (profit ~= nil and lumberCount > 0) and (profit / lumberCount) or nil
-    local name   = entry.title or ItemName(itemID) or ("Item %d"):format(itemID)
+    local title = entry.title
+    if type(title) == "string" then
+      title = title:gsub("^%s+", ""):gsub("%s+$", "")
+      if title == "" then title = nil end
+    end
+    local name   = title or ItemName(itemID) or ("Item %d"):format(itemID)
 
     local known, knownByAlt, crafterName = nil, false, nil
     local skillID = entry.source and entry.source.skillID
@@ -481,7 +502,7 @@ local function AcquireRow()
             local itemCost = (price or 0) * qty
             local pct = totalCost > 0 and (itemCost / totalCost * 100) or 0
 
-            local name = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(r.itemID) or "Unknown"
+            local name = ItemName(r.itemID) or "Unknown"
             GameTooltip:AddDoubleLine(
               string.format("%dx %s", qty, name),
               string.format("%.0f%%", pct),

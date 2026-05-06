@@ -37,6 +37,8 @@ local function getDB()
   local ui = profile.ui
   if not ui then ui = {}; profile.ui = ui end
   if not ui.viewMode then ui.viewMode = "Icon" end
+  if not ui.catalogMode then ui.catalogMode = "Sections" end
+  if ui.detailsPanelOpen == nil then ui.detailsPanelOpen = false end
   if not ui.activeCategory then ui.activeCategory = "Achievements" end
   if not ui.expanded then ui.expanded = {} end
   if ui.search == nil then ui.search = "" end
@@ -225,54 +227,21 @@ local function findScaleWidgetsOnce(header)
 end
 
 local function dockScale(frame, header)
-  if not frame or not header or not header.controls then return end
+  if not frame or not header then return end
+  local host = header.modeBar or header.controls
+  if not host then return end
+  local group = frame._resizeWidget
+  if not group then return end
 
-  local label, slider, value = findScaleWidgetsOnce(header)
-  if not label then return end
+  header.scaleGroup = group
 
-  local group = header.scaleGroup
-  if not group then
-    group = CreateFrame("Frame", nil, header.controls)
-    header.scaleGroup = group
-    group:SetHeight(20)
+  if group:GetParent() ~= host then
+    group:SetParent(host)
   end
 
-  if label.SetParent then label:SetParent(group) end
-  if slider and slider.SetParent then slider:SetParent(group) end
-  if value and value.SetParent then value:SetParent(group) end
-
-  label:ClearAllPoints()
-  label:SetPoint("LEFT", group, "LEFT", 0, 0)
-
-  if slider then
-    slider:ClearAllPoints()
-    slider:SetPoint("LEFT", label, "RIGHT", 8, 0)
-  end
-
-  if value then
-    value:ClearAllPoints()
-    value:SetPoint("LEFT", (slider or label), "RIGHT", 8, 0)
-  end
-
-  local rightEdge = header.compactBtn or header.trackersBtn or header.closeBtn or header
   group:ClearAllPoints()
-  group:SetPoint("LEFT", header.controls, "LEFT", 10, 0)
-  group:SetPoint("RIGHT", rightEdge, "LEFT", -12, 0)
-
-  local avail = group:GetWidth() or 0
-  if avail < 160 then avail = 160 end
-  if avail > 360 then avail = 360 end
-  group:SetWidth(avail)
-
-  if slider and slider.SetWidth then
-    local used = 30
-    if label.GetStringWidth then used = used + (label:GetStringWidth() or 40) end
-    if value and value.GetWidth then used = used + (value:GetWidth() or 28) end
-    local sw = avail - used
-    if sw < 80 then sw = 80 end
-    if sw > 240 then sw = 240 end
-    slider:SetWidth(sw)
-  end
+  group:SetPoint("LEFT", host, "LEFT", 10, 0)
+  group:SetSize(230, 20)
 end
 
 local function CreateCategoryIndicators(btn)
@@ -358,15 +327,17 @@ function L:CreateShell()
   header:SetBackdropBorderColor(unpack(BORDER))
   header:SetPoint("TOPLEFT", 8, -8)
   header:SetPoint("TOPRIGHT", -8, -8)
-  header:SetHeight(90)
+  header:SetHeight(104)
   header:EnableMouse(false)
   f.Header = header
 
   header.controls = CreateFrame("Frame", nil, header)
-  header.controls:SetPoint("TOPLEFT", header, "TOPLEFT", 8, -8)
-  header.controls:SetPoint("TOPRIGHT", header, "TOPRIGHT", -8, -8)
-  header.controls:SetHeight(22)
+  header.controls:SetPoint("BOTTOMLEFT", header, "BOTTOMLEFT", 8, 4)
+  header.controls:SetPoint("BOTTOMRIGHT", header, "BOTTOMRIGHT", -8, 4)
+  header.controls:SetHeight(24)
   header.controls:EnableMouse(false)
+  Backdrop(header.controls, T.panel, T.border)
+  if C.ApplyHeaderTexture then C:ApplyHeaderTexture(header.controls, false) end
 
   local logo = header:CreateTexture(nil, "ARTWORK")
   header.logo = logo
@@ -402,11 +373,11 @@ function L:CreateShell()
     if f and f.Hide then f:Hide() end
   end)
 
-  local trackersBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  local trackersBtn = CreateFrame("Button", nil, header.controls, "BackdropTemplate")
   header.trackersBtn = trackersBtn
   Backdrop(trackersBtn, T.panel, T.border)
   trackersBtn:SetSize(88, 20)
-  trackersBtn:SetPoint("RIGHT", closeBtn, "LEFT", -12, 0)
+  trackersBtn:SetPoint("RIGHT", header.controls, "RIGHT", -8, 0)
   Hover(trackersBtn, T.panel, T.hover)
 
   local trackersText = NewFS(trackersBtn, "GameFontNormal")
@@ -509,7 +480,7 @@ function L:CreateShell()
     self._hideTimer = nil
   end)
 
-  local compactBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  local compactBtn = CreateFrame("Button", nil, header.controls, "BackdropTemplate")
   header.compactBtn = compactBtn
   Backdrop(compactBtn, T.panel, T.border)
   compactBtn:SetSize(72, 20)
@@ -543,6 +514,7 @@ function L:CreateShell()
     GameTooltip:Show()
   end)
   compactBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  compactBtn:Hide()
 
   header.viewToggle = C:Segmented(
     header, { "Icon", "List" },
@@ -555,8 +527,7 @@ function L:CreateShell()
   if C.ApplyBackground and Textures and Textures.LeftPanelBG then
     C:ApplyBackground(left, Textures.LeftPanelBG, 6, 1)
   end
-  local contentTopY = -(8 + header:GetHeight() + 4)
-  left:SetPoint("TOPLEFT", 8, contentTopY)
+  left:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -1)
   left:SetPoint("BOTTOMLEFT", 8, 46)
   left:SetWidth(200)
 
@@ -863,13 +834,27 @@ function L:CreateShell()
   right:SetPoint("BOTTOMRIGHT", -8, 46)
   f.Right = right
 
+  local rightToolbar = CreateFrame("Frame", nil, right, "BackdropTemplate")
+  Backdrop(rightToolbar, T.panel, T.border)
+  if C.ApplyHeaderTexture then C:ApplyHeaderTexture(rightToolbar, false) end
+  rightToolbar:SetPoint("TOPLEFT", right, "TOPLEFT", 8, -4)
+  rightToolbar:SetPoint("TOPRIGHT", right, "TOPRIGHT", -8, -4)
+  rightToolbar:SetHeight(30)
+  f.RightToolbar = rightToolbar
+
   local bar = CreateFrame("Frame", nil, header, "BackdropTemplate")
   Backdrop(bar, T.panel, T.border)
   if C.ApplyHeaderTexture then C:ApplyHeaderTexture(bar, false) end
-  bar:SetPoint("BOTTOMLEFT",  header, "BOTTOMLEFT",   8,  6)
-  bar:SetPoint("BOTTOMRIGHT", header, "BOTTOMRIGHT", -8,  6)
+  bar:SetPoint("BOTTOMLEFT",  header, "BOTTOMLEFT",   8,  4)
+  bar:SetPoint("BOTTOMRIGHT", header, "BOTTOMRIGHT", -8,  4)
   bar:SetHeight(36)
   f.TopBar = bar
+  header.modeBar = bar
+
+  local rightContent = CreateFrame("Frame", nil, right)
+  rightContent:SetPoint("TOPLEFT", rightToolbar, "BOTTOMLEFT", 0, -1)
+  rightContent:SetPoint("BOTTOMRIGHT", right, "BOTTOMRIGHT", -8, 8)
+  f.RightContent = rightContent
 
   local function MakeTopButton(parent, w, h)
     local b = CreateFrame("Button", nil, parent, "BackdropTemplate")
@@ -888,7 +873,6 @@ function L:CreateShell()
   end
 
   local eventsBtn = MakeTopButton(bar, 96, 24)
-  eventsBtn:SetPoint("LEFT", bar, "LEFT", 8, 0)
   eventsBtn.icon:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
   eventsBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   eventsBtn.icon:SetDesaturated(true)
@@ -923,6 +907,75 @@ function L:CreateShell()
   end
   glowAnim:SetLooping("REPEAT")
 
+  compactBtn:SetParent(header)
+  compactBtn:SetSize(72, 20)
+  compactBtn:ClearAllPoints()
+  compactBtn:SetPoint("RIGHT", closeBtn, "LEFT", -8, 0)
+  compactBtn:Show()
+
+  local decorTrackerBtn = MakeTopButton(bar, 120, 24)
+  decorTrackerBtn.icon:SetTexture("Interface\\Icons\\Ability_Hunter_BeastCall")
+  decorTrackerBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+  decorTrackerBtn.icon:SetVertexColor(1, 1, 1, 0.9)
+  decorTrackerBtn.text:SetText("Decor Tracker")
+  decorTrackerBtn.text:SetTextColor(unpack(ACCENT))
+  decorTrackerBtn:SetScript("OnClick", function()
+    local Tr = (NS.UI and NS.UI.Tracker) or (NS.UI and NS.UI.DecorTracker) or NS.Tracker
+    if Tr and Tr.Toggle then Tr:Toggle() end
+  end)
+
+  local gatherTrackerBtn = MakeTopButton(bar, 128, 24)
+  gatherTrackerBtn.icon:SetTexture("Interface\\Icons\\INV_Misc_Map_01")
+  gatherTrackerBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+  gatherTrackerBtn.icon:SetVertexColor(1, 1, 1, 0.9)
+  gatherTrackerBtn.text:SetText(Loc["LUMBER_TRACKER"] or "Gather Tracker")
+  gatherTrackerBtn.text:SetTextColor(unpack(ACCENT))
+  gatherTrackerBtn:SetScript("OnClick", function()
+    local GT = (NS.UI and NS.UI.GatherTrack)
+    if GT and GT.ToggleAll then
+      GT:ToggleAll()
+    else
+      local LT = (NS.UI and NS.UI.LumberTrack) or NS.LumberTrack
+      if LT and LT.Toggle then LT:Toggle() end
+    end
+  end)
+
+  trackersBtn:Hide()
+  trackersMenu:Hide()
+  header.controls:Hide()
+
+  local decorPricingBtn
+  local altProfsTopBtn
+  local endeavorsTopBtn
+
+  local function LayoutModeBar()
+    local centerClusterWidth = 96 + 6 + 120 + 6 + 130 + 6 + 110
+
+    eventsBtn:ClearAllPoints()
+    eventsBtn:SetPoint("LEFT", bar, "CENTER", -math.floor(centerClusterWidth / 2), 0)
+
+    if decorPricingBtn then
+      decorPricingBtn:ClearAllPoints()
+      decorPricingBtn:SetPoint("LEFT", eventsBtn, "RIGHT", 6, 0)
+    end
+
+    if altProfsTopBtn and decorPricingBtn then
+      altProfsTopBtn:ClearAllPoints()
+      altProfsTopBtn:SetPoint("LEFT", decorPricingBtn, "RIGHT", 6, 0)
+    end
+
+    if endeavorsTopBtn and altProfsTopBtn then
+      endeavorsTopBtn:ClearAllPoints()
+      endeavorsTopBtn:SetPoint("LEFT", altProfsTopBtn, "RIGHT", 6, 0)
+    end
+
+    gatherTrackerBtn:ClearAllPoints()
+    gatherTrackerBtn:SetPoint("RIGHT", bar, "RIGHT", -8, 0)
+
+    decorTrackerBtn:ClearAllPoints()
+    decorTrackerBtn:SetPoint("RIGHT", gatherTrackerBtn, "LEFT", -6, 0)
+  end
+
   local EventsSys = NS.Systems and NS.Systems.Events or nil
   local function getEventState()
     local Ev = EventsSys or (NS.Systems and NS.Systems.Events)
@@ -947,10 +1000,38 @@ function L:CreateShell()
   local SelectCategory
   local setSearchUI
   local UpdateSortVisibility
-  local decorPricingBtn
-  local altProfsTopBtn
-  local endeavorsTopBtn
+  local UpdateRightToolbarVisibility
   local ScheduleEventStateRefresh
+  local modeBtn
+  local detailsBtn
+
+  local function SetToggleButtonState(btn, active)
+    if not btn then return end
+    C:SetSelected(btn, active, T.panel, T.row)
+    if btn.text then
+      if active then
+        btn.text:SetTextColor(1, 1, 1, 0.95)
+      else
+        btn.text:SetTextColor(unpack(ACCENT))
+      end
+    end
+  end
+
+  local function RefreshModeButton()
+    if not modeBtn then return end
+    local isAllItems = (UI.catalogMode == "All Items")
+    if modeBtn.text then
+      modeBtn.text:SetText(isAllItems and "All" or "Groups")
+    end
+    SetToggleButtonState(modeBtn, isAllItems)
+  end
+
+  local function RefreshDetailsButton()
+    if not detailsBtn then return end
+    SetToggleButtonState(detailsBtn, UI.detailsPanelOpen == true)
+  end
+
+  header.scaleRightEdge = closeBtn
 
   UpdateTopTabs = function()
     local isPricingSelected = UI.activeCategory == "Decor Pricing"
@@ -1113,6 +1194,7 @@ function L:CreateShell()
     end
 
     if UpdateSortVisibility then UpdateSortVisibility() end
+    if UpdateRightToolbarVisibility then UpdateRightToolbarVisibility() end
   end
 
   for i = 1, #left.buttons do
@@ -1141,10 +1223,65 @@ function L:CreateShell()
       rerender()
     end
     if header.viewToggle.Refresh then header.viewToggle:Refresh() end
-    header.viewToggle:SetParent(bar)
+    header.viewToggle:SetParent(rightToolbar)
     header.viewToggle:ClearAllPoints()
-    header.viewToggle:SetPoint("RIGHT", bar, "RIGHT", -8, 0)
+    header.viewToggle:SetPoint("RIGHT", rightToolbar, "RIGHT", -8, 0)
   end
+
+  detailsBtn = CreateFrame("Button", nil, rightToolbar, "BackdropTemplate")
+  Backdrop(detailsBtn, T.panel, T.border)
+  detailsBtn:SetSize(58, 20)
+  detailsBtn:SetPoint("RIGHT", header.viewToggle, "LEFT", -6, 0)
+  Hover(detailsBtn, T.panel, T.hover)
+
+  detailsBtn.text = NewFS(detailsBtn, "GameFontNormal")
+  detailsBtn.text:SetPoint("CENTER")
+  detailsBtn.text:SetText("Panel")
+
+  detailsBtn:SetScript("OnClick", function()
+    UI.detailsPanelOpen = not UI.detailsPanelOpen
+    if db and db.ui then db.ui.detailsPanelOpen = UI.detailsPanelOpen end
+    if f.view and f.view.SetInspectorOpen then
+      f.view:SetInspectorOpen(UI.detailsPanelOpen)
+    end
+    RefreshDetailsButton()
+    rerender()
+  end)
+  detailsBtn:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+    GameTooltip:SetText("Details Panel", 1, 1, 1)
+    GameTooltip:AddLine("Show or hide the item details panel on the right.", 0.7, 0.7, 0.7, true)
+    GameTooltip:Show()
+  end)
+  detailsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+  modeBtn = CreateFrame("Button", nil, rightToolbar, "BackdropTemplate")
+  Backdrop(modeBtn, T.panel, T.border)
+  modeBtn:SetSize(64, 20)
+  modeBtn:SetPoint("RIGHT", detailsBtn, "LEFT", -6, 0)
+  Hover(modeBtn, T.panel, T.hover)
+
+  modeBtn.text = NewFS(modeBtn, "GameFontNormal")
+  modeBtn.text:SetPoint("CENTER")
+
+  modeBtn:SetScript("OnClick", function()
+    UI.catalogMode = (UI.catalogMode == "All Items") and "Sections" or "All Items"
+    if db and db.ui then db.ui.catalogMode = UI.catalogMode end
+    if NS.UI and NS.UI.HeaderController and NS.UI.HeaderController.Reset then
+      NS.UI.HeaderController:Reset()
+    end
+    RefreshModeButton()
+    rerender()
+  end)
+  modeBtn:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+    GameTooltip:SetText("Browse Mode", 1, 1, 1)
+    GameTooltip:AddLine("Sections keeps expansion/category progress groups. All Items turns the current category into one unified browser.", 0.7, 0.7, 0.7, true)
+    GameTooltip:Show()
+  end)
+  modeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  RefreshModeButton()
+  RefreshDetailsButton()
 
   decorPricingBtn = MakeTopButton(bar, 120, 24)
   decorPricingBtn:SetPoint("LEFT", eventsBtn, "RIGHT", 6, 0)
@@ -1182,7 +1319,7 @@ function L:CreateShell()
 
   endeavorsTopBtn:SetScript("OnClick", function()
     if not NS.UI.EndeavorsPanel then
-      NS.UI.EndeavorsPanel = NS.UI.Endeavors:Create(right)
+      NS.UI.EndeavorsPanel = NS.UI.Endeavors:Create(rightContent)
     end
     SelectCategory("Endeavors")
 
@@ -1224,9 +1361,11 @@ function L:CreateShell()
     C, T
   )
 
-  sortDropdown:SetWidth(160)
-  sortDropdown:SetPoint("RIGHT", header.viewToggle, "LEFT", -8, 0)
-  sortDropdown:SetPoint("TOP", bar, "TOP", 0, -6)
+  sortDropdown:SetWidth(176)
+  sortDropdown:SetParent(rightToolbar)
+  sortDropdown:ClearAllPoints()
+  sortDropdown:SetPoint("RIGHT", modeBtn, "LEFT", -8, 0)
+  sortDropdown:SetPoint("TOP", rightToolbar, "TOP", 0, -3)
   f.SortDropdown = sortDropdown
 
   UpdateSortVisibility = function()
@@ -1239,11 +1378,29 @@ function L:CreateShell()
     end
   end
 
+  UpdateRightToolbarVisibility = function()
+    local cat = UI.activeCategory or ""
+    local hideToolbar = (cat == "Decor Pricing") or (cat == "Alts Professions") or (cat == "Endeavors")
+
+    rightContent:ClearAllPoints()
+    if hideToolbar then
+      rightToolbar:Hide()
+      rightContent:SetPoint("TOPLEFT", right, "TOPLEFT", 8, -8)
+      rightContent:SetPoint("BOTTOMRIGHT", right, "BOTTOMRIGHT", -8, 8)
+    else
+      rightToolbar:Show()
+      rightContent:SetPoint("TOPLEFT", rightToolbar, "BOTTOMLEFT", 0, -1)
+      rightContent:SetPoint("BOTTOMRIGHT", right, "BOTTOMRIGHT", -8, 8)
+    end
+  end
+
   local search = CreateFrame("EditBox", nil, bar, "BackdropTemplate")
   Backdrop(search, T.panel, T.border)
-  search:SetPoint("LEFT", endeavorsTopBtn, "RIGHT", 8, 0)
+  search:SetParent(rightToolbar)
+  search:ClearAllPoints()
+  search:SetPoint("LEFT", rightToolbar, "LEFT", 8, 0)
   search:SetPoint("RIGHT", sortDropdown, "LEFT", -8, 0)
-  search:SetHeight(24)
+  search:SetHeight(20)
   search:SetAutoFocus(false)
   search:SetFontObject(GameFontHighlightSmall)
   search:SetTextInsets(8, 26, 0, 0)
@@ -1377,15 +1534,19 @@ function L:CreateShell()
   end
 
   if header then
-    header:HookScript("OnShow", function() dockScale(f, header) end)
-    header:HookScript("OnSizeChanged", function() dockScale(f, header) end)
+    header:HookScript("OnShow", function() dockScale(f, header); if LayoutModeBar then LayoutModeBar() end end)
+    header:HookScript("OnSizeChanged", function() dockScale(f, header); if LayoutModeBar then LayoutModeBar() end end)
   end
-  f:HookScript("OnShow", function() dockScale(f, header); RefreshLeftLayout() end)
-  f:HookScript("OnSizeChanged", function() dockScale(f, header); RefreshLeftLayout() end)
+  f:HookScript("OnShow", function() dockScale(f, header); if LayoutModeBar then LayoutModeBar() end; RefreshLeftLayout() end)
+  f:HookScript("OnSizeChanged", function() dockScale(f, header); if LayoutModeBar then LayoutModeBar() end; RefreshLeftLayout() end)
   RefreshLeftLayout()
+  if LayoutModeBar then LayoutModeBar() end
 
   if NS.UI and NS.UI.ViewFactory and NS.UI.ViewFactory.Create then
     f.view = NS.UI.ViewFactory:Create(f, UI, db)
+  end
+  if f.view and f.view.SetInspectorOpen then
+    f.view:SetInspectorOpen(UI.detailsPanelOpen, true)
   end
   if f.view and f.view.OnShow then f.view:OnShow() end
   rerender()
@@ -1404,6 +1565,7 @@ function L:CreateShell()
   f:HookScript("OnShow", function()
     if UpdateTopTabs then UpdateTopTabs() end
     if UpdateSortVisibility then UpdateSortVisibility() end
+    if UpdateRightToolbarVisibility then UpdateRightToolbarVisibility() end
     if ScheduleEventStateRefresh then ScheduleEventStateRefresh() end
   end)
 
@@ -1413,6 +1575,9 @@ function L:CreateShell()
 
   if UpdateTopTabs then UpdateTopTabs() end
   if UpdateSortVisibility then UpdateSortVisibility() end
+  if UpdateRightToolbarVisibility then UpdateRightToolbarVisibility() end
+  RefreshModeButton()
+  RefreshDetailsButton()
 
   if Collection and Collection.RegisterListener and not f._hdCategoryCountsListener then
     f._hdCategoryCountsListener = true

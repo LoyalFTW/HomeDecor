@@ -48,6 +48,8 @@ local DropPanel = UI.DropPanel
 local HeaderCtrl = UI.HeaderController
 local RS = UI.RowStyles
 local IA = UI.ItemInteractions
+local Controls = UI.Controls
+local Theme = UI.Theme
 
 local C_Timer = _G.C_Timer
 local CreateFrame = _G.CreateFrame
@@ -60,6 +62,10 @@ local time = _G.time
 local floor = math.floor
 local function Pixel(v) return v and floor(v + 0.5) or 0 end
 local function clamp(v, min, max) return v < min and min or (v > max and max or v) end
+local function GetThemeColor(name, fallback)
+    local colors = Theme and Theme.colors
+    return (colors and colors[name]) or fallback
+end
 
 local function wipeTable(t)
     if type(t) ~= "table" then return end
@@ -218,6 +224,115 @@ local function AddToFlat(out, seen, it)
 
     seen[key] = true
     out[#out + 1] = it
+end
+
+local function BuildItemKey(it)
+    if type(it) ~= "table" then return nil end
+    local src = it.source or {}
+    local id = it.decorID or src.id or src.itemID or src.itemId or it.itemID
+    if not id then return nil end
+    local faction = it.faction or src.faction or ""
+    local questID = it.requirements and it.requirements.quest and (it.requirements.quest.id or it.requirements.quest)
+    local achievementID = it.requirements and it.requirements.achievement and (it.requirements.achievement.id or it.requirements.achievement)
+    local reqID = questID or achievementID or src.questID or src.achievementID or src.id or ""
+    return table.concat({
+        tostring(src.type or ""),
+        tostring(id),
+        tostring(faction),
+        tostring(reqID),
+    }, ":")
+end
+
+local function BuildSourceSummary(it)
+    if not it then return "Unknown source" end
+    local src = it.source or {}
+    local srcType = src.type
+
+    if srcType == "vendor" then
+        local vendor = it.vendor or it._navVendor
+        local name = vendor and D and D.ResolveVendorTitle and D.ResolveVendorTitle(vendor)
+        name = name or vendor and (vendor.title or vendor.name)
+        return name and ("Vendor: " .. name) or "Vendor"
+    end
+
+    if srcType == "quest" then
+        local title = (it.quest and it.quest.title) or src.quest or src.title
+        return title and title ~= "" and ("Quest: " .. title) or "Quest reward"
+    end
+
+    if srcType == "achievement" then
+        local title = (it.achievement and it.achievement.title) or src.achievement or src.title
+        return title and title ~= "" and ("Achievement: " .. title) or "Achievement reward"
+    end
+
+    if srcType == "drop" then
+        local npc = src.npc or it.npc or it.titleNPC
+        return npc and npc ~= "" and ("Drops from: " .. npc) or "Mob drop"
+    end
+
+    if srcType == "profession" then
+        return "Profession recipe"
+    end
+
+    if srcType == "saved" then
+        return "Saved item"
+    end
+
+    return srcType and (srcType:gsub("^%l", string.upper)) or "Unknown source"
+end
+
+local function BuildLocationSummary(it)
+    if not it then return nil end
+    local parts = {}
+    if it._expansion and it._expansion ~= "" then
+        parts[#parts + 1] = tostring(it._expansion)
+    end
+    if it.zone and it.zone ~= "" then
+        parts[#parts + 1] = tostring(it.zone)
+    end
+    local faction = it.faction or (it.source and it.source.faction)
+    if faction == "Alliance" or faction == "Horde" then
+        parts[#parts + 1] = faction
+    end
+    if #parts == 0 then return nil end
+    return table.concat(parts, "  -  ")
+end
+
+local function BuildCostSummary(it)
+    local goldCost, currencyAmount, currencyName = GetCurrencyInfo(it)
+    local parts = {}
+    if goldCost and goldCost > 0 then
+        parts[#parts + 1] = tostring(goldCost) .. " gold"
+    end
+    if currencyAmount and currencyAmount > 0 then
+        parts[#parts + 1] = tostring(currencyAmount) .. " " .. tostring(currencyName or "currency")
+    end
+    if #parts == 0 then return nil end
+    return table.concat(parts, "  -  ")
+end
+
+local function IsCollectedForDisplay(it)
+    if not it then return false end
+    if Collection and Collection.IsCollected then
+        local ok, collected = pcall(Collection.IsCollected, Collection, it)
+        if ok then return collected and true or false end
+    end
+
+    local state = U and U.GetStateSafe and U.GetStateSafe(it)
+    if state == (Collection and Collection.State and Collection.State.COLLECTED) then
+        return true
+    end
+    if type(state) == "table" then
+        return state.collected == true
+    end
+    return state == true
+end
+
+local function GetDefaultSceneID()
+    if Constants and Constants.HousingCatalogConsts and Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT then
+        return Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT
+    end
+    return 859
 end
 
 local function BuildFlatResults(ui, db, scopeKey)
@@ -690,7 +805,8 @@ local function RebuildEntries(f, content)
 
     local q = U and U.trim and U.trim(ui.search) or (ui.search or "")
     local fdb = db.filters or {}
-    local flatMode = (q ~= "") or
+    local forcedFlatMode = (ui.catalogMode == "All Items")
+    local flatMode = forcedFlatMode or (q ~= "") or
         (fdb and ((fdb.subcategory and fdb.subcategory ~= "ALL") or
                   (fdb.category and fdb.category ~= "ALL")))
 
@@ -1092,6 +1208,23 @@ local function RebuildEntries(f, content)
         end
     end
 
+    if f.selectedKey then
+        local found = false
+        for i = 1, #entries do
+            local entry = entries[i]
+            if entry and entry.it and BuildItemKey(entry.it) == f.selectedKey then
+                found = true
+                break
+            end
+        end
+        if not found then
+            f.selectedKey = nil
+            f.selectedItem = nil
+            f.selectedNav = nil
+            if f.UpdateInspector then f:UpdateInspector() end
+        end
+    end
+
     f.totalHeight = y + LAYOUT.PAD_BOTTOM
 end
 
@@ -1099,6 +1232,7 @@ function Render:Create(parent)
     local f = CreateFrame("Frame", nil, parent)
     f:SetAllPoints()
     f._suspendRender = false
+    f._inspectorOpen = false
 
     f:SetScript("OnShow", function(self)
         GridCache = {}
@@ -1123,6 +1257,173 @@ function Render:Create(parent)
         if f.Render then f:RequestRender(true) end
     end)
 
+    local inspector = CreateFrame("Frame", nil, f, "BackdropTemplate")
+    if Controls and Controls.Backdrop then
+        Controls:Backdrop(inspector, GetThemeColor("panel", { 0.07, 0.08, 0.10, 0.96 }), GetThemeColor("border", { 0.25, 0.22, 0.16, 1 }))
+    end
+    inspector:SetPoint("TOPRIGHT", -8, -8)
+    inspector:SetPoint("BOTTOMRIGHT", -8, 8)
+    inspector:SetWidth(272)
+    inspector:Hide()
+    f.inspector = inspector
+
+    inspector.media = CreateFrame("Frame", nil, inspector, "BackdropTemplate")
+    if Controls and Controls.Backdrop then
+        Controls:Backdrop(inspector.media, GetThemeColor("row", { 0.09, 0.10, 0.12, 1 }), GetThemeColor("border", { 0.25, 0.22, 0.16, 1 }))
+    end
+    inspector.media:SetPoint("TOPLEFT", 12, -12)
+    inspector.media:SetPoint("TOPRIGHT", -12, -12)
+    inspector.media:SetHeight(220)
+    inspector.media:SetClipsChildren(true)
+
+    inspector.icon = inspector.media:CreateTexture(nil, "ARTWORK")
+    inspector.icon:SetPoint("BOTTOMLEFT", inspector.media, "BOTTOMLEFT", 10, 10)
+    inspector.icon:SetSize(52, 52)
+
+    inspector.previewFallback = inspector.media:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    inspector.previewFallback:SetPoint("CENTER")
+    inspector.previewFallback:SetTextColor(0.72, 0.72, 0.72, 0.9)
+    inspector.previewFallback:SetText("Select an item to load its decor preview.")
+
+    inspector.previewScene = CreateFrame("ModelScene", nil, inspector.media, "PanningModelSceneMixinTemplate")
+    inspector.previewScene:SetPoint("TOPLEFT", 10, -10)
+    inspector.previewScene:SetPoint("TOPRIGHT", -10, -10)
+    inspector.previewScene:SetPoint("BOTTOMLEFT", 10, 10)
+    inspector.previewScene:SetPoint("BOTTOMRIGHT", -10, 10)
+    inspector.previewScene:Hide()
+
+    inspector.previewControls = nil
+    do
+        local ok, ctrl = pcall(CreateFrame, "Frame", nil, inspector.media, "ModelSceneControlFrameTemplate")
+        if ok and ctrl then
+            ctrl:SetPoint("BOTTOM", inspector.media, "BOTTOM", 0, 12)
+            pcall(ctrl.SetModelScene, ctrl, inspector.previewScene)
+            ctrl:Hide()
+            inspector.previewControls = ctrl
+        end
+    end
+
+    inspector.corbelL = inspector.media:CreateTexture(nil, "OVERLAY")
+    inspector.corbelL:SetSize(66, 50)
+    inspector.corbelL:SetPoint("BOTTOMLEFT", -2, -2)
+    if inspector.corbelL.SetAtlas then
+        inspector.corbelL:SetAtlas("catalog-corbel-bottom-left")
+    end
+    inspector.corbelL:Hide()
+
+    inspector.corbelR = inspector.media:CreateTexture(nil, "OVERLAY")
+    inspector.corbelR:SetSize(66, 50)
+    inspector.corbelR:SetPoint("BOTTOMRIGHT", 2, -2)
+    if inspector.corbelR.SetAtlas then
+        inspector.corbelR:SetAtlas("catalog-corbel-bottom-right")
+    end
+    inspector.corbelR:Hide()
+
+    inspector.state = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    inspector.state:SetPoint("TOPLEFT", inspector.media, "BOTTOMLEFT", 0, -12)
+    inspector.state:SetPoint("TOPRIGHT", inspector.media, "BOTTOMRIGHT", 0, -12)
+    inspector.state:SetJustifyH("LEFT")
+
+    inspector.title = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    inspector.title:SetPoint("TOPLEFT", inspector.state, "BOTTOMLEFT", 0, -6)
+    inspector.title:SetPoint("TOPRIGHT", inspector.state, "BOTTOMRIGHT", 0, -6)
+    inspector.title:SetJustifyH("LEFT")
+    inspector.title:SetWordWrap(true)
+    inspector.title:SetMaxLines(3)
+
+    inspector.meta = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    inspector.meta:SetPoint("TOPLEFT", inspector.title, "BOTTOMLEFT", 0, -6)
+    inspector.meta:SetPoint("TOPRIGHT", inspector.title, "BOTTOMRIGHT", 0, -6)
+    inspector.meta:SetJustifyH("LEFT")
+    inspector.meta:SetWordWrap(true)
+
+    inspector.source = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    inspector.source:SetPoint("TOPLEFT", inspector.meta, "BOTTOMLEFT", 0, -12)
+    inspector.source:SetPoint("TOPRIGHT", inspector.meta, "BOTTOMRIGHT", 0, -12)
+    inspector.source:SetJustifyH("LEFT")
+    inspector.source:SetWordWrap(true)
+
+    inspector.location = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    inspector.location:SetPoint("TOPLEFT", inspector.source, "BOTTOMLEFT", 0, -6)
+    inspector.location:SetPoint("TOPRIGHT", inspector.source, "BOTTOMRIGHT", 0, -6)
+    inspector.location:SetJustifyH("LEFT")
+    inspector.location:SetWordWrap(true)
+
+    inspector.cost = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    inspector.cost:SetPoint("TOPLEFT", inspector.location, "BOTTOMLEFT", 0, -10)
+    inspector.cost:SetPoint("TOPRIGHT", inspector.location, "BOTTOMRIGHT", 0, -10)
+    inspector.cost:SetJustifyH("LEFT")
+    inspector.cost:SetWordWrap(true)
+
+    inspector.req = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    inspector.req:SetPoint("TOPLEFT", inspector.cost, "BOTTOMLEFT", 0, -12)
+    inspector.req:SetPoint("TOPRIGHT", inspector.cost, "BOTTOMRIGHT", 0, -12)
+    inspector.req:SetJustifyH("LEFT")
+    inspector.req:SetWordWrap(true)
+
+    inspector.rep = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    inspector.rep:SetPoint("TOPLEFT", inspector.req, "BOTTOMLEFT", 0, -8)
+    inspector.rep:SetPoint("TOPRIGHT", inspector.req, "BOTTOMRIGHT", 0, -8)
+    inspector.rep:SetJustifyH("LEFT")
+    inspector.rep:SetWordWrap(true)
+
+    inspector.note = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    inspector.note:SetPoint("TOPLEFT", inspector.rep, "BOTTOMLEFT", 0, -10)
+    inspector.note:SetPoint("TOPRIGHT", inspector.rep, "BOTTOMRIGHT", 0, -10)
+    inspector.note:SetJustifyH("LEFT")
+    inspector.note:SetWordWrap(true)
+
+    inspector.empty = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    inspector.empty:SetPoint("TOPLEFT", inspector.media, "BOTTOMLEFT", 0, -18)
+    inspector.empty:SetPoint("TOPRIGHT", inspector.media, "BOTTOMRIGHT", 0, -18)
+    inspector.empty:SetJustifyH("LEFT")
+    inspector.empty:SetTextColor(0.72, 0.72, 0.72, 1)
+    inspector.empty:SetText("Select an item to pin its details here.")
+
+    local function CreateInspectorButton(width, text, point, relativeTo, relativePoint, x, y)
+        local btn = CreateFrame("Button", nil, inspector, "BackdropTemplate")
+        if Controls and Controls.Backdrop then
+            Controls:Backdrop(btn, GetThemeColor("panel", { 0.08, 0.09, 0.11, 1 }), GetThemeColor("border", { 0.25, 0.22, 0.16, 1 }))
+        end
+        if Controls and Controls.ApplyHover then
+            Controls:ApplyHover(btn, GetThemeColor("panel", { 0.08, 0.09, 0.11, 1 }), GetThemeColor("hover", { 0.14, 0.15, 0.18, 1 }))
+        end
+        btn:SetHeight(24)
+        btn:SetPoint(point, relativeTo, relativePoint, x, y)
+        btn:SetWidth(width)
+        btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        btn.text:SetPoint("CENTER")
+        btn.text:SetText(text)
+        return btn
+    end
+
+    inspector.previewBtn = CreateInspectorButton(76, "Preview", "BOTTOMLEFT", inspector, "BOTTOMLEFT", 12, 12)
+    inspector.linkBtn = CreateInspectorButton(66, "Links", "LEFT", inspector.previewBtn, "RIGHT", 8, 0)
+    inspector.mapBtn = CreateInspectorButton(66, "Map", "LEFT", inspector.linkBtn, "RIGHT", 8, 0)
+
+    local function UpdateInspectorButtons(hasItem)
+        local item = f.selectedItem
+        if not hasItem or not item then
+            inspector.previewBtn:Disable()
+            inspector.linkBtn:Disable()
+            inspector.mapBtn:Disable()
+            return
+        end
+        inspector.previewBtn:SetEnabled(not not (IA and IA.ViewItem and U.GetItemID(item)))
+        inspector.linkBtn:SetEnabled(not not (IA and IA.BuildWowheadLinks and IA:BuildWowheadLinks(item)))
+        inspector.mapBtn:SetEnabled(not not (IA and IA.Waypoint and (item.worldmap or (item.vendor and item.vendor.worldmap) or (item.source and item.source.worldmap))))
+    end
+
+    inspector.previewBtn:SetScript("OnClick", function()
+        if IA and IA.ViewItem and f.selectedItem then IA:ViewItem(f.selectedItem) end
+    end)
+    inspector.linkBtn:SetScript("OnClick", function()
+        if IA and IA.ShowWowheadPopup and f.selectedItem then IA:ShowWowheadPopup(f.selectedItem) end
+    end)
+    inspector.mapBtn:SetScript("OnClick", function()
+        if IA and IA.Waypoint and f.selectedItem then IA:Waypoint(f.selectedItem, f.selectedNav) end
+    end)
+
     local sf = CreateFrame("ScrollFrame", nil, f, "ScrollFrameTemplate")
     if UI.Controls and UI.Controls.SkinScrollFrame then
         UI.Controls:SkinScrollFrame(sf)
@@ -1136,6 +1437,162 @@ function Render:Create(parent)
 
     f._scrollFrame = sf
     f._scrollContent = content
+
+    function f:UpdateLayoutForInspector()
+        sf:ClearAllPoints()
+        sf:SetPoint("TOPLEFT", 8, -8)
+        if self._inspectorOpen then
+            inspector:Show()
+            sf:SetPoint("BOTTOMRIGHT", inspector, "BOTTOMLEFT", -8, 8)
+        else
+            inspector:Hide()
+            sf:SetPoint("BOTTOMRIGHT", -28, 8)
+        end
+        GridCache = {}
+        content:SetWidth((sf:GetWidth() or 0) - 18)
+    end
+
+    function f:SetInspectorOpen(open, skipRender)
+        self._inspectorOpen = open and true or false
+        self:UpdateLayoutForInspector()
+        if self.UpdateInspector then self:UpdateInspector() end
+        if not skipRender and self.RequestRender then
+            self:RequestRender(true)
+        end
+    end
+
+    function f:SetSelectedItem(it, nav)
+        self.selectedItem = it
+        self.selectedNav = nav
+        self.selectedKey = BuildItemKey(it)
+        if self.UpdateInspector then self:UpdateInspector() end
+        if self.RequestRender then self:RequestRender(false) end
+    end
+
+    function f:ClearInspectorPreview(message)
+        if inspector.previewScene then
+            inspector.previewScene:Hide()
+        end
+        if inspector.previewControls then
+            inspector.previewControls:Hide()
+        end
+        if inspector.previewFallback then
+            inspector.previewFallback:SetText(message or "Preview unavailable for this decor.")
+            inspector.previewFallback:Show()
+        end
+    end
+
+    function f:AttachInspectorPreview(decorID)
+        if not decorID or not inspector.previewScene then
+            self:ClearInspectorPreview("Preview unavailable for this decor.")
+            return false
+        end
+
+        local entryType = (Enum and Enum.HousingCatalogEntryType and Enum.HousingCatalogEntryType.Decor) or 1
+        local ok, infoObj = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID, entryType, decorID, true)
+        if not (ok and infoObj and infoObj.asset) then
+            self:ClearInspectorPreview("Preview unavailable for this decor.")
+            return false
+        end
+
+        if inspector.previewFallback then
+            inspector.previewFallback:Hide()
+        end
+
+        local sceneID = infoObj.uiModelSceneID or GetDefaultSceneID()
+        local sceneOk = pcall(function()
+            inspector.previewScene:TransitionToModelSceneID(sceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true)
+        end)
+        if not sceneOk then
+            self:ClearInspectorPreview("Preview unavailable for this decor.")
+            return false
+        end
+
+        local actor = inspector.previewScene.GetActorByTag and inspector.previewScene:GetActorByTag("decor")
+        if not actor then
+            self:ClearInspectorPreview("Preview unavailable for this decor.")
+            return false
+        end
+
+        actor:SetPreferModelCollisionBounds(true)
+        actor:SetModelByFileID(infoObj.asset)
+        inspector.previewScene:Show()
+        if inspector.previewControls then
+            inspector.previewControls:Show()
+        end
+        return true
+    end
+
+    function f:UpdateInspector()
+        if not self._inspectorOpen then return end
+
+        local it = self.selectedItem
+        if D and D.ResolveAchievementDecor and it then
+            it = D.ResolveAchievementDecor(it) or it
+            self.selectedItem = it
+        end
+
+        local hasItem = it ~= nil
+        inspector.empty:SetShown(not hasItem)
+        inspector.media:SetShown(hasItem)
+        inspector.state:SetShown(hasItem)
+        inspector.title:SetShown(hasItem)
+        inspector.meta:SetShown(hasItem)
+        inspector.source:SetShown(hasItem)
+        inspector.location:SetShown(hasItem)
+        inspector.cost:SetShown(hasItem)
+        inspector.req:SetShown(hasItem)
+        inspector.rep:SetShown(hasItem)
+        inspector.note:SetShown(hasItem)
+
+        if not hasItem then
+            self:ClearInspectorPreview("Select an item to load its decor preview.")
+            UpdateInspectorButtons(false)
+            return
+        end
+
+        local tex = (it and it.source and it.source.icon) or
+            (it and it.decorID and D and D.GetDecorIcon and D.GetDecorIcon(it.decorID)) or
+            "Interface\\Icons\\INV_Misc_QuestionMark"
+        inspector.icon:SetTexture(tex)
+        if inspector.icon.SetTexCoord then inspector.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
+
+        local isCollected = IsCollectedForDisplay(it)
+        inspector.state:SetText(isCollected and "|cff7CFC60Collected|r" or "|cffFFD166Missing|r")
+
+        local title = it.title or (it.decorID and D and D.GetDecorName and D.GetDecorName(it.decorID)) or ("Decor #" .. tostring(it.decorID or it.itemID or "?"))
+        inspector.title:SetText(title)
+
+        if not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "" then
+            if D and D.ApplyDecorBreadcrumb then D.ApplyDecorBreadcrumb(it) end
+            if (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") and it.decorID then
+                it.decorTypeBreadcrumb = GetDecorCategoryBreadcrumb(it.decorID)
+            end
+        end
+        inspector.meta:SetText((it.decorTypeBreadcrumb and it.decorTypeBreadcrumb ~= "" and "|cff9aa0a6" .. it.decorTypeBreadcrumb .. "|r") or "|cff9aa0a6Uncategorized|r")
+        inspector.source:SetText(BuildSourceSummary(it))
+        inspector.location:SetText((BuildLocationSummary(it) and "|cffb9bec6" .. BuildLocationSummary(it) .. "|r") or "")
+        inspector.cost:SetText((BuildCostSummary(it) and "|cffffd166Cost:|r " .. BuildCostSummary(it)) or "")
+
+        local req = R and R.GetRequirementLink and R.GetRequirementLink(it)
+        inspector.req:SetText(req and R.BuildReqDisplay and R.BuildReqDisplay(req, false) or "|cff8c959fNo quest or achievement required|r")
+
+        local rep = R and R.GetRepRequirement and R.GetRepRequirement(it)
+        inspector.rep:SetText(rep and R.BuildRepDisplay and R.BuildRepDisplay(rep, false) or "|cff8c959fNo reputation required|r")
+
+        local note = it.source and type(it.source.note) == "string" and it.source.note or nil
+        inspector.note:SetText(note and ("|cff9fb0c5" .. note .. "|r") or "")
+
+        if it.decorID and self.AttachInspectorPreview then
+            self:AttachInspectorPreview(it.decorID)
+        else
+            self:ClearInspectorPreview("Preview unavailable for this decor.")
+        end
+
+        UpdateInspectorButtons(true)
+    end
+
+    f:UpdateLayoutForInspector()
 
     sf:SetScript("OnSizeChanged", function(_, w)
         content:SetWidth((w or 0) - 18)
@@ -1550,7 +2007,14 @@ end
                         fr._dropBadge:Hide()
                     end
 
+                    if RS and RS.SetSelected then
+                        RS:SetSelected(fr, self.selectedKey and BuildItemKey(it) == self.selectedKey, 0.22)
+                    end
+
                     fr:SetScript("OnMouseUp", function(_, btn)
+                        if btn == "LeftButton" and f.SetSelectedItem then
+                            f:SetSelectedItem(it, e.nav)
+                        end
                         if IA and IA.HandleMouseUp then
                             IA:HandleMouseUp(it, btn, e.nav)
                         end
@@ -1708,7 +2172,14 @@ end
                         fr._dropBadge:Hide()
                     end
 
+                    if RS and RS.SetSelected then
+                        RS:SetSelected(fr, self.selectedKey and BuildItemKey(it) == self.selectedKey, 0.22)
+                    end
+
                     fr:SetScript("OnMouseUp", function(_, btn)
+                        if btn == "LeftButton" and f.SetSelectedItem then
+                            f:SetSelectedItem(it, e.nav)
+                        end
                         if IA and IA.HandleMouseUp then
                             IA:HandleMouseUp(it, btn, e.nav)
                         end
