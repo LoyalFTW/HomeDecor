@@ -695,14 +695,20 @@ function EndeavorsUI:Create(parent)
                            C_NeighborhoodInitiative.GetActiveNeighborhood()
         local yOff = 20
         yOff = AddPopupSectionTitle("HOUSE", yOff)
-        for i, house in ipairs(houses) do
-            local lbl = house.neighborhoodName or house.houseName or ("House "..i)
-            local isAct = activeGUID and house.neighborhoodGUID == activeGUID
-            if isAct then lbl = lbl.." (Active)" end
-            local idx = i
-            yOff = AddPopupRow(lbl, selIdx == i, function()
-                if selIdx ~= idx then Sys:SelectHouse(idx) end
+        if not houses or #houses == 0 then
+            yOff = AddPopupRow("Refresh house list", false, function()
+                if Sys.RefreshHouseList then Sys:RefreshHouseList() end
             end, yOff)
+        else
+            for i, house in ipairs(houses) do
+                local lbl = house.neighborhoodName or house.houseName or ("House "..i)
+                local isAct = activeGUID and house.neighborhoodGUID == activeGUID
+                if isAct then lbl = lbl.." (Active)" end
+                local idx = i
+                yOff = AddPopupRow(lbl, selIdx == i, function()
+                    if selIdx ~= idx then Sys:SelectHouse(idx) end
+                end, yOff)
+            end
         end
         yOff = AddPopupDivider(yOff + 2)
         yOff = AddPopupSectionTitle("SORT TASKS", yOff)
@@ -714,6 +720,13 @@ function EndeavorsUI:Create(parent)
             end, yOff)
         end
         filterPopup:SetHeight(yOff + 6)
+    end
+    local function RefreshHouseControls()
+        local houses = Sys and Sys:GetHouseList() or {}
+        local selIdx = Sys and Sys:GetSelectedHouseIndex() or 1
+        local current = houses and houses[selIdx]
+        local label = current and (current.neighborhoodName or current.houseName) or "House / Sort"
+        filterLabel:SetText(label)
     end
     filterPopup:SetScript("OnHide", function()
         filterArrow:SetAtlas("housing-stair-arrow-down-default")
@@ -739,6 +752,7 @@ function EndeavorsUI:Create(parent)
             filterArrow:SetAtlas("housing-stair-arrow-up-highlight")
         end
     end)
+    RefreshHouseControls()
     local cpnIconTex = Tex(infoRow, "OVERLAY")
     cpnIconTex:SetSize(14, 14)
     cpnIconTex:SetPoint("LEFT", filterBtn, "RIGHT", 12, 0)
@@ -970,6 +984,7 @@ function EndeavorsUI:Create(parent)
     cpnTab2:SetScript("OnClick", function() SetTab("coupons") end)
     function panel:RenderTopBar()
         if not Sys then return end
+        RefreshHouseControls()
         local info = Sys:GetEndeavorInfo()
         if not info then return end
         self.seasonFS:SetText(info.seasonName or "")
@@ -1005,6 +1020,11 @@ function EndeavorsUI:Create(parent)
     local cachedHouseLevel = nil
     local cachedHouseXP    = 0
     local cachedHouseMaxXP = 0
+    local function ResetHouseFavorCache()
+        cachedHouseLevel = nil
+        cachedHouseXP    = 0
+        cachedHouseMaxXP = 0
+    end
     local function RequestHouseLevelFavor()
         if not (C_Housing and C_Housing.GetCurrentHouseLevelFavor) then return end
         local houses = Sys and Sys:GetHouseList()
@@ -1012,6 +1032,13 @@ function EndeavorsUI:Create(parent)
         local house  = houses and houses[idx]
         if house and house.houseGUID then
             pcall(C_Housing.GetCurrentHouseLevelFavor, house.houseGUID)
+        end
+    end
+    local function RefreshHouseSelection()
+        ResetHouseFavorCache()
+        RequestHouseLevelFavor()
+        if panel:IsShown() then
+            panel:FullRefresh()
         end
     end
     do
@@ -1035,13 +1062,13 @@ function EndeavorsUI:Create(parent)
                 end
                 if panel:IsShown() then panel:RenderStats() end
             elseif event == "PLAYER_HOUSE_LIST_UPDATED" then
-                cachedHouseLevel = nil
-                RequestHouseLevelFavor()
+                RefreshHouseSelection()
             end
         end)
     end
     function panel:RenderStats()
         if not Sys then return end
+        RefreshHouseControls()
         if cachedHouseLevel == nil then RequestHouseLevelFavor() end
         local level      = cachedHouseLevel or "?"
         local houseXP    = cachedHouseXP
@@ -1085,6 +1112,7 @@ function EndeavorsUI:Create(parent)
     end
     function panel:RenderTasks()
         if not Sys then return end
+        RefreshHouseControls()
         local tasks    = Sys:GetTasks(self._sortBy or "default")
         local rankings = self._highlight and Sys:GetTaskRankings() or {}
         local cpnID    = Sys:GetCouponIconID()
@@ -1356,11 +1384,9 @@ function EndeavorsUI:Create(parent)
                 panel:RenderRight()
             end
         end
-        Sys.OnHouseListUpdated = function()
-            if panel:IsShown() then panel:RenderTopBar() end
-        end
+        Sys.OnHouseListUpdated_callback = RefreshHouseSelection
         Sys.OnActiveNeighborhoodChanged = function()
-            if panel:IsShown() then panel:FullRefresh() end
+            RefreshHouseSelection()
         end
     end
     panel:SetScript("OnShow", function(self)

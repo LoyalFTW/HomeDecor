@@ -9,7 +9,7 @@ local PRE_CAP_XP               = 1000
 local CUMULATIVE_CAP_XP        = 2250
 local FLOOR_COMPLETIONS        = 5
 local REFRESH_DEBOUNCE_SEC     = 0.35
-local FETCH_RETRY_DELAYS       = { 10, 30, 90, 300 }
+local FETCH_RETRY_DELAYS       = { 0.5, 1.5, 3, 10 }
 local NON_REPEATABLE_TASKS = {
     ["Kill a Profession Rare"]                    = true,
     ["Home: Complete Weekly Neighborhood Quests"] = true,
@@ -33,6 +33,7 @@ local state = {
     lastRequestTime      = 0,
     lastManualSelectTime = 0,
     lastKnownActiveGUID  = nil,
+    pendingActiveNeighborhoodGUID = nil,
     pendingTaskCompletions   = {},
     retryTimer               = nil,
     saveProgressTimer        = nil,
@@ -63,6 +64,19 @@ local function DBTaskCoupons()
     local db = DB()
     db.taskActualCoupons = db.taskActualCoupons or {}
     return db.taskActualCoupons
+end
+local function NormalizeHouseList(houseList)
+    if type(houseList) ~= "table" then return {} end
+    if type(houseList.houseInfoList) == "table" then
+        houseList = houseList.houseInfoList
+    end
+    local normalized = {}
+    for _, house in ipairs(houseList) do
+        if type(house) == "table" and (house.houseGUID or house.neighborhoodGUID) then
+            table.insert(normalized, house)
+        end
+    end
+    return normalized
 end
 local function SaveScale(guid, scale)
     if not guid or not scale or scale <= 0 then return end
@@ -418,6 +432,9 @@ function Endeavors:FetchData(attempt)
             Endeavors.OnActiveNeighborhoodChanged()
         end
     end
+    if activeGUID and state.pendingActiveNeighborhoodGUID and activeGUID == state.pendingActiveNeighborhoodGUID then
+        state.pendingActiveNeighborhoodGUID = nil
+    end
     local dataGUID = info.neighborhoodGUID
     if dataGUID and state.houseList then
         local selectedGUID = state.houseList[state.selectedHouseIndex]
@@ -433,7 +450,8 @@ function Endeavors:FetchData(attempt)
             end
         end
     end
-    if dataGUID and activeGUID and dataGUID ~= activeGUID then
+    local effectiveActiveGUID = state.pendingActiveNeighborhoodGUID or activeGUID
+    if dataGUID and effectiveActiveGUID and dataGUID ~= effectiveActiveGUID then
         state.tasks        = {}
         state.endeavorInfo = { seasonName = "Not Active Endeavor", daysRemaining = 0,
                                currentProgress = 0, maxProgress = 0, milestones = {} }
@@ -484,15 +502,23 @@ end
 function Endeavors:QueueRefresh()
     NS.SendMessage("HOMEDECOR_ENDEAVORS_REFRESH")
 end
+function Endeavors:RefreshHouseList()
+    if C_Housing and C_Housing.GetPlayerOwnedHouses then
+        pcall(C_Housing.GetPlayerOwnedHouses)
+    end
+end
 function Endeavors:GetViewingNeighborhoodGUID()
     local house = state.houseList[state.selectedHouseIndex]
     return house and house.neighborhoodGUID or nil
 end
 function Endeavors:IsViewingActiveNeighborhood()
+    local viewGUID    = self:GetViewingNeighborhoodGUID()
+    if state.pendingActiveNeighborhoodGUID and viewGUID and state.pendingActiveNeighborhoodGUID == viewGUID then
+        return true
+    end
     if not C_NeighborhoodInitiative then return false end
     local activeGUID  = C_NeighborhoodInitiative.GetActiveNeighborhood
                         and C_NeighborhoodInitiative.GetActiveNeighborhood()
-    local viewGUID    = self:GetViewingNeighborhoodGUID()
     return activeGUID and viewGUID and activeGUID == viewGUID or false
 end
 function Endeavors:SelectHouse(index)
@@ -509,11 +535,21 @@ function Endeavors:SelectHouse(index)
     state.tasks             = {}
     state.activityLogLoaded = false
     state.activityLog       = nil
+    if Endeavors.OnHouseListUpdated_callback then
+        Endeavors.OnHouseListUpdated_callback(state.houseList, state.selectedHouseIndex)
+    end
     if C_NeighborhoodInitiative then
         C_NeighborhoodInitiative.SetViewingNeighborhood(house.neighborhoodGUID)
+        if C_NeighborhoodInitiative.SetActiveNeighborhood then
+            C_NeighborhoodInitiative.SetActiveNeighborhood(house.neighborhoodGUID)
+            state.lastKnownActiveGUID = house.neighborhoodGUID
+            state.pendingActiveNeighborhoodGUID = house.neighborhoodGUID
+        end
         C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo()
+        self:FetchData()
         self:RequestActivityLog()
-        C_Timer.After(1.5, function()
+        C_Timer.After(0.4, function()
+            self:FetchData()
             self:RefreshActivityLog()
             self:QueueRefresh()
         end)
@@ -524,6 +560,8 @@ function Endeavors:SetAsActiveEndeavor()
     if not house or not house.neighborhoodGUID then return end
     if not C_NeighborhoodInitiative or not C_NeighborhoodInitiative.SetActiveNeighborhood then return end
     C_NeighborhoodInitiative.SetActiveNeighborhood(house.neighborhoodGUID)
+    state.lastKnownActiveGUID = house.neighborhoodGUID
+    state.pendingActiveNeighborhoodGUID = house.neighborhoodGUID
     state.currentHouseGUID  = house.houseGUID
     state.activityLogLoaded = false
     print("|cFF2aa198[HomeDecor Endeavors]|r Active Endeavor set to |cFFffd700" ..
@@ -731,17 +769,26 @@ function Endeavors:OnPlayerEnteringWorld()
     end)
 end
 
-function Endeavors:OnHouseListUpdated(event, houseInfoList)
-    state.houseList       = houseInfoList or {}
+function Endeavors:OnHouseListUpdated(houseInfoList)
+    local resolvedHouseList = NormalizeHouseList(houseInfoList)
+    if #resolvedHouseList == 0 and #state.houseList > 0 then
+        resolvedHouseList = state.houseList
+    end
+    state.houseList       = resolvedHouseList
     state.houseListLoaded = true
     local recentManual = (GetTime() - state.lastManualSelectTime) < 2
-    if recentManual then return end
+    if recentManual then
+        if Endeavors.OnHouseListUpdated_callback then
+            Endeavors.OnHouseListUpdated_callback(state.houseList, state.selectedHouseIndex)
+        end
+        return
+    end
     local selectedIndex, neighborhoodGUID = nil, nil
     local activeGUID = C_NeighborhoodInitiative and
                        C_NeighborhoodInitiative.GetActiveNeighborhood and
                        C_NeighborhoodInitiative.GetActiveNeighborhood()
-    if activeGUID and houseInfoList then
-        for i, house in ipairs(houseInfoList) do
+    if activeGUID and state.houseList then
+        for i, house in ipairs(state.houseList) do
             if house.neighborhoodGUID == activeGUID then
                 selectedIndex, neighborhoodGUID = i, activeGUID
                 break
@@ -750,8 +797,8 @@ function Endeavors:OnHouseListUpdated(event, houseInfoList)
     end
     if not selectedIndex then
         local savedGUID = DB().selectedHouseGUID
-        if savedGUID and houseInfoList then
-            for i, house in ipairs(houseInfoList) do
+        if savedGUID and state.houseList then
+            for i, house in ipairs(state.houseList) do
                 if house.houseGUID == savedGUID then
                     selectedIndex    = i
                     neighborhoodGUID = house.neighborhoodGUID
@@ -760,13 +807,13 @@ function Endeavors:OnHouseListUpdated(event, houseInfoList)
             end
         end
     end
-    if not selectedIndex and houseInfoList and #houseInfoList > 0 then
+    if not selectedIndex and state.houseList and #state.houseList > 0 then
         selectedIndex    = 1
-        neighborhoodGUID = houseInfoList[1].neighborhoodGUID
+        neighborhoodGUID = state.houseList[1].neighborhoodGUID
     end
     if selectedIndex then
         state.selectedHouseIndex = selectedIndex
-        state.currentHouseGUID   = houseInfoList[selectedIndex].houseGUID
+        state.currentHouseGUID   = state.houseList[selectedIndex].houseGUID
         DB().selectedHouseGUID   = state.currentHouseGUID
         state.activeGUID         = state.currentHouseGUID
         GetOrCreateContext(state.currentHouseGUID)
@@ -774,6 +821,7 @@ function Endeavors:OnHouseListUpdated(event, houseInfoList)
     if neighborhoodGUID and C_NeighborhoodInitiative then
         C_NeighborhoodInitiative.SetViewingNeighborhood(neighborhoodGUID)
         C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo()
+        Endeavors:FetchData()
         Endeavors:RequestActivityLog()
     end
     if Endeavors.OnHouseListUpdated_callback then
@@ -799,7 +847,7 @@ function Endeavors:OnTrackedListChanged()
     if Endeavors.OnDataReady then Endeavors.OnDataReady() end
 end
 
-function Endeavors:OnTaskCompleted(event, taskName)
+function Endeavors:OnTaskCompleted(taskName)
     state.activityLogStale = true
     table.insert(state.pendingTaskCompletions, {
         taskName  = taskName,
@@ -826,7 +874,7 @@ function Endeavors:OnActivityLogUpdated()
     Endeavors:RefreshActivityLog()
 end
 
-function Endeavors:OnCurrencyDisplayUpdate(event, currencyID, quantity)
+function Endeavors:OnCurrencyDisplayUpdate(currencyID, quantity)
     if currencyID == COUPON_CURRENCY_ID and #state.pendingTaskCompletions > 0 then
         local gains       = DBCouponGains()
         local taskCoupons = DBTaskCoupons()
