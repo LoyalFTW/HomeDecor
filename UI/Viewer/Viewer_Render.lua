@@ -72,6 +72,22 @@ local function wipeTable(t)
     for k in pairs(t) do t[k] = nil end
 end
 
+local viewerWarmPrefetchScheduled = false
+
+local function ScheduleViewerWarmPrefetch()
+    if viewerWarmPrefetchScheduled or not C_Timer or not C_Timer.After then return end
+    viewerWarmPrefetchScheduled = true
+
+    C_Timer.After(0.2, function()
+        if D and D.PrefetchQuestAndAchievementNames then
+            D.PrefetchQuestAndAchievementNames()
+        end
+        if D and D.PrefetchProfessionItemData then
+            D.PrefetchProfessionItemData()
+        end
+    end)
+end
+
 local DyeableCache = {}
 local CategoryBreadcrumbCache = {}
 
@@ -1236,13 +1252,8 @@ function Render:Create(parent)
 
     f:SetScript("OnShow", function(self)
         GridCache = {}
-        if D and D.PrefetchQuestAndAchievementNames then
-            D.PrefetchQuestAndAchievementNames()
-        end
-        if D and D.PrefetchProfessionItemData then
-            D.PrefetchProfessionItemData()
-        end
         if self.Render then self:Render(true) end
+        ScheduleViewerWarmPrefetch()
     end)
 
     f:SetScript("OnSizeChanged", function(self, width, height)
