@@ -1,6 +1,6 @@
-﻿local ADDON, NS = ...
-NS.L = NS.L or {}
-local L = NS.L
+local ADDON, NS = ...
+local L = LibStub("AceLocale-3.0"):NewLocale("HomeDecor", "enUS", true)
+if not L then return end
 
 L["ADDON_NAME"]                     = "HomeDecor"
 L["SETTINGS"]                       = "Settings"
@@ -149,7 +149,7 @@ L["LUMBER_TOTAL_ZERO"]             = "Lumber Total: 0"
 L["LUMBER_GOAL_AMOUNT"]            = "Goal Amount:"
 L["LUMBER_HIGHLIGHT_SAVED"]        = "Highlight Saved Items:"
 L["LUMBER_COMPACT_MODE"]           = "Compact Mode"
-L["LUMBER_COMPACT_TIP"]            = "Shows a condensed single-line list â€” fits more items with less screen space"
+L["LUMBER_COMPACT_TIP"]            = "Shows a condensed single-line list Ã¢â‚¬â€ fits more items with less screen space"
 L["LUMBER_TOGGLE_COMPACT"]         = "Toggle compact single-line view"
 L["LUMBER_SHOW_ICONS"]             = "Show Icons"
 L["LUMBER_HIDE_ZERO"]              = "Hide Items with 0"
@@ -375,7 +375,7 @@ L["MAP_PANEL_TOOLTIP_ANCHOR_SECTION"] = "Tooltip Position"
 L["MAP_PANEL_TOOLTIP_ANCHOR"]         = "Anchor"
 
 L["LUMBER_SHOW_ICONS_TIP"]          = ""
-L["LUMBER_COMPACT_MODE_TIP"]        = "Shows a condensed single-line list â€” fits more items with less screen space"
+L["LUMBER_COMPACT_MODE_TIP"]        = "Shows a condensed single-line list Ã¢â‚¬â€ fits more items with less screen space"
 L["LUMBER_AUTO_FARM_TIP_LONG"]      = "Automatically start farming stats when you loot lumber"
 L["LUMBER_ACCOUNT_WIDE_TIP_LONG"]   = "Combines lumber counts from all characters.\n\nHover over rows to see per-character breakdown."
 L["LUMBER_AUTO_CALC_GOALS_TIP_LONG"]= "Automatically calculates goals based on housing decor recipes you haven't crafted yet"

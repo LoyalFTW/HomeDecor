@@ -1,7 +1,6 @@
 local ADDON, NS = ...
-if GetLocale() ~= "frFR" then return end
-NS.L = NS.L or {}
-local L = NS.L
+local L = LibStub("AceLocale-3.0"):NewLocale("HomeDecor", "frFR")
+if not L then return end
 L["SETTINGS"]                       = "Paramètres"
 L["COMMUNITY"]                      = "Communauté"
 L["WHATS_NEW"]                      = "Nouveautés"
@@ -377,7 +376,7 @@ L["PROF_TIP_MESSAGE"]              = "Veuillez vous connecter sur tous vos alts 
 L["PROF_TIP_OK"]                   = "Compris !"
 L["CONFLICT_TITLE"]        = "Conflit de fonctionnalités d'édition"
 L["CONFLICT_LINE1"]        = "Un autre addon fournit des fonctionnalités d'édition similaires."
-L["CONFLICT_LINE2"]        = "Souhaitez-vous d�sactiver les fonctionnalit�s d'�dition de HomeDecor ?"
+L["CONFLICT_LINE2"]        = "Souhaitez-vous d�sactiver les fonctionnalit�s d'�dition de HomeDecor ?"
 L["CONFLICT_LINE3"]        = "Vous pouvez modifier cela à tout moment dans les Options de HomeDecor."
 L["CONFLICT_BTN_DISABLE"]  = "Désactiver HomeDecor"
 L["CONFLICT_BTN_KEEP"]     = "Garder HomeDecor"
