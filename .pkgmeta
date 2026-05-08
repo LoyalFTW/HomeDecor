@@ -20,9 +20,9 @@ ignore:
   - .pkgmeta
 
 move-folders:
-  HomeDecor: HomeDecor
-  HomeDecor_Data_Vendors: HomeDecor_Data_Vendors
-  HomeDecor_Data_Drops: HomeDecor_Data_Drops
-  HomeDecor_Data_Events: HomeDecor_Data_Events
-  HomeDecor_Data_Professions: HomeDecor_Data_Professions
-  HomeDecor_Data_Trainers: HomeDecor_Data_Trainers
+  HomeDecor/HomeDecor: HomeDecor
+  HomeDecor/HomeDecor_Data_Vendors: HomeDecor_Data_Vendors
+  HomeDecor/HomeDecor_Data_Drops: HomeDecor_Data_Drops
+  HomeDecor/HomeDecor_Data_Events: HomeDecor_Data_Events
+  HomeDecor/HomeDecor_Data_Professions: HomeDecor_Data_Professions
+  HomeDecor/HomeDecor_Data_Trainers: HomeDecor_Data_Trainers
