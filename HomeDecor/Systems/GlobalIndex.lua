@@ -1,0 +1,137 @@
+local ADDON, NS = ...
+NS.Systems = NS.Systems or {}
+
+local GI = {}
+NS.Systems.GlobalIndex = GI
+
+GI.byItemID   = {}
+GI.counts     = {}
+GI.collected  = {}
+GI._built     = false
+
+local Collection = NS.Systems and NS.Systems.Collection
+local PVP_VENDOR_IDS = {
+    [254603] = true,
+    [254606] = true,
+}
+
+local function NormalizeCategory(cat)
+    if cat == "Saved Items" then return "Saved Items" end
+    if cat == "PVP" then return "PvP" end
+    return cat
+end
+
+local function AddToCategory(cat, decorID)
+    if not decorID then return end
+    cat = NormalizeCategory(cat)
+    GI._categoryScratch = GI._categoryScratch or {}
+    GI._categoryScratch[cat] = GI._categoryScratch[cat] or {}
+    GI._categoryScratch[cat][decorID] = true
+    GI.byItemID[decorID] = true
+end
+
+local function CountSet(set)
+    local n = 0
+    for _ in pairs(set or {}) do n = n + 1 end
+    return n
+end
+
+local function CountCollected(set)
+    local n = 0
+    if not Collection or not Collection.IsCollected then return 0 end
+    for decorID in pairs(set or {}) do
+        if Collection:IsCollected({ decorID = decorID, source = { type = "vendor" } }) then
+            n = n + 1
+        end
+    end
+    return n
+end
+
+local function buildVendorCategories()
+    local vendors = NS.Data and NS.Data.Vendors
+    if type(vendors) ~= "table" then return end
+    for _, exp in pairs(vendors) do
+        for _, zone in pairs(exp or {}) do
+            for _, vendor in ipairs(zone or {}) do
+                local src = vendor and vendor.source or {}
+                local id = tonumber(src.id or vendor.npcID or vendor.id)
+                local isPvPVendor = id and PVP_VENDOR_IDS[id]
+                if type(vendor.items) == "table" then
+                    for _, it in ipairs(vendor.items) do
+                        AddToCategory("Vendors", it.decorID)
+                        if isPvPVendor then
+                            AddToCategory("PvP", it.decorID)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function walkCategory(cat)
+    local data = NS.Data and NS.Data[cat]
+    if type(data) ~= "table" then return end
+
+    local function walk(node)
+        if type(node) ~= "table" then return end
+        if node[1] and node[1].decorID then
+            for _, it in ipairs(node) do AddToCategory(cat, it.decorID) end
+            return
+        end
+        if node.items and type(node.items) == "table" then
+            for _, it in ipairs(node.items) do AddToCategory(cat, it.decorID) end
+            return
+        end
+        for _, v in pairs(node) do walk(v) end
+    end
+
+    walk(data)
+end
+
+function GI:Build()
+    wipe(self.byItemID)
+    wipe(self.counts)
+    wipe(self.collected)
+    self._categoryScratch = {}
+
+    buildVendorCategories()
+    walkCategory("Achievements")
+    walkCategory("Quests")
+    walkCategory("Professions")
+    walkCategory("Drops")
+    walkCategory("Saved Items")
+
+    for cat, set in pairs(self._categoryScratch) do
+        self.counts[cat] = CountSet(set)
+        self.collected[cat] = CountCollected(set)
+    end
+
+    self._categoryScratch = nil
+    self._built = true
+end
+
+function GI:Invalidate(rebuildNow)
+    self._built = false
+    if rebuildNow then
+        self:Build()
+    end
+end
+
+function GI:Ensure()
+    if not self._built then self:Build() end
+end
+
+function GI:GetCounts(cat)
+    self:Ensure()
+    cat = NormalizeCategory(cat)
+    return (self.collected[cat] or 0), (self.counts[cat] or 0)
+end
+
+if Collection and Collection.RegisterListener then
+    Collection:RegisterListener(function()
+        GI:Invalidate(false)
+    end)
+end
+
+return GI

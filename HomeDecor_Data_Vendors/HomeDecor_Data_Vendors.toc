@@ -1,0 +1,7 @@
+## Interface: 120001, 120005
+## Title: HomeDecor Data Vendors
+## Author: Jay
+## LoadOnDemand: 1
+## Dependencies: HomeDecor
+Data\Vendors\Vendors.xml
+Register.lua

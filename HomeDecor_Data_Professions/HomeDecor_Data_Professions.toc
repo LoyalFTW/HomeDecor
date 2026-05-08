@@ -1,0 +1,8 @@
+## Interface: 120001, 120005
+## Title: HomeDecor Data Professions
+## Author: Jay
+## LoadOnDemand: 1
+## Dependencies: HomeDecor
+Data\Professions\Prof_Reagents.lua
+Data\Professions\Professions.xml
+Register.lua

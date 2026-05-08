@@ -1,0 +1,7 @@
+## Interface: 120001, 120005
+## Title: HomeDecor Data Drops
+## Author: Jay
+## LoadOnDemand: 1
+## Dependencies: HomeDecor
+Data\Drops\Drops.xml
+Register.lua

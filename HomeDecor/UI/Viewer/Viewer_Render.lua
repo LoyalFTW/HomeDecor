@@ -1,0 +1,2268 @@
+local ADDON, NS = ...
+local L = NS.L
+NS.UI = NS.UI or {}
+
+local View = NS.UI.Viewer
+if not View then return end
+
+local Render = View.Render
+if not Render then return end
+
+local LAYOUT = {
+    ROW_GAP = 8,
+    LIST_H = 90,
+    LIST_GAP = 6,
+    PAD_TOP = 10,
+    PAD_BOTTOM = 12,
+    TILE = {
+        MIN_W = 175,
+        MAX_W = 260,
+        MIN_COLS = 2,
+        MAX_COLS = 6,
+        GAP = 10,
+        ASPECT = 1.10,
+        ICON_RATIO = 0.36,
+        FIXED_HEIGHT = 300
+    },
+    ICON = {
+        MIN = 66,
+        MAX = 96
+    }
+}
+
+local D = View.Data
+local U = View.Util
+local S = View.Search
+local R = View.Requirements
+
+local Systems = NS.Systems or {}
+local FiltersSys = Systems.Filters
+local Collection = Systems.Collection
+local DataLoader = Systems.DataLoader
+
+local UI = NS.UI or {}
+local TT = UI.Tooltips
+local Favorite = UI.FavoriteStar
+local StatusIcon = UI.StatusIcon
+local ProgressBar = UI.ProgressBar
+local DropPanel = UI.DropPanel
+local HeaderCtrl = UI.HeaderController
+local RS = UI.RowStyles
+local IA = UI.ItemInteractions
+local Controls = UI.Controls
+local Theme = UI.Theme
+
+local C_Timer = _G.C_Timer
+local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
+local GetTime = _G.GetTime
+local C_HousingCatalog = _G.C_HousingCatalog
+local C_CurrencyInfo = _G.C_CurrencyInfo
+local time = _G.time
+
+local floor = math.floor
+local function Pixel(v) return v and floor(v + 0.5) or 0 end
+local function clamp(v, min, max) return v < min and min or (v > max and max or v) end
+local function GetThemeColor(name, fallback)
+    local colors = Theme and Theme.colors
+    return (colors and colors[name]) or fallback
+end
+
+local function wipeTable(t)
+    if type(t) ~= "table" then return end
+    for k in pairs(t) do t[k] = nil end
+end
+
+local viewerWarmPrefetchScheduled = false
+
+local function ScheduleViewerWarmPrefetch()
+    if viewerWarmPrefetchScheduled or not C_Timer or not C_Timer.After then return end
+    viewerWarmPrefetchScheduled = true
+
+    C_Timer.After(0.2, function()
+        if D and D.PrefetchQuestAndAchievementNames then
+            D.PrefetchQuestAndAchievementNames()
+        end
+        if D and D.PrefetchProfessionItemData then
+            D.PrefetchProfessionItemData()
+        end
+    end)
+end
+
+local DyeableCache = {}
+local CategoryBreadcrumbCache = {}
+
+local function IsItemDyeable(decorID)
+    if not decorID then return false end
+    if DyeableCache[decorID] ~= nil then return DyeableCache[decorID] end
+
+    if C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByRecordID then
+        local ok, info = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID, 1, decorID, true)
+        if ok and info then
+            DyeableCache[decorID] = info.canCustomize == true
+            return DyeableCache[decorID]
+        end
+    end
+
+    DyeableCache[decorID] = false
+    return false
+end
+local VENDOR_CLASS_LABEL = {
+    [103693] = "Hunter",
+    [105986] = "Rogue",
+    [112318] = "Shaman",
+    [112323] = "Druid",
+	[93550] = "Death Knight",
+	[100196] = "Paladin",
+    [112338] = "Monk",
+    [112392] = "Warrior",
+    [112401] = "Priest",
+    [112407] = "Demon Hunter",
+    [112434] = "Warlock",
+    [112440] = "Mage",
+}
+
+local function GetClassLabelForVendor(it)
+    if not it then return nil end
+    local vid = it.npcID
+    if not vid and it.source then vid = it.source.npcID or it.source.id end
+    if not vid and it.vendor and it.vendor.source then vid = it.vendor.source.id end
+    vid = tonumber(vid)
+    return vid and VENDOR_CLASS_LABEL[vid] or nil
+end
+
+local function GetDyeableOrClassLabel(it)
+    local classLabel = GetClassLabelForVendor(it)
+    local isDyeable = IsItemDyeable(it and it.decorID)
+    if isDyeable and classLabel then return "Dyeable - " .. classLabel end
+    if isDyeable then return "Dyeable" end
+    return classLabel
+end
+
+local function GetDecorCategoryBreadcrumb(decorID)
+    if not decorID then return "" end
+
+    if CategoryBreadcrumbCache[decorID] then
+        return CategoryBreadcrumbCache[decorID]
+    end
+
+    if C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByRecordID then
+        local ok, info = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID, 1, decorID, true)
+        if ok and info then
+            local breadcrumb = ""
+
+            local categoryName = info.categoryName
+            if not categoryName or categoryName == "" then
+                if info.categoryID and C_HousingCatalog.GetCatalogCategoryInfo then
+                    local catOk, catInfo = pcall(C_HousingCatalog.GetCatalogCategoryInfo, info.categoryID)
+                    if catOk and catInfo and catInfo.name then
+                        categoryName = catInfo.name
+                    end
+                end
+            end
+            local subcategoryName = info.subcategoryName
+            if not subcategoryName or subcategoryName == "" then
+                if info.subcategoryID and C_HousingCatalog.GetCatalogSubcategoryInfo then
+                    local subOk, subInfo = pcall(C_HousingCatalog.GetCatalogSubcategoryInfo, info.subcategoryID)
+                    if subOk and subInfo and subInfo.name then
+                        subcategoryName = subInfo.name
+                    end
+                end
+            end
+
+            if categoryName and categoryName ~= "" then
+                breadcrumb = categoryName
+                if subcategoryName and subcategoryName ~= "" then
+                    breadcrumb = breadcrumb .. " > " .. subcategoryName
+                end
+            elseif subcategoryName and subcategoryName ~= "" then
+                breadcrumb = subcategoryName
+            end
+
+            CategoryBreadcrumbCache[decorID] = breadcrumb
+            return breadcrumb
+        end
+    end
+
+    CategoryBreadcrumbCache[decorID] = ""
+    return ""
+end
+
+local function GetCurrencyInfo(it)
+    if not it or not it.source then return nil, nil, nil, nil end
+
+    local s = it.source
+    local goldCost = tonumber(s.cost or it.cost)
+    local currencyAmount = tonumber(s.currency or s.currencyText or s.costText)
+    local currencyTypeID = s.currencytype or s.currencyType or s.currencyID
+    local currencyName, iconFileID
+
+    if currencyAmount and currencyTypeID then
+        if type(currencyTypeID) == "string" and not tonumber(currencyTypeID) then
+            currencyName = currencyTypeID
+        elseif C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo then
+            local numericID = tonumber(currencyTypeID)
+            if numericID then
+                local ok, info = pcall(C_CurrencyInfo.GetCurrencyInfo, numericID)
+                if ok and info then
+                    currencyName = info.name
+                    iconFileID = info.iconFileID
+                end
+            end
+        end
+        currencyName = currencyName or "Currency"
+    end
+
+    return goldCost, currencyAmount, currencyName, iconFileID
+end
+
+local function CalculateTileHeight(it, baseHeight)
+    return LAYOUT.TILE.FIXED_HEIGHT
+end
+
+local function AddToFlat(out, seen, it)
+    if type(it) ~= "table" then return end
+
+    local id = it.decorID or (it.source and (it.source.id or it.source.itemID or it.source.itemId)) or it.itemID
+    if not id then return end
+
+    local src = it.source or {}
+    local faction = it.faction or src.faction or ""
+    local questID = it.requirements and it.requirements.quest and (it.requirements.quest.id or it.requirements.quest)
+    local achievementID = it.requirements and it.requirements.achievement and (it.requirements.achievement.id or it.requirements.achievement)
+    local reqID = questID or achievementID or src.questID or src.achievementID or src.id or ""
+    local key = table.concat({
+        tostring(src.type or ""),
+        tostring(id),
+        tostring(faction),
+        tostring(reqID),
+    }, ":")
+    if seen[key] then return end
+
+    seen[key] = true
+    out[#out + 1] = it
+end
+
+local function BuildItemKey(it)
+    if type(it) ~= "table" then return nil end
+    local src = it.source or {}
+    local id = it.decorID or src.id or src.itemID or src.itemId or it.itemID
+    if not id then return nil end
+    local faction = it.faction or src.faction or ""
+    local questID = it.requirements and it.requirements.quest and (it.requirements.quest.id or it.requirements.quest)
+    local achievementID = it.requirements and it.requirements.achievement and (it.requirements.achievement.id or it.requirements.achievement)
+    local reqID = questID or achievementID or src.questID or src.achievementID or src.id or ""
+    return table.concat({
+        tostring(src.type or ""),
+        tostring(id),
+        tostring(faction),
+        tostring(reqID),
+    }, ":")
+end
+
+local function BuildSourceSummary(it)
+    if not it then return "Unknown source" end
+    local src = it.source or {}
+    local srcType = src.type
+
+    if srcType == "vendor" then
+        local vendor = it.vendor or it._navVendor
+        local name = vendor and D and D.ResolveVendorTitle and D.ResolveVendorTitle(vendor)
+        name = name or vendor and (vendor.title or vendor.name)
+        return name and ("Vendor: " .. name) or "Vendor"
+    end
+
+    if srcType == "quest" then
+        local title = (it.quest and it.quest.title) or src.quest or src.title
+        return title and title ~= "" and ("Quest: " .. title) or "Quest reward"
+    end
+
+    if srcType == "achievement" then
+        local title = (it.achievement and it.achievement.title) or src.achievement or src.title
+        return title and title ~= "" and ("Achievement: " .. title) or "Achievement reward"
+    end
+
+    if srcType == "drop" then
+        local npc = src.npc or it.npc or it.titleNPC
+        return npc and npc ~= "" and ("Drops from: " .. npc) or "Mob drop"
+    end
+
+    if srcType == "profession" then
+        return "Profession recipe"
+    end
+
+    if srcType == "saved" then
+        return "Saved item"
+    end
+
+    return srcType and (srcType:gsub("^%l", string.upper)) or "Unknown source"
+end
+
+local function BuildLocationSummary(it)
+    if not it then return nil end
+    local parts = {}
+    if it._expansion and it._expansion ~= "" then
+        parts[#parts + 1] = tostring(it._expansion)
+    end
+    if it.zone and it.zone ~= "" then
+        parts[#parts + 1] = tostring(it.zone)
+    end
+    local faction = it.faction or (it.source and it.source.faction)
+    if faction == "Alliance" or faction == "Horde" then
+        parts[#parts + 1] = faction
+    end
+    if #parts == 0 then return nil end
+    return table.concat(parts, "  -  ")
+end
+
+local function BuildCostSummary(it)
+    local goldCost, currencyAmount, currencyName = GetCurrencyInfo(it)
+    local parts = {}
+    if goldCost and goldCost > 0 then
+        parts[#parts + 1] = tostring(goldCost) .. " gold"
+    end
+    if currencyAmount and currencyAmount > 0 then
+        parts[#parts + 1] = tostring(currencyAmount) .. " " .. tostring(currencyName or "currency")
+    end
+    if #parts == 0 then return nil end
+    return table.concat(parts, "  -  ")
+end
+
+local function IsCollectedForDisplay(it)
+    if not it then return false end
+    if Collection and Collection.IsCollected then
+        local ok, collected = pcall(Collection.IsCollected, Collection, it)
+        if ok then return collected and true or false end
+    end
+
+    local state = U and U.GetStateSafe and U.GetStateSafe(it)
+    if state == (Collection and Collection.State and Collection.State.COLLECTED) then
+        return true
+    end
+    if type(state) == "table" then
+        return state.collected == true
+    end
+    return state == true
+end
+
+local function GetDefaultSceneID()
+    if Constants and Constants.HousingCatalogConsts and Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT then
+        return Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT
+    end
+    return 859
+end
+
+local function BuildFlatResults(ui, db, scopeKey)
+    if not scopeKey or scopeKey == "" then return {} end
+
+    local out, seen = {}, {}
+    if DataLoader then
+        if scopeKey == "GLOBAL" and DataLoader.EnsureAllCatalogData then
+            DataLoader:EnsureAllCatalogData()
+        elseif DataLoader.EnsureForCategory then
+            DataLoader:EnsureForCategory(scopeKey)
+        end
+    end
+    local data = NS.Data or {}
+
+    local function scanNode(node, exp, zone, vendorCtx)
+        if type(node) ~= "table" then return end
+
+        if node.decorID then
+            local it = node
+            if vendorCtx and D and D.AttachVendorCtx then
+                it = D.AttachVendorCtx(node, vendorCtx) or node
+            end
+            if exp and not it._expansion then it._expansion = exp end
+            if zone and not it._navZoneKey then it._navZoneKey = zone end
+            if not FiltersSys or not FiltersSys.Passes or FiltersSys:Passes(it, ui, db) then
+                AddToFlat(out, seen, it)
+            end
+            return
+        end
+
+        if node.items and type(node.items) == "table" then
+            for _, leaf in ipairs(node.items) do
+                scanNode(leaf, exp, zone, node)
+            end
+            return
+        end
+
+        if node[1] then
+            for _, child in ipairs(node) do
+                scanNode(child, exp, zone, vendorCtx)
+            end
+            return
+        end
+
+        for _, v in pairs(node) do
+            scanNode(v, exp, zone, vendorCtx)
+        end
+    end
+
+    local function scanCategory(catKey)
+        local catTbl = data[catKey]
+        if type(catTbl) ~= "table" then return end
+        for exp, expTbl in pairs(catTbl) do
+            if type(expTbl) == "table" then
+                for zone, items in pairs(expTbl) do
+                    if type(items) == "table" then
+                        scanNode(items, exp, zone, nil)
+                    end
+                end
+            end
+        end
+    end
+
+    if scopeKey == "GLOBAL" then
+        for k, v in pairs(data) do
+            if type(k) == "string" and type(v) == "table" and k ~= "Events" then
+                scanCategory(k)
+            end
+        end
+    else
+        scanCategory(scopeKey)
+    end
+
+    table.sort(out, function(a, b)
+        local sortMode = (db and db.ui and db.ui.sortMode) or "expAsc"
+        local ra = D and D.EXPANSION_RANK and (D.EXPANSION_RANK[a._expansion or ""] or 999) or 999
+        local rb = D and D.EXPANSION_RANK and (D.EXPANSION_RANK[b._expansion or ""] or 999) or 999
+        if ra ~= rb then
+            if sortMode == "expDesc" then return ra > rb else return ra < rb end
+        end
+        return tostring(a.title or ""):lower() < tostring(b.title or ""):lower()
+    end)
+
+    return out
+end
+
+local function CountItems(items, vendorCtx)
+    local total, collected = 0, 0
+
+    local function countOne(it, vctx)
+        if not it then return end
+        local rit = it
+        if vctx and D and D.AttachVendorCtx then D.AttachVendorCtx(rit, vctx) end
+        if U and U.Passes and U.Passes(rit) then
+            total = total + 1
+            if U.IsCollectedSafe and U.IsCollectedSafe(rit) then
+                collected = collected + 1
+            end
+        end
+    end
+
+    if vendorCtx then
+        for _, it in ipairs(items or {}) do countOne(it, vendorCtx) end
+        return collected, total
+    end
+
+    for _, it in ipairs(items or {}) do
+        local src = it and it.source
+        if type(it) == "table" and src and src.type == "vendor" and type(it.items) == "table" then
+            for _, leaf in ipairs(it.items) do countOne(leaf, it) end
+        else
+            countOne(it, nil)
+        end
+    end
+
+    return collected, total
+end
+
+local COUNT_NO_VENDOR = {}
+
+local function BuildCountSignature(ui, db)
+    local filters = (db and db.filters) or {}
+    local tokens = {
+        tostring(ui and ui.activeCategory or ""),
+        tostring(ui and ui.search or ""),
+        tostring(ui and ui._searchNorm or ""),
+        tostring(View and View._renderDataEpoch or 0),
+        tostring(filters.hideCollected),
+        tostring(filters.onlyCollected),
+        tostring(filters.expansion),
+        tostring(filters.zone),
+        tostring(filters.faction),
+        tostring(filters.category),
+        tostring(filters.subcategory),
+        tostring(filters.availableRepOnly),
+        tostring(filters.questsCompleted),
+        tostring(filters.achievementCompleted),
+        tostring(filters.hidePvpItems),
+    }
+    return table.concat(tokens, "\031")
+end
+
+local function EnsureCountCache(f, ui, db)
+    local signature = BuildCountSignature(ui, db)
+    if f._countCacheSignature ~= signature then
+        f._countCacheSignature = signature
+        f._countCache = setmetatable({}, { __mode = "k" })
+    elseif not f._countCache then
+        f._countCache = setmetatable({}, { __mode = "k" })
+    end
+    return f._countCache
+end
+
+local function GetCachedCounts(f, ui, db, items, vendorCtx)
+    if type(items) ~= "table" then
+        return 0, 0
+    end
+
+    local cache = EnsureCountCache(f, ui, db)
+    local byItems = cache[items]
+    if not byItems then
+        byItems = {}
+        cache[items] = byItems
+    end
+
+    local vendorKey = vendorCtx or COUNT_NO_VENDOR
+    local cached = byItems[vendorKey]
+    if cached then
+        return cached.collected or 0, cached.total or 0
+    end
+
+    local collected, total = CountItems(items, vendorCtx)
+    byItems[vendorKey] = {
+        collected = collected,
+        total = total,
+    }
+    return collected, total
+end
+
+local function FindFirstVisible(entries, y)
+    if not entries then return 1 end
+    local lo, hi = 1, #entries
+    local res = hi + 1
+    while lo <= hi do
+        local mid = floor((lo + hi) / 2)
+        local e = entries[mid]
+        local bottom = (e.y or 0) + (e.h or 0)
+        if bottom >= y then
+            res = mid
+            hi = mid - 1
+        else
+            lo = mid + 1
+        end
+    end
+    return res
+end
+
+local function ApplyFactionBadge(fr, it, size)
+    if not (fr and it and fr.factionIcon) then return end
+
+    local fac = it.faction or (it.source and it.source.faction)
+    local icon = (fac == "Alliance" and D.TEX_ALLI) or (fac == "Horde" and D.TEX_HORDE) or nil
+
+    fr.factionIcon:ClearAllPoints()
+
+    if fr._kind == "tile" then
+        fr.factionIcon:SetPoint("TOPRIGHT", (fr.media or fr), "TOPRIGHT", -8, -8)
+        if fr.factionIcon.SetSize then fr.factionIcon:SetSize(size or 18, size or 18) end
+    else
+        local iconSize = 14
+        if fr.factionIcon.SetSize then fr.factionIcon:SetSize(iconSize, iconSize) end
+
+        if icon then
+            fr.factionIcon:SetPoint("TOPLEFT", fr, "TOPLEFT", 70, -9)
+            if fr.text then
+                fr.text:ClearAllPoints()
+                fr.text:SetPoint("TOPLEFT", fr, "TOPLEFT", 70 + iconSize + 3, -8)
+            end
+        else
+            if fr.text then
+                fr.text:ClearAllPoints()
+                fr.text:SetPoint("TOPLEFT", fr, "TOPLEFT", 70, -8)
+            end
+        end
+    end
+
+    if icon and fr.factionIcon.SetTexture then
+        fr.factionIcon:SetTexture(icon)
+        fr.factionIcon:Show()
+    else
+        fr.factionIcon:Hide()
+    end
+
+    if fr._statusIcon and fr._statusIcon.GetTexture then
+        local t = fr._statusIcon:GetTexture()
+        if t == D.TEX_ALLI or t == D.TEX_HORDE then
+            fr._statusIcon:Hide()
+        end
+    end
+end
+
+local function SetupFavoriteHover(btn)
+    if not btn or not btn.HookScript or btn.favHoverBound then return end
+    btn.favHoverBound = true
+    btn:HookScript("OnEnter", function(b)
+        if b.SetAlpha then b:SetAlpha(1.0) end
+        if b.SetScale then b:SetScale(1.12) end
+    end)
+    btn:HookScript("OnLeave", function(b)
+        if b.SetAlpha then b:SetAlpha(0.85) end
+        if b.SetScale then b:SetScale(1.0) end
+    end)
+end
+
+local function ReqEnter(btn)
+    local row = btn and btn:GetParent()
+    local req = row and row.req and row.req._req
+    if not req then return end
+    if row.req and R.BuildReqDisplay then
+        row.req:SetText(R.BuildReqDisplay(req, true))
+    end
+    if TT and TT.ShowRequirement then
+        TT:ShowRequirement(btn, req)
+    end
+end
+
+local function ReqLeave(btn)
+    local row = btn and btn:GetParent()
+    local req = row and row.req and row.req._req
+    if not req then return end
+    if row.req and R.BuildReqDisplay then
+        row.req:SetText(R.BuildReqDisplay(req, false))
+    end
+    if GameTooltip then GameTooltip:Hide() end
+end
+
+local function ReqClick(btn)
+    local row = btn and btn:GetParent()
+    local req = row and row.req and row.req._req
+    if not req or not R.ShowWowheadLinks then return end
+
+    local url = (req.kind == "quest" and R.BuildWowheadQuestURL(req.id)) or R.BuildWowheadAchievementURL(req.id)
+    R.ShowWowheadLinks({ { label = "Link", url = url } })
+end
+
+local function BindReqButton(btn)
+    if btn and not btn.reqScriptsBound then
+        btn.reqScriptsBound = true
+        btn:SetScript("OnEnter", ReqEnter)
+        btn:SetScript("OnLeave", ReqLeave)
+        btn:SetScript("OnClick", ReqClick)
+    end
+end
+
+local function HeaderClick(self)
+    local f = self and self._owner
+    if not f then return end
+
+    local entry = self._entry
+    if not entry or not entry.payload or not entry.payload.key then return end
+
+    if entry.payload.vendor then
+        entry.payload.vendor._uiOpen = not entry.payload.vendor._uiOpen
+        if f.Render then f:Render(true) end
+        return
+    end
+
+    if entry.payload.event then
+        entry.payload.event._uiOpen = not entry.payload.event._uiOpen
+        local db = U and U.DB and U.DB()
+        if db then
+            if not db.eventHeaderStates then db.eventHeaderStates = {} end
+            db.eventHeaderStates[entry.payload.key] = entry.payload.event._uiOpen
+        end
+        if f.Render then f:Render(true) end
+        return
+    end
+
+    local sf = f._scrollFrame
+    local content = f._scrollContent
+    if not sf or not content then return end
+
+    local preScroll = sf:GetVerticalScroll() or 0
+    local anchorY = entry.y or 0
+    local anchorOff = anchorY - preScroll
+
+    if not HeaderCtrl or not HeaderCtrl.Toggle then return end
+
+    local kind = entry.clickKind
+    if kind then
+        kind = tostring(kind):lower()
+        if kind:find("vendor", 1, true) then kind = "vendor"
+        elseif kind:find("zone", 1, true) then kind = "zone"
+        elseif kind:find("event", 1, true) then kind = "event"
+        else kind = "exp" end
+    end
+
+    HeaderCtrl:Toggle(kind, entry.payload.key)
+    if f.Render then f:Render(true) end
+
+    local newY = anchorY
+    if f._headerYByKey and f._headerYByKey[entry.payload.key] then
+        newY = f._headerYByKey[entry.payload.key]
+    end
+
+    if U and U.ClampScroll then
+        sf:SetVerticalScroll(U.ClampScroll(sf, content, newY - anchorOff))
+    end
+end
+
+local GridCache = {}
+
+local function ComputeGrid(indent, contentWidth)
+    local avail = math.max(0, contentWidth - indent - 8)
+    if GridCache.lastAvail and GridCache.lastIndent == indent and
+       math.abs(avail - GridCache.lastAvail) < 4 then
+        return GridCache.cols, GridCache.startX, GridCache.tileW, GridCache.tileH, GridCache.iconSize
+    end
+
+    local t = LAYOUT.TILE
+    local est = floor((avail + t.GAP) / (t.MIN_W + t.GAP))
+    local cols = clamp(est, t.MIN_COLS, t.MAX_COLS)
+    local w = floor((avail - (cols - 1) * t.GAP) / cols)
+    w = clamp(w, t.MIN_W, t.MAX_W)
+
+    while cols < t.MAX_COLS do
+        local w2 = floor((avail - cols * t.GAP) / (cols + 1))
+        if w2 >= t.MIN_W then
+            cols = cols + 1
+            w = clamp(w2, t.MIN_W, t.MAX_W)
+        else
+            break
+        end
+    end
+
+    local tileW = w
+    local tileH = t.FIXED_HEIGHT
+    local iconSize = clamp(floor(tileW * t.ICON_RATIO), LAYOUT.ICON.MIN, LAYOUT.ICON.MAX)
+    local startX = indent
+
+    GridCache = {
+        lastAvail = avail,
+        lastIndent = indent,
+        cols = cols,
+        startX = startX,
+        tileW = tileW,
+        tileH = tileH,
+        iconSize = iconSize
+    }
+
+    return cols, startX, tileW, tileH, iconSize
+end
+
+local function RebuildEntries(f, content)
+    local db = U and U.DB and U.DB()
+    if not db then
+        f.entries = {}
+        return
+    end
+
+    local ui = db.ui or {}
+    if FiltersSys and FiltersSys.EnsureDefaults then
+        FiltersSys:EnsureDefaults(db)
+    end
+
+    local cat = ui.activeCategory or "Achievements"
+
+    if f._lastCategory and f._lastCategory ~= cat then
+        if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
+    end
+    f._lastCategory = cat
+
+    local entries = {}
+    f.entries = entries
+
+    local headerY = {}
+    f._headerYByKey = headerY
+
+    local y = LAYOUT.PAD_TOP
+    local viewMode = ui.viewMode or "Icon"
+    local contentW = content:GetWidth() or 0
+
+    local function addHeader(indent, height, label, cur, max, expanded, clickKind, payload)
+        cur = cur or 0
+        max = max or 0
+        if max <= 0 then return end
+
+        local y0 = y
+        entries[#entries + 1] = {
+            kind = "header",
+            clickKind = clickKind,
+            payload = payload,
+            indent = indent,
+            x = indent,
+            y = y0,
+            w = contentW - indent - 8,
+            h = height,
+            label = label,
+            cur = cur,
+            max = max,
+            expanded = expanded or false,
+            timerText = payload and payload.timerText or nil
+        }
+
+        if payload and payload.key then headerY[payload.key] = y0 end
+        y = y0 + height + LAYOUT.ROW_GAP
+    end
+
+    local function addListItem(indent, it, nav)
+        entries[#entries + 1] = {
+            kind = "list",
+            x = indent,
+            y = y,
+            w = contentW - indent - 8,
+            h = LAYOUT.LIST_H,
+            indent = indent,
+            it = it,
+            nav = nav
+        }
+        y = y + LAYOUT.LIST_H + LAYOUT.LIST_GAP
+    end
+
+    local function addTile(indent, it, nav, col, startX, tileW, tileH)
+        local h = CalculateTileHeight(it, tileH)
+        entries[#entries + 1] = {
+            kind = "tile",
+            x = startX + col * (tileW + LAYOUT.TILE.GAP),
+            y = y,
+            w = tileW,
+            h = h,
+            indent = indent,
+            it = it,
+            nav = nav
+        }
+    end
+
+    local q = U and U.trim and U.trim(ui.search) or (ui.search or "")
+    local fdb = db.filters or {}
+    local forcedFlatMode = (ui.catalogMode == "All Items")
+    local flatMode = forcedFlatMode or (q ~= "") or
+        (fdb and ((fdb.subcategory and fdb.subcategory ~= "ALL") or
+                  (fdb.category and fdb.category ~= "ALL")))
+
+    if flatMode then
+        if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
+
+        local DecorAHModule = NS.UI and NS.UI.DecorAH
+        local decorAHFrame = DecorAHModule and (DecorAHModule.frame or _G["HomeDecorDecorAH"])
+        if decorAHFrame and decorAHFrame._embedded then decorAHFrame:Hide() end
+        local AltProfsModule = NS.UI and NS.UI.AltsProfessions
+        local altProfsFrame = AltProfsModule and AltProfsModule.frame
+        if altProfsFrame then altProfsFrame:Hide() end
+        if f.scrollFrame or f._scrollFrame then
+            local sf = f.scrollFrame or f._scrollFrame
+            sf:Show()
+        end
+
+        local scope = (cat == "Search" or cat == "ALL" or cat == "All" or cat == "Everything") and "GLOBAL" or
+                      (D and D.CATEGORY_MAP and D.CATEGORY_MAP[cat]) or cat
+        if cat == "PvP" or cat == "PVP" then scope = "PvP" end
+
+        local results = (cat == "Search" and S and S.BuildGlobalSearchResults and S.BuildGlobalSearchResults(ui, db)) or
+                        BuildFlatResults(ui, db, scope) or {}
+
+        if viewMode == "Icon" then
+            local cols, startX, tileW, tileH = ComputeGrid(12, contentW)
+            local col = 0
+            for _, it in ipairs(results) do
+                local h = CalculateTileHeight(it, tileH)
+                addTile(12, it, it and (it.vendor or it.source) or nil, col, startX, tileW, tileH)
+                col = col + 1
+                if col >= cols then
+                    col = 0
+                    y = y + h + LAYOUT.TILE.GAP
+                end
+            end
+            if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+        else
+            for _, it in ipairs(results) do
+                addListItem(12, it, it and (it.vendor or it.source) or nil)
+            end
+        end
+
+        f.totalHeight = y + LAYOUT.PAD_BOTTOM
+        return
+    end
+
+    if cat == "Saved Items" then
+        if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
+
+        local favs = S and S.CollectAllFavorites and S.CollectAllFavorites(db) or {}
+
+        if viewMode == "Icon" then
+            local cols, startX, tileW, tileH = ComputeGrid(12, contentW)
+            local col = 0
+            for _, it in ipairs(favs) do
+                if not FiltersSys or not FiltersSys.Passes or FiltersSys:Passes(it, ui, db) then
+                    local h = CalculateTileHeight(it, tileH)
+                    addTile(12, it, it and (it.vendor or it.source) or nil, col, startX, tileW, tileH)
+                    col = col + 1
+                    if col >= cols then
+                        col = 0
+                        y = y + h + LAYOUT.TILE.GAP
+                    end
+                end
+            end
+            if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+        else
+            for _, it in ipairs(favs) do
+                if not FiltersSys or not FiltersSys.Passes or FiltersSys:Passes(it, ui, db) then
+                    addListItem(12, it, it and (it.vendor or it.source) or nil)
+                end
+            end
+        end
+
+        f.totalHeight = y + LAYOUT.PAD_BOTTOM
+        return
+    end
+
+    local GM = NS.UI and NS.UI.DecorAH
+    local decorAHFrame = GM and (GM.frame or _G["HomeDecorDecorAH"])
+
+    local AltProfs = NS.UI and NS.UI.AltsProfessions
+    local altProfsFrame = AltProfs and AltProfs.frame
+
+    if cat == "Decor Pricing" then
+        if not decorAHFrame or not decorAHFrame._embedded then
+            if GM and GM.CreateEmbedded then
+                GM:CreateEmbedded(f)
+                decorAHFrame = GM.frame or _G["HomeDecorDecorAH"]
+            end
+        end
+
+        if f.scrollFrame or f._scrollFrame then
+            local sf = f.scrollFrame or f._scrollFrame
+            sf:Hide()
+        end
+
+        if altProfsFrame then
+            altProfsFrame:Hide()
+        end
+
+        if decorAHFrame then
+            decorAHFrame:Show()
+            decorAHFrame:SetFrameLevel(f:GetFrameLevel() + 1)
+
+            if GM and GM.Refresh then
+                C_Timer.After(0, function()
+                    if decorAHFrame and decorAHFrame:IsShown() then
+                        GM:Refresh()
+                    end
+                end)
+            end
+        end
+
+        f.totalHeight = y + LAYOUT.PAD_BOTTOM
+        return
+    elseif cat == "Alts Professions" then
+        if not altProfsFrame then
+            if AltProfs and AltProfs.Create then
+                AltProfs:Create(f)
+                altProfsFrame = AltProfs.frame
+            end
+        end
+
+        if f.scrollFrame or f._scrollFrame then
+            local sf = f.scrollFrame or f._scrollFrame
+            sf:Hide()
+        end
+
+        if decorAHFrame and decorAHFrame._embedded then
+            decorAHFrame:Hide()
+        end
+
+        if altProfsFrame then
+            altProfsFrame:Show()
+            altProfsFrame:SetFrameLevel(f:GetFrameLevel() + 1)
+            if AltProfs and AltProfs.activateOpps then
+                C_Timer.After(0, function()
+                    if altProfsFrame and altProfsFrame:IsShown() then
+                        AltProfs.activateOpps()
+                    end
+                end)
+            elseif AltProfs and AltProfs.Refresh then
+                C_Timer.After(0, function()
+                    if altProfsFrame and altProfsFrame:IsShown() then
+                        AltProfs:Refresh()
+                    end
+                end)
+            end
+        end
+
+        f.totalHeight = y + LAYOUT.PAD_BOTTOM
+        return
+    else
+        if decorAHFrame and decorAHFrame._embedded then
+            decorAHFrame:Hide()
+        end
+
+        if altProfsFrame then
+            altProfsFrame:Hide()
+        end
+
+        if f.scrollFrame or f._scrollFrame then
+            local sf = f.scrollFrame or f._scrollFrame
+            sf:Show()
+        end
+    end
+
+    if cat == "Events" then
+        local Ev = Systems.Events
+        local list = (Ev and Ev.GetActive and Ev:GetActive()) or
+                     (NS.Data and type(NS.Data.Events) == "table" and NS.Data.Events) or {}
+
+        if #list == 0 then
+            addListItem(0, {
+                title = L["NO_ACTIVE_EVENTS_TITLE"],
+                decorType = L["EVENTS_PLACEHOLDER_BODY"],
+                source = { type = "event", icon = "Interface\\Icons\\INV_Misc_PocketWatch_01" }
+            }, nil)
+            f.totalHeight = y + LAYOUT.PAD_BOTTOM
+            return
+        end
+
+        for _, ev in ipairs(list) do
+            local eTitle = ev.title or ev.name or "Event"
+            local evKey = "event:" .. tostring(ev.id or ev.key or eTitle)
+
+            if not db.eventHeaderStates then db.eventHeaderStates = {} end
+            local savedOpen = db.eventHeaderStates[evKey]
+
+            local open
+            if savedOpen ~= nil then
+                open = savedOpen
+            elseif ev._uiOpen ~= nil then
+                open = ev._uiOpen
+            else
+                open = false
+            end
+
+            ev._uiOpen = open
+
+            local group = {}
+            local cEv, tEv = 0, 0
+
+            if type(ev.items) == "table" then
+                for _, it0 in ipairs(ev.items) do
+                    if type(it0) == "table" then
+                        local it = U and U.copyShallow and U.copyShallow(it0) or it0
+                        it._isEventTimed = true
+                        it._eventTitle = eTitle
+
+                        if not FiltersSys or not FiltersSys.Passes or FiltersSys:Passes(it, ui, db) then
+                            if U and U.Passes and U.Passes(it) then
+                                tEv = tEv + 1
+                                if U.IsCollectedSafe and U.IsCollectedSafe(it) then
+                                    cEv = cEv + 1
+                                end
+                            end
+                            group[#group + 1] = it
+                        end
+                    end
+                end
+            end
+
+            local timerText = nil
+            if Ev and Ev.GetEventTimeText then
+                timerText = Ev:GetEventTimeText(ev, _G.time and _G.time() or 0)
+            end
+
+            addHeader(12, 44, eTitle, cEv, tEv, open, "event", { key = evKey, event = ev, timerText = timerText })
+
+            if open and #group > 0 then
+                if viewMode == "Icon" then
+                    local cols, startX, tileW, tileH = ComputeGrid(28, contentW)
+                    local col = 0
+                    for _, it in ipairs(group) do
+                        local h = CalculateTileHeight(it, tileH)
+                        addTile(28, it, ev, col, startX, tileW, tileH)
+                        col = col + 1
+                        if col >= cols then
+                            col = 0
+                            y = y + h + LAYOUT.TILE.GAP
+                        end
+                    end
+                    if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+                else
+                    for _, it in ipairs(group) do
+                        addListItem(28, it, ev)
+                    end
+                end
+            end
+        end
+
+        f.totalHeight = y + LAYOUT.PAD_BOTTOM
+        return
+    end
+
+    local data = D and D.GetActiveData and D.GetActiveData(ui)
+    if not data then
+        f.totalHeight = y + LAYOUT.PAD_BOTTOM
+        return
+    end
+
+    local sortMode = ui.sortMode or "expAsc"
+    local expReverse = (sortMode == "expDesc")
+    local expOrder = D and D.GetExpansionOrder and D.GetExpansionOrder(data, expReverse) or {}
+    for _, exp in ipairs(expOrder) do
+        local zones = D and D.NormalizeExpansionNode and D.NormalizeExpansionNode(data[exp]) or {}
+        local eC, eT = 0, 0
+
+        local zoneList = D and D.GetZoneOrder and D.GetZoneOrder(zones) or {}
+        for _, zone in ipairs(zoneList) do
+            local items = zones[zone]
+            local c, t = GetCachedCounts(f, ui, db, items, nil)
+            eC, eT = eC + c, eT + t
+        end
+
+        local eKey = D and D.KeyExp and D.KeyExp(cat, exp) or (cat .. ":" .. tostring(exp))
+        local expOpen = HeaderCtrl and HeaderCtrl.IsOpen and HeaderCtrl:IsOpen("exp", eKey) or false
+
+        addHeader(12, 44, exp, eC, eT, expOpen, "exp", { key = eKey })
+
+        if expOpen then
+            for _, zone in ipairs(zoneList) do
+                local items = zones[zone]
+                local zC, zT = GetCachedCounts(f, ui, db, items, nil)
+                local zKey = D and D.KeyZone and D.KeyZone(cat, exp, zone) or (cat .. ":" .. tostring(exp) .. ":" .. tostring(zone))
+                local zoneOpen = HeaderCtrl and HeaderCtrl.IsOpen and HeaderCtrl:IsOpen("zone", zKey) or false
+
+                addHeader(28, 36, zone, zC, zT, zoneOpen, "zone", { key = zKey })
+
+                if zoneOpen then
+                    if viewMode == "Icon" then
+
+                        for _, it in ipairs(items) do
+                            if it.source and it.source.type == "vendor" and it.items then
+                                local vC, vT = GetCachedCounts(f, ui, db, it.items, it)
+                                local vendorKeyId = (it.source and it.source.id) or it.npcID or it.id or 0
+                                local vKey = D and D.KeyVendor and D.KeyVendor(cat, exp, zone, vendorKeyId) or tostring(vendorKeyId)
+                                local vTitle = (D and D.ResolveVendorTitle and D.ResolveVendorTitle(it)) or it.title
+                                if not vTitle or vTitle == "" then
+                                    local vid = (it.source and it.source.id) or it.npcID or it.id
+                                    vTitle = vid and (L["VENDOR_PREFIX"] .. tostring(vid)) or L["VENDOR"]
+                                end
+
+                                addHeader(44, 30, "[Vendor] " .. vTitle, vC, vT, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
+
+                                if it._uiOpen then
+                                    local vCols, vStartX, vTileW, vTileH = ComputeGrid(60, contentW)
+                                    local vCol = 0
+                                    for _, vit in ipairs(it.items) do
+                                        local rit = vit
+                                        rit.source = rit.source or {}
+                                        rit._expansion = exp
+                                        rit._navZoneKey = zone
+                                        if D and D.AttachVendorCtx then D.AttachVendorCtx(rit, it) end
+
+                                        if U and U.Passes and U.Passes(rit) then
+                                            local h = CalculateTileHeight(rit, vTileH)
+                                            addTile(60, rit, it, vCol, vStartX, vTileW, vTileH)
+                                            vCol = vCol + 1
+                                            if vCol >= vCols then
+                                                vCol = 0
+                                                y = y + h + LAYOUT.TILE.GAP
+                                            end
+                                        end
+                                    end
+                                    if vCol > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+                                end
+                            end
+                        end
+
+                        local cols, startX, tileW, tileH = ComputeGrid(44, contentW)
+                        local col = 0
+                        for _, it in ipairs(items) do
+                            if not (it.source and it.source.type == "vendor" and it.items) then
+                                local rit = it
+                                rit.source = rit.source or {}
+                                rit._expansion = exp
+                                rit._navZoneKey = zone
+
+                                if U and U.Passes and U.Passes(rit) then
+                                    local h = CalculateTileHeight(rit, tileH)
+                                    addTile(44, rit, rit.vendor, col, startX, tileW, tileH)
+                                    col = col + 1
+                                    if col >= cols then
+                                        col = 0
+                                        y = y + h + LAYOUT.TILE.GAP
+                                    end
+                                end
+                            end
+                        end
+                        if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+                    else
+
+                        for _, it in ipairs(items) do
+                            if it.source and it.source.type == "vendor" and it.items then
+                                local vC, vT = GetCachedCounts(f, ui, db, it.items, it)
+                                local vendorKeyId = (it.source and it.source.id) or it.npcID or it.id or 0
+                                local vKey = D and D.KeyVendor and D.KeyVendor(cat, exp, zone, vendorKeyId) or tostring(vendorKeyId)
+                                local vTitle = (D and D.ResolveVendorTitle and D.ResolveVendorTitle(it)) or it.title
+                                if not vTitle or vTitle == "" then
+                                    local vid = (it.source and it.source.id) or it.npcID or it.id
+                                    vTitle = vid and (L["VENDOR_PREFIX"] .. tostring(vid)) or L["VENDOR"]
+                                end
+
+                                addHeader(44, 30, "[Vendor] " .. vTitle, vC, vT, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
+
+                                if it._uiOpen then
+                                    for _, vit in ipairs(it.items) do
+                                        local rit = vit
+                                        rit.source = rit.source or {}
+                                        rit._expansion = exp
+                                        rit._navZoneKey = zone
+                                        if D and D.AttachVendorCtx then D.AttachVendorCtx(rit, it) end
+                                        if U and U.Passes and U.Passes(rit) then
+                                            addListItem(60, rit, it)
+                                        end
+                                    end
+                                end
+                            end
+                        end
+
+                        for _, it in ipairs(items) do
+                            if not (it.source and it.source.type == "vendor" and it.items) then
+                                local rit = it
+                                rit.source = rit.source or {}
+                                rit._expansion = exp
+                                rit._navZoneKey = zone
+                                if U and U.Passes and U.Passes(rit) then
+                                    addListItem(28, rit, rit.vendor)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if f.selectedKey then
+        local found = false
+        for i = 1, #entries do
+            local entry = entries[i]
+            if entry and entry.it and BuildItemKey(entry.it) == f.selectedKey then
+                found = true
+                break
+            end
+        end
+        if not found then
+            f.selectedKey = nil
+            f.selectedItem = nil
+            f.selectedNav = nil
+            if f.UpdateInspector then f:UpdateInspector() end
+        end
+    end
+
+    f.totalHeight = y + LAYOUT.PAD_BOTTOM
+end
+
+function Render:Create(parent)
+    local f = CreateFrame("Frame", nil, parent)
+    f:SetAllPoints()
+    f._suspendRender = false
+    f._inspectorOpen = false
+
+    f:SetScript("OnShow", function(self)
+        GridCache = {}
+        if self.Render then self:Render(true) end
+        ScheduleViewerWarmPrefetch()
+    end)
+
+    f:SetScript("OnSizeChanged", function(self, width, height)
+        if self._suspendRender then return end
+        GridCache = {}
+        if self.Render then self:Render(false) end
+    end)
+
+    parent:HookScript("OnDragStart", function() f._suspendRender = true end)
+    parent:HookScript("OnDragStop", function()
+        f._suspendRender = false
+        if f.Render then f:RequestRender(true) end
+    end)
+
+    local inspector = CreateFrame("Frame", nil, f, "BackdropTemplate")
+    if Controls and Controls.Backdrop then
+        Controls:Backdrop(inspector, GetThemeColor("panel", { 0.07, 0.08, 0.10, 0.96 }), GetThemeColor("border", { 0.25, 0.22, 0.16, 1 }))
+    end
+    inspector:SetPoint("TOPRIGHT", -8, -8)
+    inspector:SetPoint("BOTTOMRIGHT", -8, 8)
+    inspector:SetWidth(272)
+    inspector:Hide()
+    f.inspector = inspector
+
+    inspector.media = CreateFrame("Frame", nil, inspector, "BackdropTemplate")
+    if Controls and Controls.Backdrop then
+        Controls:Backdrop(inspector.media, GetThemeColor("row", { 0.09, 0.10, 0.12, 1 }), GetThemeColor("border", { 0.25, 0.22, 0.16, 1 }))
+    end
+    inspector.media:SetPoint("TOPLEFT", 12, -12)
+    inspector.media:SetPoint("TOPRIGHT", -12, -12)
+    inspector.media:SetHeight(220)
+    inspector.media:SetClipsChildren(true)
+
+    inspector.icon = inspector.media:CreateTexture(nil, "ARTWORK")
+    inspector.icon:SetPoint("BOTTOMLEFT", inspector.media, "BOTTOMLEFT", 10, 10)
+    inspector.icon:SetSize(52, 52)
+
+    inspector.previewFallback = inspector.media:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    inspector.previewFallback:SetPoint("CENTER")
+    inspector.previewFallback:SetTextColor(0.72, 0.72, 0.72, 0.9)
+    inspector.previewFallback:SetText("Select an item to load its decor preview.")
+
+    inspector.previewScene = CreateFrame("ModelScene", nil, inspector.media, "PanningModelSceneMixinTemplate")
+    inspector.previewScene:SetPoint("TOPLEFT", 10, -10)
+    inspector.previewScene:SetPoint("TOPRIGHT", -10, -10)
+    inspector.previewScene:SetPoint("BOTTOMLEFT", 10, 10)
+    inspector.previewScene:SetPoint("BOTTOMRIGHT", -10, 10)
+    inspector.previewScene:Hide()
+
+    inspector.previewControls = nil
+    do
+        local ok, ctrl = pcall(CreateFrame, "Frame", nil, inspector.media, "ModelSceneControlFrameTemplate")
+        if ok and ctrl then
+            ctrl:SetPoint("BOTTOM", inspector.media, "BOTTOM", 0, 12)
+            pcall(ctrl.SetModelScene, ctrl, inspector.previewScene)
+            ctrl:Hide()
+            inspector.previewControls = ctrl
+        end
+    end
+
+    inspector.corbelL = inspector.media:CreateTexture(nil, "OVERLAY")
+    inspector.corbelL:SetSize(66, 50)
+    inspector.corbelL:SetPoint("BOTTOMLEFT", -2, -2)
+    if inspector.corbelL.SetAtlas then
+        inspector.corbelL:SetAtlas("catalog-corbel-bottom-left")
+    end
+    inspector.corbelL:Hide()
+
+    inspector.corbelR = inspector.media:CreateTexture(nil, "OVERLAY")
+    inspector.corbelR:SetSize(66, 50)
+    inspector.corbelR:SetPoint("BOTTOMRIGHT", 2, -2)
+    if inspector.corbelR.SetAtlas then
+        inspector.corbelR:SetAtlas("catalog-corbel-bottom-right")
+    end
+    inspector.corbelR:Hide()
+
+    inspector.state = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    inspector.state:SetPoint("TOPLEFT", inspector.media, "BOTTOMLEFT", 0, -12)
+    inspector.state:SetPoint("TOPRIGHT", inspector.media, "BOTTOMRIGHT", 0, -12)
+    inspector.state:SetJustifyH("LEFT")
+
+    inspector.title = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    inspector.title:SetPoint("TOPLEFT", inspector.state, "BOTTOMLEFT", 0, -6)
+    inspector.title:SetPoint("TOPRIGHT", inspector.state, "BOTTOMRIGHT", 0, -6)
+    inspector.title:SetJustifyH("LEFT")
+    inspector.title:SetWordWrap(true)
+    inspector.title:SetMaxLines(3)
+
+    inspector.meta = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    inspector.meta:SetPoint("TOPLEFT", inspector.title, "BOTTOMLEFT", 0, -6)
+    inspector.meta:SetPoint("TOPRIGHT", inspector.title, "BOTTOMRIGHT", 0, -6)
+    inspector.meta:SetJustifyH("LEFT")
+    inspector.meta:SetWordWrap(true)
+
+    inspector.source = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    inspector.source:SetPoint("TOPLEFT", inspector.meta, "BOTTOMLEFT", 0, -12)
+    inspector.source:SetPoint("TOPRIGHT", inspector.meta, "BOTTOMRIGHT", 0, -12)
+    inspector.source:SetJustifyH("LEFT")
+    inspector.source:SetWordWrap(true)
+
+    inspector.location = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    inspector.location:SetPoint("TOPLEFT", inspector.source, "BOTTOMLEFT", 0, -6)
+    inspector.location:SetPoint("TOPRIGHT", inspector.source, "BOTTOMRIGHT", 0, -6)
+    inspector.location:SetJustifyH("LEFT")
+    inspector.location:SetWordWrap(true)
+
+    inspector.cost = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    inspector.cost:SetPoint("TOPLEFT", inspector.location, "BOTTOMLEFT", 0, -10)
+    inspector.cost:SetPoint("TOPRIGHT", inspector.location, "BOTTOMRIGHT", 0, -10)
+    inspector.cost:SetJustifyH("LEFT")
+    inspector.cost:SetWordWrap(true)
+
+    inspector.req = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    inspector.req:SetPoint("TOPLEFT", inspector.cost, "BOTTOMLEFT", 0, -12)
+    inspector.req:SetPoint("TOPRIGHT", inspector.cost, "BOTTOMRIGHT", 0, -12)
+    inspector.req:SetJustifyH("LEFT")
+    inspector.req:SetWordWrap(true)
+
+    inspector.rep = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    inspector.rep:SetPoint("TOPLEFT", inspector.req, "BOTTOMLEFT", 0, -8)
+    inspector.rep:SetPoint("TOPRIGHT", inspector.req, "BOTTOMRIGHT", 0, -8)
+    inspector.rep:SetJustifyH("LEFT")
+    inspector.rep:SetWordWrap(true)
+
+    inspector.note = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    inspector.note:SetPoint("TOPLEFT", inspector.rep, "BOTTOMLEFT", 0, -10)
+    inspector.note:SetPoint("TOPRIGHT", inspector.rep, "BOTTOMRIGHT", 0, -10)
+    inspector.note:SetJustifyH("LEFT")
+    inspector.note:SetWordWrap(true)
+
+    inspector.empty = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    inspector.empty:SetPoint("TOPLEFT", inspector.media, "BOTTOMLEFT", 0, -18)
+    inspector.empty:SetPoint("TOPRIGHT", inspector.media, "BOTTOMRIGHT", 0, -18)
+    inspector.empty:SetJustifyH("LEFT")
+    inspector.empty:SetTextColor(0.72, 0.72, 0.72, 1)
+    inspector.empty:SetText("Select an item to pin its details here.")
+
+    local function CreateInspectorButton(width, text, point, relativeTo, relativePoint, x, y)
+        local btn = CreateFrame("Button", nil, inspector, "BackdropTemplate")
+        if Controls and Controls.Backdrop then
+            Controls:Backdrop(btn, GetThemeColor("panel", { 0.08, 0.09, 0.11, 1 }), GetThemeColor("border", { 0.25, 0.22, 0.16, 1 }))
+        end
+        if Controls and Controls.ApplyHover then
+            Controls:ApplyHover(btn, GetThemeColor("panel", { 0.08, 0.09, 0.11, 1 }), GetThemeColor("hover", { 0.14, 0.15, 0.18, 1 }))
+        end
+        btn:SetHeight(24)
+        btn:SetPoint(point, relativeTo, relativePoint, x, y)
+        btn:SetWidth(width)
+        btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        btn.text:SetPoint("CENTER")
+        btn.text:SetText(text)
+        return btn
+    end
+
+    inspector.previewBtn = CreateInspectorButton(76, "Preview", "BOTTOMLEFT", inspector, "BOTTOMLEFT", 12, 12)
+    inspector.linkBtn = CreateInspectorButton(66, "Links", "LEFT", inspector.previewBtn, "RIGHT", 8, 0)
+    inspector.mapBtn = CreateInspectorButton(66, "Map", "LEFT", inspector.linkBtn, "RIGHT", 8, 0)
+
+    local function UpdateInspectorButtons(hasItem)
+        local item = f.selectedItem
+        if not hasItem or not item then
+            inspector.previewBtn:Disable()
+            inspector.linkBtn:Disable()
+            inspector.mapBtn:Disable()
+            return
+        end
+        inspector.previewBtn:SetEnabled(not not (IA and IA.ViewItem and U.GetItemID(item)))
+        inspector.linkBtn:SetEnabled(not not (IA and IA.BuildWowheadLinks and IA:BuildWowheadLinks(item)))
+        inspector.mapBtn:SetEnabled(not not (IA and IA.Waypoint and (item.worldmap or (item.vendor and item.vendor.worldmap) or (item.source and item.source.worldmap))))
+    end
+
+    inspector.previewBtn:SetScript("OnClick", function()
+        if IA and IA.ViewItem and f.selectedItem then IA:ViewItem(f.selectedItem) end
+    end)
+    inspector.linkBtn:SetScript("OnClick", function()
+        if IA and IA.ShowWowheadPopup and f.selectedItem then IA:ShowWowheadPopup(f.selectedItem) end
+    end)
+    inspector.mapBtn:SetScript("OnClick", function()
+        if IA and IA.Waypoint and f.selectedItem then IA:Waypoint(f.selectedItem, f.selectedNav) end
+    end)
+
+    local sf = CreateFrame("ScrollFrame", nil, f, "ScrollFrameTemplate")
+    if UI.Controls and UI.Controls.SkinScrollFrame then
+        UI.Controls:SkinScrollFrame(sf)
+    end
+    sf:SetPoint("TOPLEFT", 8, -8)
+    sf:SetPoint("BOTTOMRIGHT", -28, 8)
+
+    local content = CreateFrame("Frame", nil, sf)
+    content:SetPoint("TOPLEFT", 0, 0)
+    sf:SetScrollChild(content)
+
+    f._scrollFrame = sf
+    f._scrollContent = content
+
+    function f:UpdateLayoutForInspector()
+        sf:ClearAllPoints()
+        sf:SetPoint("TOPLEFT", 8, -8)
+        if self._inspectorOpen then
+            inspector:Show()
+            sf:SetPoint("BOTTOMRIGHT", inspector, "BOTTOMLEFT", -8, 8)
+        else
+            inspector:Hide()
+            sf:SetPoint("BOTTOMRIGHT", -28, 8)
+        end
+        GridCache = {}
+        content:SetWidth((sf:GetWidth() or 0) - 18)
+    end
+
+    function f:SetInspectorOpen(open, skipRender)
+        self._inspectorOpen = open and true or false
+        self:UpdateLayoutForInspector()
+        if self.UpdateInspector then self:UpdateInspector() end
+        if not skipRender and self.RequestRender then
+            self:RequestRender(true)
+        end
+    end
+
+    function f:SetSelectedItem(it, nav)
+        self.selectedItem = it
+        self.selectedNav = nav
+        self.selectedKey = BuildItemKey(it)
+        if self.UpdateInspector then self:UpdateInspector() end
+        if self.RequestRender then self:RequestRender(false) end
+    end
+
+    function f:ClearInspectorPreview(message)
+        if inspector.previewScene then
+            inspector.previewScene:Hide()
+        end
+        if inspector.previewControls then
+            inspector.previewControls:Hide()
+        end
+        if inspector.previewFallback then
+            inspector.previewFallback:SetText(message or "Preview unavailable for this decor.")
+            inspector.previewFallback:Show()
+        end
+    end
+
+    function f:AttachInspectorPreview(decorID)
+        if not decorID or not inspector.previewScene then
+            self:ClearInspectorPreview("Preview unavailable for this decor.")
+            return false
+        end
+
+        local entryType = (Enum and Enum.HousingCatalogEntryType and Enum.HousingCatalogEntryType.Decor) or 1
+        local ok, infoObj = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID, entryType, decorID, true)
+        if not (ok and infoObj and infoObj.asset) then
+            self:ClearInspectorPreview("Preview unavailable for this decor.")
+            return false
+        end
+
+        if inspector.previewFallback then
+            inspector.previewFallback:Hide()
+        end
+
+        local sceneID = infoObj.uiModelSceneID or GetDefaultSceneID()
+        local sceneOk = pcall(function()
+            inspector.previewScene:TransitionToModelSceneID(sceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true)
+        end)
+        if not sceneOk then
+            self:ClearInspectorPreview("Preview unavailable for this decor.")
+            return false
+        end
+
+        local actor = inspector.previewScene.GetActorByTag and inspector.previewScene:GetActorByTag("decor")
+        if not actor then
+            self:ClearInspectorPreview("Preview unavailable for this decor.")
+            return false
+        end
+
+        actor:SetPreferModelCollisionBounds(true)
+        actor:SetModelByFileID(infoObj.asset)
+        inspector.previewScene:Show()
+        if inspector.previewControls then
+            inspector.previewControls:Show()
+        end
+        return true
+    end
+
+    function f:UpdateInspector()
+        if not self._inspectorOpen then return end
+
+        local it = self.selectedItem
+        if D and D.ResolveAchievementDecor and it then
+            it = D.ResolveAchievementDecor(it) or it
+            self.selectedItem = it
+        end
+
+        local hasItem = it ~= nil
+        inspector.empty:SetShown(not hasItem)
+        inspector.media:SetShown(hasItem)
+        inspector.state:SetShown(hasItem)
+        inspector.title:SetShown(hasItem)
+        inspector.meta:SetShown(hasItem)
+        inspector.source:SetShown(hasItem)
+        inspector.location:SetShown(hasItem)
+        inspector.cost:SetShown(hasItem)
+        inspector.req:SetShown(hasItem)
+        inspector.rep:SetShown(hasItem)
+        inspector.note:SetShown(hasItem)
+
+        if not hasItem then
+            self:ClearInspectorPreview("Select an item to load its decor preview.")
+            UpdateInspectorButtons(false)
+            return
+        end
+
+        local tex = (it and it.source and it.source.icon) or
+            (it and it.decorID and D and D.GetDecorIcon and D.GetDecorIcon(it.decorID)) or
+            "Interface\\Icons\\INV_Misc_QuestionMark"
+        inspector.icon:SetTexture(tex)
+        if inspector.icon.SetTexCoord then inspector.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
+
+        local isCollected = IsCollectedForDisplay(it)
+        inspector.state:SetText(isCollected and "|cff7CFC60Collected|r" or "|cffFFD166Missing|r")
+
+        local title = it.title or (it.decorID and D and D.GetDecorName and D.GetDecorName(it.decorID)) or ("Decor #" .. tostring(it.decorID or it.itemID or "?"))
+        inspector.title:SetText(title)
+
+        if not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "" then
+            if D and D.ApplyDecorBreadcrumb then D.ApplyDecorBreadcrumb(it) end
+            if (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") and it.decorID then
+                it.decorTypeBreadcrumb = GetDecorCategoryBreadcrumb(it.decorID)
+            end
+        end
+        inspector.meta:SetText((it.decorTypeBreadcrumb and it.decorTypeBreadcrumb ~= "" and "|cff9aa0a6" .. it.decorTypeBreadcrumb .. "|r") or "|cff9aa0a6Uncategorized|r")
+        inspector.source:SetText(BuildSourceSummary(it))
+        inspector.location:SetText((BuildLocationSummary(it) and "|cffb9bec6" .. BuildLocationSummary(it) .. "|r") or "")
+        inspector.cost:SetText((BuildCostSummary(it) and "|cffffd166Cost:|r " .. BuildCostSummary(it)) or "")
+
+        local req = R and R.GetRequirementLink and R.GetRequirementLink(it)
+        inspector.req:SetText(req and R.BuildReqDisplay and R.BuildReqDisplay(req, false) or "|cff8c959fNo quest or achievement required|r")
+
+        local rep = R and R.GetRepRequirement and R.GetRepRequirement(it)
+        inspector.rep:SetText(rep and R.BuildRepDisplay and R.BuildRepDisplay(rep, false) or "|cff8c959fNo reputation required|r")
+
+        local note = it.source and type(it.source.note) == "string" and it.source.note or nil
+        inspector.note:SetText(note and ("|cff9fb0c5" .. note .. "|r") or "")
+
+        if it.decorID and self.AttachInspectorPreview then
+            self:AttachInspectorPreview(it.decorID)
+        else
+            self:ClearInspectorPreview("Preview unavailable for this decor.")
+        end
+
+        UpdateInspectorButtons(true)
+    end
+
+    f:UpdateLayoutForInspector()
+
+    sf:SetScript("OnSizeChanged", function(_, w)
+        content:SetWidth((w or 0) - 18)
+        GridCache = {}
+        if f.Render then f:RequestRender(true) end
+    end)
+
+    sf:SetScript("OnVerticalScroll", function()
+        if f.UpdateVisible then f:UpdateVisible() end
+    end)
+
+    if Collection and Collection.RegisterListener then
+        Collection:RegisterListener(function(decorID)
+            if not f or not f:IsShown() then return end
+
+            f._countCache = nil
+            f._countCacheSignature = nil
+
+            if decorID and decorID ~= -1 and f.RefreshDecor then
+                f:RefreshDecor(decorID)
+            end
+
+            C_Timer.After(0, function()
+                if f and f:IsShown() and f.RequestRender then
+                    f:RequestRender(true)
+                end
+            end)
+        end)
+    end
+
+    if C_Timer and C_Timer.NewTicker then
+        function f:ScheduleEventTimerRefresh()
+            if self._eventTimer and self._eventTimer.Cancel then
+                self._eventTimer:Cancel()
+            end
+            self._eventTimer = nil
+
+            if not self:IsShown() then return end
+
+            local db = U and U.DB and U.DB()
+            local ui = db and db.ui or {}
+            if ui.activeCategory ~= "Events" then return end
+
+            local Ev = Systems.Events
+            local now = time and time() or 0
+            local delay = 60
+
+            if Ev and Ev.RecalcStatus then
+                Ev:RecalcStatus(now)
+                local cache = Ev.cache and Ev.cache.status
+                if cache and type(cache.nextCheck) == "number" and cache.nextCheck > now then
+                    delay = cache.nextCheck - now + 1
+                end
+            end
+
+            if delay < 1 then delay = 1 end
+
+            self._eventTimer = C_Timer.NewTimer(delay, function()
+                if not f or not f:IsShown() then return end
+                if f.RequestRender then
+                    f:RequestRender(true)
+                end
+                f:ScheduleEventTimerRefresh()
+            end)
+        end
+    end
+
+    f._poolHeader, f._poolList, f._poolTile, f._active = {}, {}, {}, {}
+
+    local Frames = View.Frames
+
+    local function Acquire(kind)
+        local fr
+        if kind == "header" then
+            fr = table.remove(f._poolHeader) or Frames.CreateHeader(content)
+        elseif kind == "tile" then
+            fr = table.remove(f._poolTile) or Frames.CreateTile(content)
+        else
+            fr = table.remove(f._poolList) or Frames.CreateListRow(content)
+        end
+        fr._owner = f
+        fr:Show()
+        f._active[#f._active + 1] = fr
+        return fr
+    end
+
+    local function ReleaseFrame(frame)
+        if not frame then return end
+        frame:Hide()
+        frame:ClearAllPoints()
+        frame._entry = nil
+    end
+
+    function f:ReleaseAll()
+        for i = 1, #self._active do
+            local fr = self._active[i]
+            ReleaseFrame(fr)
+            if fr._kind == "header" then
+                self._poolHeader[#self._poolHeader + 1] = fr
+            elseif fr._kind == "tile" then
+                self._poolTile[#self._poolTile + 1] = fr
+            else
+                self._poolList[#self._poolList + 1] = fr
+            end
+        end
+        wipeTable(self._active)
+    end
+
+    f:HookScript("OnShow", function(self)
+        if self.ScheduleEventTimerRefresh then
+            self:ScheduleEventTimerRefresh()
+        end
+    end)
+
+    f:HookScript("OnHide", function(self)
+        if self._eventTimer and self._eventTimer.Cancel then
+            self._eventTimer:Cancel()
+        end
+        self._eventTimer = nil
+    end)
+
+    function f:UpdateVisible()
+        if self._suspendRender or not self.entries then return end
+
+        local db = U and U.DB and U.DB()
+        local ui = (db and db.ui) or {}
+        local viewMode = ui.viewMode or "Icon"
+        local scrollY = sf:GetVerticalScroll() or 0
+
+        self._lastScrollY, self._lastCount, self._lastViewMode = scrollY, #self.entries, viewMode
+
+        self:ReleaseAll()
+
+        local viewH = sf:GetHeight() or 0
+        local top = scrollY - 200
+        local bottom = scrollY + viewH + 200
+
+        local entries = self.entries
+        local startIdx = FindFirstVisible(entries, top)
+
+        for i = startIdx, #entries do
+            local e = entries[i]
+            if (e.y or 0) > bottom then break end
+
+            local eBottom = (e.y or 0) + (e.h or 0)
+            if eBottom >= top then
+                local fr = Acquire(e.kind)
+                fr._entry = e
+                fr:ClearAllPoints()
+                fr:SetPoint("TOPLEFT", Pixel(e.x), -Pixel(e.y))
+                fr:SetSize(Pixel(e.w), Pixel(e.h))
+
+                if e.kind == "header" then
+                    if fr.text then fr.text:SetText(e.label or "") end
+
+                    if fr.chevron then
+                        if e.expanded then
+                            fr.chevron:SetTexture("Interface\\Buttons\\UI-MinusButton-UP")
+                        else
+                            fr.chevron:SetTexture("Interface\\Buttons\\UI-PlusButton-UP")
+                        end
+                        fr.chevron:Show()
+                    elseif fr.icon then
+                        if e.expanded then
+                            fr.icon:SetRotation(math.pi / 2)
+                        else
+                            fr.icon:SetRotation(0)
+                        end
+                    end
+
+                    if fr.count then
+                        if e.timerText and e.timerText ~= "" then
+                            fr.count:SetText("|cffFFD100" .. e.timerText .. "|r")
+                            if fr.count.SetFont then
+                                fr.count:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
+                            end
+                        else
+                            fr.count:SetText((e.cur or 0) .. " / " .. (e.max or 0))
+                            if fr.count.SetFont then
+                                fr.count:SetFont("Fonts\\FRIZQT__.TTF", 13, "")
+                            end
+                        end
+                    end
+
+                    local complete = (e.max and e.max > 0 and (e.cur or 0) >= (e.max or 0))
+                    if fr.check then
+                        if complete then fr.check:Show() else fr.check:Hide() end
+                    end
+
+                    if ProgressBar and e.max and e.max > 0 then
+                        if not fr.bar then
+                            fr.bar = ProgressBar:Create(fr, 140)
+                            fr.bar:SetPoint("BOTTOMLEFT", fr, "BOTTOMLEFT", 14, 5)
+                        end
+                        fr.bar:Show()
+                        fr.bar:SetProgress(e.cur or 0, e.max or 0)
+                    elseif fr.bar then
+                        fr.bar:Hide()
+                    end
+
+                    if not fr.headerScriptsBound then
+                        fr.headerScriptsBound = true
+                        fr:SetScript("OnClick", HeaderClick)
+                    end
+
+                elseif e.kind == "tile" then
+                    local it = D and D.ResolveAchievementDecor and D.ResolveAchievementDecor(e.it) or e.it
+                    local state = U and U.GetStateSafe and U.GetStateSafe(it)
+                    local w, h = e.w or GridCache.tileW, e.h or GridCache.tileH
+
+                    if fr.media then
+                        fr.media:SetHeight(floor(h * 0.52))
+                        if fr.icon then
+                            local iconSize = GridCache.iconSize or LAYOUT.ICON.MIN
+                            fr.icon:SetSize(iconSize, iconSize)
+                            local tex = (it and it.source and it.source.icon) or
+                                       (it and it.decorID and D and D.GetDecorIcon and D.GetDecorIcon(it.decorID)) or
+                                       "Interface\\Icons\\INV_Misc_QuestionMark"
+                            fr.icon:SetTexture(tex)
+                            if fr.icon.SetTexCoord then fr.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
+                        end
+
+                        if fr.div then
+                            fr.div:ClearAllPoints()
+                            fr.div:SetPoint("TOPLEFT", fr.media, "BOTTOMLEFT", 0, -6)
+                            fr.div:SetPoint("TOPRIGHT", fr.media, "BOTTOMRIGHT", 0, -6)
+                            fr.div:SetHeight(1)
+                            fr.div:Show()
+                        end
+
+                        if fr.textBg and fr.div then
+                            fr.textBg:ClearAllPoints()
+                            fr.textBg:SetPoint("TOPLEFT", fr.div, "BOTTOMLEFT", -8, -2)
+                            fr.textBg:SetPoint("BOTTOMRIGHT", -8, 8)
+                            fr.textBg:Show()
+                        end
+                    end
+
+                    local textArea = fr.textArea or fr
+                    if fr.label then
+                        fr.label:ClearAllPoints()
+                        fr.label:SetPoint("TOPLEFT", textArea, "TOPLEFT", 0, -2)
+                        fr.label:SetPoint("TOPRIGHT", textArea, "TOPRIGHT", 0, 0)
+                        local name = it and (it.title or (it.decorID and D and D.GetDecorName and D.GetDecorName(it.decorID)))
+                        if not name or name == "" then
+                            name = "Decor #" .. tostring(it and (it.decorID or it.itemID) or "?")
+                        end
+                        fr.label:SetText(name)
+                        if fr.label.SetWidth then fr.label:SetWidth(math.max(0, w - 20)) end
+						if fr.label.SetMaxLines then fr.label:SetMaxLines(3) end
+                        if fr.label.SetHeight then fr.label:SetHeight(20) end
+                    end
+
+                    if fr.note then
+                        local noteText = (it and it.source and type(it.source.note) == "string" and it.source.note ~= "" and it.source.note) or nil
+                        if noteText then
+                            fr.note:ClearAllPoints()
+                            fr.note:SetPoint("TOPLEFT", fr.label, "BOTTOMLEFT", 0, -2)
+                            fr.note:SetPoint("TOPRIGHT", fr.label, "BOTTOMRIGHT", 0, -2)
+                            fr.note:SetText("|cff9fb0c5" .. noteText .. "|r")
+                            fr.note:Show()
+                        else
+                            fr.note:Hide()
+                        end
+                    end
+
+                    if fr.titleDiv and fr.label then
+                        fr.titleDiv:ClearAllPoints()
+                        local anchor = (fr.note and fr.note:IsShown()) and fr.note or fr.label
+                        fr.titleDiv:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -4)
+                        fr.titleDiv:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, -4)
+                        fr.titleDiv:SetHeight(1)
+                        fr.titleDiv:Show()
+                    end
+
+                    if fr.meta then
+                        if it and (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") then
+                            if D and D.ApplyDecorBreadcrumb then
+                                D.ApplyDecorBreadcrumb(it)
+                            end
+                            if (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") and it.decorID then
+                                local breadcrumb = GetDecorCategoryBreadcrumb(it.decorID)
+                                if breadcrumb and breadcrumb ~= "" then
+                                    it.decorTypeBreadcrumb = breadcrumb
+                                end
+                            end
+                        end
+                        local metaText = it and (it.decorTypeBreadcrumb or "Uncategorized") or "Uncategorized"
+                        fr.meta:ClearAllPoints()
+                        if metaText ~= "" then
+                            local anchor = (fr.titleDiv and fr.titleDiv:IsShown()) and fr.titleDiv or fr.label
+                            fr.meta:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -6)
+                            local maxWidth = math.max(0, w - 24)
+                            if fr.meta.SetWidth then fr.meta:SetWidth(maxWidth) end
+                            fr.meta:SetText("|cff9aa0a6" .. metaText .. "|r")
+                            fr.meta:Show()
+                        else
+                            fr.meta:Hide()
+                        end
+                    end
+
+                    local req = R and R.GetRequirementLink and R.GetRequirementLink(it)
+                    if fr.req and fr.reqBtn and fr.reqRow and R.BuildReqDisplay then
+                        if fr.secReq then fr.secReq:Hide() end
+
+                        if req then
+                            fr.req._req = req
+                            fr.req:SetText(R.BuildReqDisplay(req, false))
+                        else
+                            fr.req._req = nil
+                            fr.req:SetText("|cff8c959fNo quest or achievement required|r")
+                        end
+                        fr.req:Show()
+
+                        local textHeight = fr.req:GetStringHeight() or 0
+                        local rowHeight = math.max(32, textHeight + 16)
+                        fr.reqRow:SetHeight(rowHeight)
+                        fr.reqRow:Show()
+
+                        if req then
+                            fr.reqBtn:ClearAllPoints()
+                            fr.reqBtn:SetPoint("TOPLEFT", fr.reqRow, "TOPLEFT", 0, 0)
+                            fr.reqBtn:SetPoint("BOTTOMRIGHT", fr.reqRow, "BOTTOMRIGHT", 0, 0)
+                            fr.reqBtn:Show()
+                            BindReqButton(fr.reqBtn)
+                        else
+                            fr.reqBtn:Hide()
+                        end
+                    else
+                        if fr.secReq then fr.secReq:Hide() end
+                        if fr.reqRow then fr.reqRow:Hide() end
+                        if fr.req then fr.req:Hide() end
+                        if fr.reqBtn then fr.reqBtn:Hide() end
+                    end
+
+                    local rep = R and R.GetRepRequirement and R.GetRepRequirement(it)
+                    if fr.rep and fr.repRow and R.BuildRepDisplay then
+                        if fr.secRep then fr.secRep:Hide() end
+
+                        if rep then
+                            fr.rep:SetText(R.BuildRepDisplay(rep, false))
+                        else
+                            fr.rep:SetText("|cff8c959fNo reputation required|r")
+                        end
+                        fr.rep:Show()
+
+                        local textHeight = fr.rep:GetStringHeight() or 0
+                        local rowHeight = math.max(32, textHeight + 16)
+                        fr.repRow:SetHeight(rowHeight)
+                        fr.repRow:Show()
+                    else
+                        if fr.secRep then fr.secRep:Hide() end
+                        if fr.repRow then fr.repRow:Hide() end
+                        if fr.rep then fr.rep:Hide() end
+                    end
+
+                    if fr.textArea and fr.reqRow and fr.reqRow:IsShown() then
+                        fr.reqRow:ClearAllPoints()
+                        fr.reqRow:SetPoint("TOPLEFT", fr.textArea, "BOTTOMLEFT", 0, -2)
+                        fr.reqRow:SetPoint("TOPRIGHT", fr.textArea, "BOTTOMRIGHT", 0, -2)
+                    end
+
+                    if fr.textArea and fr.repRow and fr.repRow:IsShown() then
+                        fr.repRow:ClearAllPoints()
+                        if fr.reqRow and fr.reqRow:IsShown() then
+                            local reqH = fr.reqRow:GetHeight() or 32
+                            fr.repRow:SetPoint("TOPLEFT", fr.textArea, "BOTTOMLEFT", 0, -(reqH + 4))
+                            fr.repRow:SetPoint("TOPRIGHT", fr.textArea, "BOTTOMRIGHT", 0, -(reqH + 4))
+                        else
+                            fr.repRow:SetPoint("TOPLEFT", fr.textArea, "BOTTOMLEFT", 0, -2)
+                            fr.repRow:SetPoint("TOPRIGHT", fr.textArea, "BOTTOMRIGHT", 0, -2)
+                        end
+                    end
+
+                    if fr.dyePaletteFrame then
+    local label = GetDyeableOrClassLabel(it)
+    if label and label ~= "" then
+        if fr.dyePaletteFrame.text then fr.dyePaletteFrame.text:SetText(label) end
+        fr.dyePaletteFrame:Show()
+    else
+        fr.dyePaletteFrame:Hide()
+    end
+end
+
+                    if StatusIcon and StatusIcon.Attach then StatusIcon:Attach(fr, state, it) end
+                    ApplyFactionBadge(fr, it, 24)
+
+                    if Favorite and Favorite.Attach then
+                        local id = U and U.GetItemID and U.GetItemID(it)
+                        if fr._fav and fr._fav.SetItemID then
+                            fr._fav:SetItemID(id)
+                        else
+                            if fr._fav then fr._fav:Hide() end
+                            fr._fav = Favorite:Attach(fr, id, function() f:RequestRender(false) end)
+                        end
+                        if fr._fav then
+                            fr._fav:ClearAllPoints()
+                            fr._fav:SetPoint("TOPLEFT", (fr.media or fr), "TOPLEFT", 8, -8)
+                            if fr._fav.SetSize then fr._fav:SetSize(20, 20) end
+                            if fr._fav.SetFrameLevel then fr._fav:SetFrameLevel((fr:GetFrameLevel() or 1) + 20) end
+                            if fr._fav.SetAlpha then fr._fav:SetAlpha(0.85) end
+                            SetupFavoriteHover(fr._fav)
+                        end
+                    end
+
+                    if TT and TT.Attach then TT:Attach(fr, it) end
+
+                    local showDropsBadge = (ui.activeCategory == "Drops") or ((it and it.source and it.source.type) == "drop")
+                    if showDropsBadge and DropPanel and DropPanel.AttachBadge then
+                        DropPanel:AttachBadge(fr, it, "tile")
+                    elseif fr._dropBadge then
+                        fr._dropBadge:Hide()
+                    end
+
+                    if RS and RS.SetSelected then
+                        RS:SetSelected(fr, self.selectedKey and BuildItemKey(it) == self.selectedKey, 0.22)
+                    end
+
+                    fr:SetScript("OnMouseUp", function(_, btn)
+                        if btn == "LeftButton" and f.SetSelectedItem then
+                            f:SetSelectedItem(it, e.nav)
+                        end
+                        if IA and IA.HandleMouseUp then
+                            IA:HandleMouseUp(it, btn, e.nav)
+                        end
+                    end)
+
+                elseif e.kind == "list" then
+                    local it = D and D.ResolveAchievementDecor and D.ResolveAchievementDecor(e.it) or e.it
+                    local state = U and U.GetStateSafe and U.GetStateSafe(it)
+                    local textLeft = 70
+                    local fac = it and (it.faction or (it.source and it.source.faction))
+                    local hasFaction = (fac == "Alliance" or fac == "Horde")
+                    local titleLeft = hasFaction and (textLeft + 14 + 3) or textLeft
+                    local maxW = (e.w or 0) - titleLeft - 10
+
+                    if fr.icon then
+                        local tex = (it and it.source and it.source.icon) or
+                                   (it and it.decorID and D and D.GetDecorIcon and D.GetDecorIcon(it.decorID)) or
+                                   "Interface\\Icons\\INV_Misc_QuestionMark"
+                        fr.icon:SetTexture(tex)
+                        if fr.icon.SetTexCoord then fr.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
+                    end
+
+                    if fr.text then
+                        local title = it and (it.title or (it.decorID and D and D.GetDecorName and D.GetDecorName(it.decorID)))
+                        if not title or title == "" then
+                            title = "Decor #" .. tostring(it and (it.decorID or it.itemID) or "?")
+                        end
+                        fr.text:SetText(title)
+                        fr.text:SetWidth(maxW)
+                    end
+
+                    local collected = (state and ((type(state) == "table" and state.collected) or state == true))
+                    if fr.check then
+                        if collected then fr.check:Show() else fr.check:Hide() end
+                    end
+
+                    if fr.meta then
+                        if it and (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") then
+                            if D and D.ApplyDecorBreadcrumb then D.ApplyDecorBreadcrumb(it) end
+                            if (not it.decorTypeBreadcrumb or it.decorTypeBreadcrumb == "") and it.decorID then
+                                local breadcrumb = GetDecorCategoryBreadcrumb(it.decorID)
+                                if breadcrumb and breadcrumb ~= "" then
+                                    it.decorTypeBreadcrumb = breadcrumb
+                                end
+                            end
+                        end
+                        local metaText = it and (it.decorTypeBreadcrumb or it.decorType or it.subcategory or "Uncategorized") or "Uncategorized"
+                        fr.meta:ClearAllPoints()
+                        fr.meta:SetPoint("TOPLEFT", fr.text, "BOTTOMLEFT", 0, -3)
+                        fr.meta:SetWidth(maxW)
+                        fr.meta:SetHeight(14)
+                        fr.meta:SetText("|cff9aa0a6" .. metaText .. "|r")
+                        fr.meta:Show()
+                    end
+
+                    local noteAnchor = (fr.meta and fr.meta:IsShown()) and fr.meta or fr.text
+                    if fr.note then
+                        local noteText = (it and it.source and type(it.source.note) == "string" and it.source.note ~= "" and it.source.note) or nil
+                        if noteText then
+                            fr.note:ClearAllPoints()
+                            fr.note:SetPoint("TOPLEFT", noteAnchor, "BOTTOMLEFT", 0, -2)
+                            fr.note:SetWidth(maxW)
+                            fr.note:SetHeight(14)
+                            fr.note:SetText("|cff9fb0c5" .. noteText .. "|r")
+                            fr.note:Show()
+                            noteAnchor = fr.note
+                        else
+                            fr.note:Hide()
+                        end
+                    end
+
+                    if fr.div then
+                        local req = R and R.GetRequirementLink and R.GetRequirementLink(it)
+                        local rep = R and R.GetRepRequirement and R.GetRepRequirement(it)
+                        if req or rep then
+                            fr.div:ClearAllPoints()
+                            fr.div:SetPoint("TOPLEFT", noteAnchor, "BOTTOMLEFT", 0, -5)
+                            fr.div:SetPoint("TOPRIGHT", noteAnchor, "BOTTOMRIGHT", 0, -5)
+                            fr.div:Show()
+                        else
+                            fr.div:Hide()
+                        end
+                    end
+
+                    local divAnchor = (fr.div and fr.div:IsShown()) and fr.div or noteAnchor
+                    local req = R and R.GetRequirementLink and R.GetRequirementLink(it)
+                    if req and fr.req and fr.reqBtn and R.BuildReqDisplay then
+                        fr.req:Show()
+                        fr.req:ClearAllPoints()
+                        fr.req:SetPoint("TOPLEFT", divAnchor, "BOTTOMLEFT", 0, -4)
+                        fr.req:SetWidth(maxW)
+                        fr.req:SetHeight(16)
+                        fr.req._req = req
+                        fr.req:SetText(R.BuildReqDisplay(req, false))
+
+                        fr.reqBtn:ClearAllPoints()
+                        fr.reqBtn:SetPoint("TOPLEFT", fr.req, "TOPLEFT", -2, 2)
+                        fr.reqBtn:SetPoint("BOTTOMRIGHT", fr.req, "BOTTOMRIGHT", 2, -2)
+                        fr.reqBtn:Show()
+                        BindReqButton(fr.reqBtn)
+                    else
+                        if fr.req then fr.req:Hide() end
+                        if fr.reqBtn then fr.reqBtn:Hide() end
+                    end
+
+                    local repAnchor = (fr.req and fr.req:IsShown()) and fr.req or divAnchor
+                    local rep = R and R.GetRepRequirement and R.GetRepRequirement(it)
+                    if rep and fr.rep and R.BuildRepDisplay then
+                        fr.rep:Show()
+                        fr.rep:ClearAllPoints()
+                        fr.rep:SetPoint("TOPLEFT", repAnchor, "BOTTOMLEFT", 0, -3)
+                        fr.rep:SetWidth(maxW)
+                        fr.rep:SetHeight(16)
+                        fr.rep:SetText(R.BuildRepDisplay(rep, false))
+                    else
+                        if fr.rep then fr.rep:Hide() end
+                    end
+
+                    if fr.dyePaletteFrame then
+                        local label = GetDyeableOrClassLabel(it)
+                        if label and label ~= "" then
+                            if fr.dyePaletteFrame.text then fr.dyePaletteFrame.text:SetText(label) end
+                            fr.dyePaletteFrame:Show()
+                        else
+                            fr.dyePaletteFrame:Hide()
+                        end
+                    end
+
+                    if StatusIcon and StatusIcon.Attach then StatusIcon:Attach(fr, state, it) end
+                    ApplyFactionBadge(fr, it, 18)
+
+                    if Favorite and Favorite.Attach then
+                        local id = U and U.GetItemID and U.GetItemID(it)
+                        if fr._fav and fr._fav.SetItemID then
+                            fr._fav:SetItemID(id)
+                        else
+                            if fr._fav then fr._fav:Hide() end
+                            fr._fav = Favorite:Attach(fr, id, function() f:RequestRender(false) end)
+                        end
+                        if fr._fav then
+                            fr._fav:ClearAllPoints()
+                            fr._fav:SetPoint("TOPRIGHT", fr, "TOPRIGHT", -8, -8)
+                            if fr._fav.SetFrameLevel then fr._fav:SetFrameLevel((fr:GetFrameLevel() or 1) + 20) end
+                            if fr._fav.SetAlpha then fr._fav:SetAlpha(0.85) end
+                            SetupFavoriteHover(fr._fav)
+                        end
+                    end
+
+                    if TT and TT.Attach then TT:Attach(fr, it) end
+
+                    local showDropsBadge = (ui.activeCategory == "Drops") or ((it and it.source and it.source.type) == "drop")
+                    if showDropsBadge and DropPanel and DropPanel.AttachBadge then
+                        DropPanel:AttachBadge(fr, it, "list")
+                    elseif fr._dropBadge then
+                        fr._dropBadge:Hide()
+                    end
+
+                    if RS and RS.SetSelected then
+                        RS:SetSelected(fr, self.selectedKey and BuildItemKey(it) == self.selectedKey, 0.22)
+                    end
+
+                    fr:SetScript("OnMouseUp", function(_, btn)
+                        if btn == "LeftButton" and f.SetSelectedItem then
+                            f:SetSelectedItem(it, e.nav)
+                        end
+                        if IA and IA.HandleMouseUp then
+                            IA:HandleMouseUp(it, btn, e.nav)
+                        end
+                    end)
+                end
+            end
+        end
+
+        content:SetHeight(self.totalHeight or 0)
+    end
+
+    function f:Render(full)
+        if self._suspendRender then return end
+        if full ~= false then
+            RebuildEntries(self, content)
+        end
+        self:UpdateVisible()
+    end
+
+    function f:RequestRender(full)
+        if self._suspendRender then return end
+        if full ~= false then
+            self._pendingFullRender = true
+        end
+
+        if self._renderQueued then return end
+        self._renderQueued = true
+
+        C_Timer.After(0.05, function()
+            if not f then return end
+            f._renderQueued = nil
+            local wantsFull = f._pendingFullRender
+            f._pendingFullRender = nil
+            if f._suspendRender then return end
+            if wantsFull then
+                f:Render(true)
+            else
+                f:Render(false)
+            end
+        end)
+    end
+
+    function f:RefreshDecor(decorID)
+        if not decorID then return end
+        for i = 1, #self._active do
+            local fr = self._active[i]
+            local e = fr and fr._entry
+            if e and e.kind ~= "header" then
+                local it = D and D.ResolveAchievementDecor and D.ResolveAchievementDecor(e.it) or e.it
+                if it and it.decorID == decorID then
+                    local state = U and U.GetStateSafe and U.GetStateSafe(it)
+                    if StatusIcon and StatusIcon.Attach then
+                        StatusIcon:Attach(fr, state, it)
+                    end
+                    ApplyFactionBadge(fr, it, 16)
+                end
+            end
+        end
+    end
+
+    f.scrollFrame = sf
+    f.content = content
+    return f
+end
+
+View.Create = function(self, parent) return Render:Create(parent) end
+return Render

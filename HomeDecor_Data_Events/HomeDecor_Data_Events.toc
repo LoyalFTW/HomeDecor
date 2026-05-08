@@ -1,0 +1,7 @@
+## Interface: 120001, 120005
+## Title: HomeDecor Data Events
+## Author: Jay
+## LoadOnDemand: 1
+## Dependencies: HomeDecor
+Data\Events\Events.xml
+Register.lua

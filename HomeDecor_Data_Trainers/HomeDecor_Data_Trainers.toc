@@ -1,0 +1,7 @@
+## Interface: 120001, 120005
+## Title: HomeDecor Data Trainers
+## Author: Jay
+## LoadOnDemand: 1
+## Dependencies: HomeDecor
+Data\Trainers\Trainers.lua
+Register.lua

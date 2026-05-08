@@ -12,8 +12,17 @@ externals:
   Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
   Libs/AceLocale-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0
   Libs/HereBeDragons: https://repos.wowace.com/wow/herebedragons
+
 ignore:
   - .github
   - .gitignore
   - README.md
   - .pkgmeta
+
+move-folders:
+  HomeDecor: HomeDecor
+  HomeDecor_Data_Vendors: HomeDecor_Data_Vendors
+  HomeDecor_Data_Drops: HomeDecor_Data_Drops
+  HomeDecor_Data_Events: HomeDecor_Data_Events
+  HomeDecor_Data_Professions: HomeDecor_Data_Professions
+  HomeDecor_Data_Trainers: HomeDecor_Data_Trainers
