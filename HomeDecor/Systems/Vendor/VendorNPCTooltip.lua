@@ -13,6 +13,13 @@ local UnitGUID = _G.UnitGUID
 local tonumber = _G.tonumber
 local type = _G.type
 
+local function CanAccess(value)
+  if value == nil then return false end
+  if _G.issecretvalue and _G.issecretvalue(value) then return false end
+  if _G.canaccessvalue and not _G.canaccessvalue(value) then return false end
+  return true
+end
+
 local function GetNPCIDFromGUID(guid)
   if type(guid) ~= "string" then return nil end
   local ok, npcID = pcall(function()
@@ -63,18 +70,32 @@ local function GetVendorCollectedStats(npcID)
   return nil, nil
 end
 
-local function AppendVendorInfo(tooltip)
+local function AppendVendorInfo(tooltip, tooltipData)
   if not IsEnabled() then return end
+  if tooltip and tooltip.IsForbidden and tooltip:IsForbidden() then return end
 
-  local ok, unit, guid = pcall(function() return tooltip:GetUnit() end)
-  if not ok then return end
-  if not unit and not guid then return end
+  local guid = type(tooltipData) == "table" and tooltipData.guid or nil
 
-  if not guid and unit then
-    local guidOk, guidVal = pcall(UnitGUID, unit)
-    if not guidOk then return end
-    guid = guidVal
+  if not guid and tooltip and tooltip.GetTooltipData then
+    local dataOk, data = pcall(tooltip.GetTooltipData, tooltip)
+    if dataOk and type(data) == "table" then
+      guid = data.guid
+    end
   end
+
+  if not guid and tooltip and tooltip.GetUnit then
+    local ok, unit, tooltipGuid = pcall(function() return tooltip:GetUnit() end)
+    if not ok then return end
+    guid = tooltipGuid
+    if not guid and CanAccess(unit) then
+      local guidOk, guidVal = pcall(UnitGUID, unit)
+      if guidOk then
+        guid = guidVal
+      end
+    end
+  end
+
+  if not CanAccess(guid) then return end
   if not guid then return end
 
   local npcID = GetNPCIDFromGUID(guid)
@@ -103,9 +124,9 @@ function VendorNPCTooltip:Enable()
   local TDP = _G.TooltipDataProcessor
   if TDP and TDP.AddTooltipPostCall and _G.Enum and _G.Enum.TooltipDataType then
     local ok = pcall(function()
-      TDP.AddTooltipPostCall(_G.Enum.TooltipDataType.Unit, function(tooltip)
+      TDP.AddTooltipPostCall(_G.Enum.TooltipDataType.Unit, function(tooltip, tooltipData)
         if tooltip == GameTooltip then
-          AppendVendorInfo(tooltip)
+          AppendVendorInfo(tooltip, tooltipData)
         end
       end)
     end)

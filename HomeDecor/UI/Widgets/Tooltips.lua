@@ -658,24 +658,7 @@ end
 local function RefreshUnitTooltip()
   if not GameTooltip or not GameTooltip.IsShown or not GameTooltip:IsShown() then return end
   if GameTooltip:IsForbidden() then return end
-
-  local ok, unit = pcall(GameTooltip.GetUnit, GameTooltip)
-  if not ok or not unit then
-    if UnitExists and UnitExists("mouseover") then
-      unit = "mouseover"
-    else
-      return
-    end
-  end
-  if UnitExists and not UnitExists(unit) then return end
-
-  local npcIDBeforeRefresh = getTooltipNPCID(GameTooltip)
-  TT._suppressNpcTooltipHook = true
-  pcall(GameTooltip.Hide, GameTooltip)
-  pcall(GameTooltip.SetUnit, GameTooltip, unit)
-  TT._suppressNpcTooltipHook = nil
-
-  local npcID = getTooltipNPCID(GameTooltip) or npcIDBeforeRefresh
+  local npcID = getTooltipNPCID(GameTooltip)
   if npcID then
     TT.AppendNpcMouseover(GameTooltip, npcID)
     GameTooltip:Show()
