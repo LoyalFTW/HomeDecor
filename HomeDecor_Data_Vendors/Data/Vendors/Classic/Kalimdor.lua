@@ -192,4 +192,24 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
     }
   },
 
+  {
+    source={
+      id=261262,
+      type="vendor",
+      faction="Neutral",
+      zone="Orgrimmar",
+      worldmap="85:4837:8115"
+    },
+    items={
+      {decorID=12244, source={type="vendor", itemID=259044}},
+      {decorID=12245, source={type="vendor", itemID=259045}},
+      {decorID=12246, source={type="vendor", itemID=259046}},
+      {decorID=12264, source={type="vendor", itemID=259093}},
+      {decorID=12265, source={type="vendor", itemID=259094}},
+      {decorID=15547, source={type="vendor", itemID=264275}},
+      {decorID=15548, source={type="vendor", itemID=264276}},
+      {decorID=15549, source={type="vendor", itemID=264277}},
+    }
+  },
+
 }

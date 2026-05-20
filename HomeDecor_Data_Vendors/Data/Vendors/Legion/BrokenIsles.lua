@@ -542,4 +542,43 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     }
   },
 
+  {
+    source={
+      id=106901,
+      type="vendor",
+      faction="Neutral",
+      zone="Val'sharah",
+      worldmap="641:5470:7325"
+    },
+    items={
+--       {decorID=678, source={type="vendor", itemID=238862}}, -- DNT / do not use
+    }
+  },
+
+  {
+    source={
+      id=112434,
+      type="vendor",
+      faction="Neutral",
+      zone="Dreadscar Rift",
+      worldmap="717:5876:3269"
+    },
+    items={
+--       {decorID=5118, source={type="vendor", itemID=248941}}, -- DNT / do not use
+    }
+  },
+
+  {
+    source={
+      id=253387,
+      type="vendor",
+      faction="Neutral",
+      zone="Val'sharah",
+      worldmap="641:5540:7280"
+    },
+    items={
+--       {decorID=678, source={type="vendor", itemID=238862}}, -- DNT / do not use
+    }
+  },
+
 }

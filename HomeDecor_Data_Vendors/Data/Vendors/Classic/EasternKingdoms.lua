@@ -408,4 +408,24 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
     }
   },
 
+  {
+    source={
+      id=261231,
+      type="vendor",
+      faction="Neutral",
+      zone="Stormwind City",
+      worldmap="84:4851:6876"
+    },
+    items={
+      {decorID=12244, source={type="vendor", itemID=259044}},
+      {decorID=12245, source={type="vendor", itemID=259045}},
+      {decorID=12246, source={type="vendor", itemID=259046}},
+      {decorID=12264, source={type="vendor", itemID=259093}},
+      {decorID=12265, source={type="vendor", itemID=259094}},
+      {decorID=15547, source={type="vendor", itemID=264275}},
+      {decorID=15548, source={type="vendor", itemID=264276}},
+      {decorID=15549, source={type="vendor", itemID=264277}},
+    }
+  },
+
 }

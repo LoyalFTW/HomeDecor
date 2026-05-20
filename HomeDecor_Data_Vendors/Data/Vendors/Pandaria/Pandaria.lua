@@ -184,4 +184,30 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
     }
   },
 
+  {
+    source={
+      id=59908,
+      type="vendor",
+      faction="Neutral",
+      zone="Either Shrine in Vale of Eternal Blossoms",
+      worldmap="390:6320:2210"
+    },
+    items={
+--       {decorID=3879, source={type="vendor", itemID=247739}, requirements={quest={id=30612}}}, -- DNT / do not use
+    }
+  },
+
+  {
+    source={
+      id=62088,
+      type="vendor",
+      faction="Neutral",
+      zone="The Jade Forest - Dawn's Blossom",
+      worldmap="371:4700:4800"
+    },
+    items={
+      {decorID=21857, source={type="vendor", itemID=271971}, requirements={achievement={id=61442}}},
+    }
+  },
+
 }

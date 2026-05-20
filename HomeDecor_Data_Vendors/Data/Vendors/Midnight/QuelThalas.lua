@@ -801,4 +801,79 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
     }
   },
 
+  {
+    source={
+      id=242725,
+      type="vendor",
+      faction="Neutral",
+      zone="Eversong Woods",
+      worldmap="2395:4354:4750"
+    },
+    items={
+--       {decorID=15505, source={type="vendor", itemID=264270}}, -- DNT / do not use
+    }
+  },
+
+  {
+    source={
+      id=255495,
+      type="vendor",
+      faction="Neutral",
+      zone="Silvermoon City",
+      worldmap="2393:4768:5055"
+    },
+    items={
+      {decorID=25307, source={type="vendor", itemID=276083}, requirements={achievement={id=63325}}},
+    }
+  },
+
+  {
+    source={
+      id=256828,
+      type="vendor",
+      faction="Neutral",
+      zone="Murder Row",
+      worldmap="2393:5110:5640"
+    },
+    items={
+      {decorID=12244, source={type="vendor", itemID=259044}},
+      {decorID=12245, source={type="vendor", itemID=259045}},
+      {decorID=12246, source={type="vendor", itemID=259046}},
+      {decorID=12264, source={type="vendor", itemID=259093}},
+      {decorID=12265, source={type="vendor", itemID=259094}},
+      {decorID=15547, source={type="vendor", itemID=264275}},
+      {decorID=15548, source={type="vendor", itemID=264276}},
+      {decorID=15549, source={type="vendor", itemID=264277}},
+    }
+  },
+
+  {
+    source={
+      id=265581,
+      type="vendor",
+      faction="Neutral",
+      zone="Naigtal",
+      worldmap=""
+    },
+    items={
+--       {decorID=25564, source={type="vendor", itemID=276321}}, -- missing verified worldmap
+--       {decorID=25566, source={type="vendor", itemID=276316}}, -- missing verified worldmap
+--       {decorID=25665, source={type="vendor", itemID=276429}}, -- missing verified worldmap
+    }
+  },
+
+  {
+    source={
+      id=265581,
+      type="vendor",
+      faction="Neutral",
+      zone="Val",
+      worldmap=""
+    },
+    items={
+--       {decorID=25565, source={type="vendor", itemID=276318}}, -- missing verified worldmap
+--       {decorID=25664, source={type="vendor", itemID=276432}}, -- missing verified worldmap
+    }
+  },
+
 }

@@ -586,4 +586,17 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
     }
   },
 
+  {
+    source={
+      id=255325,
+      type="vendor",
+      faction="Horde",
+      zone="Razorwind Shores",
+      worldmap="2351:3980:7280"
+    },
+    items={
+      {decorID=21950, source={type="vendor", itemID=272359}},
+    }
+  },
+
 }

@@ -304,4 +304,17 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
     }
   },
 
+  {
+    source={
+      id=193015,
+      type="vendor",
+      faction="Neutral",
+      zone="Valdrakken",
+      worldmap=""
+    },
+    items={
+--       {decorID=4171, source={type="vendor", itemID=248115}}, -- DNT / do not use
+    }
+  },
+
 }

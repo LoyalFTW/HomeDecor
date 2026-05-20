@@ -450,4 +450,17 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
     }
   },
 
+  {
+    source={
+      id=255203,
+      type="vendor",
+      faction="Alliance",
+      zone="Founder's Point",
+      worldmap="2352:5190:3830"
+    },
+    items={
+      {decorID=21950, source={type="vendor", itemID=272359}},
+    }
+  },
+
 }
