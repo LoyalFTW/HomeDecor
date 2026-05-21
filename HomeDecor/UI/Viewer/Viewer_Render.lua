@@ -63,6 +63,17 @@ local time = _G.time
 local floor = math.floor
 local function Pixel(v) return v and floor(v + 0.5) or 0 end
 local function clamp(v, min, max) return v < min and min or (v > max and max or v) end
+local function IsPlainLeftClick(btn)
+    return btn == "LeftButton"
+        and not (IsControlKeyDown and IsControlKeyDown())
+        and not (IsAltKeyDown and IsAltKeyDown())
+        and not (IsShiftKeyDown and IsShiftKeyDown())
+end
+
+local function ShouldRunItemInteraction(viewFrame, btn)
+    return not (viewFrame and viewFrame._inspectorOpen and IsPlainLeftClick(btn))
+end
+
 local function GetThemeColor(name, fallback)
     local colors = Theme and Theme.colors
     return (colors and colors[name]) or fallback
@@ -2034,7 +2045,7 @@ end
                         if btn == "LeftButton" and f.SetSelectedItem then
                             f:SetSelectedItem(it, e.nav)
                         end
-                        if IA and IA.HandleMouseUp then
+                        if ShouldRunItemInteraction(f, btn) and IA and IA.HandleMouseUp then
                             IA:HandleMouseUp(it, btn, e.nav)
                         end
                     end)
@@ -2199,7 +2210,7 @@ end
                         if btn == "LeftButton" and f.SetSelectedItem then
                             f:SetSelectedItem(it, e.nav)
                         end
-                        if IA and IA.HandleMouseUp then
+                        if ShouldRunItemInteraction(f, btn) and IA and IA.HandleMouseUp then
                             IA:HandleMouseUp(it, btn, e.nav)
                         end
                     end)
