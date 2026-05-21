@@ -106,6 +106,20 @@ end
 local SetWorldOwnerWithAnchor = SetOwnerWithAnchor
 local TooltipSys = NS.UI and NS.UI.Tooltips
 
+local function IsValidUiMapID(mapID)
+  mapID = tonumber(mapID)
+  return mapID and mapID > 0 and mapID <= 2147483647
+end
+
+local function OpenWorldMapOverlay(mapID, vendorID)
+  local UI = NS.UI
+  if UI and UI.OpenWorldMapDecorOverlay then
+    UI.OpenWorldMapDecorOverlay(mapID, vendorID)
+    return true
+  end
+  return false
+end
+
 function R.AddWorldPinsForMap(mapID)
   if not HBDPins then return end
   P.ClearWorldPins()
@@ -182,10 +196,7 @@ function R.AddWorldPinsForMap(mapID)
           return
         end
         if mouseButton == "RightButton" then
-          local MapPopup = NS.UI and NS.UI.MapPopup
-          if MapPopup and MapPopup.Show then
-            MapPopup:Show(vendor.id, vendor)
-          end
+          OpenWorldMapOverlay(vendor.mapID, vendor.id)
         end
       end)
 
@@ -351,22 +362,7 @@ function R.ShowZoneBadges(continentMapID)
           end
         end
         if button == "RightButton" and self.badgeData.mapID then
-          local vendors = {}
-          local seenVendorIDs = {}
-          local vendorList = D.GetVendorsForMap(self.badgeData.mapID)
-          if vendorList and #vendorList > 0 then
-            for i = 1, #vendorList do
-              local vendor = vendorList[i]
-              if not seenVendorIDs[vendor.id] then
-                seenVendorIDs[vendor.id] = true
-                vendors[#vendors + 1] = { id = vendor.id, data = vendor }
-              end
-            end
-          end
-          if #vendors > 0 then
-            local MapPopup = NS.UI and NS.UI.MapPopup
-            if MapPopup and MapPopup.ShowMultiple then MapPopup:ShowMultiple(vendors) end
-          end
+          OpenWorldMapOverlay(self.badgeData.mapID)
         end
       end)
       frame:Show()
@@ -431,22 +427,7 @@ function R.ShowZoneBadges(continentMapID)
                     end
                   end
                   if button == "RightButton" and self.badgeData.mapID then
-                    local vendors = {}
-                    local seenVendorIDs = {}
-                    local vendorList = D.GetVendorsForMap(self.badgeData.mapID)
-                    if vendorList and #vendorList > 0 then
-                      for i = 1, #vendorList do
-                        local vendor = vendorList[i]
-                        if not seenVendorIDs[vendor.id] then
-                          seenVendorIDs[vendor.id] = true
-                          vendors[#vendors + 1] = { id = vendor.id, data = vendor }
-                        end
-                      end
-                    end
-                    if #vendors > 0 then
-                      local MapPopup = NS.UI and NS.UI.MapPopup
-                      if MapPopup and MapPopup.ShowMultiple then MapPopup:ShowMultiple(vendors) end
-                    end
+                    OpenWorldMapOverlay(self.badgeData.mapID)
                   end
                 end)
                 frame:Show()
@@ -471,14 +452,16 @@ function R.ShowContinentBadges()
   local hideCompleted = IsHideCompletedVendors()
   local continentVendors = {}
   for zoneMapID, continentID in pairs(D.zoneToContinent) do
-    local vendorList = D.GetVendorsForMap(zoneMapID)
-    if vendorList and #vendorList > 0 then
-      if not continentVendors[continentID] then continentVendors[continentID] = {} end
-      for i = 1, #vendorList do
-        local vendor = vendorList[i]
-        if vendor and vendor.id then
-          if not hideCompleted or not IsVendorFullyCompleted(vendor.id) then
-            continentVendors[continentID][vendor.id] = true
+    if IsValidUiMapID(continentID) then
+      local vendorList = D.GetVendorsForMap(zoneMapID)
+      if vendorList and #vendorList > 0 then
+        if not continentVendors[continentID] then continentVendors[continentID] = {} end
+        for i = 1, #vendorList do
+          local vendor = vendorList[i]
+          if vendor and vendor.id then
+            if not hideCompleted or not IsVendorFullyCompleted(vendor.id) then
+              continentVendors[continentID][vendor.id] = true
+            end
           end
         end
       end
@@ -493,7 +476,7 @@ function R.ShowContinentBadges()
 
   for continentID, vendorCount in pairs(continentCounts) do
     local continentName = "Continent"
-    if C_Map and C_Map.GetMapInfo then
+    if IsValidUiMapID(continentID) and C_Map and C_Map.GetMapInfo then
       local info = C_Map.GetMapInfo(continentID)
       if info then continentName = info.name end
     end
@@ -520,39 +503,7 @@ function R.ShowContinentBadges()
         if WorldMapFrame and type(WorldMapFrame.SetMapID) == "function" then WorldMapFrame:SetMapID(self.badgeData.mapID) end
       end
       if button == "RightButton" and self.badgeData.mapID then
-        local vendors = {}
-        local seenVendorIDs = {}
-        if self.badgeData.isContinent then
-          for zoneMapID, continentID in pairs(D.zoneToContinent) do
-            if continentID == self.badgeData.mapID then
-              local zoneVendors = D.GetVendorsForMap(zoneMapID)
-              if zoneVendors and #zoneVendors > 0 then
-                for i = 1, #zoneVendors do
-                  local vendor = zoneVendors[i]
-                  if not seenVendorIDs[vendor.id] then
-                    seenVendorIDs[vendor.id] = true
-                    vendors[#vendors + 1] = { id = vendor.id, data = vendor }
-                  end
-                end
-              end
-            end
-          end
-        else
-          local vendorList = D.GetVendorsForMap(self.badgeData.mapID)
-          if vendorList and #vendorList > 0 then
-            for i = 1, #vendorList do
-              local vendor = vendorList[i]
-              if not seenVendorIDs[vendor.id] then
-                seenVendorIDs[vendor.id] = true
-                vendors[#vendors + 1] = { id = vendor.id, data = vendor }
-              end
-            end
-          end
-        end
-        if #vendors > 0 then
-          local MapPopup = NS.UI and NS.UI.MapPopup
-          if MapPopup and MapPopup.ShowMultiple then MapPopup:ShowMultiple(vendors) end
-        end
+        OpenWorldMapOverlay(self.badgeData.mapID)
       end
     end)
     frame:Show()
@@ -605,22 +556,7 @@ function R.ShowContinentBadges()
           if WorldMapFrame and type(WorldMapFrame.SetMapID) == "function" then WorldMapFrame:SetMapID(self.badgeData.mapID) end
         end
         if button == "RightButton" and self.badgeData.mapID then
-          local vendors = {}
-          local seenVendorIDs = {}
-          local vendorList = D.GetVendorsForMap(self.badgeData.mapID)
-          if vendorList and #vendorList > 0 then
-            for i = 1, #vendorList do
-              local vendor = vendorList[i]
-              if not seenVendorIDs[vendor.id] then
-                seenVendorIDs[vendor.id] = true
-                vendors[#vendors + 1] = { id = vendor.id, data = vendor }
-              end
-            end
-          end
-          if #vendors > 0 then
-            local MapPopup = NS.UI and NS.UI.MapPopup
-            if MapPopup and MapPopup.ShowMultiple then MapPopup:ShowMultiple(vendors) end
-          end
+          OpenWorldMapOverlay(self.badgeData.mapID)
         end
       end)
       frame:Show()
