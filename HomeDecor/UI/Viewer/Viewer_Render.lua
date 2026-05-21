@@ -840,10 +840,17 @@ local function RebuildEntries(f, content)
 
     local q = U and U.trim and U.trim(ui.search) or (ui.search or "")
     local fdb = db.filters or {}
+    local isSpecialCategory = (cat == "Events") or
+                              (cat == "Decor Pricing") or
+                              (cat == "Alts Professions") or
+                              (cat == "Endeavors") or
+                              (cat == "Saved Items")
     local forcedFlatMode = (ui.catalogMode == "All Items")
-    local flatMode = forcedFlatMode or (q ~= "") or
+    local flatMode = (not isSpecialCategory) and (
+        forcedFlatMode or (q ~= "") or
         (fdb and ((fdb.subcategory and fdb.subcategory ~= "ALL") or
                   (fdb.category and fdb.category ~= "ALL")))
+    )
 
     if flatMode then
         if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
