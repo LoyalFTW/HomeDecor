@@ -11,11 +11,30 @@ MapPins.Data = D
 
 local pairs = pairs
 local tonumber = tonumber
+local pcall = pcall
+local strtrim = strtrim
 local type = type
 local wipe = wipe or function(t) for k in pairs(t) do t[k] = nil end end
 local C_Map = C_Map
 local NPCNames = NS.Systems and NS.Systems.NPCNames
 local U = NS.Systems.MapPinsUtil
+
+local function CleanText(text)
+  if type(text) ~= "string" then return nil end
+
+  local ok, cleaned = pcall(function(value)
+    if strtrim then
+      value = strtrim(value)
+    else
+      value = value:gsub("^%s+", ""):gsub("%s+$", "")
+    end
+    if value == "" then return nil end
+    return value
+  end, text)
+
+  if not ok then return nil end
+  return cleaned
+end
 
 D.mapIndex = D.mapIndex or {}
 D.zoneToContinent = D.zoneToContinent or {}
@@ -269,13 +288,15 @@ function D.ResolveNamesFor(vendorList)
   end
   for vendorIndex = 1, #vendorList do
     local vendor = vendorList[vendorIndex]
-    if vendor and not vendor.name then
-      if NPCNames and NPCNames.Get then
-        vendor.name = NPCNames.Get(vendor.id)
+    if vendor then
+      local name = CleanText(vendor.name)
+      if not name and NPCNames and NPCNames.Get then
+        name = CleanText(NPCNames.Get(vendor.id))
       end
-      if not vendor.name or vendor.name == "" then
-        vendor.name = L["VENDOR_PREFIX"] .. vendor.id
+      if not name then
+        name = (L["VENDOR_PREFIX"] or "Vendor ") .. tostring(vendor.id or "")
       end
+      vendor.name = name
     end
   end
 end

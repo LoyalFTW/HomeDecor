@@ -35,6 +35,7 @@ local callbacksByNpcId = {}
 
 local persistentCache
 local persistentTried = false
+local trimText
 
 local function getPersistentCache()
   if persistentTried then return persistentCache end
@@ -62,44 +63,38 @@ end
 local function loadPersisted(npcID)
   local store = getPersistentCache()
   if not store then return nil end
-  local name = store[tostring(npcID)]
-  if type(name) == "string" and name ~= "" then
-    return name
-  end
-  return nil
+  return trimText(store[tostring(npcID)])
 end
 
 local function savePersisted(npcID, name)
   local store = getPersistentCache()
   if not store then return end
-  store[tostring(npcID)] = name
+  name = trimText(name)
+  if name then
+    store[tostring(npcID)] = name
+  end
 end
 
 local tooltipFrame
 
-local function trimText(text)
+trimText = function(text)
   if type(text) ~= "string" then return nil end
 
-  if strtrim then
-    local ok, trimmed = pcall(strtrim, text)
-    if ok then
-      text = trimmed
+  local ok, trimmed = pcall(function(value)
+    if strtrim then
+      value = strtrim(value)
     else
-      return text
+      value = value:gsub("^%s+", ""):gsub("%s+$", "")
     end
-  else
-    local ok, trimmed = pcall(function(value)
-      return value:gsub("^%s+", ""):gsub("%s+$", "")
-    end, text)
-    if ok then
-      text = trimmed
-    else
-      return text
-    end
+    if value == "" then return nil end
+    return value
+  end, text)
+
+  if not ok then
+    return nil
   end
 
-  if text == "" then return nil end
-  return text
+  return trimmed
 end
 
 local function ensureTooltipFrame()
