@@ -164,45 +164,68 @@ local pendingItemNames = {}
 local itemNameCache = {}
 local invalidateDataRowsFn
 local refreshTableFn
+local itemNameRefreshPending = false
+
+local function RequestItemName(itemID, force)
+  if not itemID or (pendingItemNames[itemID] and not force) then return end
+  pendingItemNames[itemID] = true
+  if C_Item and C_Item.RequestLoadItemDataByID then
+    pcall(C_Item.RequestLoadItemDataByID, itemID)
+  end
+end
+
+local function ResolveItemNameNow(itemID)
+  if not itemID then return nil end
+  local name = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(itemID)
+  if (not name or name == "") and GetItemInfo then
+    name = GetItemInfo(itemID)
+  end
+  if name and name ~= "" then
+    itemNameCache[itemID] = name
+    pendingItemNames[itemID] = nil
+    return name
+  end
+end
+
+local function ScheduleItemNameRefresh()
+  if itemNameRefreshPending then return end
+  itemNameRefreshPending = true
+  C_Timer.After(0, function()
+    itemNameRefreshPending = false
+    if invalidateDataRowsFn then invalidateDataRowsFn() end
+    if frame and frame:IsShown() and refreshTableFn then
+      refreshTableFn()
+    end
+  end)
+end
 
 local function ItemName(itemID)
   if not itemID then return "?" end
   local cached = itemNameCache[itemID]
   if cached and cached ~= "" then return cached end
-  local name = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(itemID)
-  if name and name ~= "" then
-    itemNameCache[itemID] = name
-    return name
-  end
-  name = GetItemInfo(itemID)
-  if name and name ~= "" then
-    itemNameCache[itemID] = name
-    return name
-  end
-  if C_Item and C_Item.RequestLoadItemDataByID then
-    C_Item.RequestLoadItemDataByID(itemID)
-    pendingItemNames[itemID] = true
-  end
+  local name = ResolveItemNameNow(itemID)
+  if name then return name end
+  RequestItemName(itemID)
   return nil
 end
 
 local itemLoadFrame = CreateFrame("Frame")
 itemLoadFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
-itemLoadFrame:SetScript("OnEvent", function(_, _, itemID, success)
-  if success and pendingItemNames[itemID] then
-    pendingItemNames[itemID] = nil
-    local resolvedName = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(itemID)
-    if (not resolvedName or resolvedName == "") and GetItemInfo then
-      resolvedName = GetItemInfo(itemID)
-    end
-    if resolvedName and resolvedName ~= "" then
-      itemNameCache[itemID] = resolvedName
-    end
-    if invalidateDataRowsFn then invalidateDataRowsFn() end
-    if frame and frame:IsShown() and refreshTableFn then
-      refreshTableFn()
-    end
+itemLoadFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+itemLoadFrame:SetScript("OnEvent", function(_, event, itemID, success)
+  if not itemID or not pendingItemNames[itemID] or success == false then return end
+  if ResolveItemNameNow(itemID) then
+    ScheduleItemNameRefresh()
+    return
   end
+
+  C_Timer.After(0, function()
+    if ResolveItemNameNow(itemID) then
+      ScheduleItemNameRefresh()
+    elseif event == "GET_ITEM_INFO_RECEIVED" then
+      RequestItemName(itemID, true)
+    end
+  end)
 end)
 
 local reagentCache = {}
@@ -308,7 +331,7 @@ local function BuildDataRows()
       title = title:gsub("^%s+", ""):gsub("%s+$", "")
       if title == "" then title = nil end
     end
-    local name   = title or ItemName(itemID) or ("Item %d"):format(itemID)
+    local name   = ItemName(itemID) or title or ("Item %d"):format(itemID)
 
     local known, knownByAlt, crafterName = nil, false, nil
     local skillID = entry.source and entry.source.skillID
@@ -1489,7 +1512,8 @@ function DH:Create(parentFrame, embedded)
 
   if embedded then
     frame:SetScript("OnShow", function(self)
-      C_Timer.After(0.1, function()
+      InvalidateDataRows()
+      C_Timer.After(0, function()
         if not self or not self:IsShown() or not scrollFrame then return end
         local sw = scrollFrame:GetWidth() or 400
         contentWidth = math.max(400, sw - 4)
