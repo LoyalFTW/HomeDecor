@@ -44,6 +44,7 @@ local defaults = {
       catalogMode = "Sections",
       detailsPanelOpen = false,
       activeCategory = "Achievements",
+      compactActiveCategory = "Achievements",
       search = "",
       compactMode = false,
     },
@@ -78,6 +79,7 @@ local defaults = {
     tracker = {
       open = false,
       collapsed = false,
+      activeTab = "tracker",
       trackZone = true,
       hideCompleted = false,
       hideCompletedVendors = false,

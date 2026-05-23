@@ -12,10 +12,14 @@ local unpack = unpack or table.unpack
 
 local ORDER = { "lumber", "ore", "herb" }
 local MIN_FRAME_WIDTH = 220
-local MIN_FRAME_HEIGHT = 196
+local MIN_FRAME_HEIGHT = 42
 local MAX_FRAME_WIDTH = 320
 local MAX_FRAME_HEIGHT = 360
 local TIMER_REFRESH_INTERVAL = 0.2
+local HEADER_ONLY_HEIGHT = 42
+local CARD_HEIGHT = 42
+local CARD_GAP = 4
+local FRAME_VERTICAL_PADDING = 70
 
 local function FormatWholeNumber(value)
   value = tonumber(value) or 0
@@ -110,6 +114,16 @@ local function ensureDB()
   return s
 end
 
+local function GetAutoHeight(visibleCount)
+  visibleCount = tonumber(visibleCount) or 0
+  if visibleCount <= 0 then
+    return HEADER_ONLY_HEIGHT
+  end
+
+  local cardsHeight = (visibleCount * CARD_HEIGHT) + (math.max(0, visibleCount - 1) * CARD_GAP)
+  return math.max(HEADER_ONLY_HEIGHT, math.min(MAX_FRAME_HEIGHT, FRAME_VERTICAL_PADDING + cardsHeight))
+end
+
 local function makeStat(parent, label)
   local box = CreateFrame("Frame", nil, parent)
   box.label = box:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -134,6 +148,43 @@ local function makeAction(parent, label)
   b.text:SetPoint("CENTER")
   b.text:SetText(label)
   return b
+end
+
+local function makeCheckbox(parent, label)
+  local cb = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
+  cb:SetSize(20, 20)
+  cb:SetHitRectInsets(0, -120, 0, 0)
+  cb.label = cb:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  cb.label:SetPoint("LEFT", cb, "RIGHT", 2, 0)
+  cb.label:SetWidth(100)
+  cb.label:SetJustifyH("LEFT")
+  cb.label:SetText(label)
+  cb.label:SetTextColor(0.82, 0.88, 0.95, 1)
+  return cb
+end
+
+local function SetKindEnabled(kind, enabled)
+  local db = GTUtil.GetDB()
+  local ctx = GTUtil.GetSharedCtx()
+  enabled = enabled and true or false
+
+  if kind == "lumber" then
+    db.trackLumber = enabled
+    if ctx then ctx.trackLumber = enabled end
+  elseif kind == "ore" then
+    db.trackOre = enabled
+    if ctx then ctx.trackOre = enabled end
+  elseif kind == "herb" then
+    db.trackHerbs = enabled
+    if ctx then ctx.trackHerbs = enabled end
+  end
+
+  local Render = NS.UI and NS.UI.GatherTrackRender
+  if Render and Render.Refresh and ctx then
+    Render:Refresh(ctx)
+  else
+    Panels:Refresh(nil, ctx)
+  end
 end
 
 local function makeRow(parent)
@@ -195,26 +246,85 @@ local function hideAuxiliaryPanels(frame)
   end
 end
 
-local function HasActiveSession()
+local function HasActiveSession(ctx)
   if not Farming or not Farming.EnsureSession then
     return false
   end
 
   for _, kind in ipairs(ORDER) do
-    local session = Farming:EnsureSession(kind)
-    if session and session.active then
-      return true
+    if ctx and not GTUtil.IsKindEnabled(ctx, kind) then
+      local session = Farming:EnsureSession(kind)
+      if session and session.active and Farming.Stop then
+        Farming:Stop(kind)
+      end
+    elseif not ctx or GTUtil.IsKindEnabled(ctx, kind) then
+      local session = Farming:EnsureSession(kind)
+      if session and session.active then
+        return true
+      end
     end
   end
 
   return false
 end
 
+local function SyncSessionsWithEnabled(ctx)
+  if not Farming or not Farming.EnsureSession then
+    return
+  end
+
+  for _, kind in ipairs(ORDER) do
+    if not GTUtil.IsKindEnabled(ctx, kind) then
+      local session = Farming:EnsureSession(kind)
+      if session and session.active and Farming.Stop then
+        Farming:Stop(kind)
+      end
+    end
+  end
+end
+
+local function RefreshMaterialChecks(frame, ctx)
+  local checks = frame and frame.settingsPopup and frame.settingsPopup.materialChecks
+  if not checks then return end
+  if checks.lumber then checks.lumber:SetChecked(GTUtil.IsKindEnabled(ctx, "lumber")) end
+  if checks.ore then checks.ore:SetChecked(GTUtil.IsKindEnabled(ctx, "ore")) end
+  if checks.herb then checks.herb:SetChecked(GTUtil.IsKindEnabled(ctx, "herb")) end
+end
+
+local function ForEachEnabledKind(ctx, fn)
+  for _, kind in ipairs(ORDER) do
+    if GTUtil.IsKindEnabled(ctx, kind) then
+      fn(kind, Farming:EnsureSession(kind))
+    end
+  end
+end
+
+local function HasPausedEnabledSession(ctx)
+  local anyPaused = false
+  ForEachEnabledKind(ctx, function(_, session)
+    if session and session.active and session.paused then
+      anyPaused = true
+    end
+  end)
+  return anyPaused
+end
+
+local function HasActiveEnabledSession(ctx)
+  local anyActive = false
+  ForEachEnabledKind(ctx, function(_, session)
+    if session and session.active then
+      anyActive = true
+    end
+  end)
+
+  return anyActive
+end
+
 function Panels:Create()
   if self.frame then return self.frame end
 
   local db = ensureDB()
-  local expandedHeight = db.height or MIN_FRAME_HEIGHT
+  local expandedHeight = db.height or GetAutoHeight(3)
   local collapsedHeight = 42
   local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
   frame:SetSize(db.width or MIN_FRAME_WIDTH, db.collapsed and collapsedHeight or expandedHeight)
@@ -278,9 +388,9 @@ function Panels:Create()
   close.txt:SetPoint("CENTER")
   close.txt:SetText("x")
   close:SetScript("OnClick", function()
-    frame:Hide()
     db.open = false
     db.userClosed = true
+    frame:Hide()
   end)
 
   frame.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -313,32 +423,23 @@ function Panels:Create()
 
   frame.startPause:SetScript("OnClick", function()
     local ctx = GTUtil.GetSharedCtx()
-    local anyActive = false
-    local anyPaused = false
-    for _, kind in ipairs(ORDER) do
-      local session = Farming:EnsureSession(kind)
-      if session.active then
-        anyActive = true
-        if session.paused then
-          anyPaused = true
-        end
-      end
-    end
+    SyncSessionsWithEnabled(ctx)
+    local anyActive = HasActiveEnabledSession(ctx)
+    local anyPaused = HasPausedEnabledSession(ctx)
 
     if not anyActive then
-      for _, kind in ipairs(ORDER) do
+      ForEachEnabledKind(ctx, function(kind)
         Farming:Start(kind, ctx)
-      end
+      end)
     else
-      for _, kind in ipairs(ORDER) do
-        local session = Farming:EnsureSession(kind)
+      ForEachEnabledKind(ctx, function(kind, session)
         if session.active then
           local shouldToggle = (anyPaused and session.paused) or ((not anyPaused) and (not session.paused))
           if shouldToggle then
             Farming:TogglePause(kind)
           end
         end
-      end
+      end)
     end
 
     Panels:Refresh(nil, ctx)
@@ -367,14 +468,42 @@ function Panels:Create()
   local settings = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
   settings:SetFrameStrata("FULLSCREEN_DIALOG")
   settings:SetFrameLevel(500)
-  settings:SetSize(240, 110)
+  settings:SetSize(240, 178)
   settings:Hide()
   CreateBackdrop(settings, { 0.08, 0.09, 0.11, 0.98 }, { 0.78, 0.82, 0.88, 0.7 })
   local settingsTitle = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   settingsTitle:SetPoint("TOP", 0, -12)
   settingsTitle:SetText("Farming Options")
+
+  local materialLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  materialLabel:SetPoint("TOPLEFT", 16, -38)
+  materialLabel:SetText("Materials")
+  materialLabel:SetTextColor(0.58, 0.62, 0.70, 1)
+
+  settings.materialChecks = {}
+  local lumberCB = makeCheckbox(settings, "Lumber")
+  lumberCB:SetPoint("TOPLEFT", 14, -54)
+  lumberCB:SetScript("OnClick", function(self)
+    SetKindEnabled("lumber", self:GetChecked())
+  end)
+  settings.materialChecks.lumber = lumberCB
+
+  local oreCB = makeCheckbox(settings, "Ore")
+  oreCB:SetPoint("TOPLEFT", 14, -76)
+  oreCB:SetScript("OnClick", function(self)
+    SetKindEnabled("ore", self:GetChecked())
+  end)
+  settings.materialChecks.ore = oreCB
+
+  local herbCB = makeCheckbox(settings, "Herbs")
+  herbCB:SetPoint("TOPLEFT", 14, -98)
+  herbCB:SetScript("OnClick", function(self)
+    SetKindEnabled("herb", self:GetChecked())
+  end)
+  settings.materialChecks.herb = herbCB
+
   local alphaLabel = settings:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  alphaLabel:SetPoint("TOPLEFT", 16, -40)
+  alphaLabel:SetPoint("TOPLEFT", 16, -126)
   alphaLabel:SetText("Transparency")
   local alphaSlider = CreateFrame("Slider", nil, settings, "OptionsSliderTemplate")
   alphaSlider:SetPoint("TOPLEFT", alphaLabel, "BOTTOMLEFT", 0, -10)
@@ -394,6 +523,7 @@ function Panels:Create()
     else
       settings:ClearAllPoints()
       settings:SetPoint("TOP", header, "BOTTOM", 0, -8)
+      RefreshMaterialChecks(frame, GTUtil.GetSharedCtx())
       settings:Show()
       settings:Raise()
     end
@@ -405,13 +535,13 @@ function Panels:Create()
     controls:SetShown(not collapsed)
     if collapsed then hideAuxiliaryPanels(frame) end
     if frame.resizeGrip then frame.resizeGrip:SetShown(not collapsed) end
-    frame:SetHeight(collapsed and collapsedHeight or (db.height or expandedHeight))
+    frame:SetHeight(collapsed and collapsedHeight or (frame._autoHeight or db.height or expandedHeight))
     collapseBtn.icon:SetRotation(collapsed and 0 or -1.5708)
   end
 
   local function layout()
     local contentWidth = math.max(170, content:GetWidth() or (frame:GetWidth() - 20))
-    local gap = 4
+    local gap = CARD_GAP
     local y = 0
 
     local function layoutCard(card)
@@ -453,7 +583,7 @@ function Panels:Create()
       row:SetPoint("TOPLEFT", card, "TOPLEFT", inset, -31)
       row:SetPoint("TOPRIGHT", card, "TOPRIGHT", -inset, -31)
 
-      card:SetHeight(42)
+      card:SetHeight(CARD_HEIGHT)
     end
 
     frame.startPause:ClearAllPoints()
@@ -521,8 +651,8 @@ function Panels:Create()
   resizeGrip:SetScript("OnDragStop", function()
     frame:StopMovingOrSizing()
     db.width = math.max(MIN_FRAME_WIDTH, math.min(MAX_FRAME_WIDTH, frame:GetWidth()))
-    db.height = math.max(collapsedHeight, math.max(MIN_FRAME_HEIGHT, math.min(MAX_FRAME_HEIGHT, frame:GetHeight())))
-    frame:SetSize(db.width, db.height)
+    db.height = math.max(collapsedHeight, math.min(MAX_FRAME_HEIGHT, frame:GetHeight()))
+    frame:SetWidth(db.width)
     layout()
     Panels:Refresh(nil, GTUtil.GetSharedCtx())
   end)
@@ -540,11 +670,14 @@ function Panels:Create()
     end
     self._timerElapsed = 0
 
-    if HasActiveSession() then
-      Panels:Refresh(nil, GTUtil.GetSharedCtx())
+    local ctx = GTUtil.GetSharedCtx()
+    if HasActiveSession(ctx) then
+      Panels:Refresh(nil, ctx)
     end
   end)
   frame:HookScript("OnShow", function()
+    local d = ensureDB()
+    d.open = true
     frame._timerElapsed = 0
     C_Timer.After(0, function()
       if not frame or not frame:IsShown() then return end
@@ -553,6 +686,18 @@ function Panels:Create()
   end)
   frame:HookScript("OnHide", function()
     hideAuxiliaryPanels(frame)
+    if frame._suppressOpenSave then
+      frame._suppressOpenSave = nil
+      return
+    end
+    local d = ensureDB()
+    d.open = false
+    d.userClosed = true
+  end)
+  frame._logoutFrame = CreateFrame("Frame")
+  frame._logoutFrame:RegisterEvent("PLAYER_LOGOUT")
+  frame._logoutFrame:SetScript("OnEvent", function()
+    frame._suppressOpenSave = true
   end)
   frame._layout = layout
 
@@ -567,9 +712,12 @@ function Panels:Refresh(kind, ctx)
   local frame = self:Create()
   local db = ensureDB()
   ctx = ctx or GTUtil.GetSharedCtx()
+  SyncSessionsWithEnabled(ctx)
+  RefreshMaterialChecks(frame, ctx)
   if GTUtil.ShouldHideInInstance() then
     if frame:IsShown() then
       hideAuxiliaryPanels(frame)
+      frame._suppressOpenSave = true
       frame:Hide()
     end
     return
@@ -641,6 +789,10 @@ function Panels:Refresh(kind, ctx)
   if frame.startPause then
     frame.startPause.text:SetText(activeCount == 0 and "Start" or (anyPaused and "Resume" or "Pause"))
   end
+  frame._autoHeight = GetAutoHeight(visibleCount)
+  if not db.collapsed then
+    frame:SetHeight(frame._autoHeight)
+  end
   frame.controls:SetShown((not db.collapsed) and visibleCount > 0)
   if frame._layout then
     frame._layout()
@@ -650,9 +802,7 @@ end
 function Panels:Show(kind, autoOpened)
   local frame = self:Create()
   local db = ensureDB()
-  local trackDB = GTUtil.GetDB()
-  local autoFarmEnabled = trackDB and trackDB.autoStartFarming and true or false
-  if autoOpened and db.userClosed and not autoFarmEnabled then
+  if autoOpened and db.userClosed then
     return
   end
   if GTUtil.ShouldHideInInstance() then
@@ -675,10 +825,10 @@ function Panels:Toggle(kind)
   local frame = self:Create()
   if frame:IsShown() then
     hideAuxiliaryPanels(frame)
-    frame:Hide()
     local db = ensureDB()
     db.open = false
     db.userClosed = true
+    frame:Hide()
   else
     self:Show(kind, false)
   end

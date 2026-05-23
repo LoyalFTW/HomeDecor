@@ -54,6 +54,34 @@ local CAT_LABEL = {
     PVP          = "PvP",
 }
 
+local function IsCompactCategory(category)
+    for _, cat in ipairs(CATS) do
+        if category == cat then return true end
+    end
+    return false
+end
+
+local function GetProfileUI()
+    local profile = NS.db and NS.db.profile
+    if type(profile) ~= "table" then return nil end
+    if type(profile.ui) ~= "table" then profile.ui = {} end
+    return profile.ui
+end
+
+local function GetSavedCompactCategory()
+    local ui = GetProfileUI()
+    if not ui then return "Achievements" end
+    if IsCompactCategory(ui.compactActiveCategory) then return ui.compactActiveCategory end
+    if IsCompactCategory(ui.activeCategory) then return ui.activeCategory end
+    return "Achievements"
+end
+
+local function SaveCompactCategory(category)
+    if not IsCompactCategory(category) then return end
+    local ui = GetProfileUI()
+    if ui then ui.compactActiveCategory = category end
+end
+
 local SRC_TAG = {
     vendor      = "Vendor",
     quest       = "Quest",
@@ -776,8 +804,9 @@ function CM:_Build()
     tabBar:SetPoint("TOPRIGHT", hdr, "BOTTOMRIGHT", 0, -3)
     tabBar:SetHeight(24)
 
-    local tabs           = {}
-    local activeCategory = "Achievements"
+    local tabs            = {}
+    local activeCategory  = GetSavedCompactCategory()
+    local expansionFilter = "all"
     local Refresh        
 
     local function LayoutTabs()
@@ -820,6 +849,7 @@ function CM:_Build()
         tab:SetScript("OnClick", function()
             if activeCategory == cat then return end
             activeCategory = cat
+            SaveCompactCategory(cat)
             expansionFilter = "all"
             StyleTabs()
             if Refresh then Refresh(true) end
@@ -941,7 +971,6 @@ function CM:_Build()
     end
     filterBar:SetScript("OnSizeChanged", LayoutFilterBtns)
 
-    local expansionFilter = "all"
     local expActiveList   = {}
     local expBtnPool      = {}
 

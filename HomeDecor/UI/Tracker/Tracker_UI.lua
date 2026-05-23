@@ -65,6 +65,10 @@ local function GetTrackerDB()
   return U and U.GetTrackerDB and U.GetTrackerDB()
 end
 
+local function NormalizeActiveTab(which)
+  return (which == "saved") and "saved" or "tracker"
+end
+
 local function ReadSizeFromDB(db, defaultW, defaultH)
   if not db then return defaultW, defaultH end
   local size = db.size
@@ -366,10 +370,14 @@ function UI:CreateFrame()
   tabSaved:SetPoint("TOPLEFT", tabTracker, "TOPRIGHT", 4, 0)
   tabSaved:SetPoint("TOPRIGHT", tabBar, "TOPRIGHT", -4, -2)
 
-  frame._activeTab = "tracker"
+  frame._activeTab = NormalizeActiveTab(db and db.activeTab)
 
   local function SetActiveTab(which)
+    which = NormalizeActiveTab(which)
     frame._activeTab = which
+    local d = GetTrackerDB()
+    if d then d.activeTab = which end
+
     local TC = GetThemeColors()
     local accent = TC.accent or { 1, 0.82, 0.2, 1 }
     local normal = TC.text or { 0.9, 0.9, 0.9, 1 }
@@ -382,7 +390,7 @@ function UI:CreateFrame()
     end
   end
 
-  SetActiveTab("tracker")
+  SetActiveTab(frame._activeTab)
 
   tabTracker:SetScript("OnClick", function()
     if frame._activeTab == "tracker" then return end
@@ -745,6 +753,7 @@ function UI:CreateFrame()
     if not d then return end
     d.alpha = Clamp(frame._bgAlpha or d.alpha or 1, 0, 1)
     d.collapsed = frame._collapsed and true or false
+    d.activeTab = NormalizeActiveTab(frame._activeTab)
     d.trackZone = trackZoneCB:GetChecked() and true or false
     d.hideCompleted = frame._hideCompleted and true or false
   end)

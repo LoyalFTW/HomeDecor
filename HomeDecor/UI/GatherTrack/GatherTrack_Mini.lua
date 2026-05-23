@@ -8,7 +8,7 @@ local Panels = NS.UI.GatherTrackMiniPanels
 local GTUtil = NS.UI.GatherTrackMiniUtil
 local FarmingPanels = NS.UI.GatherTrackMiniFarmingPanels
 
-local function SetKindEnabled(kind, enabled)
+local function SetKindEnabled(kind, enabled, deferRefresh)
   local db = GTUtil.GetDB()
   local ctx = GTUtil.GetSharedCtx()
 
@@ -23,12 +23,30 @@ local function SetKindEnabled(kind, enabled)
     if ctx then ctx.trackHerbs = enabled and true or false end
   end
 
-  if ctx then
+  if ctx and not deferRefresh then
     local Render = NS.UI and NS.UI.GatherTrackRender
     if Render and Render.Refresh then
       Render:Refresh(ctx)
     end
   end
+end
+
+function Gather:RequestRefresh(ctx, delay)
+  if self._refreshTimer then
+    self._refreshTimer:Cancel()
+    self._refreshTimer = nil
+  end
+
+  self._refreshTimer = C_Timer.NewTimer(delay or 0.05, function()
+    Gather._refreshTimer = nil
+    local sharedCtx = ctx or GTUtil.GetSharedCtx()
+    local Render = NS.UI and NS.UI.GatherTrackRender
+    if Render and Render.Refresh and sharedCtx then
+      Render:Refresh(sharedCtx)
+    else
+      Gather:RefreshAll(sharedCtx)
+    end
+  end)
 end
 
 function Gather:Ensure()
@@ -68,6 +86,7 @@ function Gather:Ensure()
             if FarmingPanels.frame.settingsPopup and FarmingPanels.frame.settingsPopup:IsShown() then
               FarmingPanels.frame.settingsPopup:Hide()
             end
+            FarmingPanels.frame._suppressOpenSave = true
             FarmingPanels.frame:Hide()
           end
         else
@@ -95,27 +114,32 @@ end
 
 function Gather:Toggle(kind)
   self:Ensure()
-  SetKindEnabled(kind, true)
+  SetKindEnabled(kind, true, true)
   Panels:Toggle(kind)
-  self:RefreshAll()
+  self:RequestRefresh(nil, 0.05)
 end
 
 function Gather:Show(kind)
   self:Ensure()
   if kind then
-    SetKindEnabled(kind, true)
+    SetKindEnabled(kind, true, true)
   end
   Panels:Show(kind)
-  self:RefreshAll()
+  self:RequestRefresh(nil, 0.05)
 end
 
 function Gather:ToggleAll()
   self:Ensure()
-  SetKindEnabled("lumber", true)
-  SetKindEnabled("ore", true)
-  SetKindEnabled("herb", true)
+  if Panels and Panels.frame and Panels.frame:IsShown() then
+    Panels:Hide()
+    return
+  end
+
+  SetKindEnabled("lumber", true, true)
+  SetKindEnabled("ore", true, true)
+  SetKindEnabled("herb", true, true)
   Panels:ShowDefaults()
-  self:RefreshAll()
+  self:RequestRefresh(nil, 0.05)
 end
 
 function Gather:RestoreOpenPanels()
@@ -123,15 +147,15 @@ function Gather:RestoreOpenPanels()
   local db = GTUtil.GetDB()
   local mini = db and db.gatherMini or {}
   if mini.main and mini.main.open then
-    SetKindEnabled("lumber", true)
-    SetKindEnabled("ore", true)
-    SetKindEnabled("herb", true)
+    SetKindEnabled("lumber", true, true)
+    SetKindEnabled("ore", true, true)
+    SetKindEnabled("herb", true, true)
     Panels:Show()
   end
   if FarmingPanels and FarmingPanels.RestoreOpen then
     FarmingPanels:RestoreOpen()
   end
-  self:RefreshAll()
+  self:RequestRefresh(nil, 0.05)
 end
 
 return Gather

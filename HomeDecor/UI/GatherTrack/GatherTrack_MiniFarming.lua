@@ -7,7 +7,6 @@ NS.UI.GatherTrackMiniFarming = Farming
 local GTUtil = NS.UI.GatherTrackMiniUtil
 local time = time or GetTime
 local floor = math.floor
-local STARTUP_RATE_WINDOW = 60
 
 local function ensureDB(kind)
   local db = GTUtil.GetDB()
@@ -28,6 +27,10 @@ function Farming:EnsureSession(kind)
     startTotal = 0,
     totalGained = 0,
     perMinute = 0,
+    gainEvents = 0,
+    lastRateElapsed = 0,
+    itemPerHour = {},
+    itemGainEvents = {},
     topItems = {},
     itemGains = {},
     primaryItemID = nil,
@@ -48,6 +51,10 @@ function Farming:Start(kind, ctx)
   session.startTotal = GTUtil.GetTotalForKind(ctx or GTUtil.GetSharedCtx(), kind)
   session.totalGained = 0
   session.perMinute = 0
+  session.gainEvents = 0
+  session.lastRateElapsed = 0
+  session.itemPerHour = {}
+  session.itemGainEvents = {}
   session.topItems = {}
   session.itemGains = {}
   session.primaryItemID = nil
@@ -73,6 +80,10 @@ function Farming:Reset(kind, ctx)
   session.startTotal = GTUtil.GetTotalForKind(ctx or GTUtil.GetSharedCtx(), kind)
   session.totalGained = 0
   session.perMinute = 0
+  session.gainEvents = 0
+  session.lastRateElapsed = 0
+  session.itemPerHour = {}
+  session.itemGainEvents = {}
   session.topItems = {}
   session.itemGains = {}
   session.primaryItemID = nil
@@ -110,10 +121,6 @@ function Farming:RecordGain(kind, itemID, amount, ctx)
 
   local session = self:EnsureSession(kind)
   if kind == "lumber" then
-    if session.active and session.primaryItemID and session.primaryItemID ~= itemID then
-      self:Start(kind, ctx)
-      session = self:EnsureSession(kind)
-    end
     session.primaryItemID = itemID
   end
   if session.active and (not session.firstGainTime or session.firstGainTime == 0) then
@@ -121,6 +128,9 @@ function Farming:RecordGain(kind, itemID, amount, ctx)
   end
   session.itemGains = session.itemGains or {}
   session.itemGains[itemID] = (session.itemGains[itemID] or 0) + amount
+  session.gainEvents = (session.gainEvents or 0) + 1
+  session.itemGainEvents = session.itemGainEvents or {}
+  session.itemGainEvents[itemID] = (session.itemGainEvents[itemID] or 0) + 1
   session.recentItemID = itemID
   session.recentAmount = amount
 
@@ -129,22 +139,24 @@ function Farming:RecordGain(kind, itemID, amount, ctx)
     GTUtil.EnsureItemMeta(ctx, itemID)
   end
 
-  self:Update(kind, ctx)
+  self:Update(kind, ctx, true)
 end
 
-local function BuildTopItems(session, ctx, kind, elapsed)
+local function BuildTopItems(session, ctx, kind, elapsed, updateRates)
   local items = {}
   local gains = session.itemGains or {}
   local rateElapsed = tonumber(elapsed) or 0
-  local effectiveElapsed = rateElapsed > 0 and rateElapsed or STARTUP_RATE_WINDOW
+  local effectiveElapsed = math.max(1, rateElapsed)
+  session.itemPerHour = session.itemPerHour or {}
 
   for itemID, count in pairs(gains) do
     if count and count > 0 then
       local meta = GTUtil.EnsureItemMeta(ctx, itemID)
-      local perHour = 0
-      if count > 0 then
-        perHour = (count / effectiveElapsed) * 3600
+      local itemEvents = tonumber(session.itemGainEvents and session.itemGainEvents[itemID]) or 0
+      if updateRates and itemEvents > 1 then
+        session.itemPerHour[itemID] = (count / effectiveElapsed) * 3600
       end
+      local perHour = session.itemPerHour[itemID] or 0
       items[#items + 1] = {
         itemID = itemID,
         count = count,
@@ -189,27 +201,30 @@ local function GetSessionGainTotal(session)
   return total
 end
 
-function Farming:Update(kind, ctx)
+function Farming:Update(kind, ctx, updateRates)
   local session = self:EnsureSession(kind)
   ctx = ctx or GTUtil.GetSharedCtx()
 
   if not session.active then
     session.totalGained = GetSessionGainTotal(session)
-    session.topItems = BuildTopItems(session, ctx, kind, 0)
+    session.topItems = BuildTopItems(session, ctx, kind, session.lastRateElapsed or 0, false)
     return
   end
 
   session.totalGained = GetSessionGainTotal(session)
 
   local elapsed = self:GetElapsed(kind)
-  local effectiveElapsed = elapsed > 0 and elapsed or STARTUP_RATE_WINDOW
-  if session.totalGained > 0 then
+  if updateRates and session.totalGained > 0 and (tonumber(session.gainEvents) or 0) > 1 then
+    local effectiveElapsed = math.max(1, elapsed)
     session.perMinute = (session.totalGained / effectiveElapsed) * 60
-  else
+    session.lastRateElapsed = elapsed
+  elseif session.totalGained <= 0 then
     session.perMinute = 0
+    session.lastRateElapsed = 0
+    session.itemPerHour = {}
   end
 
-  session.topItems = BuildTopItems(session, ctx, kind, elapsed)
+  session.topItems = BuildTopItems(session, ctx, kind, session.lastRateElapsed or elapsed, updateRates and session.totalGained > 0)
 end
 
 function Farming:GetStats(kind, ctx)
@@ -226,11 +241,7 @@ function Farming:GetStats(kind, ctx)
   local focusGain = tonumber(session.itemGains and session.itemGains[focusItemID]) or 0
   local focusBagCount = GTUtil.GetBagItemCount(ctx, focusItemID)
   local focusOverallCount = GTUtil.GetOverallItemCount(ctx, focusItemID)
-  local focusPerHour = 0
-  local effectiveElapsed = elapsed > 0 and elapsed or STARTUP_RATE_WINDOW
-  if focusGain > 0 then
-    focusPerHour = (focusGain / effectiveElapsed) * 3600
-  end
+  local focusPerHour = tonumber(session.itemPerHour and session.itemPerHour[focusItemID]) or 0
   local extraItems = 0
   for itemID, count in pairs(session.itemGains or {}) do
     if itemID ~= focusItemID and (tonumber(count) or 0) > 0 then
