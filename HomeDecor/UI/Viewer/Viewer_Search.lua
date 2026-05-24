@@ -78,6 +78,23 @@ local function SortKey(it)
   return t:lower()
 end
 
+local function VariantKey(it)
+  if type(it) ~= "table" then return nil end
+
+  local id = it.decorID
+  if not id then return nil end
+
+  local src = it.source or {}
+  local vendor = it._navVendor or it.vendor
+  local faction = (vendor and (vendor.faction or (vendor.source and vendor.source.faction))) or it.faction or src.faction
+
+  if faction == "Alliance" or faction == "Horde" then
+    return tostring(id) .. ":" .. faction
+  end
+
+  return tostring(id)
+end
+
 local function BuildGlobalSearchResults(ui, db)
   local out = {}
   if not Filters or not Filters.Passes then return out end
@@ -93,29 +110,29 @@ local function BuildGlobalSearchResults(ui, db)
     uiSearch.search = ""
   end
 
-  local bestByDecor = {}
+  local bestByVariant = {}
 
   local function Prefer(it)
-    local id = it and it.decorID
-    if not id then return end
+    local key = VariantKey(it)
+    if not key then return end
 
-    local cur = bestByDecor[id]
+    local cur = bestByVariant[key]
     if not cur then
-      bestByDecor[id] = it
+      bestByVariant[key] = it
       return
     end
 
     local curTitle = cur.title
     local newTitle = it.title
     if (not curTitle or curTitle == "") and (newTitle and newTitle ~= "") then
-      bestByDecor[id] = it
+      bestByVariant[key] = it
       return
     end
 
     local curItemID = (cur.source and cur.source.itemID) or cur.itemID
     local newItemID = (it.source and it.source.itemID) or it.itemID
     if not curItemID and newItemID then
-      bestByDecor[id] = it
+      bestByVariant[key] = it
     end
   end
 
@@ -215,7 +232,7 @@ local function BuildGlobalSearchResults(ui, db)
   Scan(data.Professions, "profession")
   Scan(data.SavedItems or data["Saved Items"], "saved")
 
-  for _, it in pairs(bestByDecor) do
+  for _, it in pairs(bestByVariant) do
     out[#out + 1] = it
   end
 

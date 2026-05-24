@@ -722,7 +722,7 @@ function L:CreateShell()
 
   local filterScroll = CreateFrame("ScrollFrame", nil, left, "ScrollFrameTemplate")
   filterScroll:SetPoint("TOPLEFT", 8, y)
-  filterScroll:SetPoint("BOTTOMRIGHT", resetFiltersBtn, "TOPRIGHT", -10, -8)
+  filterScroll:SetPoint("BOTTOMRIGHT", resetFiltersBtn, "TOPRIGHT", -10, 8)
 
   local filterContent = CreateFrame("Frame", nil, filterScroll)
   filterContent:SetPoint("TOPLEFT", 0, 0)
@@ -786,7 +786,7 @@ function L:CreateShell()
     local scrollTopY = lineY - math.floor(6 * ratio + 0.5)
     filterScroll:ClearAllPoints()
     filterScroll:SetPoint("TOPLEFT", 8, scrollTopY)
-    filterScroll:SetPoint("BOTTOMRIGHT", resetFiltersBtn, "TOPRIGHT", -10, -8)
+    filterScroll:SetPoint("BOTTOMRIGHT", resetFiltersBtn, "TOPRIGHT", -10, 8)
 
     local bottomBtnH = math.floor(26 * ratio + 0.5)
     if bottomBtnH < 20 then bottomBtnH = 20 end
