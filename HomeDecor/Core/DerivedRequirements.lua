@@ -20,7 +20,20 @@ local function ensurePath(root, expName, zoneName)
   return root[expName][zoneName]
 end
 
-local function addDerived(root, seen, expName, zoneName, decorID, sourceType, requirementID, faction)
+local function slimVendor(vendor)
+  if type(vendor) ~= "table" then return nil end
+  local src = vendor.source or {}
+  return {
+    title = vendor.title,
+    name = vendor.name,
+    zone = vendor.zone or src.zone,
+    faction = vendor.faction or src.faction,
+    worldmap = vendor.worldmap or src.worldmap,
+    source = src,
+  }
+end
+
+local function addDerived(root, seen, expName, zoneName, decorID, sourceType, requirementID, faction, vendor)
   if not expName or not zoneName or not decorID or not sourceType then return end
 
   local key = table.concat({
@@ -33,8 +46,7 @@ local function addDerived(root, seen, expName, zoneName, decorID, sourceType, re
   if seen[key] then return end
   seen[key] = true
 
-  local bucket = ensurePath(root, expName, zoneName)
-  bucket[#bucket + 1] = {
+  local entry = {
     decorID = decorID,
     source = {
       type = sourceType,
@@ -42,6 +54,21 @@ local function addDerived(root, seen, expName, zoneName, decorID, sourceType, re
       faction = faction,
     },
   }
+
+  if faction == "Alliance" or faction == "Horde" then
+    entry.faction = faction
+  end
+
+  local vctx = slimVendor(vendor)
+  if vctx then
+    entry.vendor = vctx
+    entry._navVendor = vctx
+    entry.zone = vctx.zone
+    entry.worldmap = vctx.worldmap
+  end
+
+  local bucket = ensurePath(root, expName, zoneName)
+  bucket[#bucket + 1] = entry
 end
 
 local function mergeOverrides(root, seen, overrides, sourceType)
@@ -110,11 +137,11 @@ local function buildDerivedFromVendors(forceRebuild)
                   local questID = req and req.quest and tonumber(req.quest.id or req.quest)
 
                   if achID then
-                    addDerived(achievements, seenAchievementDecor, expName, zoneName, item.decorID, "achievement", achID, vendorFaction)
+                    addDerived(achievements, seenAchievementDecor, expName, zoneName, item.decorID, "achievement", achID, vendorFaction, vendor)
                   end
 
                   if questID then
-                    addDerived(quests, seenQuestDecor, expName, zoneName, item.decorID, "quest", questID, vendorFaction)
+                    addDerived(quests, seenQuestDecor, expName, zoneName, item.decorID, "quest", questID, vendorFaction, vendor)
                   end
                 end
               end

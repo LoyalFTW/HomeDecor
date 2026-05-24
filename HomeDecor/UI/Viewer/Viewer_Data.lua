@@ -644,9 +644,17 @@ function Data.ResolveAchievementDecor(it)
   end
 
   local picked, pickedItem
+  local currentVendor = resolved._navVendor or resolved.vendor
+  if type(currentVendor) == "table" then
+    local currentFaction = VendorFaction(currentVendor)
+    if not desiredFaction or currentFaction == desiredFaction then
+      picked = currentVendor
+    end
+  end
+
   local expName = resolved._expansion
   local zoneKey = resolved._navZoneKey
-  if expName and zoneKey then
+  if not picked and expName and zoneKey then
     picked, pickedItem = PickVendorFromZoneData(resolved.decorID, expName, zoneKey, desiredFaction)
   end
 
@@ -666,20 +674,20 @@ function Data.ResolveAchievementDecor(it)
   local vsrc = picked and picked.source
   if vsrc then
     if vsrc.id then
-      resolved.npcID = resolved.npcID or vsrc.id
-      resolved.source.npcID = resolved.source.npcID or vsrc.id
+      resolved.npcID = vsrc.id
+      resolved.source.npcID = vsrc.id
     end
     if vsrc.worldmap then
-      resolved.worldmap = resolved.worldmap or vsrc.worldmap
-      resolved.source.worldmap = resolved.source.worldmap or vsrc.worldmap
+      resolved.worldmap = vsrc.worldmap
+      resolved.source.worldmap = vsrc.worldmap
     end
     if vsrc.zone then
-      resolved.zone = resolved.zone or vsrc.zone
-      resolved.source.zone = resolved.source.zone or vsrc.zone
+      resolved.zone = vsrc.zone
+      resolved.source.zone = vsrc.zone
     end
     if vsrc.faction then
-      resolved.faction = resolved.faction or vsrc.faction
-      resolved.source.faction = resolved.source.faction or vsrc.faction
+      resolved.faction = vsrc.faction
+      resolved.source.faction = vsrc.faction
     end
   end
 
