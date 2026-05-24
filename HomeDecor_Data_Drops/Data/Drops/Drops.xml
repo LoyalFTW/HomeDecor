@@ -10,6 +10,9 @@
     <!-- WoD -->
     <Script file="WarlordsOfDraenor/Draenor.lua"/>
 
+    <!-- Wrath -->
+    <Script file="WrathOfTheLichKing/Northrend.lua"/>
+
     <!-- Legion -->
     <Script file="Legion/BrokenIsles.lua"/>
 
