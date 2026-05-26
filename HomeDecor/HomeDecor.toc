@@ -125,6 +125,7 @@ UI\MapPopup\MapPopup_Rows.lua
 UI\MapPopup\MapPopup_UI.lua
 UI\MapPopup\MapPopup_Render.lua 
 UI\MapPopup\MapPopup.lua
+UI\Vendor\VendorAssistant.lua
 
 UI\Tracker\Tracker_Util.lua
 UI\Tracker\Tracker_Rows.lua

@@ -35,8 +35,10 @@ end
 
 local function toggle(id)
     local db = getDB()
-    if not db then return end
+    if not db then return false end
     db[id] = not db[id]
+    if not db[id] then db[id] = nil end
+    return db[id] and true or false
 end
 
 local function apply(tex, on)
@@ -68,6 +70,16 @@ function Star:Attach(parent, itemID, onChanged)
     refresh()
     b.Refresh = refresh
     return b
+end
+
+function Star:IsFavorite(itemID)
+    return isFav(itemID) and true or false
+end
+
+function Star:Toggle(itemID)
+    local on = toggle(itemID)
+    NotifyListeners()
+    return on
 end
 
 return Star
