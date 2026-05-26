@@ -10,6 +10,7 @@ Tracker.Rows = Rows
 
 local RS = NS.UI.RowStyles
 local ProgressBar = NS.UI.ProgressBar
+local C = NS.UI.Controls
 
 local HEADER_H = 44
 local ITEM_H = 54
@@ -97,6 +98,7 @@ function Rows:MakeSmallIconButton(parent, sizeOrTex)
   if tex then
     ic:SetTexture(tex)
   end
+  if C and C.TextureColor then C:TextureColor(ic, "accent") end
   b.icon = ic
 
   if b.SetHighlightTexture then

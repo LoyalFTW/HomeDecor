@@ -79,6 +79,10 @@ local function GetThemeColor(name, fallback)
     return (colors and colors[name]) or fallback
 end
 
+local function TextColor(fs, role, alpha)
+    if Controls and Controls.TextColor then Controls:TextColor(fs, role, alpha) end
+end
+
 local function wipeTable(t)
     if type(t) ~= "table" then return end
     for k in pairs(t) do t[k] = nil end
@@ -279,7 +283,6 @@ local function BuildSourceSummary(it)
     if srcType == "vendor" then
         local vendor = it.vendor or it._navVendor
         local name = vendor and D and D.ResolveVendorTitle and D.ResolveVendorTitle(vendor)
-        name = name or vendor and (vendor.title or vendor.name)
         return name and ("Vendor: " .. name) or "Vendor"
     end
 
@@ -1149,10 +1152,9 @@ local function RebuildEntries(f, content)
                                 local vC, vT = GetCachedCounts(f, ui, db, it.items, it)
                                 local vendorKeyId = (it.source and it.source.id) or it.npcID or it.id or 0
                                 local vKey = D and D.KeyVendor and D.KeyVendor(cat, exp, zone, vendorKeyId) or tostring(vendorKeyId)
-                                local vTitle = (D and D.ResolveVendorTitle and D.ResolveVendorTitle(it)) or it.title
+                                local vTitle = D and D.ResolveVendorTitle and D.ResolveVendorTitle(it)
                                 if not vTitle or vTitle == "" then
-                                    local vid = (it.source and it.source.id) or it.npcID or it.id
-                                    vTitle = vid and (L["VENDOR_PREFIX"] .. tostring(vid)) or L["VENDOR"]
+                                    vTitle = L["VENDOR"]
                                 end
 
                                 addHeader(44, 30, "[Vendor] " .. vTitle, vC, vT, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
@@ -1210,10 +1212,9 @@ local function RebuildEntries(f, content)
                                 local vC, vT = GetCachedCounts(f, ui, db, it.items, it)
                                 local vendorKeyId = (it.source and it.source.id) or it.npcID or it.id or 0
                                 local vKey = D and D.KeyVendor and D.KeyVendor(cat, exp, zone, vendorKeyId) or tostring(vendorKeyId)
-                                local vTitle = (D and D.ResolveVendorTitle and D.ResolveVendorTitle(it)) or it.title
+                                local vTitle = D and D.ResolveVendorTitle and D.ResolveVendorTitle(it)
                                 if not vTitle or vTitle == "" then
-                                    local vid = (it.source and it.source.id) or it.npcID or it.id
-                                    vTitle = vid and (L["VENDOR_PREFIX"] .. tostring(vid)) or L["VENDOR"]
+                                    vTitle = L["VENDOR"]
                                 end
 
                                 addHeader(44, 30, "[Vendor] " .. vTitle, vC, vT, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
@@ -1319,7 +1320,7 @@ function Render:Create(parent)
 
     inspector.previewFallback = inspector.media:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     inspector.previewFallback:SetPoint("CENTER")
-    inspector.previewFallback:SetTextColor(0.72, 0.72, 0.72, 0.9)
+    TextColor(inspector.previewFallback, "textMuted", 0.9)
     inspector.previewFallback:SetText("Select an item to load its decor preview.")
 
     inspector.previewScene = CreateFrame("ModelScene", nil, inspector.media, "PanningModelSceneMixinTemplate")
@@ -1357,11 +1358,13 @@ function Render:Create(parent)
     inspector.corbelR:Hide()
 
     inspector.state = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    TextColor(inspector.state, "text")
     inspector.state:SetPoint("TOPLEFT", inspector.media, "BOTTOMLEFT", 0, -12)
     inspector.state:SetPoint("TOPRIGHT", inspector.media, "BOTTOMRIGHT", 0, -12)
     inspector.state:SetJustifyH("LEFT")
 
     inspector.title = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    TextColor(inspector.title, "text")
     inspector.title:SetPoint("TOPLEFT", inspector.state, "BOTTOMLEFT", 0, -6)
     inspector.title:SetPoint("TOPRIGHT", inspector.state, "BOTTOMRIGHT", 0, -6)
     inspector.title:SetJustifyH("LEFT")
@@ -1369,42 +1372,49 @@ function Render:Create(parent)
     inspector.title:SetMaxLines(3)
 
     inspector.meta = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    TextColor(inspector.meta, "textMuted")
     inspector.meta:SetPoint("TOPLEFT", inspector.title, "BOTTOMLEFT", 0, -6)
     inspector.meta:SetPoint("TOPRIGHT", inspector.title, "BOTTOMRIGHT", 0, -6)
     inspector.meta:SetJustifyH("LEFT")
     inspector.meta:SetWordWrap(true)
 
     inspector.source = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    TextColor(inspector.source, "text")
     inspector.source:SetPoint("TOPLEFT", inspector.meta, "BOTTOMLEFT", 0, -12)
     inspector.source:SetPoint("TOPRIGHT", inspector.meta, "BOTTOMRIGHT", 0, -12)
     inspector.source:SetJustifyH("LEFT")
     inspector.source:SetWordWrap(true)
 
     inspector.location = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    TextColor(inspector.location, "textMuted")
     inspector.location:SetPoint("TOPLEFT", inspector.source, "BOTTOMLEFT", 0, -6)
     inspector.location:SetPoint("TOPRIGHT", inspector.source, "BOTTOMRIGHT", 0, -6)
     inspector.location:SetJustifyH("LEFT")
     inspector.location:SetWordWrap(true)
 
     inspector.cost = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    TextColor(inspector.cost, "textMuted")
     inspector.cost:SetPoint("TOPLEFT", inspector.location, "BOTTOMLEFT", 0, -10)
     inspector.cost:SetPoint("TOPRIGHT", inspector.location, "BOTTOMRIGHT", 0, -10)
     inspector.cost:SetJustifyH("LEFT")
     inspector.cost:SetWordWrap(true)
 
     inspector.req = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    TextColor(inspector.req, "text")
     inspector.req:SetPoint("TOPLEFT", inspector.cost, "BOTTOMLEFT", 0, -12)
     inspector.req:SetPoint("TOPRIGHT", inspector.cost, "BOTTOMRIGHT", 0, -12)
     inspector.req:SetJustifyH("LEFT")
     inspector.req:SetWordWrap(true)
 
     inspector.rep = inspector:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    TextColor(inspector.rep, "text")
     inspector.rep:SetPoint("TOPLEFT", inspector.req, "BOTTOMLEFT", 0, -8)
     inspector.rep:SetPoint("TOPRIGHT", inspector.req, "BOTTOMRIGHT", 0, -8)
     inspector.rep:SetJustifyH("LEFT")
     inspector.rep:SetWordWrap(true)
 
     inspector.note = inspector:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    TextColor(inspector.note, "textMuted")
     inspector.note:SetPoint("TOPLEFT", inspector.rep, "BOTTOMLEFT", 0, -10)
     inspector.note:SetPoint("TOPRIGHT", inspector.rep, "BOTTOMRIGHT", 0, -10)
     inspector.note:SetJustifyH("LEFT")
@@ -1414,7 +1424,7 @@ function Render:Create(parent)
     inspector.empty:SetPoint("TOPLEFT", inspector.media, "BOTTOMLEFT", 0, -18)
     inspector.empty:SetPoint("TOPRIGHT", inspector.media, "BOTTOMRIGHT", 0, -18)
     inspector.empty:SetJustifyH("LEFT")
-    inspector.empty:SetTextColor(0.72, 0.72, 0.72, 1)
+    TextColor(inspector.empty, "textMuted")
     inspector.empty:SetText("Select an item to pin its details here.")
 
     local function CreateInspectorButton(width, text, point, relativeTo, relativePoint, x, y)
@@ -1431,6 +1441,7 @@ function Render:Create(parent)
         btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         btn.text:SetPoint("CENTER")
         btn.text:SetText(text)
+        TextColor(btn.text, "text")
         return btn
     end
 

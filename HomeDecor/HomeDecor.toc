@@ -95,6 +95,7 @@ UI\Endeavors\Endeavors.lua
 UI\Shared\Theme.lua
 UI\Shared\Controls.lua
 UI\Shared\Options.lua
+UI\Shared\SettingsPopup.lua
 UI\Widgets\RowStyles.lua
 UI\Shared\ChangelogPopup.lua
 UI\Shared\ProfessionsTipPopup.lua

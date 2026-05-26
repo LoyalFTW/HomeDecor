@@ -34,8 +34,29 @@ local function Hov(b, bg, hv)
     if C and C.ApplyHover then C:ApplyHover(b, bg, hv) end
 end
 
+local function TextColor(fs, role, alpha)
+    local C = Controls()
+    if C and C.TextColor then C:TextColor(fs, role, alpha) end
+end
+
+local function TextureColor(texture, role, alpha)
+    local C = Controls()
+    if C and C.TextureColor then C:TextureColor(texture, role, alpha) end
+end
+
+local function Font(fs, size, flags)
+    local U = NS.UI and NS.UI.Util
+    if U and U.SetFont then
+        U.SetFont(fs, size, flags)
+    else
+        fs:SetFont(STANDARD_TEXT_FONT, size, flags or "")
+    end
+end
+
 local function FS(p, tmpl)
-    return p:CreateFontString(nil, "OVERLAY", tmpl or "GameFontNormal")
+    local fs = p:CreateFontString(nil, "OVERLAY", tmpl or "GameFontNormal")
+    TextColor(fs, "text")
+    return fs
 end
 
 local ROW_H = 22
@@ -608,14 +629,16 @@ local function CreateRow(parent)
     nameFS:SetJustifyH("LEFT")
     nameFS:SetWordWrap(false)
     nameFS:SetMaxLines(1)
-    nameFS:SetFont(STANDARD_TEXT_FONT, 11, "")
+    Font(nameFS, 11, "")
+    TextColor(nameFS, "text")
     row._nameFS = nameFS
 
     local tagFS = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     tagFS:SetPoint("RIGHT", row, "RIGHT", -6, 0)
     tagFS:SetWidth(90)
     tagFS:SetJustifyH("RIGHT")
-    tagFS:SetFont(STANDARD_TEXT_FONT, 10, "")
+    Font(tagFS, 10, "")
+    TextColor(tagFS, "textMuted")
     row._tagFS = tagFS
 
     local locBtn = CreateFrame("Button", nil, row)
@@ -625,11 +648,11 @@ local function CreateRow(parent)
     local locFS = locBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     locFS:SetAllPoints()
     locFS:SetJustifyH("CENTER")
-    locFS:SetFont(STANDARD_TEXT_FONT, 9, "OUTLINE")
+    Font(locFS, 9, "OUTLINE")
     locFS:SetText("Loc")
-    locFS:SetTextColor(1, 0.82, 0, 0.85)
+    TextColor(locFS, "accent", 0.85)
     locBtn:SetScript("OnEnter", function(self)
-        locFS:SetTextColor(1, 1, 1, 1)
+        TextColor(locFS, "text")
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:ClearLines()
         GameTooltip:AddLine("Drop Locations", 1, 0.82, 0)
@@ -637,7 +660,7 @@ local function CreateRow(parent)
         GameTooltip:Show()
     end)
     locBtn:SetScript("OnLeave", function(self)
-        locFS:SetTextColor(1, 0.82, 0, 0.85)
+        TextColor(locFS, "accent", 0.85)
         GameTooltip:Hide()
     end)
     locBtn:SetScript("OnClick", function(self)
@@ -745,19 +768,19 @@ function CM:_Build()
     local titleFS = FS(hdr, "GameFontNormalLarge")
     titleFS:SetPoint("LEFT", 10, 0)
     titleFS:SetText("HomeDecor")
-    titleFS:SetTextColor(accent[1], accent[2], accent[3], 1)
-    titleFS:SetFont(STANDARD_TEXT_FONT, 13, "OUTLINE")
+    TextColor(titleFS, "accent")
+    Font(titleFS, 13, "OUTLINE")
 
     local subtitleFS = FS(hdr, "GameFontNormalSmall")
     subtitleFS:SetPoint("LEFT", titleFS, "RIGHT", 6, -1)
     subtitleFS:SetText("- Compact")
-    subtitleFS:SetTextColor(1, 1, 1, 0.35)
-    subtitleFS:SetFont(STANDARD_TEXT_FONT, 10, "")
+    TextColor(subtitleFS, "textMuted", 0.6)
+    Font(subtitleFS, 10, "")
 
     local progFS = FS(hdr, "GameFontNormalSmall")
     progFS:SetPoint("LEFT", subtitleFS, "RIGHT", 10, 0)
-    progFS:SetTextColor(1, 1, 1, 0.40)
-    progFS:SetFont(STANDARD_TEXT_FONT, 10, "")
+    TextColor(progFS, "textMuted", 0.65)
+    Font(progFS, 10, "")
 
     local closeBtn = CreateFrame("Button", nil, hdr, "BackdropTemplate")
     Bd(closeBtn, panel, border)
@@ -768,7 +791,7 @@ function CM:_Build()
     closeX:SetSize(12, 12)
     closeX:SetPoint("CENTER")
     closeX:SetTexture("Interface\\Buttons\\UI-StopButton")
-    closeX:SetVertexColor(accent[1], accent[2], accent[3], 1)
+    TextureColor(closeX, "accent")
     closeBtn:SetScript("OnClick", function() frame:Hide() end)
 
     local expandBtn = CreateFrame("Button", nil, hdr, "BackdropTemplate")
@@ -780,8 +803,8 @@ function CM:_Build()
     expandFS:SetAllPoints()
     expandFS:SetJustifyH("CENTER")
     expandFS:SetText("[+]  Full View")
-    expandFS:SetFont(STANDARD_TEXT_FONT, 11, "")
-    expandFS:SetTextColor(accent[1], accent[2], accent[3], 1)
+    Font(expandFS, 11, "")
+    TextColor(expandFS, "text")
     expandBtn:SetScript("OnClick", function()
         frame:Hide()
         local db2 = NS.db and NS.db.profile
@@ -826,12 +849,7 @@ function CM:_Build()
             if C and C.SetSelected then
                 C:SetSelected(tab, sel, panel, rowBg)
             end
-            tab._fs:SetTextColor(
-                sel and 1                or accent[1],
-                sel and 0.92             or accent[2],
-                sel and 0.92             or accent[3],
-                sel and 1                or 0.78
-            )
+            TextColor(tab._fs, sel and "highlight" or "text", sel and 1 or 0.78)
         end
     end
 
@@ -844,7 +862,7 @@ function CM:_Build()
         fs:SetAllPoints()
         fs:SetJustifyH("CENTER")
         fs:SetText(CAT_LABEL[cat] or cat)
-        fs:SetFont(STANDARD_TEXT_FONT, 10, "OUTLINE")
+        Font(fs, 10, "OUTLINE")
         tab._fs = fs
         tab:SetScript("OnClick", function()
             if activeCategory == cat then return end
@@ -880,12 +898,12 @@ function CM:_Build()
     srchIcon:SetSize(13, 13)
     srchIcon:SetPoint("LEFT", 6, 0)
     srchIcon:SetTexture("Interface\\Common\\UI-Searchbox-Icon")
-    srchIcon:SetVertexColor(accent[1], accent[2], accent[3], 0.60)
+    TextureColor(srchIcon, "accent", 0.60)
 
     local phFS = searchBg:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
     phFS:SetPoint("LEFT", 26, 0)
     phFS:SetText("Search...")
-    phFS:SetTextColor(1, 1, 1, 0.25)
+    TextColor(phFS, "placeholder")
 
     local clearSB = CreateFrame("Button", nil, searchRow, "BackdropTemplate")
     Bd(clearSB, panel, border)
@@ -896,7 +914,7 @@ function CM:_Build()
     clearX:SetSize(11, 11)
     clearX:SetPoint("CENTER")
     clearX:SetTexture("Interface\\Buttons\\UI-StopButton")
-    clearX:SetVertexColor(accent[1], accent[2], accent[3], 0.80)
+    TextureColor(clearX, "accent", 0.80)
     clearSB:Hide()
 
     searchBox:SetScript("OnTextChanged", function(self)
@@ -931,12 +949,7 @@ function CM:_Build()
             if C2 and C2.Backdrop then
                 C2:Backdrop(btn, sel and header or panel, border)
             end
-            btn._fs:SetTextColor(
-                sel and 1    or accent[1],
-                sel and 0.92 or accent[2],
-                sel and 0.92 or accent[3],
-                sel and 1    or 0.55
-            )
+            TextColor(btn._fs, sel and "highlight" or "text", sel and 1 or 0.7)
         end
     end
 
@@ -959,7 +972,7 @@ function CM:_Build()
         fs:SetAllPoints()
         fs:SetJustifyH("CENTER")
         fs:SetText(CFILT_LABELS[filt])
-        fs:SetFont(STANDARD_TEXT_FONT, 10, "OUTLINE")
+        Font(fs, 10, "OUTLINE")
         btn._fs = fs
         btn:SetScript("OnClick", function()
             if collectedFilter == filt then return end
@@ -988,12 +1001,7 @@ function CM:_Build()
                 if C2 and C2.Backdrop then
                     C2:Backdrop(btn, sel and header or panel, border)
                 end
-                btn._fs:SetTextColor(
-                    sel and 1    or accent[1],
-                    sel and 0.92 or accent[2],
-                    sel and 0.92 or accent[3],
-                    sel and 1    or 0.55
-                )
+                TextColor(btn._fs, sel and "highlight" or "text", sel and 1 or 0.7)
             end
         end
     end
@@ -1032,7 +1040,7 @@ function CM:_Build()
         fs:SetAllPoints()
         fs:SetJustifyH("CENTER")
         fs:SetText(label or code)
-        fs:SetFont(STANDARD_TEXT_FONT, 9, "OUTLINE")
+        Font(fs, 9, "OUTLINE")
         btn._fs  = fs
         btn._exp = code
         btn:SetScript("OnClick", function()
@@ -1074,14 +1082,14 @@ function CM:_Build()
     local chName = FS(colHdr, "GameFontNormalSmall")
     chName:SetPoint("LEFT", 22, 0)
     chName:SetText("ITEM NAME")
-    chName:SetFont(STANDARD_TEXT_FONT, 9, "OUTLINE")
-    chName:SetTextColor(accent[1], accent[2], accent[3], 0.50)
+    Font(chName, 9, "OUTLINE")
+    TextColor(chName, "accent", 0.5)
 
     local chTag = FS(colHdr, "GameFontNormalSmall")
     chTag:SetPoint("RIGHT", -24, 0)
     chTag:SetText("SOURCE  EXP")
-    chTag:SetFont(STANDARD_TEXT_FONT, 9, "OUTLINE")
-    chTag:SetTextColor(accent[1], accent[2], accent[3], 0.50)
+    Font(chTag, 9, "OUTLINE")
+    TextColor(chTag, "accent", 0.5)
     chTag:SetJustifyH("RIGHT")
 
     local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "ScrollFrameTemplate")
@@ -1129,7 +1137,7 @@ function CM:_Build()
     local gripTex = grip:CreateTexture(nil, "OVERLAY")
     gripTex:SetAllPoints()
     gripTex:SetTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
-    gripTex:SetVertexColor(accent[1], accent[2], accent[3], 0.45)
+    TextureColor(gripTex, "accent", 0.45)
     grip:SetScript("OnMouseDown", function()
         frame:StartSizing("BOTTOMRIGHT")
     end)
@@ -1162,8 +1170,8 @@ function CM:_Build()
 
     local previewTitle = FS(previewHdr, "GameFontNormal")
     previewTitle:SetPoint("LEFT", 10, 0)
-    previewTitle:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
-    previewTitle:SetTextColor(accent[1], accent[2], accent[3], 1)
+    Font(previewTitle, 12, "OUTLINE")
+    TextColor(previewTitle, "accent")
     previewTitle:SetText("Decor Preview")
 
     local previewClose = CreateFrame("Button", nil, previewHdr, "BackdropTemplate")
@@ -1175,7 +1183,7 @@ function CM:_Build()
     previewCloseX:SetSize(12, 12)
     previewCloseX:SetPoint("CENTER")
     previewCloseX:SetTexture("Interface\\Buttons\\UI-StopButton")
-    previewCloseX:SetVertexColor(accent[1], accent[2], accent[3], 1)
+    TextureColor(previewCloseX, "accent")
     previewClose:SetScript("OnClick", function()
         previewFrame:Hide()
         previewCurrentDecorID = nil
@@ -1205,7 +1213,7 @@ function CM:_Build()
     previewName:SetJustifyH("LEFT")
     previewName:SetWordWrap(false)
     previewName:SetMaxLines(1)
-    previewName:SetTextColor(textCol[1], textCol[2], textCol[3], 1)
+    TextColor(previewName, "text")
 
     local previewMeta = FS(previewInfo, "GameFontHighlightSmall")
     previewMeta:SetPoint("TOPLEFT", previewName, "BOTTOMLEFT", 0, -4)
@@ -1213,7 +1221,7 @@ function CM:_Build()
     previewMeta:SetJustifyH("LEFT")
     previewMeta:SetWordWrap(false)
     previewMeta:SetMaxLines(1)
-    previewMeta:SetTextColor(muted[1], muted[2], muted[3], 1)
+    TextColor(previewMeta, "textMuted")
 
     local previewDetails = FS(previewInfo, "GameFontHighlightSmall")
     previewDetails:SetPoint("TOPLEFT", previewMeta, "BOTTOMLEFT", 0, -8)
@@ -1221,7 +1229,7 @@ function CM:_Build()
     previewDetails:SetJustifyH("LEFT")
     previewDetails:SetWordWrap(false)
     previewDetails:SetMaxLines(1)
-    previewDetails:SetTextColor(textCol[1], textCol[2], textCol[3], 0.9)
+    TextColor(previewDetails, "text", 0.9)
 
     local previewModelHost = CreateFrame("Frame", nil, previewFrame, "BackdropTemplate")
     Bd(previewModelHost, { 0.03, 0.03, 0.04, 0.98 }, border)
@@ -1233,7 +1241,7 @@ function CM:_Build()
 
     local previewFallback = FS(previewModelHost, "GameFontHighlight")
     previewFallback:SetPoint("CENTER")
-    previewFallback:SetTextColor(muted[1], muted[2], muted[3], 0.9)
+    TextColor(previewFallback, "textMuted", 0.9)
     previewFallback:SetText("Loading decor preview...")
 
     local previewScene = CreateFrame("ModelScene", nil, previewModelHost, "PanningModelSceneMixinTemplate")
@@ -1509,7 +1517,7 @@ function CM:_Build()
                 local isOpen = vendorOpen[d._key] or false
                 local arrow  = isOpen and "|cFFFFD700[-]|r " or "|cFFFFD700[+]|r "
                 row._nameFS:SetText(arrow .. vname)
-                row._nameFS:SetTextColor(accent[1], accent[2], accent[3], 1.0)
+                TextColor(row._nameFS, "accent")
 
                 local expS   = GetExpShort(d.exp)
                 local tagStr = d.zone or ""
@@ -1517,7 +1525,7 @@ function CM:_Build()
                     tagStr = tagStr ~= "" and (tagStr .. "  " .. expS) or expS
                 end
                 row._tagFS:SetText(tagStr)
-                row._tagFS:SetTextColor(accent[1], accent[2], accent[3], 0.60)
+                TextColor(row._tagFS, "accent", 0.6)
             else
                 if row._lastKind ~= "item" then
                     row._lastKind = "item"
@@ -1551,13 +1559,13 @@ function CM:_Build()
                     row._dot:Hide()
                     row._accent:SetColorTexture(success[1], success[2], success[3], 0.55)
                     row._accent:Show()
-                    row._nameFS:SetTextColor(muted[1], muted[2], muted[3], 0.70)
+                    TextColor(row._nameFS, "textMuted", 0.7)
                 else
                     row._chk:Hide()
                     row._dot:Show()
                     row._dot:SetColorTexture(muted[1], muted[2], muted[3], 0.50)
                     row._accent:Hide()
-                    row._nameFS:SetTextColor(textCol[1], textCol[2], textCol[3], textCol[4] or 0.95)
+                    TextColor(row._nameFS, "text", textCol[4] or 0.95)
                 end
 
                 local isDrop = d.item and d.item.source and d.item.source.type == "drop"
@@ -1598,7 +1606,7 @@ function CM:_Build()
                     end
                 end
                 row._tagFS:SetText(tag)
-                row._tagFS:SetTextColor(accent[1], accent[2], accent[3], 0.52)
+                TextColor(row._tagFS, "accent", 0.52)
             end
 
             row:Show()

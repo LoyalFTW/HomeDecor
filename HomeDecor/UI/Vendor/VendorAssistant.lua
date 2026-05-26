@@ -380,7 +380,7 @@ function Assistant:Ensure()
   header.settings.icon:SetSize(14, 14)
   header.settings.icon:SetPoint("CENTER")
   header.settings.icon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
-  header.settings.icon:SetVertexColor(accent[1], accent[2], accent[3], 1)
+  if Controls and Controls.TextureColor then Controls:TextureColor(header.settings.icon, "accent") end
   header.settings:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     GameTooltip:SetText(L["VENDOR_ASSISTANT_OPTIONS"] or "Drawer Options")

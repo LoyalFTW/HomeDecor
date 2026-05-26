@@ -4,6 +4,8 @@ NS.UI = NS.UI or {}
 
 local C = {}
 NS.UI.Controls = C
+NS.UI.Util = NS.UI.Util or {}
+C._backdropFrames = setmetatable({}, { __mode = "k" })
 
 local unpack = _G.unpack or table.unpack
 local min = math.min
@@ -16,6 +18,11 @@ end
 
 function C:Backdrop(frame, bgColor, borderColor)
   if not frame then return end
+  local _, colors = GetTheme()
+  local themedBorder = colors and colors.border or borderColor
+  self._backdropFrames[frame] = true
+  frame.__hdBackdropBG = bgColor
+  frame.__hdBackdropBorder = themedBorder
 
   if frame.SetBackdrop then
     frame:SetBackdrop({
@@ -36,12 +43,127 @@ function C:Backdrop(frame, bgColor, borderColor)
   end
 
   if frame.SetBackdropBorderColor then
-    if borderColor then
-      frame:SetBackdropBorderColor(unpack(borderColor))
+    if themedBorder then
+      frame:SetBackdropBorderColor(unpack(themedBorder))
     else
       frame:SetBackdropBorderColor(0.20, 0.20, 0.20, 1)
     end
   end
+end
+
+function C:RefreshRegisteredBorders()
+  local _, colors = GetTheme()
+  local border = colors and colors.border
+  if not border then return end
+  for frame in pairs(self._backdropFrames) do
+    if frame and frame.SetBackdropBorderColor and frame.__hdBackdropBorder then
+      frame.__hdBackdropBorder = border
+      frame:SetBackdropBorderColor(unpack(border))
+    end
+  end
+end
+
+local function GetAppearance()
+  local profile = NS.db and NS.db.profile
+  local ui = profile and profile.ui
+  return ui and ui.appearance or {}
+end
+
+local function ApplyFontString(fs, opts)
+  if not fs or not fs.GetFont or not fs.SetFont then return end
+  if not fs.__hdBaseFont then
+    local path, size, flags = fs:GetFont()
+    if not path or not size then return end
+    fs.__hdBaseFont = { path, size, flags }
+  end
+  local base = fs.__hdBaseFont
+  local Theme = NS.UI and NS.UI.Theme
+  local text = fs.GetText and fs:GetText() or ""
+  local path = Theme and Theme.ResolveFontForText and Theme:ResolveFontForText(text) or base[1]
+  local scale = tonumber(opts.fontScale) or 1
+  fs:SetFont(path, math.max(7, base[2] * scale), base[3])
+end
+
+function C:RefreshAppearance(root, refreshColors)
+  if not root then return end
+  local opts = GetAppearance()
+  local _, colors = GetTheme()
+
+  local function apply(frame)
+    if refreshColors and frame.__hdBackdropBG and not frame.__hdPreserveBackdrop and frame.SetBackdropColor then
+      frame:SetBackdropColor(unpack(frame.__hdBackdropBG))
+    end
+    if refreshColors and frame.__hdBackdropBorder and frame.SetBackdropBorderColor then
+      frame.__hdBackdropBorder = colors and colors.border or frame.__hdBackdropBorder
+      frame:SetBackdropBorderColor(unpack(frame.__hdBackdropBorder))
+    end
+    if frame.GetRegions then
+      for _, region in ipairs({ frame:GetRegions() }) do
+        if region and region.GetObjectType and region:GetObjectType() == "FontString" then
+          ApplyFontString(region, opts)
+          if refreshColors and region.__hdTextRole then
+            self:TextColor(region, region.__hdTextRole, region.__hdTextAlpha)
+          end
+        elseif refreshColors and region and region.__hdSolidColorRole then
+          self:SolidColor(region, region.__hdSolidColorRole, region.__hdSolidColorAlpha)
+        elseif refreshColors and region and region.__hdColorRole then
+          self:TextureColor(region, region.__hdColorRole, region.__hdColorAlpha)
+        end
+      end
+    end
+  end
+
+  local function walk(frame)
+    apply(frame)
+    if not frame.GetChildren then return end
+    for _, child in ipairs({ frame:GetChildren() }) do
+      walk(child)
+    end
+  end
+
+  walk(root)
+end
+
+function C:TextColor(fontString, role, alpha)
+  if not fontString then return end
+  fontString.__hdTextRole = role or "text"
+  fontString.__hdTextAlpha = alpha
+  local _, colors = GetTheme()
+  local color = colors and colors[role or "text"]
+  if color and fontString.SetTextColor then
+    fontString:SetTextColor(color[1], color[2], color[3], alpha or color[4] or 1)
+  end
+end
+
+function C:TextureColor(texture, role, alpha)
+  if not texture then return end
+  texture.__hdColorRole = role or "accent"
+  texture.__hdColorAlpha = alpha
+  local _, colors = GetTheme()
+  local color = colors and colors[texture.__hdColorRole]
+  if color and texture.SetVertexColor then
+    texture:SetVertexColor(color[1], color[2], color[3], alpha or color[4] or 1)
+  end
+end
+
+function C:SolidColor(texture, role, alpha)
+  if not texture then return end
+  texture.__hdSolidColorRole = role or "accent"
+  texture.__hdSolidColorAlpha = alpha
+  local _, colors = GetTheme()
+  local color = colors and colors[texture.__hdSolidColorRole]
+  if color and texture.SetColorTexture then
+    texture:SetColorTexture(color[1], color[2], color[3], alpha or color[4] or 1)
+  end
+end
+
+function NS.UI.Util.SetFont(fontString, size, flags)
+  if not fontString or not fontString.SetFont then return end
+  local appearance = GetAppearance()
+  local Theme = NS.UI and NS.UI.Theme
+  local path = Theme and Theme.ResolveFontForText and Theme:ResolveFontForText(fontString:GetText() or "")
+    or STANDARD_TEXT_FONT
+  fontString:SetFont(path, math.max(7, size * (tonumber(appearance.fontScale) or 1)), flags or "")
 end
 
 function C:ApplyHover(btn, bgNormal, bgHover, borderNormal, borderHover)
@@ -55,7 +177,7 @@ function C:ApplyHover(btn, bgNormal, bgHover, borderNormal, borderHover)
   local _, T = GetTheme()
   local nbg = bgNormal or (T and T.row) or { 0.08, 0.08, 0.10, 1 }
   local hbg = bgHover or (T and T.hover) or { 0.14, 0.14, 0.17, 1 }
-  local nbd = borderNormal or (T and T.border) or { 0.35, 0.28, 0.14, 0.9 }
+  local nbd = (T and T.border) or borderNormal or { 0.35, 0.28, 0.14, 0.9 }
   local hbd = borderHover or (T and T.accentSoft) or { 0.92, 0.78, 0.45, 0.55 }
 
   if not btn.__hdHasBackdrop then
@@ -118,7 +240,7 @@ function C:Segmented(parent, labels, getValue, setValue)
         bg:SetAlpha(0.22)
       end
       if b.text then
-        b.text:SetTextColor(unpack(T.text))
+        self:TextColor(b.text, "highlight")
       end
     else
       if bg then
@@ -126,7 +248,7 @@ function C:Segmented(parent, labels, getValue, setValue)
         bg:SetAlpha(1.0)
       end
       if b.text then
-        b.text:SetTextColor(unpack(T.textMuted))
+        self:TextColor(b.text, "textMuted")
       end
     end
   end

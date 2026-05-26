@@ -44,13 +44,12 @@ local function EnsureHeaderCounter()
 
   local parent = MerchantFrame.TitleContainer or MerchantFrame
 
-  local fs = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+  local fs = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  fs:SetPoint("TOPRIGHT", MerchantFrame, "TOPRIGHT", -39, -10)
   fs:SetJustifyH("RIGHT")
   fs:SetText("")
+  fs:SetTextColor(1, 0.82, 0.18, 1)
   fs:Hide()
-
-  fs:ClearAllPoints()
-  fs:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -18, -10)
 
   if fs.SetDrawLayer then
     fs:SetDrawLayer("OVERLAY", 7)

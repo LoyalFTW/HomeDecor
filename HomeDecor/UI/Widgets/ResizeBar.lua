@@ -113,6 +113,7 @@ end
   local label = holder:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   label:SetPoint("LEFT", 0, 0)
   label:SetText(L["SCALE"])
+  C:TextColor(label, "accent")
 
   local sliderBG = CreateFrame("Frame", nil, holder, "BackdropTemplate")
   C:Backdrop(sliderBG, T.panel, T.border)
@@ -132,7 +133,7 @@ end
   local fill = sliderBG:CreateTexture(nil, "ARTWORK")
   fill:SetPoint("LEFT", 4, 0)
   fill:SetHeight(10)
-  fill:SetColorTexture(unpack(T.accent))
+  C:SolidColor(fill, "accent")
 
   local valueBox = CreateFrame("Frame", nil, holder, "BackdropTemplate")
   C:Backdrop(valueBox, T.panel, T.border)
@@ -141,6 +142,7 @@ end
 
   local valueText = valueBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   valueText:SetPoint("CENTER", 0, 0)
+  C:TextColor(valueText, "accent")
 
   local function setScaleVisual(s)
     s = clamp(s, MIN_S, MAX_S)
@@ -185,7 +187,33 @@ end
   C:ApplyHover(valueBox, T.panel, T.hover)
 
   holder:SetFrameLevel((parent:GetFrameLevel() or headerFrame:GetFrameLevel()) + 2)
+  holder.slider = slider
+  holder.fill = fill
+  holder.label = label
+  holder.valueText = valueText
+  holder.GetDisplayValue = function()
+    return floor((slider:GetValue() or 0) / STEP) * STEP
+  end
+  holder.SetDisplayValue = function(_, value, apply)
+    value = floor((tonumber(value) or 0) / STEP) * STEP
+    value = clamp(value, MIN_S, MAX_S)
+    slider:SetValue(value)
+    setScaleVisual(value)
+    if apply then applyScale(value) end
+  end
   rootFrame._resizeWidget = holder
+end
+
+function RB:GetDisplayValue(rootFrame)
+  local widget = rootFrame and rootFrame._resizeWidget
+  return widget and widget.GetDisplayValue and widget:GetDisplayValue() or 100
+end
+
+function RB:SetDisplayValue(rootFrame, value)
+  local widget = rootFrame and rootFrame._resizeWidget
+  if widget and widget.SetDisplayValue then
+    widget:SetDisplayValue(value, true)
+  end
 end
 
 return RB

@@ -8,6 +8,7 @@ local GTUtil = NS.UI.GatherTrackMiniUtil
 local LTUtils = NS.GT and NS.GT.Utils
 local FarmingPanels = NS.UI.GatherTrackMiniFarmingPanels
 local LegacySettings = NS.UI.GatherTrackSettings
+local Controls = NS.UI.Controls
 
 local CreateFrame = CreateFrame
 local unpack = unpack or table.unpack
@@ -41,6 +42,8 @@ end
 local function ApplyBackdropAlpha(frame, bg, border, alpha, showBackgrounds)
   if not frame then return end
   if showBackgrounds then
+    local colors = NS.UI and NS.UI.Theme and NS.UI.Theme.colors
+    border = (colors and colors.border) or border
     frame:SetBackdropColor(bg[1], bg[2], bg[3], (bg[4] or 1) * alpha)
     frame:SetBackdropBorderColor(border[1], border[2], border[3], border[4] or 1)
   else
@@ -320,6 +323,7 @@ function Panels:Create()
   settingsBtn.icon = settingsBtn:CreateTexture(nil, "OVERLAY")
   settingsBtn.icon:SetAllPoints()
   settingsBtn.icon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
+  if Controls and Controls.TextureColor then Controls:TextureColor(settingsBtn.icon, "accent") end
 
   local farmBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
   farmBtn:SetSize(40, 18)
@@ -345,6 +349,7 @@ function Panels:Create()
   close.x = close:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   close.x:SetPoint("CENTER")
   close.x:SetText("x")
+  if Controls and Controls.TextColor then Controls:TextColor(close.x, "accent") end
   close:SetScript("OnClick", function()
     frame:Hide()
     db.open = false

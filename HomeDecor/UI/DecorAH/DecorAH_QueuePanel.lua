@@ -122,14 +122,14 @@ function QueuePanel:Create(parent, width, height)
   local closeX = NewFS(closeBtn, "GameFontNormalLarge")
   closeX:SetPoint("CENTER", 0, 1)
   closeX:SetText("×")
-  closeX:SetTextColor(unpack(T.textMuted))
+  if C and C.TextColor then C:TextColor(closeX, "accent") else closeX:SetTextColor(unpack(T.accent)) end
   closeBtn:SetScript("OnClick", function() queueFrame:Hide() end)
   closeBtn:SetScript("OnEnter", function()
     closeX:SetTextColor(unpack(T.text))
     if C and C.Backdrop then C:Backdrop(closeBtn, T.hover, T.border) end
   end)
   closeBtn:SetScript("OnLeave", function()
-    closeX:SetTextColor(unpack(T.textMuted))
+    if C and C.TextColor then C:TextColor(closeX, "accent") else closeX:SetTextColor(unpack(T.accent)) end
     if C and C.Backdrop then C:Backdrop(closeBtn, T.panel, T.border) end
   end)
 
@@ -523,7 +523,7 @@ function QueuePanel:ShowExportPopup()
   local hdrCloseX = NewFS(hdrClose, "GameFontNormalLarge")
   hdrCloseX:SetPoint("CENTER", 0, 1)
   hdrCloseX:SetText("×")
-  hdrCloseX:SetTextColor(unpack(T.textMuted))
+  if C and C.TextColor then C:TextColor(hdrCloseX, "accent") else hdrCloseX:SetTextColor(unpack(T.accent)) end
   hdrClose:SetScript("OnClick", function() popup:Hide() end)
 
   local sf = CreateFrame("ScrollFrame", nil, popup, "ScrollFrameTemplate")

@@ -7,6 +7,7 @@ NS.UI.GatherTrackList = LumberList
 
 local Utils = NS.GT.Utils
 local Settings = NS.UI.GatherTrackSettings
+local C = NS.UI.Controls
 local CreateFrame = CreateFrame
 local unpack = unpack or table.unpack
 
@@ -99,6 +100,7 @@ function LumberList:Create(sharedCtx)
   settingsBtn.icon:SetSize(14, 14)
   settingsBtn.icon:SetPoint("CENTER")
   settingsBtn.icon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
+  if C and C.TextureColor then C:TextureColor(settingsBtn.icon, "accent") end
   settingsBtn:SetScript("OnEnter", function(self)
     self:SetBackdropBorderColor(unpack(T.accentBright or T.accent))
   end)
@@ -169,7 +171,7 @@ function LumberList:Create(sharedCtx)
   closeBtn.icon:SetSize(14, 14)
   closeBtn.icon:SetPoint("CENTER")
   closeBtn.icon:SetTexture("Interface\\Buttons\\UI-StopButton")
-  closeBtn.icon:SetVertexColor(1, 0.82, 0.2, 1)
+  if C and C.TextureColor then C:TextureColor(closeBtn.icon, "accent") end
   closeBtn:SetScript("OnEnter", function(self)
     self:SetBackdropBorderColor(unpack(T.accentBright or T.accent))
   end)

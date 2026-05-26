@@ -3,6 +3,11 @@ NS.UI = NS.UI or {}
 local View = NS.UI.Viewer
 local Frames = View.Frames
 local L = NS.L
+local C = NS.UI and NS.UI.Controls
+
+local function TextColor(fs, role, alpha)
+  if C and C.TextColor then C:TextColor(fs, role, alpha) end
+end
 
 local function RS()
   return NS.UI and NS.UI.RowStyles
@@ -241,7 +246,7 @@ function Frames.CreateTile(content)
   r.secReq.text:SetPoint("LEFT", 12, 0)
   r.secReq.text:SetJustifyH("LEFT")
   r.secReq.text:SetText(L["QUESTS_ACHS"])
-  r.secReq.text:SetTextColor(0.9, 0.9, 0.9, 1)
+  TextColor(r.secReq.text, "text")
   r.reqRow = CreateFrame("Frame", nil, r, "BackdropTemplate")
   r.reqRow:SetHeight(32)
   r.reqRow:SetClipsChildren(true)
@@ -276,7 +281,7 @@ function Frames.CreateTile(content)
   r.secRep.text:SetPoint("LEFT", 12, 0)
   r.secRep.text:SetJustifyH("LEFT")
   r.secRep.text:SetText(L["REPUTATION"])
-  r.secRep.text:SetTextColor(0.9, 0.9, 0.9, 1)
+  TextColor(r.secRep.text, "text")
   r.repRow = CreateFrame("Frame", nil, r, "BackdropTemplate")
   r.repRow:SetHeight(32)
   r.repRow:SetClipsChildren(true)
@@ -306,7 +311,7 @@ function Frames.CreateTile(content)
   r.secCur.text:SetPoint("LEFT", 12, 0)
   r.secCur.text:SetJustifyH("LEFT")
   r.secCur.text:SetText(L["CURRENCY"])
-  r.secCur.text:SetTextColor(0.9, 0.9, 0.9, 1)
+  TextColor(r.secCur.text, "text")
 
   r.curRow = CreateFrame("Frame", nil, r, "BackdropTemplate")
   r.curRow:SetHeight(30)
@@ -325,7 +330,7 @@ function Frames.CreateTile(content)
   r.curLeftText = r.curRow:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   r.curLeftText:SetPoint("LEFT", r.curLeftIcon, "RIGHT", 4, 0)
   r.curLeftText:SetJustifyH("LEFT")
-  r.curLeftText:SetTextColor(1, 0.82, 0, 1)
+  TextColor(r.curLeftText, "accent")
 
   r.curRightIcon = r.curRow:CreateTexture(nil, "ARTWORK")
   r.curRightIcon:SetSize(16, 16)
@@ -335,7 +340,7 @@ function Frames.CreateTile(content)
   r.curRightText = r.curRow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   r.curRightText:SetPoint("RIGHT", r.curRightIcon, "LEFT", -4, 0)
   r.curRightText:SetJustifyH("RIGHT")
-  r.curRightText:SetTextColor(1, 0.82, 0, 1)
+  TextColor(r.curRightText, "accent")
 
   r.currency = r.curLeftText
 

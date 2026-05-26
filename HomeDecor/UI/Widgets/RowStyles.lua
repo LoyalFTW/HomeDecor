@@ -84,21 +84,12 @@ end
 
 local function HeaderBorderColor()
   local T = ThemeColors()
-  local base = T.headerBorder
-  if type(base) == "table" then
-    return { base[1] or 0.60, base[2] or 0.48, base[3] or 0.14, base[4] or 1 }
-  end
-  local b = BronzeBase()
-  return Mix(b, { 0.35, 0.35, 0.38, 1 }, 0.35)
+  return T.border or { 0.35, 0.35, 0.38, 1 }
 end
 
 local function DefaultBorderColor()
   local T = ThemeColors()
-  local base = T.borderGold or T.accentSoft or T.accent
-  if type(base) ~= "table" then base = { 0.62, 0.50, 0.14, 1 } end
-  local neutral = T.border
-  if type(neutral) ~= "table" then neutral = { 0.35, 0.35, 0.38, 1 } end
-  return Mix(base, neutral, 0.55)
+  return T.border or { 0.35, 0.35, 0.38, 1 }
 end
 
 local function BorderColorFor(frame)
@@ -227,7 +218,12 @@ function RS:ApplyFonts(row)
   local function SetFS(fs, fontObj, r, g, b, a)
     if not fs then return end
     if fontObj and fs.SetFontObject then fs:SetFontObject(fontObj) end
-    if r and fs.SetTextColor then fs:SetTextColor(r, g, b, a or 1) end
+    if C and C.TextColor then
+      local role = (r == text[1] and g == text[2] and b == text[3]) and "text" or "textMuted"
+      C:TextColor(fs, role, a)
+    elseif r and fs.SetTextColor then
+      fs:SetTextColor(r, g, b, a or 1)
+    end
   end
 
   SetFS(row.text,  GameFontNormal, text[1], text[2], text[3], text[4])
@@ -248,7 +244,11 @@ function RS:StrongText(fs)
   local gold = Palette()
   if not fs or not fs.SetFontObject then return end
   fs:SetFontObject(GameFontNormalLarge)
-  if fs.SetTextColor then fs:SetTextColor(gold[1], gold[2], gold[3], 1) end
+  if C and C.TextColor then
+    C:TextColor(fs, "accent")
+  elseif fs.SetTextColor then
+    fs:SetTextColor(gold[1], gold[2], gold[3], 1)
+  end
 end
 
 function RS:ApplyDivider(tex, alpha)

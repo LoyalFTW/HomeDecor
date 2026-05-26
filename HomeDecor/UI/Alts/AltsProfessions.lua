@@ -139,6 +139,10 @@ local function ProfitColor(profit)
 end
 
 local function ApplyBackdrop(f, bg, border)
+  if C and C.Backdrop then
+    C:Backdrop(f, bg, border)
+    return
+  end
   if not f or not f.SetBackdrop then return end
   f:SetBackdrop({ bgFile="Interface/Buttons/WHITE8X8", edgeFile="Interface/Buttons/WHITE8X8", edgeSize=1 })
   f:SetBackdropColor(bg[1], bg[2], bg[3], bg[4] or 1)

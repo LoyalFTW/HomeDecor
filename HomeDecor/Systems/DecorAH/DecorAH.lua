@@ -1057,7 +1057,7 @@ function DH:Create(parentFrame, embedded)
     closeIcon:SetSize(14, 14)
     closeIcon:SetPoint("CENTER")
     closeIcon:SetTexture("Interface\\Buttons\\UI-StopButton")
-    closeIcon:SetVertexColor(1, 0.82, 0.2, 1)
+    if C and C.TextureColor then C:TextureColor(closeIcon, "accent") end
     closeBtn:SetScript("OnClick", function() DH:Hide() end)
   end
 
@@ -1530,7 +1530,11 @@ function DH:Create(parentFrame, embedded)
   local fill = sliderBG:CreateTexture(nil, "ARTWORK")
   fill:SetPoint("LEFT", 4, 0)
   fill:SetHeight(12)
-  fill:SetColorTexture(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+  if C and C.SolidColor then
+    C:SolidColor(fill, "accent")
+  else
+    fill:SetColorTexture(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+  end
   local valueBox = CreateFrame("Frame", nil, scaleHolder, "BackdropTemplate")
   Backdrop(valueBox, T.panel, T.border)
   valueBox:SetPoint("LEFT", sliderBG, "RIGHT", 6, 0)

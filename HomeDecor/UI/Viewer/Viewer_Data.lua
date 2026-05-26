@@ -109,13 +109,15 @@ local function CleanVendorTitle(s)
   s = s:gsub("^%s+", ""):gsub("%s+$", "")
   if s == "" then return nil end
   if s:match("^%d+$") then return nil end
+  if s:match("^%[?[Vv]endor%]?%s*#?%s*%d+$") then return nil end
+  if s:match("^[Nn][Pp][Cc]%s*#?%s*%d+$") then return nil end
   return s
 end
 
 function Data.ResolveVendorTitle(vendor, refreshCallback)
   if type(vendor) ~= "table" then return nil end
 
-  local t = CleanVendorTitle(vendor.title or vendor.name)
+  local t = CleanVendorTitle(vendor.name) or CleanVendorTitle(vendor.title)
   if t then return t end
 
   local src = vendor.source or {}
@@ -123,12 +125,22 @@ function Data.ResolveVendorTitle(vendor, refreshCallback)
   if not id then return nil end
 
   if NPCNames and NPCNames.Get then
+    local duringLookup = true
     local name = NPCNames.Get(id, function(npcID, resolvedName)
-
-      if refreshCallback and type(refreshCallback) == "function" then
-        refreshCallback(npcID, resolvedName)
+      local resolved = CleanVendorTitle(resolvedName)
+      if resolved then
+        vendor.name = resolved
+        vendor.title = resolved
+      end
+      if not duringLookup then
+        if refreshCallback and type(refreshCallback) == "function" then
+          refreshCallback(npcID, resolved)
+        else
+          RequestAsyncRefresh()
+        end
       end
     end)
+    duringLookup = false
     name = CleanVendorTitle(name)
     if name then return name end
   end

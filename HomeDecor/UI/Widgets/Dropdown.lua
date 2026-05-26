@@ -34,6 +34,11 @@ local function setFont(fs, size)
     if fs then fs:SetFont(STANDARD_TEXT_FONT, size, "") end
 end
 
+local function textColor(fs, role, alpha)
+    local C = NS.UI and NS.UI.Controls
+    if C and C.TextColor then C:TextColor(fs, role, alpha) end
+end
+
 local function setBorder(f, col)
     if Util and Util.SafeBorder then return Util.SafeBorder(f, col) end
     if f and f.SetBackdropBorderColor then f:SetBackdropBorderColor(col[1], col[2], col[3], col[4] or 1) end
@@ -141,6 +146,7 @@ local function ensureBtn(dd, pool, i, parentFrame, isSub, T)
 
         b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         setFont(b.text, 12)
+        textColor(b.text, "text")
         b.text:SetWordWrap(false)
         if b.text.SetMaxLines then b.text:SetMaxLines(1) end
 
@@ -193,6 +199,7 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
     dd.text:SetPoint("RIGHT", -22, 0)
     dd.text:SetJustifyH("LEFT")
     setFont(dd.text, 12)
+    textColor(dd.text, "text")
     dd.text:SetWordWrap(false)
     if dd.text.SetMaxLines then dd.text:SetMaxLines(1) end
 
@@ -302,7 +309,7 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
             else
                 b.div:Hide()
                 b.text:SetText(opt.text or "")
-                b.text:SetTextColor(1,1,1,1)
+                textColor(b.text, "text")
                 b.text:ClearAllPoints()
                 if wantsBox(opt) then
                     b.box:Show()
@@ -365,7 +372,7 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
             else
                 b.div:Hide()
                 b.text:SetText(opt.text or "")
-                b.text:SetTextColor(1,1,1,1)
+                textColor(b.text, "text")
                 b.text:ClearAllPoints()
                 if wantsBox(opt) then
                     b.box:Show()

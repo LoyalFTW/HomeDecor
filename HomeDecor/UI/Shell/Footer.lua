@@ -21,7 +21,13 @@ local function Backdrop(f, bg, border)
 end
 
 local function NewFS(parent, template)
-	return parent:CreateFontString(nil, "OVERLAY", template or "GameFontNormal")
+	local fs = parent:CreateFontString(nil, "OVERLAY", template or "GameFontNormal")
+	if C and C.TextColor then C:TextColor(fs, "text") end
+	return fs
+end
+
+local function TextColor(fs, role, alpha)
+	if C and C.TextColor then C:TextColor(fs, role, alpha) end
 end
 
 local function AttachFooter(f)
@@ -48,13 +54,13 @@ local function AttachFooter(f)
 
 	local levelFS = NewFS(levelCircle, "GameFontNormal")
 	levelFS:SetPoint("CENTER", levelCircle, "CENTER", 0, 0)
-	levelFS:SetTextColor(ACCENT[1], ACCENT[2], ACCENT[3], 1)
+	TextColor(levelFS, "accent")
 	levelFS:SetFont(STANDARD_TEXT_FONT, 11, "OUTLINE")
 
 	local houseLvlFS = NewFS(footer, "GameFontNormalSmall")
 	houseLvlFS:SetPoint("LEFT", levelCircle, "RIGHT", 7, 0)
 	houseLvlFS:SetText("HOUSE LVL")
-	houseLvlFS:SetTextColor(ACCENT[1], ACCENT[2], ACCENT[3], 0.9)
+	TextColor(houseLvlFS, "accent", 0.9)
 	houseLvlFS:SetFont(STANDARD_TEXT_FONT, 10, "OUTLINE")
 
 	local xpBarHolder = CreateFrame("Frame", nil, footer, "BackdropTemplate")
@@ -73,12 +79,12 @@ local function AttachFooter(f)
 
 	local xpFS = NewFS(xpBarHolder, "GameFontNormalSmall")
 	xpFS:SetPoint("CENTER", xpBarHolder, "CENTER", 0, 0)
-	xpFS:SetTextColor(1, 1, 1, 0.95)
+	TextColor(xpFS, "text", 0.95)
 	xpFS:SetFont(STANDARD_TEXT_FONT, 10, "OUTLINE")
 
 	local nextLvlFS = NewFS(footer, "GameFontNormalSmall")
 	nextLvlFS:SetPoint("LEFT", xpBarHolder, "RIGHT", 8, 0)
-	nextLvlFS:SetTextColor(TEXT_MUTED[1], TEXT_MUTED[2], TEXT_MUTED[3], 1)
+	TextColor(nextLvlFS, "textMuted")
 	nextLvlFS:SetFont(STANDARD_TEXT_FONT, 10, "")
 
 	local endSepLine = footer:CreateTexture(nil, "ARTWORK")
@@ -90,7 +96,7 @@ local function AttachFooter(f)
 	local endLabelFS = NewFS(footer, "GameFontNormalSmall")
 	endLabelFS:SetPoint("LEFT", endSepLine, "RIGHT", 12, 0)
 	endLabelFS:SetText("ENDEAVORS")
-	endLabelFS:SetTextColor(ACCENT[1], ACCENT[2], ACCENT[3], 0.9)
+	TextColor(endLabelFS, "accent", 0.9)
 	endLabelFS:SetFont(STANDARD_TEXT_FONT, 10, "OUTLINE")
 
 	local MAX_DOTS    = 6
@@ -117,7 +123,7 @@ local function AttachFooter(f)
 
 	local daysFS = NewFS(footer, "GameFontNormalSmall")
 	daysFS:SetPoint("LEFT", dots[MAX_DOTS], "RIGHT", 8, 0)
-	daysFS:SetTextColor(TEXT_MUTED[1], TEXT_MUTED[2], TEXT_MUTED[3], 1)
+	TextColor(daysFS, "textMuted")
 	daysFS:SetFont(STANDARD_TEXT_FONT, 10, "")
 
 	local couponSepLine = footer:CreateTexture(nil, "ARTWORK")
@@ -128,7 +134,7 @@ local function AttachFooter(f)
 
 	local couponFS = NewFS(footer, "GameFontNormalSmall")
 	couponFS:SetPoint("RIGHT", couponSepLine, "LEFT", -8, 0)
-	couponFS:SetTextColor(ACCENT[1], ACCENT[2], ACCENT[3], 0.85)
+	TextColor(couponFS, "accent", 0.85)
 	couponFS:SetFont(STANDARD_TEXT_FONT, 10, "")
 
 	local couponIcon = footer:CreateTexture(nil, "OVERLAY")

@@ -60,6 +60,9 @@ function M:Build(popup, env)
     local C, T, Dropdown, Filters, FiltersSys = env.C, env.T, env.Dropdown, env.Filters, env.FiltersSys
     local HeaderCtrl = NS.UI and NS.UI.HeaderController
     local rerender = env.rerender
+    local function TextColor(fs, role, alpha)
+        if C and C.TextColor then C:TextColor(fs, role, alpha) end
+    end
 
     popup._rows = popup._rows or {}
     popup._tabs = popup._tabs or {}
@@ -141,6 +144,7 @@ function M:Build(popup, env)
         b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         b.text:SetPoint("CENTER")
         b.text:SetText(text)
+        TextColor(b.text, "text")
 
         b:SetScript("OnClick", function() if onClick then onClick() end end)
         popup._rows[#popup._rows + 1] = { isButton = true, dd = b }
@@ -155,7 +159,7 @@ function M:Build(popup, env)
         local r = {}
         r.title = popup:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         r.title:SetText(titleText)
-        r.title:SetTextColor(unpack(T.accent))
+        TextColor(r.title, "accent")
 
         r.line = popup:CreateTexture(nil, "ARTWORK")
         r.line:SetHeight(2)
@@ -183,6 +187,7 @@ function M:Build(popup, env)
         b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         b.text:SetPoint("LEFT", 10, 0)
         b.text:SetText(titleText)
+        TextColor(b.text, "text")
 
         b.indicator = b:CreateTexture(nil, "OVERLAY")
         b.indicator:SetSize(8, 8)
@@ -271,7 +276,7 @@ function M:Build(popup, env)
         local label = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         label:SetPoint("LEFT", arrow, "RIGHT", 6, 0)
         label:SetText(titleText)
-        label:SetTextColor(unpack(T.accent))
+        TextColor(label, "accent")
 
         local function updateArrow()
             if r.isExpanded then
@@ -348,6 +353,7 @@ function M:Build(popup, env)
         btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         btn.text:SetPoint("CENTER")
         btn.text:SetText(text)
+        TextColor(btn.text, "text")
 
         btn._tabId = tabId
         popup._tabs[#popup._tabs + 1] = btn
@@ -374,10 +380,10 @@ function M:Build(popup, env)
 
             if isActive then
                 U.Backdrop(btn, C, T.row, T.accent)
-                btn.text:SetTextColor(unpack(T.accent))
+                TextColor(btn.text, "highlight")
             else
                 U.Backdrop(btn, C, T.panel, T.border)
-                btn.text:SetTextColor(1, 1, 1, 0.9)
+                TextColor(btn.text, "text", 0.9)
             end
         end
     end

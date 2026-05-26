@@ -5,6 +5,10 @@ local UI = NS.UI
 function UI:CreateMainFrame()
   if self.MainFrame then return end
 
+  if self.Theme and self.Theme.ApplyProfile then
+    self.Theme:ApplyProfile()
+  end
+
   local Layout = self.Layout
   local View = self.Viewer
   if not Layout or not View then return end
@@ -41,8 +45,16 @@ function UI:CreateMainFrame()
 
   frame.view = View:Create(frame.RightContent or frame.Right)
 
+  if self.SettingsPopup and self.SettingsPopup.Apply then
+    self.SettingsPopup:Apply(frame)
+  end
+
   frame:SetScript("OnShow", function()
-    if frame.view and frame.view.Render then frame.view:Render() end
+    if UI.SettingsPopup and UI.SettingsPopup.Apply then
+      UI.SettingsPopup:Apply(frame)
+    elseif frame.view and frame.view.Render then
+      frame.view:Render()
+    end
   end)
 end
 

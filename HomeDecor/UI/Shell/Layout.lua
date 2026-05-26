@@ -67,7 +67,15 @@ local function SkinBtn(b)
 end
 
 local function NewFS(parent, template)
-  return parent:CreateFontString(nil, "OVERLAY", template or "GameFontNormal")
+  local fs = parent:CreateFontString(nil, "OVERLAY", template or "GameFontNormal")
+  if C and C.TextColor then C:TextColor(fs, "text") end
+  return fs
+end
+
+local function TextColor(fs, role, alpha)
+  if C and C.TextColor then
+    C:TextColor(fs, role, alpha)
+  end
 end
 
 local function Trim(s)
@@ -118,7 +126,7 @@ local function ShowCommunityPopup()
   local title = NewFS(header, "GameFontNormalLarge")
   title:SetPoint("CENTER")
   title:SetText(Loc["COMMUNITY"])
-  title:SetTextColor(unpack(ACCENT))
+  TextColor(title, "accent")
 
   local closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
   Backdrop(closeBtn, T.panel, T.border)
@@ -130,7 +138,7 @@ local function ShowCommunityPopup()
   closeIcon:SetSize(14, 14)
   closeIcon:SetPoint("CENTER")
   closeIcon:SetTexture("Interface\\Buttons\\UI-StopButton")
-  closeIcon:SetVertexColor(1, 0.82, 0.2, 1)
+  C:TextureColor(closeIcon, "accent")
 
   closeBtn:SetScript("OnClick", function() p:Hide() end)
 
@@ -161,7 +169,7 @@ local function ShowCommunityPopup()
     local label = NewFS(p, "GameFontNormal")
     label:SetPoint("TOPLEFT", 16, y - ((i - 1) * gap))
     label:SetText(info[1])
-    label:SetTextColor(1, 1, 1, 0.95)
+    TextColor(label, "text", 0.95)
 
     local edit = CreateFrame("EditBox", nil, p, "InputBoxTemplate")
     edit:SetAutoFocus(false)
@@ -292,9 +300,9 @@ local function SetCategorySelected(btn, selected)
 
   if btn.text then
     if selected then
-      btn.text:SetTextColor(1, 1, 1, 0.95)
+      TextColor(btn.text, "highlight", 0.95)
     else
-      btn.text:SetTextColor(unpack(ACCENT))
+      TextColor(btn.text, "text")
     end
   end
 end
@@ -329,6 +337,7 @@ function L:CreateShell()
   header:SetPoint("TOPRIGHT", -8, -8)
   header:SetHeight(104)
   header:EnableMouse(false)
+  header.__hdPreserveBackdrop = true
   f.Header = header
 
   header.controls = CreateFrame("Frame", nil, header)
@@ -365,13 +374,39 @@ function L:CreateShell()
   closeIcon:SetSize(14, 14)
   closeIcon:SetPoint("CENTER", 0, 0)
   closeIcon:SetTexture("Interface\\Buttons\\UI-StopButton")
-  closeIcon:SetVertexColor(1, 0.82, 0.2, 1)
+  C:TextureColor(closeIcon, "accent")
   closeBtn:SetFrameLevel(header:GetFrameLevel() + 6)
   closeIcon:SetDrawLayer("OVERLAY", 7)
 
   closeBtn:SetScript("OnClick", function()
     if f and f.Hide then f:Hide() end
   end)
+
+  local settingsBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  header.settingsBtn = settingsBtn
+  Backdrop(settingsBtn, T.panel, T.border)
+  settingsBtn:SetSize(22, 22)
+  settingsBtn:SetPoint("RIGHT", closeBtn, "LEFT", -6, 0)
+  settingsBtn:SetFrameLevel(header:GetFrameLevel() + 6)
+  Hover(settingsBtn, T.panel, T.hover)
+
+  local settingsIcon = settingsBtn:CreateTexture(nil, "OVERLAY")
+  settingsBtn.icon = settingsIcon
+  settingsIcon:SetSize(16, 16)
+  settingsIcon:SetPoint("CENTER", 0, 0)
+  settingsIcon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
+  C:TextureColor(settingsIcon, "accent")
+
+  settingsBtn:SetScript("OnClick", function()
+    local popup = NS.UI and NS.UI.SettingsPopup
+    if popup and popup.Toggle then popup:Toggle(f, settingsBtn) end
+  end)
+  settingsBtn:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+    GameTooltip:SetText("HomeDecor Settings", 1, 1, 1)
+    GameTooltip:Show()
+  end)
+  settingsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
   local trackersBtn = CreateFrame("Button", nil, header.controls, "BackdropTemplate")
   header.trackersBtn = trackersBtn
@@ -384,7 +419,7 @@ function L:CreateShell()
   trackersBtn.text = trackersText
   trackersText:SetPoint("CENTER", -6, 0)
   trackersText:SetText(Loc["TRACKERS"])
-  trackersText:SetTextColor(unpack(ACCENT))
+  TextColor(trackersText, "text")
   trackersBtn:SetFrameLevel(header:GetFrameLevel() + 6)
   trackersText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
   trackersText:SetShadowColor(0, 0, 0, 0)
@@ -395,7 +430,7 @@ function L:CreateShell()
   arrow:SetSize(8, 8)
   arrow:SetPoint("RIGHT", trackersBtn, "RIGHT", -6, 0)
   arrow:SetTexture("Interface\\ChatFrame\\ChatFrameExpandArrow")
-  arrow:SetVertexColor(unpack(ACCENT))
+  C:TextureColor(arrow, "accent")
 
   local trackersMenu = CreateFrame("Frame", nil, trackersBtn, "BackdropTemplate")
   trackersMenu:SetFrameStrata("FULLSCREEN_DIALOG")
@@ -415,7 +450,7 @@ function L:CreateShell()
   local decorText = NewFS(decorOption, "GameFontNormal")
   decorText:SetPoint("CENTER", 0, 0)
   decorText:SetText(Loc["DECOR_TRACKER"])
-  decorText:SetTextColor(unpack(ACCENT))
+  TextColor(decorText, "text")
 
   decorOption:SetScript("OnClick", function()
     local Tr = (NS.UI and NS.UI.Tracker) or (NS.UI and NS.UI.DecorTracker) or NS.Tracker
@@ -433,7 +468,7 @@ function L:CreateShell()
   local lumberText = NewFS(lumberOption, "GameFontNormal")
   lumberText:SetPoint("CENTER", 0, 0)
   lumberText:SetText(Loc["LUMBER_TRACKER"] or "Gather Tracker")
-  lumberText:SetTextColor(unpack(ACCENT))
+  TextColor(lumberText, "text")
 
   lumberOption:SetScript("OnClick", function()
     local GT = (NS.UI and NS.UI.GatherTrack)
@@ -491,7 +526,7 @@ function L:CreateShell()
   compactBtn.text = compactText
   compactText:SetPoint("CENTER", 0, 0)
   compactText:SetText("Compact")
-  compactText:SetTextColor(unpack(ACCENT))
+  TextColor(compactText, "text")
   compactBtn:SetFrameLevel(header:GetFrameLevel() + 6)
   compactText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
   compactText:SetShadowColor(0, 0, 0, 0)
@@ -573,13 +608,13 @@ function L:CreateShell()
   else
     savedItemsIcon:SetTexture("Interface/Common/ReputationStar")
   end
-  savedItemsIcon:SetVertexColor(unpack(ACCENT))
+  C:TextureColor(savedItemsIcon, "accent")
   savedItemsBtn.icon = savedItemsIcon
 
   local savedItemsTxt = NewFS(savedItemsBtn, "GameFontNormal")
   savedItemsTxt:SetPoint("LEFT", savedItemsIcon, "RIGHT", 6, 0)
   savedItemsTxt:SetText(Loc["SAVED_ITEMS"])
-  savedItemsTxt:SetTextColor(unpack(ACCENT))
+  TextColor(savedItemsTxt, "accent")
   savedItemsBtn.text = savedItemsTxt
   savedItemsBtn._category = "Saved Items"
 
@@ -621,7 +656,7 @@ function L:CreateShell()
   local filtersTitle = NewFS(left, "GameFontNormal")
   filtersTitle:SetPoint("TOPLEFT", 10, y - 10)
   filtersTitle:SetText(Loc["FILTERS"])
-  filtersTitle:SetTextColor(unpack(ACCENT))
+  TextColor(filtersTitle, "accent")
   y = y - 24
 
   local filtersLine = left:CreateTexture(nil, "ARTWORK")
@@ -648,12 +683,12 @@ function L:CreateShell()
   resetIcon:SetSize(14, 14)
   resetIcon:SetPoint("LEFT", 10, 0)
   resetIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
-  resetIcon:SetVertexColor(1, 0.82, 0, 1)
+  C:TextureColor(resetIcon, "accent")
 
   local resetText = NewFS(resetFiltersBtn, "GameFontNormal")
   resetText:SetPoint("LEFT", resetIcon, "RIGHT", 6, 0)
   resetText:SetText(Loc["RESET_ALL_FILTERS"])
-  resetText:SetTextColor(1, 0.82, 0)
+  TextColor(resetText, "accent")
 
   resetFiltersBtn:SetScript("OnClick", function()
     local fc = left.filterContent
@@ -878,7 +913,7 @@ function L:CreateShell()
   eventsBtn.icon:SetDesaturated(true)
   eventsBtn.icon:SetVertexColor(1, 1, 1, 0.9)
   eventsBtn.text:SetText(Loc["EVENTS"])
-  eventsBtn.text:SetTextColor(unpack(TEXT_MUTED))
+  TextColor(eventsBtn.text, "textMuted")
 
   local glow = eventsBtn:CreateTexture(nil, "ARTWORK")
   eventsBtn.glow = glow
@@ -910,7 +945,7 @@ function L:CreateShell()
   compactBtn:SetParent(header)
   compactBtn:SetSize(72, 20)
   compactBtn:ClearAllPoints()
-  compactBtn:SetPoint("RIGHT", closeBtn, "LEFT", -8, 0)
+  compactBtn:SetPoint("RIGHT", settingsBtn, "LEFT", -8, 0)
   compactBtn:Show()
 
   local decorTrackerBtn = MakeTopButton(bar, 120, 24)
@@ -918,7 +953,7 @@ function L:CreateShell()
   decorTrackerBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   decorTrackerBtn.icon:SetVertexColor(1, 1, 1, 0.9)
   decorTrackerBtn.text:SetText("Decor Tracker")
-  decorTrackerBtn.text:SetTextColor(unpack(ACCENT))
+  TextColor(decorTrackerBtn.text, "text")
   decorTrackerBtn:SetScript("OnClick", function()
     local Tr = (NS.UI and NS.UI.Tracker) or (NS.UI and NS.UI.DecorTracker) or NS.Tracker
     if Tr and Tr.Toggle then Tr:Toggle() end
@@ -929,7 +964,7 @@ function L:CreateShell()
   gatherTrackerBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   gatherTrackerBtn.icon:SetVertexColor(1, 1, 1, 0.9)
   gatherTrackerBtn.text:SetText(Loc["LUMBER_TRACKER"] or "Gather Tracker")
-  gatherTrackerBtn.text:SetTextColor(unpack(ACCENT))
+  TextColor(gatherTrackerBtn.text, "text")
   gatherTrackerBtn:SetScript("OnClick", function()
     local GT = (NS.UI and NS.UI.GatherTrack)
     if GT and GT.ToggleAll then
@@ -1010,9 +1045,9 @@ function L:CreateShell()
     C:SetSelected(btn, active, T.panel, T.row)
     if btn.text then
       if active then
-        btn.text:SetTextColor(1, 1, 1, 0.95)
+        TextColor(btn.text, "highlight", 0.95)
       else
-        btn.text:SetTextColor(unpack(ACCENT))
+        TextColor(btn.text, "text")
       end
     end
   end
@@ -1031,37 +1066,37 @@ function L:CreateShell()
     SetToggleButtonState(detailsBtn, UI.detailsPanelOpen == true)
   end
 
-  header.scaleRightEdge = closeBtn
+  header.scaleRightEdge = settingsBtn
 
   UpdateTopTabs = function()
     local isPricingSelected = UI.activeCategory == "Decor Pricing"
     C:SetSelected(decorPricingBtn, isPricingSelected, T.panel, T.row)
     if isPricingSelected then
       decorPricingBtn.icon:SetVertexColor(1, 1, 1, 1)
-      decorPricingBtn.text:SetTextColor(1, 1, 1, 0.95)
+      TextColor(decorPricingBtn.text, "highlight", 0.95)
     else
       decorPricingBtn.icon:SetVertexColor(1, 1, 1, 0.9)
-      decorPricingBtn.text:SetTextColor(unpack(ACCENT))
+      TextColor(decorPricingBtn.text, "text")
     end
 
     local isAltsSelected = UI.activeCategory == "Alts Professions"
     C:SetSelected(altProfsTopBtn, isAltsSelected, T.panel, T.row)
     if isAltsSelected then
       altProfsTopBtn.icon:SetVertexColor(1, 1, 1, 1)
-      altProfsTopBtn.text:SetTextColor(1, 1, 1, 0.95)
+      TextColor(altProfsTopBtn.text, "highlight", 0.95)
     else
       altProfsTopBtn.icon:SetVertexColor(1, 1, 1, 0.9)
-      altProfsTopBtn.text:SetTextColor(unpack(ACCENT))
+      TextColor(altProfsTopBtn.text, "text")
     end
 
     local isEndeavorsSelected = UI.activeCategory == "Endeavors"
     C:SetSelected(endeavorsTopBtn, isEndeavorsSelected, T.panel, T.row)
     if isEndeavorsSelected then
       endeavorsTopBtn.icon:SetVertexColor(1, 1, 1, 1)
-      endeavorsTopBtn.text:SetTextColor(1, 1, 1, 0.95)
+      TextColor(endeavorsTopBtn.text, "highlight", 0.95)
     else
       endeavorsTopBtn.icon:SetVertexColor(1, 1, 1, 0.9)
-      endeavorsTopBtn.text:SetTextColor(unpack(ACCENT))
+      TextColor(endeavorsTopBtn.text, "text")
     end
 
     if NS.UI.EndeavorsPanel then
@@ -1083,7 +1118,7 @@ function L:CreateShell()
 
     if hasActive then
       eventsBtn.icon:SetDesaturated(false)
-      eventsBtn.text:SetTextColor(unpack(ACCENT))
+      TextColor(eventsBtn.text, "highlight", 0.95)
       eventsBtn:SetAlpha(1.0)
 
       if isNew then
@@ -1095,7 +1130,7 @@ function L:CreateShell()
       end
     else
       eventsBtn.icon:SetDesaturated(true)
-      eventsBtn.text:SetTextColor(unpack(TEXT_MUTED))
+      TextColor(eventsBtn.text, "textMuted")
       eventsBtn:SetAlpha(0.85)
       if glowAnim:IsPlaying() then glowAnim:Stop() end
       glow:SetAlpha(0)
@@ -1289,7 +1324,7 @@ function L:CreateShell()
   decorPricingBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   decorPricingBtn.icon:SetVertexColor(1, 1, 1, 0.9)
   decorPricingBtn.text:SetText(Loc["DECOR_PRICING"])
-  decorPricingBtn.text:SetTextColor(1, 1, 1, 0.95)
+  TextColor(decorPricingBtn.text, "text")
 
   decorPricingBtn:SetScript("OnClick", function()
     SelectCategory("Decor Pricing")
@@ -1302,7 +1337,7 @@ function L:CreateShell()
   altProfsTopBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   altProfsTopBtn.icon:SetVertexColor(1, 1, 1, 0.9)
   altProfsTopBtn.text:SetText(Loc["ALTS_PROFESSIONS"])
-  altProfsTopBtn.text:SetTextColor(unpack(ACCENT))
+  TextColor(altProfsTopBtn.text, "text")
 
   altProfsTopBtn:SetScript("OnClick", function()
     SelectCategory("Alts Professions")
@@ -1315,7 +1350,7 @@ function L:CreateShell()
   endeavorsTopBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   endeavorsTopBtn.icon:SetVertexColor(1, 1, 1, 0.9)
   endeavorsTopBtn.text:SetText("Endeavors")
-  endeavorsTopBtn.text:SetTextColor(unpack(ACCENT))
+  TextColor(endeavorsTopBtn.text, "text")
 
   endeavorsTopBtn:SetScript("OnClick", function()
     if not NS.UI.EndeavorsPanel then
@@ -1409,7 +1444,7 @@ function L:CreateShell()
   local placeholder = search:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
   placeholder:SetPoint("LEFT", search, "LEFT", 8, 0)
   placeholder:SetText(Loc["SEARCH_PLACEHOLDER"])
-  placeholder:SetTextColor(unpack(PLACEHOLDER))
+  TextColor(placeholder, "placeholder")
 
   f.SearchBox = search
   f.SearchPlaceholder = placeholder
@@ -1424,7 +1459,7 @@ function L:CreateShell()
   clearIcon:SetSize(12, 12)
   clearIcon:SetPoint("CENTER", 0, 0)
   clearIcon:SetTexture("Interface\\Buttons\\UI-StopButton")
-  clearIcon:SetVertexColor(1, 0.82, 0.2, 0.95)
+  C:TextureColor(clearIcon, "accent", 0.95)
 
   clearBtn:Hide()
   search._clearBtn = clearBtn

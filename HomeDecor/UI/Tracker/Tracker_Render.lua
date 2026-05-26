@@ -31,6 +31,8 @@ local function CleanVendorTitle(s)
   s = s:gsub("^%s+", ""):gsub("%s+$", "")
   if s == "" then return nil end
   if s:match("^%d+$") then return nil end
+  if s:match("^%[?[Vv]endor%]?%s*#?%s*%d+$") then return nil end
+  if s:match("^[Nn][Pp][Cc]%s*#?%s*%d+$") then return nil end
   return s
 end
 
@@ -465,9 +467,7 @@ function Render:Attach(_, ctx)
           do
             local title = ResolveVendorTitle(v, frame)
             if not title then
-              local src = v.source or {}
-              local id = tonumber(src.id or v.npcID or v.id)
-              title = (id and (L["VENDOR_PREFIX"] .. tostring(id))) or L["VENDOR"]
+              title = L["VENDOR"]
             else
               v.title = title
             end

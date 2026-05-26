@@ -37,6 +37,7 @@ end
 
 local function CreateSalesPanel(parent)
   local frame = CreateFrame("Frame", "HomeDecorDecorAH_SalesPanel", parent or UIParent, "BackdropTemplate")
+  SalesPanel.frame = frame
   frame:SetSize(700, 500)
   frame:SetPoint("CENTER")
   frame:SetFrameStrata("DIALOG")
@@ -65,7 +66,7 @@ local function CreateSalesPanel(parent)
   closeIcon:SetSize(14, 14)
   closeIcon:SetPoint("CENTER")
   closeIcon:SetTexture("Interface\\Buttons\\UI-StopButton")
-  closeIcon:SetVertexColor(1, 0.82, 0.2, 1)
+  if C and C.TextureColor then C:TextureColor(closeIcon, "accent") end
   closeBtn:SetScript("OnClick", function() frame:Hide() end)
 
   local todayBtn = CreateFrame("Button", nil, frame, "BackdropTemplate")

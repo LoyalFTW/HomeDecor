@@ -50,7 +50,7 @@ local function CreatePopup()
   header.closeBtn.icon:SetSize(14, 14)
   header.closeBtn.icon:SetPoint("CENTER")
   header.closeBtn.icon:SetTexture("Interface\\Buttons\\UI-StopButton")
-  header.closeBtn.icon:SetVertexColor(1, 0.82, 0.2, 1)
+  C:TextureColor(header.closeBtn.icon, "accent")
 
   header.closeBtn:SetScript("OnClick", function()
     CLog:MarkSeen()

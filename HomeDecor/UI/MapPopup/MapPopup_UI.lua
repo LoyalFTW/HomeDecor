@@ -178,7 +178,7 @@ function UI:CreateHeader(frame)
   header.closeBtn.icon:SetSize(14, 14)
   header.closeBtn.icon:SetPoint("CENTER")
   header.closeBtn.icon:SetTexture("Interface\\Buttons\\UI-StopButton")
-  header.closeBtn.icon:SetVertexColor(1, 0.82, 0.2, 1)
+  if Controls and Controls.TextureColor then Controls:TextureColor(header.closeBtn.icon, "accent") end
 
   header.closeBtn:SetScript("OnClick", function()
     frame:Hide()

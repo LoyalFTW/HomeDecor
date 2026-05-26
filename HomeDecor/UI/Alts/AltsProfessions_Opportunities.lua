@@ -98,6 +98,10 @@ local ACCENT = T.accent or {1, 0.82, 0.2, 1}
 local BORDER = T.border  or {0.2, 0.18, 0.08, 0.8}
 
 local function ApplyBackdrop(f, bg, border)
+  if C and C.Backdrop then
+    C:Backdrop(f, bg, border)
+    return
+  end
   if not f or not f.SetBackdrop then return end
   f:SetBackdrop({
     bgFile   = "Interface/Buttons/WHITE8X8",

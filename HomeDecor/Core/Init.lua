@@ -47,6 +47,12 @@ local defaults = {
       compactActiveCategory = "Achievements",
       search = "",
       compactMode = false,
+      appearance = {
+        fontMedia = "__HOMEDECOR_DEFAULT__",
+        fontMediaPath = nil,
+        fontScale = 1.0,
+        colors = {},
+      },
     },
 
     filters = {
@@ -194,6 +200,13 @@ local defaults = {
       showCollectedCheckmark = true,
       showOwnedCount = false,
       showVendorNPCTooltip = false,
+      assistant = {
+        open = false,
+        filter = "missing",
+        drawerStyle = true,
+        compactRows = true,
+        showPrices = true,
+      },
     },
 
     mapPins = {

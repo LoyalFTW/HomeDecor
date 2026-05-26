@@ -519,7 +519,7 @@ local function EnsurePopup()
     p._closeBtn.icon:SetSize(14, 14)
     p._closeBtn.icon:SetPoint("CENTER")
     p._closeBtn.icon:SetTexture("Interface\\Buttons\\UI-StopButton")
-    p._closeBtn.icon:SetVertexColor(1, 0.82, 0.2, 1)
+    if C and C.TextureColor then C:TextureColor(p._closeBtn.icon, "accent") end
 
     p._closeBtn:SetFrameStrata(p:GetFrameStrata())
     p._closeBtn:SetFrameLevel(p:GetFrameLevel() + 20)
