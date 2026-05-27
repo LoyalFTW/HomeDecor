@@ -31,33 +31,6 @@ function Util.GetSharedCtx()
   end
 end
 
-function Util.EnsurePanelDB(kind)
-  local db = Util.GetDB()
-  db.gatherMini = db.gatherMini or {}
-  db.gatherMini[kind] = db.gatherMini[kind] or {}
-  local panelDB = db.gatherMini[kind]
-
-  if panelDB.width == nil then panelDB.width = 280 end
-  if panelDB.height == nil then panelDB.height = 300 end
-  if panelDB.collapsed == nil then panelDB.collapsed = false end
-  if panelDB.alpha == nil then panelDB.alpha = 0.95 end
-  if panelDB.point == nil then panelDB.point = "CENTER" end
-  if panelDB.relPoint == nil then panelDB.relPoint = "CENTER" end
-
-  if panelDB.x == nil or panelDB.y == nil then
-    if kind == "lumber" then
-      panelDB.x, panelDB.y = -270, 60
-    elseif kind == "ore" then
-      panelDB.x, panelDB.y = 0, 60
-    else
-      panelDB.x, panelDB.y = 270, 60
-    end
-  end
-
-  if panelDB.open == nil then panelDB.open = false end
-  return panelDB
-end
-
 function Util.GetKindInfo(kind)
   return Util.KINDS[kind] or Util.KINDS.lumber
 end
@@ -73,26 +46,6 @@ function Util.IsKindEnabled(ctx, kind)
   return false
 end
 
-function Util.GetEnabledKinds(ctx)
-  local enabled = {}
-  for kind in pairs(Util.KINDS) do
-    if Util.IsKindEnabled(ctx, kind) then
-      enabled[#enabled + 1] = kind
-    end
-  end
-
-  table.sort(enabled, function(a, b)
-    local order = {
-      lumber = 1,
-      ore = 2,
-      herb = 3,
-    }
-    return (order[a] or 99) < (order[b] or 99)
-  end)
-
-  return enabled
-end
-
 function Util.ShouldHideInInstance()
   local db = Util.GetDB()
   if not (db and db.hideInInstance) then
@@ -105,11 +58,6 @@ function Util.ShouldHideInInstance()
   end
 
   return false
-end
-
-function Util.GetDisplayTitle(kind)
-  local info = Util.GetKindInfo(kind)
-  return info.title .. " Materials"
 end
 
 function Util.EnsureItemMeta(ctx, itemID)
@@ -223,16 +171,6 @@ function Util.GetOverallItemCount(ctx, itemID)
   end
 
   return Util.GetBagItemCount(ctx, itemID)
-end
-
-function Util.GetTopItemsForKind(ctx, kind, maxItems)
-  local items = Util.BuildListForKind(ctx, kind)
-  local top = {}
-  maxItems = maxItems or 5
-  for i = 1, math.min(#items, maxItems) do
-    top[#top + 1] = items[i]
-  end
-  return top
 end
 
 return Util

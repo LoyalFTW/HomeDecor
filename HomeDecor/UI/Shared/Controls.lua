@@ -529,49 +529,6 @@ function C:SkinScrollFrame(sf)
   skinArrow(dnBtn, X.ScrollArrowDown or X.DropdownArrow)
 end
 
-function C:PolishWidgets(root)
-  if not root then return end
-  local _, _, X = GetTheme()
-  if not X then return end
-
-  local function looksLikeHeader(f)
-    if not f or f.__hdHeaderSkinned then return false end
-    if f._kind == "header" then return true end
-    if not f.GetHeight then return false end
-    local h = f:GetHeight()
-    if not h or h < 18 or h > 44 then return false end
-    if f.GetObjectType and f:GetObjectType() == "Button" then return false end
-    if f.GetBackdrop and f:GetBackdrop() then return true end
-    return false
-  end
-
-  local function apply(f)
-    if not f then return end
-
-    if looksLikeHeader(f) then
-      self:ApplyHeaderTexture(f, f:GetHeight() >= 30)
-    end
-
-    if f.GetObjectType and f:GetObjectType() == "Button" then
-      self:SkinButton(f, f.__hdIsTab == true)
-    end
-
-    if f.SetBackdropColor and not f.__hdHover then
-      self:ApplyBackdropHover(f)
-    end
-  end
-
-  local function walk(f, depth)
-    apply(f)
-    if depth <= 0 or not f.GetChildren then return end
-    for _, ch in ipairs({ f:GetChildren() }) do
-      walk(ch, depth - 1)
-    end
-  end
-
-  walk(root, 6)
-end
-
 function C:ClearHoverHighlights(root)
   if not root or type(root) ~= "table" or not root.GetChildren then return end
 

@@ -74,29 +74,6 @@ function NS.Debounce(delay, func)
     end
 end
 
-function NS.DebounceLeading(delay, func)
-    local timer = nil
-    local fired = false
-    return function(...)
-        if not fired then
-            fired = true
-            func(...)
-            timer = C_Timer.NewTimer(delay, function()
-                timer = nil
-                fired = false
-            end)
-            return
-        end
-        if timer then timer:Cancel() end
-        local args = { ... }
-        timer = C_Timer.NewTimer(delay, function()
-            timer = nil
-            fired = false
-            func(unpack(args))
-        end)
-    end
-end
-
 local messageHandlers = {} 
 
 function NS.OnMessage(msg, func)

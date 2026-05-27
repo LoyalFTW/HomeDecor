@@ -81,10 +81,6 @@ function Utils.IsLumberName(name)
       or lowerName:find("plank", 1, true)
 end
 
-function Utils.GetKnownLumberIDs()
-  return KNOWN_LUMBER_IDS
-end
-
 function Utils.SeedKnownLumberIDs(target)
   if type(target) ~= "table" then return target end
   for itemID in pairs(KNOWN_LUMBER_IDS) do
@@ -131,10 +127,6 @@ function Utils.GetTrackedGatheringKind(name, classID, subclassID, itemID)
   end
 
   return nil
-end
-
-function Utils.IsTrackedGatheringItem(name, classID, subclassID)
-  return Utils.GetTrackedGatheringKind(name, classID, subclassID) ~= nil
 end
 
 function Utils.IsGatheringKindEnabled(kind, settings)
@@ -185,13 +177,6 @@ function Utils.GetDB()
   local addon = NS.Addon
   local prof = addon and addon.db and addon.db.profile
   return prof and prof.gatherTrack or {}
-end
-
-function Utils.FormatTime(seconds)
-  seconds = tonumber(seconds) or 0
-  local minutes = math_floor(seconds / 60)
-  local secs = math_floor(seconds % 60)
-  return string_format("%d:%02d", minutes, secs)
 end
 
 function Utils.GetTime()

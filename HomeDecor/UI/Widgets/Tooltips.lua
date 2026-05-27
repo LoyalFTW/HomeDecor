@@ -45,11 +45,6 @@ local function own(frame)
   GameTooltip:ClearLines()
 end
 
-local function ownPin(frame)
-  applyOwner(frame, GetPinTooltipAnchor())
-  GameTooltip:ClearLines()
-end
-
 local function hide()
   GameTooltip:Hide()
 end
@@ -474,11 +469,6 @@ function TT:Attach(frame, data)
   end)
 
   frame:SetScript("OnLeave", hide)
-end
-
-function TT:AttachPin(frame, data)
-  if frame then frame.__hdUsePinAnchor = true end
-  self:Attach(frame, data)
 end
 
 function TT:ShowRequirementPin(owner, req)

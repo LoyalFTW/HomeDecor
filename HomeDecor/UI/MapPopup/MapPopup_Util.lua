@@ -157,13 +157,6 @@ function Util.GetVendorItems(vendorID)
   return vendorItemsCache[tonumber(vendorID)] or {}
 end
 
-function Util.ClearVendorItemsCache()
-  for key in pairs(vendorItemsCache) do
-    vendorItemsCache[key] = nil
-  end
-  Util._vendorItemsCacheBuilt = false
-end
-
 function Util.VendorKey(vendorID)
   return "vendor:" .. tostring(vendorID)
 end
