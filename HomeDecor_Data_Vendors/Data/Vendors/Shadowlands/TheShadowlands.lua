@@ -11,7 +11,7 @@ NS.Data.Vendors["Shadowlands"]["TheShadowlands"] = {
     source={
       id=162804,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="The Maw",
       worldmap="1543:4680:4160"
     },
@@ -26,10 +26,10 @@ NS.Data.Vendors["Shadowlands"]["TheShadowlands"] = {
       type="vendor",
       faction="Neutral",
       zone="Sinfall",
-      worldmap="1699:5400:2480"
+      worldmap="1699:5400:2560"
     },
     items={
-      {decorID=756, source={type="vendor", itemID=245501, currency="1500", currencytype=1813}, requirements={rep="true"}},
+      {decorID=756, source={type="vendor", itemID=245501, currency="1500", currencytype=1813}},
     }
   },
 

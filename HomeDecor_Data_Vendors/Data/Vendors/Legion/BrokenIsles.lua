@@ -11,7 +11,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=89939,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Azsuna",
       worldmap="630:4780:2360"
     },
@@ -38,19 +38,19 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=97140,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Suramar",
       worldmap="680:3713:4655"
     },
     items={
-      {decorID=1440, source={type="vendor", itemID=244536}, requirements={rep="true"}},
-      {decorID=2516, source={type="vendor", itemID=246850}, requirements={rep="true"}},
-      {decorID=3983, source={type="vendor", itemID=247844}, requirements={rep="true"}},
-      {decorID=3984, source={type="vendor", itemID=247845}, requirements={rep="true"}},
-      {decorID=3985, source={type="vendor", itemID=247847}, requirements={rep="true"}},
-      {decorID=4024, source={type="vendor", itemID=247910}, requirements={rep="true"}},
-      {decorID=4035, source={type="vendor", itemID=247921}, requirements={rep="true"}},
-      {decorID=4038, source={type="vendor", itemID=247924}, requirements={rep="true"}},
+      {decorID=1440, source={type="vendor", itemID=244536, currency="560", currencytype="& 1000 Order Resources"}},
+      {decorID=2516, source={type="vendor", itemID=246850, currency="800", currencytype="& 2000 Order Resources"}},
+      {decorID=3983, source={type="vendor", itemID=247844, currency="400", currencytype="& 750 Order Resources"}},
+      {decorID=3984, source={type="vendor", itemID=247845, currency="400", currencytype="& 750 Order Resources"}},
+      {decorID=3985, source={type="vendor", itemID=247847, currency="560", currencytype="& 1000 Order Resources"}},
+      {decorID=4024, source={type="vendor", itemID=247910, currency="240", currencytype="& 500 Order Resources"}},
+      {decorID=4035, source={type="vendor", itemID=247921, currency="240", currencytype="& 500 Order Resources"}},
+      {decorID=4038, source={type="vendor", itemID=247924, currency="560", currencytype="& 1000 Order Resources"}},
     }
   },
 
@@ -67,35 +67,6 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       {decorID=5877, source={type="vendor", itemID=250110, currency="500", currencytype=1220}},
       {decorID=5891, source={type="vendor", itemID=250126, currency="2000", currencytype=1220}, requirements={achievement={id=60984}}},
       {decorID=5893, source={type="vendor", itemID=250128, currency="1000", currencytype=1220}},
-    }
-  },
-
-  {
-    source={
-      id=105333,
-      type="vendor",
-      faction="Neutral",
-      zone="Dalaran",
-      worldmap="628:6736:6322"
-    },
-    items={
-      {decorID=7610, source={type="vendor", itemID=250307, costs={{currency="6000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42318}}},
-      {decorID=7620, source={type="vendor", itemID=250402, costs={{currency="12000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42658}}},
-      {decorID=7621, source={type="vendor", itemID=250403, costs={{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42692}}},
-      {decorID=7622, source={type="vendor", itemID=250404, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}},
-      {decorID=7623, source={type="vendor", itemID=250405, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=61060}}},
-      {decorID=7624, source={type="vendor", itemID=250406, costs={{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42321}}},
-      {decorID=7625, source={type="vendor", itemID=250407, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42619}}},
-      {decorID=7658, source={type="vendor", itemID=250622, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42675}}},
-      {decorID=7686, source={type="vendor", itemID=250689, costs={{currency="6000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=61054}}},
-      {decorID=7687, source={type="vendor", itemID=250690, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42627}}},
-      {decorID=7690, source={type="vendor", itemID=250693, costs={{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42674}}},
-      {decorID=8810, source={type="vendor", itemID=251778, costs={{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=61218}}},
-      {decorID=8811, source={type="vendor", itemID=251779, costs={{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42689}}},
-      {decorID=9165, source={type="vendor", itemID=252753, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42655}}},
-      {decorID=11278, source={type="vendor", itemID=256677, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42628}}},
-      {decorID=11279, source={type="vendor", itemID=256678, costs={{currency="1500", currencytype=1220},{currency="50", currencytype=1508}}}},
-      {decorID=11942, source={type="vendor", itemID=258299, costs={{currency="12000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42547}}},
     }
   },
 
@@ -119,16 +90,17 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=106901,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Val'sharah",
       worldmap="641:5470:7325"
     },
     items={
-      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="800", currencytype="gold"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="400", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="500", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, requirements={rep="true"}},
-      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="400", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
+      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="1000", currencytype="& 2000 Order Resources"},{currency="800", currencytype="& 2000 Order Resources"}}}},
+      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="500", currencytype="& 750 Order Resources"},{currency="400", currencytype="& 750 Order Resources"}}}},
+--       {decorID=678, source={type="vendor", itemID=238862}}, -- DNT / do not use
+      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="700", currencytype="& 1000 Order Resources"},{currency="500", currencytype="& 1000 Order Resources"}}}},
+      {decorID=8195, source={type="vendor", itemID=251494, costs={{currency="200", currencytype=1220},{currency="200", currencytype=1220}}}},
+      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="500", currencytype="& 750 Order Resources"},{currency="400", currencytype="& 750 Order Resources"}}}},
     }
   },
 
@@ -137,18 +109,18 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       id=106902,
       type="vendor",
       faction="Neutral",
-      zone="Highmountain",
-      worldmap="650:4588:6049"
+      zone="Thunder Totem",
+      worldmap="750:3860:4540"
     },
     items={
-      {decorID=1231, source={type="vendor", itemID=245452, costs={{currency="400", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=1252, source={type="vendor", itemID=243290, costs={{currency="800", currencytype="gold"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=1292, source={type="vendor", itemID=243359, costs={{currency="560", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=1293, source={type="vendor", itemID=245454, costs={{currency="240", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=1295, source={type="vendor", itemID=245458, costs={{currency="240", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=1297, source={type="vendor", itemID=245450, costs={{currency="800", currencytype="gold"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=1703, source={type="vendor", itemID=245270, costs={{currency="560", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=5136, source={type="vendor", itemID=248985, costs={{currency="400", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
+      {decorID=1231, source={type="vendor", itemID=245452, currency="400", currencytype="& 750 Order Resources"}},
+      {decorID=1252, source={type="vendor", itemID=243290, currency="800", currencytype="& 2000 Order Resources"}},
+      {decorID=1292, source={type="vendor", itemID=243359, currency="560", currencytype="& 1000 Order Resources"}},
+      {decorID=1293, source={type="vendor", itemID=245454, currency="240", currencytype="& 500 Order Resources"}},
+      {decorID=1295, source={type="vendor", itemID=245458, currency="240", currencytype="& 500 Order Resources"}},
+      {decorID=1297, source={type="vendor", itemID=245450, currency="800", currencytype="& 2000 Order Resources"}},
+      {decorID=1703, source={type="vendor", itemID=245270, currency="560", currencytype="& 1000 Order Resources"}},
+      {decorID=5136, source={type="vendor", itemID=248985, currency="400", currencytype="& 750 Order Resources"}},
     }
   },
 
@@ -157,25 +129,25 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       id=108017,
       type="vendor",
       faction="Neutral",
-      zone="Thunder Totem, Highmountain",
-      worldmap="652:5470:7740"
+      zone="Thunder Totem",
+      worldmap="750:3880:4580"
     },
     items={
-      {decorID=1235, source={type="vendor", itemID=245453, costs={{currency="300", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={quest={id=42590}}},
-      {decorID=1251, source={type="vendor", itemID=245405, costs={{currency="300", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={quest={id=42622}}},
-      {decorID=1287, source={type="vendor", itemID=245456, costs={{currency="500", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={quest={id=39579}}},
-      {decorID=1291, source={type="vendor", itemID=245461, costs={{currency="700", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={quest={id=39780}}},
-      {decorID=1294, source={type="vendor", itemID=245457, costs={{currency="300", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={quest={id=39614}}},
-      {decorID=1307, source={type="vendor", itemID=245460, costs={{currency="500", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={achievement={id=11257}}},
-      {decorID=1309, source={type="vendor", itemID=245409, costs={{currency="300", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={quest={id=39496}}},
-      {decorID=11315, source={type="vendor", itemID=256913, costs={{currency="300", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={achievement={id=10996}}},
-      {decorID=11487, source={type="vendor", itemID=257397, costs={{currency="500", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={quest={id=39992}}},
-      {decorID=11491, source={type="vendor", itemID=257401, costs={{currency="700", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={quest={id=39387}}},
-      {decorID=11751, source={type="vendor", itemID=257721, costs={{currency="300", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={achievement={id=10398}}},
-      {decorID=11752, source={type="vendor", itemID=257722, costs={{currency="300", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={quest={id=39426}}},
-      {decorID=11753, source={type="vendor", itemID=257723, costs={{currency="500", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={quest={id=39305}}},
-      {decorID=14379, source={type="vendor", itemID=260698, costs={{currency="100", currencytype="gold"},{currency="200", currencytype=1220}}}, requirements={quest={id=39772}}},
-      {decorID=15741, source={type="vendor", itemID=264477, currency="8", currencytype="gold"}, requirements={quest={id=39487}}},
+      {decorID=1235, source={type="vendor", itemID=245453, currency="300", currencytype="& 500 Order Resources"}, requirements={quest={id=42590}}},
+      {decorID=1251, source={type="vendor", itemID=245405, currency="300", currencytype="& 500 Order Resources"}, requirements={quest={id=42622}}},
+      {decorID=1287, source={type="vendor", itemID=245456, currency="500", currencytype="& 750 Order Resources"}, requirements={quest={id=39579}}},
+      {decorID=1291, source={type="vendor", itemID=245461, currency="700", currencytype="& 1000 Order Resources"}, requirements={quest={id=39780}}},
+      {decorID=1294, source={type="vendor", itemID=245457, currency="300", currencytype="& 500 Order Resources"}, requirements={quest={id=39614}}},
+      {decorID=1307, source={type="vendor", itemID=245460, currency="500", currencytype="& 750 Order Resources"}, requirements={achievement={id=11257}}},
+      {decorID=1309, source={type="vendor", itemID=245409, currency="300", currencytype="& 500 Order Resources"}, requirements={quest={id=39496}}},
+      {decorID=11315, source={type="vendor", itemID=256913, currency="300", currencytype="& 500 Order Resources"}, requirements={achievement={id=10996}}},
+      {decorID=11487, source={type="vendor", itemID=257397, currency="500", currencytype="& 750 Order Resources"}, requirements={quest={id=39992}}},
+      {decorID=11491, source={type="vendor", itemID=257401, currency="700", currencytype="& 1000 Order Resources"}, requirements={quest={id=39387}}},
+      {decorID=11751, source={type="vendor", itemID=257721, currency="300", currencytype="& 500 Order Resources"}, requirements={achievement={id=10398}}},
+      {decorID=11752, source={type="vendor", itemID=257722, currency="300", currencytype="& 500 Order Resources"}, requirements={quest={id=39426}}},
+      {decorID=11753, source={type="vendor", itemID=257723, currency="500", currencytype="& 750 Order Resources"}, requirements={quest={id=39305}}},
+      {decorID=14379, source={type="vendor", itemID=260698, currency="100", currencytype="& 200 Order Resources"}, requirements={quest={id=39772}}},
+      {decorID=15741, source={type="vendor", itemID=264477}, requirements={quest={id=39487}}},
     }
   },
 
@@ -213,7 +185,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=112318,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="The Maelstrom",
       worldmap="726:3032:6069"
     },
@@ -246,8 +218,8 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       id=112338,
       type="vendor",
       faction="Neutral",
-      zone="Mandori Village",
-      worldmap="709:5033:5913"
+      zone="The Wandering Isle",
+      worldmap="709:5040:5900"
     },
     items={
       {decorID=5112, source={type="vendor", itemID=248935, currency="500", currencytype=1220}},
@@ -260,7 +232,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=112392,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Skyhold",
       worldmap="695:5549:2591"
     },
@@ -276,7 +248,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=112401,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Netherlight Temple",
       worldmap="702:3862:2377"
     },
@@ -309,11 +281,12 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=112434,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="Dreadscar Rift",
       worldmap="717:5876:3269"
     },
     items={
+--       {decorID=5118, source={type="vendor", itemID=248941}}, -- DNT / do not use
       {decorID=5120, source={type="vendor", itemID=248943, currency="1000", currencytype=1220}},
       {decorID=5127, source={type="vendor", itemID=248959, currency="500", currencytype=1220}},
       {decorID=5292, source={type="vendor", itemID=249004, currency="500", currencytype=1220}},
@@ -341,7 +314,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=112634,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="Val'sharah",
       worldmap="641:5714:7191"
     },
@@ -355,12 +328,12 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=112716,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="Dalaran",
-      worldmap="626:4340:4940"
+      worldmap="627:4340:4940"
     },
     items={
-      {decorID=2517, source={type="vendor", itemID=246851, currency="15000", currencytype="gold"}},
+      {decorID=2517, source={type="vendor", itemID=246851}},
     }
   },
 
@@ -370,17 +343,17 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Suramar",
-      worldmap="680:3713:4655"
+      worldmap="680:3680:4660"
     },
     items={
-      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="560", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="800", currencytype="gold"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="400", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="400", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="560", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="240", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="240", currencytype="gold"},{currency="500", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="560", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}},
+      {decorID=1440, source={type="vendor", itemID=244536, currency="560", currencytype="& 1000 Order Resources"}},
+      {decorID=2516, source={type="vendor", itemID=246850, currency="800", currencytype="& 2000 Order Resources"}},
+      {decorID=3983, source={type="vendor", itemID=247844, currency="400", currencytype="& 750 Order Resources"}},
+      {decorID=3984, source={type="vendor", itemID=247845, currency="400", currencytype="& 750 Order Resources"}},
+      {decorID=3985, source={type="vendor", itemID=247847, currency="560", currencytype="& 1000 Order Resources"}},
+      {decorID=4024, source={type="vendor", itemID=247910, currency="240", currencytype="& 500 Order Resources"}},
+      {decorID=4035, source={type="vendor", itemID=247921, currency="240", currencytype="& 500 Order Resources"}},
+      {decorID=4038, source={type="vendor", itemID=247924, currency="560", currencytype="& 1000 Order Resources"}},
     }
   },
 
@@ -393,12 +366,12 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:5090:7778"
     },
     items={
-      {decorID=1444, source={type="vendor", itemID=244654, currency="100", currencytype=1155}, requirements={rep="true"}},
-      {decorID=1464, source={type="vendor", itemID=244676, currency="200", currencytype=1155}, requirements={rep="true"}},
-      {decorID=1465, source={type="vendor", itemID=244677, currency="300", currencytype=1155}, requirements={rep="true"}},
-      {decorID=1466, source={type="vendor", itemID=244678, currency="100", currencytype=1155}, requirements={rep="true"}},
-      {decorID=1919, source={type="vendor", itemID=246001, currency="200", currencytype=1155}, requirements={rep="true"}},
-      {decorID=1920, source={type="vendor", itemID=246002, currency="300", currencytype=1155}, requirements={rep="true"}},
+      {decorID=1444, source={type="vendor", itemID=244654, currency="100", currencytype=1155}},
+      {decorID=1464, source={type="vendor", itemID=244676, currency="200", currencytype=1155}},
+      {decorID=1465, source={type="vendor", itemID=244677, currency="300", currencytype=1155}},
+      {decorID=1466, source={type="vendor", itemID=244678, currency="100", currencytype=1155}},
+      {decorID=1919, source={type="vendor", itemID=246001, currency="200", currencytype=1155}},
+      {decorID=1920, source={type="vendor", itemID=246002, currency="300", currencytype=1155}},
     }
   },
 
@@ -411,23 +384,23 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="619:5506:7797"
     },
     items={
-      {decorID=7610, source={type="vendor", itemID=250307, currency="10000", currencytype=3252}, requirements={achievement={id=42318}}},
-      {decorID=7620, source={type="vendor", itemID=250402, currency="20000", currencytype=3252}, requirements={achievement={id=42658}}},
-      {decorID=7621, source={type="vendor", itemID=250403, currency="30000", currencytype=3252}, requirements={achievement={id=42692}}},
-      {decorID=7622, source={type="vendor", itemID=250404, currency="5000", currencytype=3252}},
-      {decorID=7623, source={type="vendor", itemID=250405, currency="5000", currencytype=3252}, requirements={achievement={id=61060}}},
-      {decorID=7624, source={type="vendor", itemID=250406, currency="30000", currencytype=3252}, requirements={achievement={id=42321}}},
-      {decorID=7625, source={type="vendor", itemID=250407, currency="5000", currencytype=3252}, requirements={achievement={id=42619}}},
-      {decorID=7658, source={type="vendor", itemID=250622, currency="5000", currencytype=3252}, requirements={achievement={id=42675}}},
-      {decorID=7686, source={type="vendor", itemID=250689, currency="10000", currencytype=3252}, requirements={achievement={id=61054}}},
-      {decorID=7687, source={type="vendor", itemID=250690, currency="5000", currencytype=3252}, requirements={achievement={id=42627}}},
-      {decorID=7690, source={type="vendor", itemID=250693, currency="30000", currencytype=3252}, requirements={achievement={id=42674}}},
-      {decorID=8810, source={type="vendor", itemID=251778, currency="30000", currencytype=3252}, requirements={achievement={id=61218}}},
-      {decorID=8811, source={type="vendor", itemID=251779, currency="30000", currencytype=3252}, requirements={achievement={id=42689}}},
-      {decorID=9165, source={type="vendor", itemID=252753, currency="5000", currencytype=3252}, requirements={achievement={id=42655}}},
-      {decorID=11278, source={type="vendor", itemID=256677, currency="5000", currencytype=3252}, requirements={achievement={id=42628}}},
-      {decorID=11279, source={type="vendor", itemID=256678, currency="2500", currencytype=3252}},
-      {decorID=11942, source={type="vendor", itemID=258299, currency="20000", currencytype=3252}, requirements={achievement={id=42547}}},
+      {decorID=7610, source={type="vendor", itemID=250307, costs={{currency="10000", currencytype="Deathstalker Report"},{currency="6000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42318}}},
+      {decorID=7620, source={type="vendor", itemID=250402, costs={{currency="20000", currencytype="Deathstalker Report"},{currency="12000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42658}}},
+      {decorID=7621, source={type="vendor", itemID=250403, costs={{currency="30000", currencytype="Deathstalker Report"},{currency="18000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42692}}},
+      {decorID=7622, source={type="vendor", itemID=250404, costs={{currency="5000", currencytype="Deathstalker Report"},{currency="3000", currencytype="Order Resources & 50 Veiled Argunite"}}}},
+      {decorID=7623, source={type="vendor", itemID=250405, costs={{currency="5000", currencytype="Deathstalker Report"},{currency="3000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=61060}}},
+      {decorID=7624, source={type="vendor", itemID=250406, costs={{currency="30000", currencytype="Deathstalker Report"},{currency="18000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42321}}},
+      {decorID=7625, source={type="vendor", itemID=250407, costs={{currency="5000", currencytype="Deathstalker Report"},{currency="3000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42619}}},
+      {decorID=7658, source={type="vendor", itemID=250622, costs={{currency="5000", currencytype="Deathstalker Report"},{currency="3000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42675}}},
+      {decorID=7686, source={type="vendor", itemID=250689, costs={{currency="10000", currencytype="Deathstalker Report"},{currency="6000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=61054}}},
+      {decorID=7687, source={type="vendor", itemID=250690, costs={{currency="5000", currencytype="Deathstalker Report"},{currency="3000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42627}}},
+      {decorID=7690, source={type="vendor", itemID=250693, costs={{currency="30000", currencytype="Deathstalker Report"},{currency="18000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42674}}},
+      {decorID=8810, source={type="vendor", itemID=251778, costs={{currency="30000", currencytype="Deathstalker Report"},{currency="18000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=61218}}},
+      {decorID=8811, source={type="vendor", itemID=251779, costs={{currency="30000", currencytype="Deathstalker Report"},{currency="18000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42689}}},
+      {decorID=9165, source={type="vendor", itemID=252753, costs={{currency="5000", currencytype="Deathstalker Report"},{currency="3000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42655}}},
+      {decorID=11278, source={type="vendor", itemID=256677, costs={{currency="5000", currencytype="Deathstalker Report"},{currency="3000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42628}}},
+      {decorID=11279, source={type="vendor", itemID=256678, costs={{currency="2500", currencytype="Deathstalker Report"},{currency="1500", currencytype="Order Resources & 50 Veiled Argunite"}}}},
+      {decorID=11942, source={type="vendor", itemID=258299, costs={{currency="20000", currencytype="Deathstalker Report"},{currency="12000", currencytype="Order Resources & 50 Veiled Argunite"}}}, requirements={achievement={id=42547}}},
     }
   },
 
@@ -435,13 +408,13 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=252043,
       type="vendor",
-      faction="Alliance",
+      faction="Horde",
       zone="Dalaran",
       worldmap="627:6746:3389"
     },
     items={
-      {decorID=947, source={type="vendor", itemID=245411, currency="2000", currencytype="gold"}, requirements={quest={id=38882}}},
-      {decorID=9267, source={type="vendor", itemID=253251, currency="200", currencytype="gold"}, requirements={quest={id=39801}}},
+      {decorID=947, source={type="vendor", itemID=245411}, requirements={quest={id=38882}}},
+      {decorID=9267, source={type="vendor", itemID=253251}, requirements={quest={id=39801}}},
     }
   },
 
@@ -449,7 +422,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     source={
       id=252498,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Val'sharah",
       worldmap="641:4209:5938"
     },
@@ -465,10 +438,10 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Suramar",
-      worldmap="680:4963:6283"
+      worldmap="680:4920:7700"
     },
     items={
-      {decorID=752, source={type="vendor", itemID=245448, costs={{currency="1000", currencytype="gold"},{currency="2000", currencytype=1220}}}, requirements={achievement={id=11124}}},
+      {decorID=752, source={type="vendor", itemID=245448, currency="1000", currencytype="& 2000 Order Resources"}, requirements={achievement={id=11124}}},
       {decorID=1747, source={type="vendor", itemID=245558, currency="225", currencytype=1220}, requirements={quest={id=44955}}},
       {decorID=3981, source={type="vendor", itemID=247842, currency="600", currencytype=1220}, requirements={quest={id=44756}}},
       {decorID=3982, source={type="vendor", itemID=247843, currency="1200", currencytype=1220}, requirements={achievement={id=11340}}},
@@ -485,20 +458,21 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Val'sharah",
-      worldmap="641:5426:7236"
+      worldmap="641:5540:7280"
     },
     items={
-      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="1000", currencytype="gold"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}},
+      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="1000", currencytype="& 2000 Order Resources"},{currency="800", currencytype="& 2000 Order Resources"}}}},
       {decorID=676, source={type="vendor", itemID=238860, currency="700", currencytype=1220}},
-      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="500", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
-      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="700", currencytype="gold"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}},
+      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="500", currencytype="& 750 Order Resources"},{currency="400", currencytype="& 750 Order Resources"}}}},
+--       {decorID=678, source={type="vendor", itemID=238862}}, -- DNT / do not use
+      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="700", currencytype="& 1000 Order Resources"},{currency="500", currencytype="& 1000 Order Resources"}}}},
       {decorID=1881, source={type="vendor", itemID=245697, currency="600", currencytype=1220}, requirements={achievement={id=10698}}},
       {decorID=1884, source={type="vendor", itemID=245700, currency="250", currencytype=1220}, requirements={quest={id=38663}}},
       {decorID=1886, source={type="vendor", itemID=245702, currency="75", currencytype=1220}, requirements={quest={id=38147}}},
       {decorID=1887, source={type="vendor", itemID=245703, currency="750", currencytype=1220}, requirements={achievement={id=11258}}},
       {decorID=1889, source={type="vendor", itemID=245739, currency="300", currencytype=1220}, requirements={quest={id=40890}}},
-      {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, requirements={rep="true"}},
-      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="500", currencytype="gold"},{currency="750", currencytype=1220}}}, requirements={rep="true"}},
+      {decorID=8195, source={type="vendor", itemID=251494, costs={{currency="200", currencytype=1220},{currency="200", currencytype=1220}}}},
+      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="500", currencytype="& 750 Order Resources"},{currency="400", currencytype="& 750 Order Resources"}}}},
     }
   },
 
@@ -535,49 +509,10 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Suramar",
-      worldmap="680:1511:5333"
+      worldmap="641:6872:9510"
     },
     items={
       {decorID=11908, source={type="vendor", itemID=258222, currency="600", currencytype=1220}, requirements={quest={id=41143}}},
-    }
-  },
-
-  {
-    source={
-      id=106901,
-      type="vendor",
-      faction="Neutral",
-      zone="Val'sharah",
-      worldmap="641:5470:7325"
-    },
-    items={
---       {decorID=678, source={type="vendor", itemID=238862}}, -- DNT / do not use
-    }
-  },
-
-  {
-    source={
-      id=112434,
-      type="vendor",
-      faction="Neutral",
-      zone="Dreadscar Rift",
-      worldmap="717:5876:3269"
-    },
-    items={
---       {decorID=5118, source={type="vendor", itemID=248941}}, -- DNT / do not use
-    }
-  },
-
-  {
-    source={
-      id=253387,
-      type="vendor",
-      faction="Neutral",
-      zone="Val'sharah",
-      worldmap="641:5540:7280"
-    },
-    items={
---       {decorID=678, source={type="vendor", itemID=238862}}, -- DNT / do not use
     }
   },
 

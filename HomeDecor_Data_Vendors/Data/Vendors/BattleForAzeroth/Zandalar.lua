@@ -13,7 +13,7 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       type="vendor",
       faction="Horde",
       zone="Nazmir",
-      worldmap="863:3911:7947"
+      worldmap="863:3910:7950"
     },
     items={
       {decorID=1170, source={type="vendor", itemID=245488, currency="500", currencytype=1560}, requirements={quest={id=47188}}},
@@ -30,7 +30,7 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       type="vendor",
       faction="Horde",
       zone="Port of Zandalar, Dazar'alor",
-      worldmap="1163:4460:9440"
+      worldmap="1165:4440:9440"
     },
     items={
       {decorID=943, source={type="vendor", itemID=245482, currency="250", currencytype=1710}},
@@ -43,7 +43,7 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       type="vendor",
       faction="Horde",
       zone="Zuldazar",
-      worldmap="1165:5122:9508"
+      worldmap="862:5840:6080"
     },
     items={
       {decorID=839, source={type="vendor", itemID=245464, currency="200", currencytype=1560}},
@@ -61,8 +61,8 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       id=251921,
       type="vendor",
       faction="Horde",
-      zone="Port of Zandalar, Dazar'alor",
-      worldmap="862:5800:6260"
+      zone="Zuldazar",
+      worldmap="862:5810:6250"
     },
     items={
       {decorID=837, source={type="vendor", itemID=245467, currency="150", currencytype=1560}, requirements={achievement={id=12869}}},
@@ -76,10 +76,10 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       {decorID=935, source={type="vendor", itemID=245475, currency="300", currencytype=1560}, requirements={quest={id=51985}}},
       {decorID=936, source={type="vendor", itemID=245470, currency="300", currencytype=1560}, requirements={quest={id=52978}}},
       {decorID=941, source={type="vendor", itemID=245478, currency="200", currencytype=1560}},
-      {decorID=942, source={type="vendor", itemID=245479, currency="300", currencytype=1560}, requirements={rep="true"}},
+      {decorID=942, source={type="vendor", itemID=245479, currency="300", currencytype=1560}},
       {decorID=944, source={type="vendor", itemID=241062, currency="200", currencytype=1560}, requirements={achievement={id=12509}}},
-      {decorID=945, source={type="vendor", itemID=245480, currency="200", currencytype=1560}, requirements={rep="true"}},
-      {decorID=946, source={type="vendor", itemID=245481, currency="300", currencytype=1560}, requirements={rep="true"}},
+      {decorID=945, source={type="vendor", itemID=245480, currency="200", currencytype=1560}},
+      {decorID=946, source={type="vendor", itemID=245481, currency="300", currencytype=1560}},
     }
   },
 
@@ -89,7 +89,7 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       type="vendor",
       faction="Horde",
       zone="Zuldazar",
-      worldmap="1164:3694:5917"
+      worldmap="1164:4000:6900"
     },
     items={
       {decorID=1175, source={type="vendor", itemID=245487, currency="500", currencytype=1560}, requirements={achievement={id=13038}}},

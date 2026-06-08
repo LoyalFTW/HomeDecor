@@ -332,6 +332,7 @@ local function BuildDataRows()
       if title == "" then title = nil end
     end
     local name   = ItemName(itemID) or title or ("Item %d"):format(itemID)
+    local searchName = type(name) == "string" and name:lower() or ""
 
     local known, knownByAlt, crafterName = nil, false, nil
     local skillID = entry.source and entry.source.skillID
@@ -360,6 +361,7 @@ local function BuildDataRows()
     dataRows[#dataRows + 1] = {
       itemID         = itemID,
       name           = name,
+      searchName     = searchName,
       profession     = profName,
       expansion      = expName,
       cost           = cost,
@@ -404,7 +406,7 @@ local function ApplyFiltersAndSort(filterProf, filterExp, filterLumber, filterSe
       include = false
     elseif filterLumber and filterLumber ~= "All" and (row.lumberTypeName or "") ~= filterLumber then
       include = false
-    elseif search ~= "" and not (row.name and row.name:lower():find(search, 1, true)) then
+    elseif search ~= "" and not ((row.searchName or ""):find(search, 1, true)) then
       include = false
     elseif knownOnly and altProfsOnly then
       if not row.known and not row.knownByAlt then
@@ -627,6 +629,7 @@ end
 
 local cachedFiltered = nil
 local cachedFilteredDirty = true
+local searchRefreshTimer = nil
 
 InvalidateFilteredCache = function()
   cachedFilteredDirty = true
@@ -869,6 +872,23 @@ DecorAH.refreshTableFn  = RefreshTable
 DecorAH._invalidate    = InvalidateDataRows
 DecorAH._invalidFilter = InvalidateFilteredCache
 refreshTableFn = RefreshTable
+
+local function QueueSearchRefresh()
+  InvalidateFilteredCache()
+
+  if searchRefreshTimer and searchRefreshTimer.Cancel then
+    searchRefreshTimer:Cancel()
+  end
+
+  if C_Timer and C_Timer.NewTimer then
+    searchRefreshTimer = C_Timer.NewTimer(0.12, function()
+      searchRefreshTimer = nil
+      RefreshTable()
+    end)
+  else
+    RefreshTable()
+  end
+end
 
 local function RefreshSourceHighlights()
   for src, btn in pairs(sourceButtons) do
@@ -1459,7 +1479,7 @@ function DH:Create(parentFrame, embedded)
   searchBox:SetAutoFocus(false)
   searchBox:SetFontObject("GameFontNormal")
   searchBox:SetTextInsets(6, 6, 0, 0)
-  searchBox:SetScript("OnTextChanged", function() InvalidateFilteredCache(); RefreshTable() end)
+  searchBox:SetScript("OnTextChanged", QueueSearchRefresh)
   searchBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
 
   knownOnlyCheck = MakeCheck(filterRow2, "Known only", searchBox, 14)

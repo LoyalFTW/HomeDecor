@@ -715,6 +715,19 @@ local function HeaderClick(self)
     end
 end
 
+local function ItemMouseUp(self, btn)
+    local f = self and self._owner
+    local it = self and self._item
+    if not f or not it then return end
+
+    if btn == "LeftButton" and f.SetSelectedItem then
+        f:SetSelectedItem(it, self._nav)
+    end
+    if ShouldRunItemInteraction(f, btn) and IA and IA.HandleMouseUp then
+        IA:HandleMouseUp(it, btn, self._nav)
+    end
+end
+
 local GridCache = {}
 
 local function ComputeGrid(indent, contentWidth)
@@ -1722,6 +1735,10 @@ function Render:Create(parent)
             fr = table.remove(f._poolList) or Frames.CreateListRow(content)
         end
         fr._owner = f
+        if kind ~= "header" and not fr._itemMouseBound then
+            fr._itemMouseBound = true
+            fr:SetScript("OnMouseUp", ItemMouseUp)
+        end
         fr:Show()
         f._active[#f._active + 1] = fr
         return fr
@@ -1732,6 +1749,8 @@ function Render:Create(parent)
         frame:Hide()
         frame:ClearAllPoints()
         frame._entry = nil
+        frame._item = nil
+        frame._nav = nil
     end
 
     function f:ReleaseAll()
@@ -2059,14 +2078,8 @@ end
                         RS:SetSelected(fr, self.selectedKey and BuildItemKey(it) == self.selectedKey, 0.22)
                     end
 
-                    fr:SetScript("OnMouseUp", function(_, btn)
-                        if btn == "LeftButton" and f.SetSelectedItem then
-                            f:SetSelectedItem(it, e.nav)
-                        end
-                        if ShouldRunItemInteraction(f, btn) and IA and IA.HandleMouseUp then
-                            IA:HandleMouseUp(it, btn, e.nav)
-                        end
-                    end)
+                    fr._item = it
+                    fr._nav = e.nav
 
                 elseif e.kind == "list" then
                     local it = D and D.ResolveAchievementDecor and D.ResolveAchievementDecor(e.it) or e.it
@@ -2224,14 +2237,8 @@ end
                         RS:SetSelected(fr, self.selectedKey and BuildItemKey(it) == self.selectedKey, 0.22)
                     end
 
-                    fr:SetScript("OnMouseUp", function(_, btn)
-                        if btn == "LeftButton" and f.SetSelectedItem then
-                            f:SetSelectedItem(it, e.nav)
-                        end
-                        if ShouldRunItemInteraction(f, btn) and IA and IA.HandleMouseUp then
-                            IA:HandleMouseUp(it, btn, e.nav)
-                        end
-                    end)
+                    fr._item = it
+                    fr._nav = e.nav
                 end
             end
         end

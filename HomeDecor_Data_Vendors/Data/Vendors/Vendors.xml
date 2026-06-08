@@ -30,8 +30,10 @@
 	<!-- Midnight -->
 	<Script file="Midnight/Arcantina.lua"/>
 	<Script file="Midnight/FoundersPoint.lua"/>
+	<Script file="Midnight/Harandar.lua"/>
 	<Script file="Midnight/QuelThalas.lua"/>
 	<Script file="Midnight/RazorShore.lua"/>
+	<Script file="Midnight/StormwindCity.lua"/>
 	<Script file="Midnight/VoidStorm.lua"/>
 	
 </Ui>

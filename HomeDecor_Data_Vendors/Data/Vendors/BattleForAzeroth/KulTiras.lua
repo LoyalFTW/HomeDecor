@@ -11,13 +11,13 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
     source={
       id=127151,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="The Vindicaar",
       worldmap="940:6822:5691"
     },
     items={
-      {decorID=930, source={type="vendor", itemID=245422, currency="640", currencytype="gold"}, requirements={quest={id=47691}}},
-      {decorID=8189, source={type="vendor", itemID=251480, currency="240", currencytype="gold"}, requirements={quest={id=44004}}},
+      {decorID=930, source={type="vendor", itemID=245422}, requirements={quest={id=47691}}},
+      {decorID=8189, source={type="vendor", itemID=251480}, requirements={quest={id=44004}}},
     }
   },
 
@@ -26,15 +26,28 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       id=135808,
       type="vendor",
       faction="Alliance",
-      zone="Boralus",
+      zone="Harbormaster's Office",
       worldmap="1161:6760:2180"
     },
     items={
-      {decorID=2091, source={type="vendor", itemID=246222, currency="75", currencytype=1560}, requirements={rep="true"}},
-      {decorID=8984, source={type="vendor", itemID=252036, currency="500", currencytype=1560}, requirements={rep="true"}},
-      {decorID=9036, source={type="vendor", itemID=252387, currency="100", currencytype=1560}, requirements={rep="true"}},
-      {decorID=9037, source={type="vendor", itemID=252388, currency="50", currencytype=1560}, requirements={rep="true"}},
-      {decorID=9051, source={type="vendor", itemID=252402, currency="450", currencytype=1560}, requirements={rep="true"}},
+      {decorID=2091, source={type="vendor", itemID=246222, currency="75", currencytype=1560}},
+      {decorID=8984, source={type="vendor", itemID=252036, currency="500", currencytype=1560}},
+      {decorID=9036, source={type="vendor", itemID=252387, currency="100", currencytype=1560}},
+      {decorID=9037, source={type="vendor", itemID=252388, currency="50", currencytype=1560}},
+      {decorID=9051, source={type="vendor", itemID=252402, currency="450", currencytype=1560}},
+    }
+  },
+
+  {
+    source={
+      id=142115,
+      type="vendor",
+      faction="Neutral",
+      zone="Boralus",
+      worldmap="1161:6760:4080"
+    },
+    items={
+      {decorID=4813, source={type="vendor", itemID=248796}, requirements={achievement={id=5442}}},
     }
   },
 
@@ -44,7 +57,7 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       type="vendor",
       faction="Neutral",
       zone="Blackrock Depths",
-      worldmap="1186:4977:3222"
+      worldmap="1186:4980:3220"
     },
     items={
       {decorID=1120, source={type="vendor", itemID=245291}},
@@ -56,25 +69,25 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       id=150716,
       type="vendor",
       faction="Neutral",
-      zone="Mechagon",
-      worldmap="1462:7370:3691"
+      zone="Mechagon Island",
+      worldmap="1460:7140:3860"
     },
     items={
       {decorID=2322, source={type="vendor", itemID=246479, currency="5", currencytype=3363}, requirements={achievement={id=13723}}},
-      {decorID=2323, source={type="vendor", itemID=246480, currency="800", currencytype="gold"}, requirements={rep="true"}},
-      {decorID=2326, source={type="vendor", itemID=246483, currency="400", currencytype="gold"}, requirements={achievement={id=13473}}},
-      {decorID=2327, source={type="vendor", itemID=246484}, requirements={rep="true"}},
-      {decorID=2337, source={type="vendor", itemID=246497}, requirements={rep="true"}},
-      {decorID=2338, source={type="vendor", itemID=246498, currency="80", currencytype="gold"}, requirements={rep="true"}},
-      {decorID=2339, source={type="vendor", itemID=246499, currency="120", currencytype="gold"}, requirements={rep="true"}},
-      {decorID=2341, source={type="vendor", itemID=246501, currency="160", currencytype="gold"}, requirements={rep="true"}},
-      {decorID=2343, source={type="vendor", itemID=246503, currency="80", currencytype="gold"}, requirements={rep="true"}},
-      {decorID=2430, source={type="vendor", itemID=246598}, requirements={achievement={id=13477}}},
-      {decorID=2433, source={type="vendor", itemID=246601}},
-      {decorID=2435, source={type="vendor", itemID=246603}, requirements={achievement={id=13475}}},
-      {decorID=2437, source={type="vendor", itemID=246605, currency="120", currencytype="gold"}, requirements={rep="true"}},
-      {decorID=2466, source={type="vendor", itemID=246701, currency="160", currencytype="gold"}, requirements={quest={id=55651}}},
-      {decorID=2467, source={type="vendor", itemID=246703}, requirements={quest={id=55736}}},
+      {decorID=2323, source={type="vendor", itemID=246480, currency="800", currencytype="& 5 Chain Ignitercoil & 5 Galvanic Oscillator"}},
+      {decorID=2326, source={type="vendor", itemID=246483, currency="400", currencytype="& 1 Chain Ignitercoil & 2 Energy Cell"}, requirements={achievement={id=13473}}},
+      {decorID=2327, source={type="vendor", itemID=246484, currency="1", currencytype="Energy Cell"}},
+      {decorID=2337, source={type="vendor", itemID=246497, currency="1", currencytype="Energy Cell"}},
+      {decorID=2338, source={type="vendor", itemID=246498, currency="80", currencytype="& 1 Energy Cell"}},
+      {decorID=2339, source={type="vendor", itemID=246499, currency="120", currencytype="& 2 Energy Cell"}},
+      {decorID=2341, source={type="vendor", itemID=246501, currency="160", currencytype="& 2 Galvanic Oscillator"}},
+      {decorID=2343, source={type="vendor", itemID=246503, currency="80", currencytype="& 2 S.P.A.R.E. Crate"}},
+      {decorID=2430, source={type="vendor", itemID=246598, currency="1", currencytype="S.P.A.R.E. Crate"}, requirements={achievement={id=13477}}},
+      {decorID=2433, source={type="vendor", itemID=246601, currency="10", currencytype="Spare Parts"}},
+      {decorID=2435, source={type="vendor", itemID=246603, currency="50", currencytype="Spare Parts"}, requirements={achievement={id=13475}}},
+      {decorID=2437, source={type="vendor", itemID=246605, currency="120", currencytype="& 2 Chain Ignitercoil"}},
+      {decorID=2466, source={type="vendor", itemID=246701, currency="160", currencytype="& 2 S.P.A.R.E. Crate"}, requirements={quest={id=55651}}},
+      {decorID=2467, source={type="vendor", itemID=246703, currency="3", currencytype="S.P.A.R.E. Crate"}, requirements={quest={id=55736}}},
     }
   },
 
@@ -96,7 +109,7 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
     source={
       id=246721,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="Tiragarde Sound",
       worldmap="1161:5629:4582"
     },
@@ -113,17 +126,17 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
     source={
       id=252313,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="Stormsong Valley",
-      worldmap="942:5960:6960"
+      worldmap="942:5950:6960"
     },
     items={
       {decorID=1900, source={type="vendor", itemID=245984, currency="350", currencytype=1560}, requirements={quest={id=50783}}},
-      {decorID=9043, source={type="vendor", itemID=252394, currency="550", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9043, source={type="vendor", itemID=252394, currency="550", currencytype=1560}},
       {decorID=9044, source={type="vendor", itemID=252395, currency="450", currencytype=1560}, requirements={quest={id=51401}}},
-      {decorID=9045, source={type="vendor", itemID=252396, currency="125", currencytype=1560}, requirements={rep="true"}},
-      {decorID=9047, source={type="vendor", itemID=252398, currency="200", currencytype=1560}, requirements={rep="true"}},
-      {decorID=9139, source={type="vendor", itemID=252652, currency="800", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9045, source={type="vendor", itemID=252396, currency="125", currencytype=1560}},
+      {decorID=9047, source={type="vendor", itemID=252398, currency="200", currencytype=1560}},
+      {decorID=9139, source={type="vendor", itemID=252652, currency="800", currencytype=1560}},
       {decorID=9142, source={type="vendor", itemID=252655, currency="175", currencytype=1560}, requirements={quest={id=50611}}},
     }
   },
@@ -132,7 +145,7 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
     source={
       id=252316,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="Tiragarde Sound",
       worldmap="895:5340:3120"
     },
@@ -148,7 +161,7 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       type="vendor",
       faction="Alliance",
       zone="Tiragarde Sound",
-      worldmap="1161:7074:1566"
+      worldmap="1161:7070:1570"
     },
     items={
       {decorID=1704, source={type="vendor", itemID=245271, currency="800", currencytype=1560}, requirements={achievement={id=12582}}},

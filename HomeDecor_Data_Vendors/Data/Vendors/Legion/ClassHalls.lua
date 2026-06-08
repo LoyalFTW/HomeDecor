@@ -11,12 +11,31 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     source={
       id=93550,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
+      zone="Acherus: The Ebon Hold",
+      worldmap="647:2540:4720"
+    },
+    items={
+      {decorID=5879, source={type="vendor", itemID=250112, currency="2000", currencytype=1220}, requirements={achievement={id=60981}}},
+      {decorID=5880, source={type="vendor", itemID=250113, currency="500", currencytype=1220}},
+      {decorID=5881, source={type="vendor", itemID=250114, currency="500", currencytype=1220}},
+      {decorID=5882, source={type="vendor", itemID=250115, currency="1500", currencytype=1220}, requirements={achievement={id=42270}}},
+      {decorID=5888, source={type="vendor", itemID=250123, currency="5000", currencytype=1220}, requirements={achievement={id=42287}}},
+      {decorID=5889, source={type="vendor", itemID=250124, currency="1000", currencytype=1220}},
+      {decorID=14361, source={type="vendor", itemID=260584, currency="3000", currencytype=1220}, requirements={achievement={id=60962}}},
+    }
+  },
+
+  {
+    source={
+      id=93550,
+      type="vendor",
+      faction="Neutral",
       zone="Acherus: The Ebon Hold",
       worldmap="647:4390:3717"
     },
     items={
-      {decorID=5575, source={type="vendor", itemID=249690}, requirements={achievement={id=60963}}},
+      {decorID=5575, source={type="vendor", itemID=249690, currency="3000", currencytype=1220}, requirements={achievement={id=60963}}},
       {decorID=5879, source={type="vendor", itemID=250112, currency="2000", currencytype=1220}, requirements={achievement={id=60981}}},
       {decorID=5880, source={type="vendor", itemID=250113, currency="500", currencytype=1220}},
       {decorID=5881, source={type="vendor", itemID=250114, currency="500", currencytype=1220}},
@@ -68,7 +87,7 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     items={
       {decorID=7819, source={type="vendor", itemID=250787, currency="5000", currencytype=1220}, requirements={achievement={id=42295}}},
       {decorID=7820, source={type="vendor", itemID=250788, currency="3000", currencytype=1220}, requirements={achievement={id=60970}}},
-      {decorID=11493, source={type="vendor", itemID=257403}, requirements={achievement={id=42280}}},
+      {decorID=11493, source={type="vendor", itemID=257403, currency="1500", currencytype=1220}, requirements={achievement={id=42280}}},
       {decorID=14461, source={type="vendor", itemID=260776, currency="1500", currencytype=1220}, requirements={achievement={id=42279}}},
     }
   },
@@ -77,7 +96,7 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     source={
       id=112318,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="The Maelstrom",
       worldmap="726:3032:6069"
     },
@@ -85,6 +104,19 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       {decorID=7837, source={type="vendor", itemID=250914, currency="5000", currencytype=1220}, requirements={achievement={id=42296}}},
       {decorID=7838, source={type="vendor", itemID=250915, currency="3000", currencytype=1220}, requirements={achievement={id=60971}}},
       {decorID=11493, source={type="vendor", itemID=257403, currency="1500", currencytype=1220}, requirements={achievement={id=42280}}},
+    }
+  },
+
+  {
+    source={
+      id=112318,
+      type="vendor",
+      faction="Neutral",
+      zone="The Maelstrom (Order Hall)",
+      worldmap="726:3032:6069"
+    },
+    items={
+      {decorID=7837, source={type="vendor", itemID=250914, currency="5000", currencytype=1220}, requirements={achievement={id=42296}}},
     }
   },
 
@@ -108,8 +140,8 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       id=112338,
       type="vendor",
       faction="Neutral",
-      zone="Mandori Village",
-      worldmap="709:5033:5913"
+      zone="The Wandering Isle",
+      worldmap="709:5040:5900"
     },
     items={
       {decorID=5126, source={type="vendor", itemID=248958, currency="1500", currencytype=1220}, requirements={achievement={id=42275}}},
@@ -122,7 +154,7 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     source={
       id=112392,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Skyhold",
       worldmap="695:5549:2591"
     },
@@ -137,7 +169,7 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     source={
       id=112401,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Netherlight Temple",
       worldmap="702:3862:2377"
     },
@@ -145,6 +177,19 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       {decorID=7822, source={type="vendor", itemID=250790, currency="5000", currencytype=1220}, requirements={achievement={id=42294}}},
       {decorID=7823, source={type="vendor", itemID=250791, currency="3000", currencytype=1220}, requirements={achievement={id=60969}}},
       {decorID=7824, source={type="vendor", itemID=250792, currency="1500", currencytype=1220}, requirements={achievement={id=42277}}},
+    }
+  },
+
+  {
+    source={
+      id=112407,
+      type="vendor",
+      faction="Neutral",
+      zone="Mardum, the Shattered Abyss",
+      worldmap="719:5800:5200"
+    },
+    items={
+      {decorID=5575, source={type="vendor", itemID=249690, currency="3000", currencytype=1220}, requirements={achievement={id=60963}}},
     }
   },
 
@@ -167,7 +212,7 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     source={
       id=112434,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="Dreadscar Rift",
       worldmap="717:5876:3269"
     },

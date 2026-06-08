@@ -11,7 +11,7 @@ NS.Data.Vendors["Wrath"]["Northrend"] = {
     source={
       id=25206,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Borean Tundra",
       worldmap="114:4304:1381"
     },
@@ -29,7 +29,7 @@ NS.Data.Vendors["Wrath"]["Northrend"] = {
       worldmap="116:3240:5980"
     },
     items={
-      {decorID=4448, source={type="vendor", itemID=248622, currency="500", currencytype="gold"}, requirements={quest={id=12227}}},
+      {decorID=4448, source={type="vendor", itemID=248622}, requirements={quest={id=12227}}},
     }
   },
 
@@ -38,11 +38,11 @@ NS.Data.Vendors["Wrath"]["Northrend"] = {
       id=28038,
       type="vendor",
       faction="Neutral",
-      zone="Sholazar Basin",
+      zone="Nesingwary Base Camp",
       worldmap="119:2680:5920"
     },
     items={
-      {decorID=4839, source={type="vendor", itemID=248807, currency="500", currencytype="gold"}, requirements={achievement={id=938}}},
+      {decorID=4839, source={type="vendor", itemID=248807}, requirements={achievement={id=938}}},
     }
   },
 
