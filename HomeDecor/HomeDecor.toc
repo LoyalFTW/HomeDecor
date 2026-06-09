@@ -20,7 +20,7 @@
 ## Category-zhCN: 住宅
 ## Category-zhTW: 房屋
 
-Libs\Krowi_WorldMapButtons\Krowi_WorldMapButtons-1.4.lua
+Libs\Krowi_WorldMapButtons\Krowi_WorldMapButtons.lua
 Libs\LibStub\LibStub.lua
 Libs\AceAddon-3.0\AceAddon-3.0.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
