@@ -127,8 +127,8 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:2970:4100"
     },
     items={
-      {decorID=1268, source={type="vendor", itemID=245307, currency="800", currencytype=2815}},
-      {decorID=11127, source={type="vendor", itemID=256327, currency="450", currencytype=2815}},
+      {decorID=1268, source={type="vendor", itemID=245307, currency="800", currencytype=2815}, requirements={rep="true"}},
+      {decorID=11127, source={type="vendor", itemID=256327, currency="450", currencytype=2815}, requirements={rep="true"}},
     }
   },
 
@@ -141,8 +141,8 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:6320:1680"
     },
     items={
-      {decorID=4560, source={type="vendor", itemID=248758, currency="900", currencytype=2815}},
-      {decorID=10853, source={type="vendor", itemID=255642, currency="475", currencytype=2815}},
+      {decorID=4560, source={type="vendor", itemID=248758, currency="900", currencytype=2815}, requirements={rep="true"}},
+      {decorID=10853, source={type="vendor", itemID=255642, currency="475", currencytype=2815}, requirements={rep="true"}},
     }
   },
 
@@ -155,8 +155,8 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:3900:2200"
     },
     items={
-      {decorID=1259, source={type="vendor", itemID=245313, currency="450", currencytype=2815}},
-      {decorID=10889, source={type="vendor", itemID=255674, currency="450", currencytype=2815}},
+      {decorID=1259, source={type="vendor", itemID=245313, currency="450", currencytype=2815}, requirements={rep="true"}},
+      {decorID=10889, source={type="vendor", itemID=255674, currency="450", currencytype=2815}, requirements={rep="true"}},
     }
   },
 
@@ -169,8 +169,8 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:5320:7260"
     },
     items={
-      {decorID=1269, source={type="vendor", itemID=245311, currency="600", currencytype=2815}},
-      {decorID=10857, source={type="vendor", itemID=255647, currency="650", currencytype=2815}},
+      {decorID=1269, source={type="vendor", itemID=245311, currency="600", currencytype=2815}, requirements={rep="true"}},
+      {decorID=10857, source={type="vendor", itemID=255647, currency="650", currencytype=2815}, requirements={rep="true"}},
     }
   },
 
@@ -183,8 +183,8 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:2720:7240"
     },
     items={
-      {decorID=1265, source={type="vendor", itemID=245321, currency="400", currencytype=2815}},
-      {decorID=10852, source={type="vendor", itemID=255641, currency="500", currencytype=2815}},
+      {decorID=1265, source={type="vendor", itemID=245321, currency="400", currencytype=2815}, requirements={rep="true"}},
+      {decorID=10852, source={type="vendor", itemID=255641, currency="500", currencytype=2815}, requirements={rep="true"}},
     }
   },
 
@@ -334,9 +334,9 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2214:3796:8490"
     },
     items={
-      {decorID=3922, source={type="vendor", itemID=247785, currency="250", currencytype="Voidlight Marl"}},
-      {decorID=15488, source={type="vendor", itemID=264253, currency="250", currencytype="Voidlight Marl"}},
-      {decorID=15585, source={type="vendor", itemID=264345, currency="250", currencytype="Voidlight Marl"}},
+      {decorID=3922, source={type="vendor", itemID=247785, currency="250", currencytype="Voidlight Marl"}, requirements={rep="true"}},
+      {decorID=15488, source={type="vendor", itemID=264253, currency="250", currencytype="Voidlight Marl"}, requirements={rep="true"}},
+      {decorID=15585, source={type="vendor", itemID=264345, currency="250", currencytype="Voidlight Marl"}, requirements={rep="true"}},
     }
   },
 

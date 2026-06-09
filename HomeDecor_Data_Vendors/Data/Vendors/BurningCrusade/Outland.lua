@@ -16,8 +16,8 @@ NS.Data.Vendors["BurningCrusade"]["Outland"] = {
       worldmap="111:4800:4620"
     },
     items={
-      {decorID=10950, source={type="vendor", itemID=256049}},
-      {decorID=11500, source={type="vendor", itemID=257419}},
+      {decorID=10950, source={type="vendor", itemID=256049}, requirements={rep="true"}},
+      {decorID=11500, source={type="vendor", itemID=257419}, requirements={rep="true"}},
     }
   },
 

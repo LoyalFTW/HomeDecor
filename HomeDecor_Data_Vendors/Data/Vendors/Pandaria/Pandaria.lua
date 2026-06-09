@@ -16,8 +16,8 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="371:5670:4440"
     },
     items={
-      {decorID=3870, source={type="vendor", itemID=247730}},
-      {decorID=3872, source={type="vendor", itemID=247732}},
+      {decorID=3870, source={type="vendor", itemID=247730}, requirements={rep="true"}},
+      {decorID=3872, source={type="vendor", itemID=247732}, requirements={rep="true"}},
     }
   },
 
@@ -30,10 +30,10 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="376:5320:5160"
     },
     items={
-      {decorID=1201, source={type="vendor", itemID=245508}},
-      {decorID=3840, source={type="vendor", itemID=247670}},
-      {decorID=3874, source={type="vendor", itemID=247734}},
-      {decorID=3877, source={type="vendor", itemID=247737}},
+      {decorID=1201, source={type="vendor", itemID=245508}, requirements={rep="true"}},
+      {decorID=3840, source={type="vendor", itemID=247670}, requirements={rep="true"}},
+      {decorID=3874, source={type="vendor", itemID=247734}, requirements={rep="true"}},
+      {decorID=3877, source={type="vendor", itemID=247737}, requirements={rep="true"}},
       {decorID=4488, source={type="vendor", itemID=248663}, requirements={quest={id=30526}}},
     }
   },
@@ -129,12 +129,12 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="390:8220:2940"
     },
     items={
-      {decorID=1172, source={type="vendor", itemID=245512}},
-      {decorID=3832, source={type="vendor", itemID=247662}},
-      {decorID=3833, source={type="vendor", itemID=247663}},
-      {decorID=3993, source={type="vendor", itemID=247855}},
+      {decorID=1172, source={type="vendor", itemID=245512}, requirements={rep="true"}},
+      {decorID=3832, source={type="vendor", itemID=247662}, requirements={rep="true"}},
+      {decorID=3833, source={type="vendor", itemID=247663}, requirements={rep="true"}},
+      {decorID=3993, source={type="vendor", itemID=247855}, requirements={rep="true"}},
       {decorID=3995, source={type="vendor", itemID=247858}, requirements={quest={id=32816}}},
-      {decorID=11873, source={type="vendor", itemID=258147}},
+      {decorID=11873, source={type="vendor", itemID=258147}, requirements={rep="true"}},
     }
   },
 

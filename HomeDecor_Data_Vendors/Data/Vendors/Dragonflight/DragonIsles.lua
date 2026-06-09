@@ -272,7 +272,7 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       {decorID=1693, source={type="vendor", itemID=245259}},
       {decorID=1861, source={type="vendor", itemID=245655, costs={{currency="10", currencytype=2003},{currency="10", currencytype=2003}}}},
       {decorID=2330, source={type="vendor", itemID=246487}},
-      {decorID=2433, source={type="vendor", itemID=246601, currency="10", currencytype="Spare Parts"}},
+      {decorID=2433, source={type="vendor", itemID=246601, currency="10", currencytype="Spare Parts"}, requirements={rep="true"}},
       {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}},
       {decorID=4029, source={type="vendor", itemID=247915}},
       {decorID=4172, source={type="vendor", itemID=248116}},

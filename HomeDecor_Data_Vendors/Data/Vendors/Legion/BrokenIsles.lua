@@ -63,7 +63,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="739:4456:4888"
     },
     items={
-      {decorID=1740, source={type="vendor", itemID=245549, currency="500", currencytype=1220}},
+      {decorID=1740, source={type="vendor", itemID=245549, currency="500", currencytype=1220}, requirements={rep="true"}},
       {decorID=5877, source={type="vendor", itemID=250110, currency="500", currencytype=1220}},
       {decorID=5891, source={type="vendor", itemID=250126, currency="2000", currencytype=1220}, requirements={achievement={id=60984}}},
       {decorID=5893, source={type="vendor", itemID=250128, currency="1000", currencytype=1220}},

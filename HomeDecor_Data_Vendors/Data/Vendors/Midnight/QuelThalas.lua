@@ -283,9 +283,9 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       worldmap="2393:5220:4740"
     },
     items={
-      {decorID=714, source={type="vendor", itemID=245284, costs={{currency="3000", currencytype=2815},{currency="50", currencytype=3319}}}},
-      {decorID=1227, source={type="vendor", itemID=251997, costs={{currency="5000", currencytype=2815},{currency="75", currencytype=3319}}}},
-      {decorID=1236, source={type="vendor", itemID=245330, costs={{currency="3000", currencytype=2815},{currency="50", currencytype=3319}}}},
+      {decorID=714, source={type="vendor", itemID=245284, costs={{currency="3000", currencytype=2815},{currency="50", currencytype=3319}}}, requirements={rep="true"}},
+      {decorID=1227, source={type="vendor", itemID=251997, costs={{currency="5000", currencytype=2815},{currency="75", currencytype=3319}}}, requirements={rep="true"}},
+      {decorID=1236, source={type="vendor", itemID=245330, costs={{currency="3000", currencytype=2815},{currency="50", currencytype=3319}}}, requirements={rep="true"}},
     }
   },
 
@@ -298,7 +298,7 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       worldmap="2393:5072:5608"
     },
     items={
-      {decorID=11499, source={type="vendor", itemID=257418, currency="750", currencytype="Voidlight Marl"}, requirements={quest={id=92025}}},
+      {decorID=11499, source={type="vendor", itemID=257418, currency="750", currencytype="Voidlight Marl"}, requirements={quest={id=92025}, rep="true"}},
     }
   },
 
@@ -706,6 +706,33 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
     items={
 --       {decorID=25565, source={type="vendor", itemID=276318}}, -- missing verified worldmap
 --       {decorID=25664, source={type="vendor", itemID=276432}}, -- missing verified worldmap
+    }
+  },
+
+  {
+    source={
+      id=259864,
+      type="vendor",
+      faction="Neutral",
+      zone="Eversong Woods",
+      worldmap="2437:0314:1871"
+    },
+    items={
+      {decorID=16691, source={type="vendor", itemID=265106}},
+      {decorID=17294, source={type="vendor", itemID=265631}},
+    }
+  },
+
+  {
+    source={
+      id=265581,
+      type="vendor",
+      faction="Neutral",
+      zone="Naigtal",
+      worldmap=""
+    },
+    items={
+--       {decorID=18802, source={type="vendor", itemID=267211, currency="150", currencytype="Voidlight Marl"}}, -- missing verified worldmap
     }
   },
 

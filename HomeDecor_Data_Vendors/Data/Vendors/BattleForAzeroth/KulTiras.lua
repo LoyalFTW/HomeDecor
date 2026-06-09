@@ -30,11 +30,11 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       worldmap="1161:6760:2180"
     },
     items={
-      {decorID=2091, source={type="vendor", itemID=246222, currency="75", currencytype=1560}},
-      {decorID=8984, source={type="vendor", itemID=252036, currency="500", currencytype=1560}},
-      {decorID=9036, source={type="vendor", itemID=252387, currency="100", currencytype=1560}},
-      {decorID=9037, source={type="vendor", itemID=252388, currency="50", currencytype=1560}},
-      {decorID=9051, source={type="vendor", itemID=252402, currency="450", currencytype=1560}},
+      {decorID=2091, source={type="vendor", itemID=246222, currency="75", currencytype=1560}, requirements={rep="true"}},
+      {decorID=8984, source={type="vendor", itemID=252036, currency="500", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9036, source={type="vendor", itemID=252387, currency="100", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9037, source={type="vendor", itemID=252388, currency="50", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9051, source={type="vendor", itemID=252402, currency="450", currencytype=1560}, requirements={rep="true"}},
     }
   },
 
@@ -73,21 +73,21 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       worldmap="1460:7140:3860"
     },
     items={
-      {decorID=2322, source={type="vendor", itemID=246479, currency="5", currencytype=3363}, requirements={achievement={id=13723}}},
-      {decorID=2323, source={type="vendor", itemID=246480, currency="800", currencytype="& 5 Chain Ignitercoil & 5 Galvanic Oscillator"}},
-      {decorID=2326, source={type="vendor", itemID=246483, currency="400", currencytype="& 1 Chain Ignitercoil & 2 Energy Cell"}, requirements={achievement={id=13473}}},
-      {decorID=2327, source={type="vendor", itemID=246484, currency="1", currencytype="Energy Cell"}},
-      {decorID=2337, source={type="vendor", itemID=246497, currency="1", currencytype="Energy Cell"}},
-      {decorID=2338, source={type="vendor", itemID=246498, currency="80", currencytype="& 1 Energy Cell"}},
-      {decorID=2339, source={type="vendor", itemID=246499, currency="120", currencytype="& 2 Energy Cell"}},
-      {decorID=2341, source={type="vendor", itemID=246501, currency="160", currencytype="& 2 Galvanic Oscillator"}},
-      {decorID=2343, source={type="vendor", itemID=246503, currency="80", currencytype="& 2 S.P.A.R.E. Crate"}},
-      {decorID=2430, source={type="vendor", itemID=246598, currency="1", currencytype="S.P.A.R.E. Crate"}, requirements={achievement={id=13477}}},
-      {decorID=2433, source={type="vendor", itemID=246601, currency="10", currencytype="Spare Parts"}},
-      {decorID=2435, source={type="vendor", itemID=246603, currency="50", currencytype="Spare Parts"}, requirements={achievement={id=13475}}},
-      {decorID=2437, source={type="vendor", itemID=246605, currency="120", currencytype="& 2 Chain Ignitercoil"}},
-      {decorID=2466, source={type="vendor", itemID=246701, currency="160", currencytype="& 2 S.P.A.R.E. Crate"}, requirements={quest={id=55651}}},
-      {decorID=2467, source={type="vendor", itemID=246703, currency="3", currencytype="S.P.A.R.E. Crate"}, requirements={quest={id=55736}}},
+      {decorID=2322, source={type="vendor", itemID=246479, currency="5", currencytype=3363}, requirements={achievement={id=13723}, rep="true"}},
+      {decorID=2323, source={type="vendor", itemID=246480, currency="800", currencytype="& 5 Chain Ignitercoil & 5 Galvanic Oscillator"}, requirements={rep="true"}},
+      {decorID=2326, source={type="vendor", itemID=246483, currency="400", currencytype="& 1 Chain Ignitercoil & 2 Energy Cell"}, requirements={achievement={id=13473}, rep="true"}},
+      {decorID=2327, source={type="vendor", itemID=246484, currency="1", currencytype="Energy Cell"}, requirements={rep="true"}},
+      {decorID=2337, source={type="vendor", itemID=246497, currency="1", currencytype="Energy Cell"}, requirements={rep="true"}},
+      {decorID=2338, source={type="vendor", itemID=246498, currency="80", currencytype="& 1 Energy Cell"}, requirements={rep="true"}},
+      {decorID=2339, source={type="vendor", itemID=246499, currency="120", currencytype="& 2 Energy Cell"}, requirements={rep="true"}},
+      {decorID=2341, source={type="vendor", itemID=246501, currency="160", currencytype="& 2 Galvanic Oscillator"}, requirements={rep="true"}},
+      {decorID=2343, source={type="vendor", itemID=246503, currency="80", currencytype="& 2 S.P.A.R.E. Crate"}, requirements={rep="true"}},
+      {decorID=2430, source={type="vendor", itemID=246598, currency="1", currencytype="S.P.A.R.E. Crate"}, requirements={achievement={id=13477}, rep="true"}},
+      {decorID=2433, source={type="vendor", itemID=246601, currency="10", currencytype="Spare Parts"}, requirements={rep="true"}},
+      {decorID=2435, source={type="vendor", itemID=246603, currency="50", currencytype="Spare Parts"}, requirements={achievement={id=13475}, rep="true"}},
+      {decorID=2437, source={type="vendor", itemID=246605, currency="120", currencytype="& 2 Chain Ignitercoil"}, requirements={rep="true"}},
+      {decorID=2466, source={type="vendor", itemID=246701, currency="160", currencytype="& 2 S.P.A.R.E. Crate"}, requirements={quest={id=55651}, rep="true"}},
+      {decorID=2467, source={type="vendor", itemID=246703, currency="3", currencytype="S.P.A.R.E. Crate"}, requirements={quest={id=55736}, rep="true"}},
     }
   },
 
@@ -131,13 +131,13 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       worldmap="942:5950:6960"
     },
     items={
-      {decorID=1900, source={type="vendor", itemID=245984, currency="350", currencytype=1560}, requirements={quest={id=50783}}},
-      {decorID=9043, source={type="vendor", itemID=252394, currency="550", currencytype=1560}},
-      {decorID=9044, source={type="vendor", itemID=252395, currency="450", currencytype=1560}, requirements={quest={id=51401}}},
-      {decorID=9045, source={type="vendor", itemID=252396, currency="125", currencytype=1560}},
-      {decorID=9047, source={type="vendor", itemID=252398, currency="200", currencytype=1560}},
-      {decorID=9139, source={type="vendor", itemID=252652, currency="800", currencytype=1560}},
-      {decorID=9142, source={type="vendor", itemID=252655, currency="175", currencytype=1560}, requirements={quest={id=50611}}},
+      {decorID=1900, source={type="vendor", itemID=245984, currency="350", currencytype=1560}, requirements={quest={id=50783}, rep="true"}},
+      {decorID=9043, source={type="vendor", itemID=252394, currency="550", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9044, source={type="vendor", itemID=252395, currency="450", currencytype=1560}, requirements={quest={id=51401}, rep="true"}},
+      {decorID=9045, source={type="vendor", itemID=252396, currency="125", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9047, source={type="vendor", itemID=252398, currency="200", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9139, source={type="vendor", itemID=252652, currency="800", currencytype=1560}, requirements={rep="true"}},
+      {decorID=9142, source={type="vendor", itemID=252655, currency="175", currencytype=1560}, requirements={quest={id=50611}, rep="true"}},
     }
   },
 
@@ -164,14 +164,14 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       worldmap="1161:7070:1570"
     },
     items={
-      {decorID=1704, source={type="vendor", itemID=245271, currency="800", currencytype=1560}, requirements={achievement={id=12582}}},
-      {decorID=9035, source={type="vendor", itemID=252386, currency="400", currencytype=1560}, requirements={quest={id=50972}}},
-      {decorID=9049, source={type="vendor", itemID=252400, currency="500", currencytype=1560}, requirements={quest={id=53887}}},
-      {decorID=9052, source={type="vendor", itemID=252403, currency="550", currencytype=1560}, requirements={quest={id=53720}}},
-      {decorID=9055, source={type="vendor", itemID=252406, currency="375", currencytype=1560}, requirements={quest={id=47489}}},
-      {decorID=9140, source={type="vendor", itemID=252653, currency="650", currencytype=1560}, requirements={achievement={id=13049}}},
-      {decorID=9141, source={type="vendor", itemID=252654, currency="300", currencytype=1560}, requirements={achievement={id=12997}}},
-      {decorID=9166, source={type="vendor", itemID=252754, currency="800", currencytype=1560}, requirements={quest={id=55045}}},
+      {decorID=1704, source={type="vendor", itemID=245271, currency="800", currencytype=1560}, requirements={achievement={id=12582}, rep="true"}},
+      {decorID=9035, source={type="vendor", itemID=252386, currency="400", currencytype=1560}, requirements={quest={id=50972}, rep="true"}},
+      {decorID=9049, source={type="vendor", itemID=252400, currency="500", currencytype=1560}, requirements={quest={id=53887}, rep="true"}},
+      {decorID=9052, source={type="vendor", itemID=252403, currency="550", currencytype=1560}, requirements={quest={id=53720}, rep="true"}},
+      {decorID=9055, source={type="vendor", itemID=252406, currency="375", currencytype=1560}, requirements={quest={id=47489}, rep="true"}},
+      {decorID=9140, source={type="vendor", itemID=252653, currency="650", currencytype=1560}, requirements={achievement={id=13049}, rep="true"}},
+      {decorID=9141, source={type="vendor", itemID=252654, currency="300", currencytype=1560}, requirements={achievement={id=12997}, rep="true"}},
+      {decorID=9166, source={type="vendor", itemID=252754, currency="800", currencytype=1560}, requirements={quest={id=55045}, rep="true"}},
     }
   },
 

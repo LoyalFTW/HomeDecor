@@ -109,13 +109,13 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
     },
     items={
       {decorID=927, source={type="vendor", itemID=245423, currency="250", currencytype=824}},
-      {decorID=8185, source={type="vendor", itemID=251476, currency="1000", currencytype=824}},
-      {decorID=8188, source={type="vendor", itemID=251479, currency="1500", currencytype=824}},
-      {decorID=8190, source={type="vendor", itemID=251481, currency="500", currencytype=824}},
-      {decorID=8192, source={type="vendor", itemID=251483, currency="250", currencytype=824}},
-      {decorID=8193, source={type="vendor", itemID=251484, currency="1000", currencytype=824}},
-      {decorID=8194, source={type="vendor", itemID=251493, currency="500", currencytype=824}},
-      {decorID=8242, source={type="vendor", itemID=251551, currency="1500", currencytype=824}},
+      {decorID=8185, source={type="vendor", itemID=251476, currency="1000", currencytype=824}, requirements={rep="true"}},
+      {decorID=8188, source={type="vendor", itemID=251479, currency="1500", currencytype=824}, requirements={rep="true"}},
+      {decorID=8190, source={type="vendor", itemID=251481, currency="500", currencytype=824}, requirements={rep="true"}},
+      {decorID=8192, source={type="vendor", itemID=251483, currency="250", currencytype=824}, requirements={rep="true"}},
+      {decorID=8193, source={type="vendor", itemID=251484, currency="1000", currencytype=824}, requirements={rep="true"}},
+      {decorID=8194, source={type="vendor", itemID=251493, currency="500", currencytype=824}, requirements={rep="true"}},
+      {decorID=8242, source={type="vendor", itemID=251551, currency="1500", currencytype=824}, requirements={rep="true"}},
     }
   },
 

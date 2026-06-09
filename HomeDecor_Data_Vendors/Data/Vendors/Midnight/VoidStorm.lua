@@ -58,9 +58,9 @@ NS.Data.Vendors["Midnight"]["VoidStorm"] = {
       worldmap="15958:3933:8096"
     },
     items={
-      {decorID=3922, source={type="vendor", itemID=247785, currency="250", currencytype="Voidlight Marl"}},
-      {decorID=15488, source={type="vendor", itemID=264253, currency="250", currencytype="Voidlight Marl"}},
-      {decorID=15585, source={type="vendor", itemID=264345, currency="250", currencytype="Voidlight Marl"}},
+      {decorID=3922, source={type="vendor", itemID=247785, currency="250", currencytype="Voidlight Marl"}, requirements={rep="true"}},
+      {decorID=15488, source={type="vendor", itemID=264253, currency="250", currencytype="Voidlight Marl"}, requirements={rep="true"}},
+      {decorID=15585, source={type="vendor", itemID=264345, currency="250", currencytype="Voidlight Marl"}, requirements={rep="true"}},
     }
   },
 

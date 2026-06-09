@@ -91,7 +91,7 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
     items={
       {decorID=7668, source={type="vendor", itemID=250627, currency="5", currencytype=3363}},
       {decorID=7691, source={type="vendor", itemID=250694, currency="15", currencytype=3363}},
-      {decorID=7692, source={type="vendor", itemID=250695, currency="10", currencytype=3363}},
+      {decorID=7692, source={type="vendor", itemID=250695, currency="10", currencytype=3363}, requirements={rep="true"}},
       {decorID=7693, source={type="vendor", itemID=250696, currency="10", currencytype=3363}},
       {decorID=7694, source={type="vendor", itemID=250697, currency="10", currencytype=3363}},
       {decorID=7695, source={type="vendor", itemID=250698, currency="10", currencytype=3363}},
@@ -113,8 +113,8 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap="2351:5440:5620"
     },
     items={
-      {decorID=14677, source={type="vendor", itemID=262664, currency="5", currencytype=3363}},
-      {decorID=14678, source={type="vendor", itemID=262665, currency="5", currencytype=3363}},
+      {decorID=14677, source={type="vendor", itemID=262664, currency="5", currencytype=3363}, requirements={rep="true"}},
+      {decorID=14678, source={type="vendor", itemID=262665, currency="5", currencytype=3363}, requirements={rep="true"}},
       {decorID=14679, source={type="vendor", itemID=262666, currency="2", currencytype=3363}},
       {decorID=14680, source={type="vendor", itemID=262667, currency="5", currencytype=3363}},
       {decorID=14793, source={type="vendor", itemID=262884, currency="10", currencytype=3363}},
