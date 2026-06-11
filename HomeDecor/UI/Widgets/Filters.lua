@@ -42,6 +42,8 @@ local DEFAULTS = {
   onlyCollected = false,
   expansion     = "ALL",
   zone          = "ALL",
+  color         = "ALL",
+  sourceType    = "ALL",
   faction       = "ALL",
   category      = "ALL",
   subcategory   = "ALL",
@@ -365,6 +367,51 @@ local function GetDecorName(decorID)
   return nil
 end
 
+local function GetItemColors(it)
+  if type(it) ~= "table" then return nil end
+  if type(it.colors) == "table" then return it.colors end
+
+  local decorID = it.decorID
+  local DI = NS.Systems and NS.Systems.DecorIndex
+  if not decorID or not DI then return nil end
+
+  if DI.Ensure then pcall(DI.Ensure, DI) end
+  local entry = DI[decorID]
+  local item = entry and entry.item
+  return type(item) == "table" and type(item.colors) == "table" and item.colors or nil
+end
+
+local function GetIndexedItem(it)
+  if type(it) ~= "table" or not it.decorID then return nil end
+  local DI = NS.Systems and NS.Systems.DecorIndex
+  if not DI then return nil end
+
+  if DI.Ensure then pcall(DI.Ensure, DI) end
+  local entry = DI[it.decorID]
+  return entry and entry.item or nil
+end
+
+local function GetBudgetCost(it)
+  if type(it) ~= "table" then return nil end
+  local cost = it.budgetCost
+  if cost == nil then
+    local indexed = GetIndexedItem(it)
+    cost = indexed and indexed.budgetCost
+  end
+  return tonumber(cost)
+end
+
+local function GetSize(it)
+  if type(it) ~= "table" then return nil end
+  local size = it.size
+  if size == nil or size == "" then
+    local indexed = GetIndexedItem(it)
+    size = indexed and indexed.size
+  end
+  if type(size) ~= "string" or size == "" then return nil end
+  return size
+end
+
 local function Ensure(db)
   if not db then return end
   local f = db.filters
@@ -373,6 +420,9 @@ local function Ensure(db)
     if f[k] == nil then f[k] = v end
   end
   if f.decorTypes == nil then f.decorTypes = {} end
+  if type(f.colors) ~= "table" then f.colors = {} end
+  if type(f.budgetCosts) ~= "table" then f.budgetCosts = {} end
+  if type(f.sizes) ~= "table" then f.sizes = {} end
 end
 
 function Filters:EnsureDefaults(db) Ensure(db) end
@@ -459,6 +509,7 @@ function Filters:GetZones(ui, db)
   local expFilter = (db and db.filters and db.filters.expansion) or "ALL"
 
   local function scanData(tbl)
+    if type(tbl) ~= "table" then return end
     for zone in pairs(tbl or {}) do add(zone) end
   end
 
@@ -474,7 +525,9 @@ function Filters:GetZones(ui, db)
   for _, catTbl in pairs(NS.Data or {}) do
     if type(catTbl) == "table" then
       for _, expTbl in pairs(catTbl) do
-        scanData(expTbl)
+        if type(expTbl) == "table" then
+          scanData(expTbl)
+        end
       end
     end
   end
@@ -502,6 +555,245 @@ function Filters:GetSubcategories(f)
   return out
 end
 
+local COLOR_ORDER = {
+  Black = 10,
+  Gray = 20,
+  Grey = 20,
+  Silver = 30,
+  White = 40,
+  Cream = 50,
+  Red = 60,
+  ["Deep Red"] = 70,
+  Maroon = 80,
+  Pink = 90,
+  Magenta = 100,
+  Purple = 110,
+  Violet = 120,
+  Blue = 130,
+  ["Deep Blue"] = 140,
+  Cyan = 150,
+  Teal = 160,
+  Green = 170,
+  ["Deep Green"] = 180,
+  Lime = 190,
+  Yellow = 200,
+  Gold = 210,
+  Orange = 220,
+  Brown = 230,
+  Copper = 240,
+  Bronze = 250,
+  Tan = 260,
+}
+
+function Filters:GetColorOptions()
+  if DataLoader and DataLoader.EnsureAllCatalogData then
+    DataLoader:EnsureAllCatalogData()
+  end
+
+  local out, seen, scanned = { { value = "ALL", text = "All Colors" } }, {}, {}
+
+  local function add(color)
+    if type(color) == "string" and color ~= "" and not seen[color] then
+      seen[color] = true
+      out[#out + 1] = { value = color, text = color }
+    end
+  end
+
+  local function scan(node)
+    if type(node) ~= "table" then return end
+    if scanned[node] then return end
+    scanned[node] = true
+
+    if type(node.colors) == "table" then
+      for _, color in ipairs(node.colors) do add(color) end
+    end
+
+    for _, child in pairs(node) do
+      if type(child) == "table" then scan(child) end
+    end
+  end
+
+  scan(NS.Data)
+
+  sort(out, function(a, b)
+    if a.value == "ALL" then return true end
+    if b.value == "ALL" then return false end
+    local ao, bo = COLOR_ORDER[a.value] or 9999, COLOR_ORDER[b.value] or 9999
+    if ao ~= bo then return ao < bo end
+    return tostring(a.text) < tostring(b.text)
+  end)
+
+  return out
+end
+
+local BUDGET_COST_OPTIONS = {
+  { value = "low", text = "1-2 (Low)" },
+  { value = "medium", text = "3-4 (Medium)" },
+  { value = "high", text = "5+ (High)" },
+  { value = "none", text = "No Budget Cost" },
+}
+
+local SIZE_OPTIONS = {
+  { value = "Huge", text = "Huge" },
+  { value = "Large", text = "Large" },
+  { value = "Medium", text = "Medium" },
+  { value = "Small", text = "Small" },
+  { value = "Tiny", text = "Tiny" },
+}
+
+local function budgetBucket(cost)
+  cost = tonumber(cost)
+  if not cost or cost <= 0 then return "none" end
+  if cost <= 2 then return "low" end
+  if cost <= 4 then return "medium" end
+  return "high"
+end
+
+local function scanUniqueDataRows(onItem)
+  if DataLoader and DataLoader.EnsureAllCatalogData then
+    DataLoader:EnsureAllCatalogData()
+  end
+
+  local scanned, byDecorID, order = {}, {}, {}
+
+  local function itemHasMeta(it, key)
+    if type(it) ~= "table" then return false end
+    local v = it[key]
+    return v ~= nil and v ~= ""
+  end
+
+  local function addItem(it)
+    local did = tonumber(it.decorID) or it.decorID
+    if not did then return end
+
+    local existing = byDecorID[did]
+    if not existing then
+      byDecorID[did] = {
+        decorID = it.decorID,
+        budgetCost = it.budgetCost,
+        size = it.size,
+        colors = it.colors,
+      }
+      order[#order + 1] = did
+      return
+    end
+
+    if not itemHasMeta(existing, "budgetCost") and itemHasMeta(it, "budgetCost") then
+      existing.budgetCost = it.budgetCost
+    end
+    if not itemHasMeta(existing, "size") and itemHasMeta(it, "size") then
+      existing.size = it.size
+    end
+    if type(existing.colors) ~= "table" and type(it.colors) == "table" then
+      existing.colors = it.colors
+    end
+  end
+
+  local function scan(node)
+    if type(node) ~= "table" then return end
+    if scanned[node] then return end
+    scanned[node] = true
+
+    if node.decorID then
+      addItem(node)
+      return
+    end
+
+    for _, child in pairs(node) do
+      if type(child) == "table" then scan(child) end
+    end
+  end
+
+  scan(NS.Data)
+
+  for i = 1, #order do
+    onItem(byDecorID[order[i]])
+  end
+end
+
+local function scanCatalogMetaRows(onItem)
+  local meta = NS.Data and NS.Data.DecorCatalogMeta
+  if type(meta) ~= "table" then return false end
+
+  for _, it in pairs(meta) do
+    if type(it) == "table" then
+      onItem(it)
+    end
+  end
+
+  return true
+end
+
+local function getCatalogCounts(group)
+  local counts = NS.Data and NS.Data.DecorCatalogCounts
+  counts = type(counts) == "table" and counts[group] or nil
+  return type(counts) == "table" and counts or nil
+end
+
+function Filters:GetBudgetCostOptions()
+  local counts = { low = 0, medium = 0, high = 0, none = 0 }
+  local catalogCounts = getCatalogCounts("budget")
+  if catalogCounts then
+    for key, value in pairs(catalogCounts) do
+      counts[key] = tonumber(value) or 0
+    end
+  else
+    local scanner = scanCatalogMetaRows
+    if not scanner(function(it)
+      local bucket = budgetBucket(GetBudgetCost(it))
+      counts[bucket] = (counts[bucket] or 0) + 1
+    end) then
+      scanUniqueDataRows(function(it)
+        local bucket = budgetBucket(GetBudgetCost(it))
+        counts[bucket] = (counts[bucket] or 0) + 1
+      end)
+    end
+  end
+
+  local out = {}
+  for i = 1, #BUDGET_COST_OPTIONS do
+    local opt = BUDGET_COST_OPTIONS[i]
+    out[#out + 1] = {
+      value = opt.value,
+      text = opt.text,
+      count = counts[opt.value] or 0,
+    }
+  end
+  return out
+end
+
+function Filters:GetSizeOptions()
+  local counts = {}
+  local catalogCounts = getCatalogCounts("size")
+  if catalogCounts then
+    for key, value in pairs(catalogCounts) do
+      counts[key] = tonumber(value) or 0
+    end
+  else
+    local scanner = scanCatalogMetaRows
+    if not scanner(function(it)
+      local size = GetSize(it)
+      if size then counts[size] = (counts[size] or 0) + 1 end
+    end) then
+      scanUniqueDataRows(function(it)
+        local size = GetSize(it)
+        if size then counts[size] = (counts[size] or 0) + 1 end
+      end)
+    end
+  end
+
+  local out = {}
+  for i = 1, #SIZE_OPTIONS do
+    local opt = SIZE_OPTIONS[i]
+    out[#out + 1] = {
+      value = opt.value,
+      text = opt.text,
+      count = counts[opt.value] or 0,
+    }
+  end
+  return out
+end
+
 local function addText(parts, v)
   if type(v) == "string" then
     if v ~= "" then parts[#parts + 1] = lower(v) end
@@ -510,7 +802,7 @@ local function addText(parts, v)
   end
 end
 
-local SEARCH_CACHE_VER = 1
+local SEARCH_CACHE_VER = 2
 
 local function getItemSearchText(self, it, ui)
   if it._hdSearchCache and it._hdSearchCacheVer == SEARCH_CACHE_VER then
@@ -634,6 +926,21 @@ function Filters:BuildSearchText(it, ui)
   addText(parts, it.zone)
   addText(parts, it.expansion)
 
+  local colors = GetItemColors(it)
+  if type(colors) == "table" then
+    for _, color in ipairs(colors) do addText(parts, color) end
+  end
+
+  local cost = GetBudgetCost(it)
+  if cost then
+    addText(parts, cost)
+    addText(parts, "budget")
+    addText(parts, budgetBucket(cost))
+  end
+
+  local size = GetSize(it)
+  if size then addText(parts, size) end
+
   local src = it.source
   if src then
     addText(parts, src.type)
@@ -710,6 +1017,50 @@ local function matchesValue(val, want)
   return val == want
 end
 
+local function itemHasColor(it, want)
+  if not want or want == "ALL" then return true end
+  local colors = GetItemColors(it)
+  if type(colors) ~= "table" then return false end
+
+  for _, color in ipairs(colors) do
+    if tostring(color) == tostring(want) then return true end
+  end
+
+  return false
+end
+
+local function hasSelectedColors(selected)
+  if type(selected) ~= "table" then return false end
+  for _, enabled in pairs(selected) do
+    if enabled == true then return true end
+  end
+  return false
+end
+
+local function itemHasAnySelectedColor(it, selected)
+  if type(selected) ~= "table" then return true end
+  if not hasSelectedColors(selected) then return true end
+  local colors = GetItemColors(it)
+  if type(colors) ~= "table" then return false end
+
+  for _, color in ipairs(colors) do
+    if selected[tostring(color)] == true then return true end
+  end
+
+  return false
+end
+
+local function matchesSelectedBudget(it, selected)
+  if not hasSelectedColors(selected) then return true end
+  return selected[budgetBucket(GetBudgetCost(it))] == true
+end
+
+local function matchesSelectedSize(it, selected)
+  if not hasSelectedColors(selected) then return true end
+  local size = GetSize(it)
+  return size and selected[size] == true or false
+end
+
 function Filters:Passes(it, ui, db)
   if not it or not db then return false end
   Ensure(db)
@@ -719,6 +1070,28 @@ function Filters:Passes(it, ui, db)
 
   local st = it.source and it.source.type
   local isExternalish = (st == "external" or st == "event" or it._isEventTimed or it._isEventHeader)
+
+  if f.sourceType and f.sourceType ~= "ALL" then
+    local want = tostring(f.sourceType)
+    local srcType = st or ""
+    if want == "achievement" then
+      if srcType ~= "achievement" and not it.achievement then return false end
+    elseif want == "quest" then
+      if srcType ~= "quest" and not it.quest then return false end
+    elseif want == "vendor" then
+      if srcType ~= "vendor" and not it.vendor and not it._navVendor then return false end
+    elseif want == "drop" then
+      if srcType ~= "drop" then return false end
+    elseif want == "profession" then
+      if srcType ~= "profession" and not it.profession then return false end
+    elseif want == "event" then
+      if srcType ~= "event" and not it._isEventTimed and not it._isEventHeader then return false end
+    elseif want == "pvp" then
+      if srcType ~= "pvp" then return false end
+    elseif want == "saved" then
+      if srcType ~= "saved" then return false end
+    end
+  end
 
   if f.faction ~= "ALL" and not isExternalish then
     local fac = tostring(self:ResolveFaction(it) or "Neutral")
@@ -742,6 +1115,15 @@ function Filters:Passes(it, ui, db)
       if not matchesValue(itZone, f.zone) then return false end
     end
   end
+
+  if hasSelectedColors(f.colors) then
+    if not itemHasAnySelectedColor(it, f.colors) then return false end
+  elseif f.color ~= "ALL" and not itemHasColor(it, f.color) then
+    return false
+  end
+
+  if not matchesSelectedBudget(it, f.budgetCosts) then return false end
+  if not matchesSelectedSize(it, f.sizes) then return false end
 
   if f.subcategory ~= "ALL" then
     if type(f.subcategory) == "number" then

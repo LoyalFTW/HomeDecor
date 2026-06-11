@@ -152,10 +152,16 @@ function Frames.CreateTile(content)
 
   r.mediaBg = r.media:CreateTexture(nil, "BACKGROUND")
   r.mediaBg:SetAllPoints()
+  r.mediaBg:SetColorTexture(0.025, 0.028, 0.032, 0.92)
+
+  r.mediaGlow = r.media:CreateTexture(nil, "BORDER")
+  r.mediaGlow:SetPoint("TOPLEFT", 2, -2)
+  r.mediaGlow:SetPoint("BOTTOMRIGHT", -2, 2)
+  r.mediaGlow:SetColorTexture(0.90, 0.72, 0.18, 0.06)
 
   r.icon = r.media:CreateTexture(nil, "ARTWORK")
   r.icon:SetPoint("CENTER", 0, 0)
-  r.icon:SetSize(68, 68)
+  r.icon:SetSize(92, 92)
 
   if r.icon.SetTexCoord then r.icon:SetTexCoord(0.20, 0.80, 0.20, 0.80) end
   r.checkFrame = CreateFrame("Frame", nil, r.media)

@@ -10,8 +10,17 @@ if not Data then return end
 local DecorIndex = NS.Systems and NS.Systems.DecorIndex
 local NPCNames = NS.Systems and NS.Systems.NPCNames
 
-Data.TEX_ALLI  = "Interface\\Icons\\INV_BannerPVP_02"
-Data.TEX_HORDE = "Interface\\Icons\\INV_BannerPVP_01"
+Data.TEX_ALLI  = "Interface\\FriendsFrame\\PlusManz-Alliance"
+Data.TEX_HORDE = "Interface\\FriendsFrame\\PlusManz-Horde"
+
+local function NormalizeFaction(value)
+  if type(value) ~= "string" then return nil end
+  local v = value:gsub("^%s+", ""):gsub("%s+$", ""):lower()
+  if v == "alliance" then return "Alliance" end
+  if v == "horde" then return "Horde" end
+  if v == "neutral" then return "Neutral" end
+  return nil
+end
 
 local EXPANSION_RANK = {
   Classic = 1,
@@ -68,6 +77,8 @@ Data.EXPANSION_RANK = EXPANSION_RANK
 
 local DecorIconCache, DecorNameCache = {}, {}
 local AchTitleCache, QuestTitleCache = {}, {}
+local QUEST_TITLE_PENDING = {}
+local questTitleTooltip
 local VendorPickCache = {}
 local prefetchQueued = false
 local profItemPrefetchQueued = false
@@ -102,6 +113,33 @@ local function RequestAsyncRefresh()
     end
   end)
   View._asyncRefresh()
+end
+
+function Data.GetLocalQuestTitle(id)
+  id = tonumber(id)
+  local titles = NS.Data and NS.Data.QuestTitles
+  return id and titles and titles[id] or nil
+end
+
+local function GetQuestTitleFromTooltip(id)
+  if not CreateFrame or not UIParent then return nil end
+
+  if not questTitleTooltip then
+    questTitleTooltip = CreateFrame("GameTooltip", "HomeDecorQuestTitleTooltip", UIParent, "GameTooltipTemplate")
+    questTitleTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+  end
+
+  questTitleTooltip:ClearLines()
+  local ok = pcall(questTitleTooltip.SetHyperlink, questTitleTooltip, "quest:" .. tostring(id))
+  if not ok then return nil end
+
+  local fs = _G.HomeDecorQuestTitleTooltipTextLeft1
+  local title = fs and fs.GetText and fs:GetText()
+  if title and title ~= "" and not title:match("^Quest%s*#?%d+$") then
+    return title
+  end
+
+  return nil
 end
 
 local function CleanVendorTitle(s)
@@ -156,7 +194,7 @@ end
 local function VendorFaction(v)
   if type(v) ~= "table" then return nil end
   local src = v.source or {}
-  local f = v.faction or src.faction
+  local f = NormalizeFaction(v.faction or src.faction)
   if f == "Alliance" or f == "Horde" then return f end
   if f == "Neutral" then return "Neutral" end
   return nil
@@ -460,33 +498,49 @@ end
 function Data.GetQuestTitle(id)
   id = tonumber(id)
   if not id then return end
-  if QuestTitleCache[id] ~= nil then return QuestTitleCache[id] or nil end
+
+  local cached = QuestTitleCache[id]
+  if cached ~= nil and cached ~= QUEST_TITLE_PENDING then return cached or nil end
 
   if C_QuestLog and C_QuestLog.GetTitleForQuestID then
-    local name = C_QuestLog.GetTitleForQuestID(id)
-    if name and name ~= "" then
+    local ok, name = pcall(C_QuestLog.GetTitleForQuestID, id)
+    if ok and name and name ~= "" then
       QuestTitleCache[id] = name
       return name
     end
   end
 
-  if C_QuestLog and C_QuestLog.RequestLoadQuestByID then
-    C_QuestLog.RequestLoadQuestByID(id)
-
-    C_Timer.After(0.1, function()
-      if C_QuestLog and C_QuestLog.GetTitleForQuestID then
-        local name = C_QuestLog.GetTitleForQuestID(id)
-        if name and name ~= "" then
-          QuestTitleCache[id] = name
-          RequestAsyncRefresh()
-        else
-          QuestTitleCache[id] = false
-        end
-      end
-    end)
+  local tooltipName = GetQuestTitleFromTooltip(id)
+  if tooltipName and tooltipName ~= "" then
+    QuestTitleCache[id] = tooltipName
+    return tooltipName
   end
 
-  QuestTitleCache[id] = false
+  local localName = Data.GetLocalQuestTitle(id)
+  if localName and localName ~= "" then
+    QuestTitleCache[id] = localName
+    return localName
+  end
+
+  if C_QuestLog and C_QuestLog.RequestLoadQuestByID then
+    pcall(C_QuestLog.RequestLoadQuestByID, id)
+
+    if cached ~= QUEST_TITLE_PENDING and C_Timer and C_Timer.After then
+      C_Timer.After(0.1, function()
+        if C_QuestLog and C_QuestLog.GetTitleForQuestID then
+          local ok, name = pcall(C_QuestLog.GetTitleForQuestID, id)
+          if ok and name and name ~= "" then
+            QuestTitleCache[id] = name
+            RequestAsyncRefresh()
+          else
+            QuestTitleCache[id] = nil
+          end
+        end
+      end)
+    end
+  end
+
+  QuestTitleCache[id] = QUEST_TITLE_PENDING
   return nil
 end
 
@@ -546,6 +600,15 @@ function Data.HydrateFromDecorIndex(it, ui, db)
   local vitem = entry.item
   it.title = it.title or vitem.title
   it.decorType = it.decorType or vitem.decorType
+  if type(it.colors) ~= "table" and type(vitem.colors) == "table" then
+    it.colors = vitem.colors
+  end
+  if it.budgetCost == nil and vitem.budgetCost ~= nil then
+    it.budgetCost = vitem.budgetCost
+  end
+  if (it.size == nil or it.size == "") and vitem.size then
+    it.size = vitem.size
+  end
 
   local itemID = (vitem.source and vitem.source.itemID) or vitem.itemID
   it.source = it.source or {}
@@ -553,11 +616,21 @@ function Data.HydrateFromDecorIndex(it, ui, db)
     it.itemID = it.itemID or itemID
     it.source.itemID = it.source.itemID or itemID
   end
-  if vitem.faction == "Alliance" or vitem.faction == "Horde" then
-    it.faction = it.faction or vitem.faction
+  if vitem.source then
+    it.source.currency = it.source.currency or vitem.source.currency
+    it.source.currencytype = it.source.currencytype or vitem.source.currencytype
+    it.source.currencyType = it.source.currencyType or vitem.source.currencyType
+    it.source.currencyID = it.source.currencyID or vitem.source.currencyID
+    it.source.cost = it.source.cost or vitem.source.cost
+    it.source.price = it.source.price or vitem.source.price
   end
-  if vitem.source and (vitem.source.faction == "Alliance" or vitem.source.faction == "Horde") then
-    it.source.faction = it.source.faction or vitem.source.faction
+  local vitemFaction = NormalizeFaction(vitem.faction)
+  if vitemFaction == "Alliance" or vitemFaction == "Horde" then
+    it.faction = it.faction or vitemFaction
+  end
+  local vitemSourceFaction = NormalizeFaction(vitem.source and vitem.source.faction)
+  if vitemSourceFaction == "Alliance" or vitemSourceFaction == "Horde" then
+    it.source.faction = it.source.faction or vitemSourceFaction
   end
   if vitem.zone then
     it.zone = it.zone or vitem.zone
@@ -586,7 +659,7 @@ function Data.AttachVendorCtx(it, vendor)
 
   local vsrc = vendor.source or {}
 
-  local vf = vendor.faction or vsrc.faction
+  local vf = NormalizeFaction(vendor.faction or vsrc.faction)
   if vf == "Alliance" or vf == "Horde" then
     it.faction = vf
     it.source = it.source or {}
@@ -639,9 +712,10 @@ function Data.ResolveAchievementDecor(it)
   if item then
     resolved.title = item.title or resolved.title
     resolved.decorType = item.decorType or resolved.decorType
-    if item.faction == "Alliance" or item.faction == "Horde" then
-      resolved.faction = resolved.faction or item.faction
-      resolved.source.faction = resolved.source.faction or item.faction
+    local itemFaction = NormalizeFaction(item.faction)
+    if itemFaction == "Alliance" or itemFaction == "Horde" then
+      resolved.faction = resolved.faction or itemFaction
+      resolved.source.faction = resolved.source.faction or itemFaction
     end
     if item.zone then
       resolved.zone = resolved.zone or item.zone
@@ -649,7 +723,7 @@ function Data.ResolveAchievementDecor(it)
     end
   end
 
-  local desiredFaction = resolved.faction or (resolved.source and resolved.source.faction)
+  local desiredFaction = NormalizeFaction(resolved.faction or (resolved.source and resolved.source.faction))
   if desiredFaction ~= "Alliance" and desiredFaction ~= "Horde" then
     local pf = UnitFactionGroup and UnitFactionGroup("player")
     if pf == "Alliance" or pf == "Horde" then desiredFaction = pf else desiredFaction = nil end
@@ -697,9 +771,10 @@ function Data.ResolveAchievementDecor(it)
       resolved.zone = vsrc.zone
       resolved.source.zone = vsrc.zone
     end
-    if vsrc.faction then
-      resolved.faction = vsrc.faction
-      resolved.source.faction = vsrc.faction
+    local pickedFaction = NormalizeFaction(vsrc.faction)
+    if pickedFaction then
+      resolved.faction = pickedFaction
+      resolved.source.faction = pickedFaction
     end
   end
 

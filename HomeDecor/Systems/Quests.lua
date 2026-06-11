@@ -23,9 +23,23 @@ local function CheckQuest(questID)
 end
 
 local function GetQuestName(questID)
-  if not (C_QuestLog and C_QuestLog.GetQuestInfo) then return nil end
-  local ok, info = pcall(C_QuestLog.GetQuestInfo, questID)
-  if ok and info then return info.title or info.name end
+  local titles = NS.Data and NS.Data.QuestTitles
+  local localName = titles and titles[tonumber(questID)]
+  if localName and localName ~= "" then return localName end
+
+  if C_QuestLog and C_QuestLog.GetTitleForQuestID then
+    local ok, title = pcall(C_QuestLog.GetTitleForQuestID, questID)
+    if ok and title and title ~= "" then return title end
+  end
+
+  if C_QuestLog and C_QuestLog.RequestLoadQuestByID then
+    pcall(C_QuestLog.RequestLoadQuestByID, questID)
+  end
+
+  if C_QuestLog and C_QuestLog.GetQuestInfo then
+    local ok, info = pcall(C_QuestLog.GetQuestInfo, questID)
+    if ok and info then return info.title or info.name end
+  end
   return nil
 end
 
@@ -63,7 +77,8 @@ function Q.GetRequirement(it)
       return { text = "Quest required", questID = nil, met = false }
     end
     local isComplete = CheckQuest(questID)
-    return { text = "Quest #" .. tostring(questID), questID = questID, met = isComplete }
+    local questName = GetQuestName(questID) or ("Quest #" .. tostring(questID))
+    return { text = questName, questID = questID, met = isComplete }
   end
 
   if type(quest) == "string" then
@@ -84,6 +99,8 @@ end
 function Q.GetQuestInfo(questID)
   questID = tonumber(questID)
   if not questID then return nil end
+  local title = GetQuestName(questID)
+  if title then return { title = title, name = title } end
   if not (C_QuestLog and C_QuestLog.GetQuestInfo) then return nil end
   local ok, info = pcall(C_QuestLog.GetQuestInfo, questID)
   return ok and info or nil

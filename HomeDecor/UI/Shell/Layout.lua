@@ -37,13 +37,23 @@ local function getDB()
   local ui = profile.ui
   if not ui then ui = {}; profile.ui = ui end
   if not ui.viewMode then ui.viewMode = "Icon" end
-  if not ui.catalogMode then ui.catalogMode = "Sections" end
-  if ui.detailsPanelOpen == nil then ui.detailsPanelOpen = false end
-  if not ui.activeCategory then ui.activeCategory = "Achievements" end
+  if not ui.catalogMode then ui.catalogMode = "All Items" end
+  if ui.detailsPanelOpen == nil then ui.detailsPanelOpen = true end
+  if not ui.activeCategory then ui.activeCategory = "All" end
   if not ui.expanded then ui.expanded = {} end
   if ui.search == nil then ui.search = "" end
   if not ui.sortMode then ui.sortMode = "expAsc" end
   if ui.compactMode == nil then ui.compactMode = false end
+  if not ui.designPreset then ui.designPreset = "gallery" end
+  if not ui.galleryDesignApplied then
+    ui.galleryDesignApplied = true
+    ui.designPreset = "gallery"
+    ui.activeCategory = "All"
+    ui.catalogMode = "All Items"
+  end
+  if (ui.galleryDesignVersion or 0) < 3 then
+    ui.galleryDesignVersion = 3
+  end
 
   profile.filters = profile.filters or {}
   if FiltersSys and FiltersSys.EnsureDefaults then
@@ -81,6 +91,10 @@ end
 local function Trim(s)
   if not s or s == "" then return "" end
   return (s:gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+local function LiveFiltersSys()
+  return (NS.Systems and NS.Systems.Filters) or FiltersSys
 end
 
 local communityPopup
@@ -236,7 +250,7 @@ end
 
 local function dockScale(frame, header)
   if not frame or not header then return end
-  local host = header.modeBar or header.controls
+  local host = header
   if not host then return end
   local group = frame._resizeWidget
   if not group then return end
@@ -248,8 +262,9 @@ local function dockScale(frame, header)
   end
 
   group:ClearAllPoints()
-  group:SetPoint("LEFT", host, "LEFT", 10, 0)
-  group:SetSize(230, 20)
+  group:SetPoint("TOPLEFT", host, "TOPLEFT", 12, -12)
+  group:SetSize(218, 17)
+  group:Show()
 end
 
 local function CreateCategoryIndicators(btn)
@@ -292,6 +307,11 @@ end
 local function SetCategorySelected(btn, selected)
   if not btn then return end
   local show = selected and true or false
+  btn._hdNavSelected = show
+  if btn.navBG and Textures then
+    btn.navBG:SetTexture(show and (Textures.GalleryNavSelected or Textures.GalleryNav) or (Textures.GalleryNav or ""))
+    btn.navBG:SetAlpha(show and 1 or 0.86)
+  end
   if btn.selBG then btn.selBG:SetShown(show) end
   if btn.selTop then btn.selTop:SetShown(show) end
   if btn.selBottom then btn.selBottom:SetShown(show) end
@@ -303,6 +323,54 @@ local function SetCategorySelected(btn, selected)
       TextColor(btn.text, "highlight", 0.95)
     else
       TextColor(btn.text, "text")
+    end
+  end
+end
+
+local function ApplyNavArt(btn)
+  if not (btn and btn.CreateTexture and Textures and Textures.GalleryNav) then return end
+  if not btn.navBG then
+    btn.navBG = btn:CreateTexture(nil, "BACKGROUND", nil, -3)
+    btn.navBG:SetAllPoints(btn)
+  end
+  btn.navBG:SetTexture(Textures.GalleryNav)
+
+  if btn.GetHighlightTexture then
+    local ht = btn:GetHighlightTexture()
+    if ht then ht:SetAlpha(0) end
+  end
+
+  if not btn._hdNavArtHooked then
+    btn._hdNavArtHooked = true
+    btn:HookScript("OnEnter", function(self)
+      if self.navBG and Textures then
+        self.navBG:SetTexture(self._hdNavSelected and (Textures.GalleryNavSelected or Textures.GalleryNav) or (Textures.GalleryNavHover or Textures.GalleryNav))
+        self.navBG:SetAlpha(1)
+      end
+      if self.icon and self.icon.SetDrawLayer then self.icon:SetDrawLayer("OVERLAY", 7) end
+      if self.text and self.text.SetDrawLayer then self.text:SetDrawLayer("OVERLAY", 7) end
+    end)
+    btn:HookScript("OnLeave", function(self)
+      if self.navBG and Textures then
+        self.navBG:SetTexture(self._hdNavSelected and (Textures.GalleryNavSelected or Textures.GalleryNav) or (Textures.GalleryNav or ""))
+        self.navBG:SetAlpha(self._hdNavSelected and 1 or 0.86)
+      end
+      if self.icon and self.icon.SetDrawLayer then self.icon:SetDrawLayer("OVERLAY", 7) end
+      if self.text and self.text.SetDrawLayer then self.text:SetDrawLayer("OVERLAY", 7) end
+    end)
+  end
+
+  if btn.icon and btn.icon.SetDrawLayer then btn.icon:SetDrawLayer("OVERLAY", 7) end
+  if btn.text and btn.text.SetDrawLayer then btn.text:SetDrawLayer("OVERLAY", 7) end
+
+  if btn.SetHighlightTexture then
+    local blank = btn:CreateTexture(nil, "HIGHLIGHT")
+    blank:SetColorTexture(1, 1, 1, 0)
+    blank:SetAllPoints(btn)
+    btn:SetHighlightTexture(blank)
+    local ht = btn:GetHighlightTexture()
+    if ht then
+      ht:SetAlpha(0)
     end
   end
 end
@@ -321,12 +389,16 @@ function L:CreateShell()
     C:ApplyBackground(f, Textures.MainBackground, 8, 1)
   end
 
-  f:SetSize(1150, 680)
+  f:SetSize(1320, 760)
   f:SetPoint("CENTER")
 
   local function rerender()
     local v = f.view
-    if v and v.Render then v:Render() end
+    if v and v.RequestRender then
+      v:RequestRender(true)
+    elseif v and v.Render then
+      v:Render()
+    end
   end
 
   local header = CreateFrame("Frame", nil, f, "BackdropTemplate")
@@ -335,10 +407,27 @@ function L:CreateShell()
   header:SetBackdropBorderColor(unpack(BORDER))
   header:SetPoint("TOPLEFT", 8, -8)
   header:SetPoint("TOPRIGHT", -8, -8)
-  header:SetHeight(104)
+  header:SetHeight(62)
   header:EnableMouse(false)
   header.__hdPreserveBackdrop = true
   f.Header = header
+
+  local headerShade = header:CreateTexture(nil, "BACKGROUND", nil, -2)
+  headerShade:SetPoint("TOPLEFT", header, "TOPLEFT", 1, -1)
+  headerShade:SetPoint("BOTTOMRIGHT", header, "BOTTOMRIGHT", -1, 1)
+  headerShade:SetColorTexture(0.018, 0.018, 0.022, 0.88)
+
+  local headerTopLine = header:CreateTexture(nil, "ARTWORK")
+  headerTopLine:SetPoint("TOPLEFT", header, "TOPLEFT", 8, -5)
+  headerTopLine:SetPoint("TOPRIGHT", header, "TOPRIGHT", -8, -5)
+  headerTopLine:SetHeight(1)
+  headerTopLine:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.18)
+
+  local headerBottomLine = header:CreateTexture(nil, "ARTWORK")
+  headerBottomLine:SetPoint("BOTTOMLEFT", header, "BOTTOMLEFT", 8, 4)
+  headerBottomLine:SetPoint("BOTTOMRIGHT", header, "BOTTOMRIGHT", -8, 4)
+  headerBottomLine:SetHeight(1)
+  headerBottomLine:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.28)
 
   header.controls = CreateFrame("Frame", nil, header)
   header.controls:SetPoint("BOTTOMLEFT", header, "BOTTOMLEFT", 8, 4)
@@ -357,16 +446,46 @@ function L:CreateShell()
     logo:SetColorTexture(1, 0.82, 0.2, 1)
   end
 
-  logo:SetSize(506, 50)
-  logo:SetPoint("CENTER", header, "TOP", 0, -26)
+  logo:SetSize(430, 44)
+  logo:SetPoint("TOP", header, "TOP", 0, -8)
   logo:SetTexCoord(0, 1, 0, 1)
   logo:SetAlpha(1)
+
+  local logoUnder = header:CreateTexture(nil, "ARTWORK")
+  logoUnder:SetPoint("TOP", logo, "BOTTOM", 0, 1)
+  logoUnder:SetSize(360, 2)
+  logoUnder:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.34)
+
+  local logoUnderSoft = header:CreateTexture(nil, "ARTWORK")
+  logoUnderSoft:SetPoint("TOP", logoUnder, "BOTTOM", 0, -2)
+  logoUnderSoft:SetSize(260, 1)
+  logoUnderSoft:SetColorTexture(1, 1, 1, 0.08)
+
+  local leftOrnament = header:CreateTexture(nil, "ARTWORK")
+  leftOrnament:SetPoint("RIGHT", logo, "LEFT", -20, -2)
+  leftOrnament:SetSize(190, 1)
+  leftOrnament:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.20)
+
+  local rightOrnament = header:CreateTexture(nil, "ARTWORK")
+  rightOrnament:SetPoint("LEFT", logo, "RIGHT", 20, -2)
+  rightOrnament:SetSize(190, 1)
+  rightOrnament:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.20)
+
+  local leftCap = header:CreateTexture(nil, "ARTWORK")
+  leftCap:SetPoint("RIGHT", leftOrnament, "LEFT", -8, 0)
+  leftCap:SetSize(28, 3)
+  leftCap:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.32)
+
+  local rightCap = header:CreateTexture(nil, "ARTWORK")
+  rightCap:SetPoint("LEFT", rightOrnament, "RIGHT", 8, 0)
+  rightCap:SetSize(28, 3)
+  rightCap:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.32)
 
   local closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
   header.closeBtn = closeBtn
   Backdrop(closeBtn, T.panel, T.border)
   closeBtn:SetSize(22, 22)
-  closeBtn:SetPoint("TOPRIGHT", header, "TOPRIGHT", -10, -8)
+  closeBtn:SetPoint("TOPRIGHT", header, "TOPRIGHT", -10, -9)
   Hover(closeBtn, T.panel, T.hover)
 
   local closeIcon = closeBtn:CreateTexture(nil, "OVERLAY")
@@ -551,11 +670,144 @@ function L:CreateShell()
   compactBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
   compactBtn:Hide()
 
-  header.viewToggle = C:Segmented(
-    header, { "Icon", "List" },
-    function() return UI.viewMode end,
-    function(v) UI.viewMode = v end
-  )
+  local designBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
+  header.designBtn = designBtn
+  Backdrop(designBtn, T.panel, T.border)
+  designBtn:SetSize(94, 20)
+  designBtn:SetPoint("RIGHT", compactBtn, "LEFT", -8, 0)
+  designBtn:SetFrameLevel(header:GetFrameLevel() + 6)
+  Hover(designBtn, T.panel, T.hover)
+
+  local designIcon = designBtn:CreateTexture(nil, "OVERLAY")
+  designBtn.icon = designIcon
+  designIcon:SetSize(14, 14)
+  designIcon:SetPoint("LEFT", 8, 0)
+  designIcon:SetTexture("Interface\\Icons\\INV_Inscription_Pigment_Golden")
+  designIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+  C:TextureColor(designIcon, "accent")
+
+  local designText = NewFS(designBtn, "GameFontNormal")
+  designBtn.text = designText
+  designText:SetPoint("LEFT", designIcon, "RIGHT", 5, 0)
+  designText:SetPoint("RIGHT", designBtn, "RIGHT", -6, 0)
+  designText:SetJustifyH("LEFT")
+  designText:SetWordWrap(false)
+  designText:SetText("Design")
+  TextColor(designText, "text")
+
+  local function RefreshDesignButton()
+    local ThemeNow = NS.UI and NS.UI.Theme
+    local key = (db and db.ui and db.ui.designPreset) or "classic"
+    local label = ThemeNow and ThemeNow.GetDesignPresetLabel and ThemeNow:GetDesignPresetLabel(key) or "Classic"
+    if designText then designText:SetText(label) end
+  end
+
+  designBtn:SetScript("OnClick", function()
+    local ThemeNow = NS.UI and NS.UI.Theme
+    if ThemeNow and ThemeNow.CycleDesignPreset then
+      ThemeNow:CycleDesignPreset()
+      RefreshDesignButton()
+      if C and C.RefreshAppearance then C:RefreshAppearance(f, true) end
+      if C and C.RefreshRegisteredBorders then C:RefreshRegisteredBorders() end
+      if rerender then rerender() end
+    end
+  end)
+  designBtn:SetScript("OnEnter", function(self)
+    local ThemeNow = NS.UI and NS.UI.Theme
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+    GameTooltip:SetText("Design Preset", 1, 1, 1)
+    GameTooltip:AddLine("Cycle the addon between Classic, Gallery, Workshop, and Arcane layouts.", 0.7, 0.7, 0.7, true)
+    if ThemeNow and ThemeNow.GetDesignPresetLabel then
+      GameTooltip:AddLine("Current: " .. ThemeNow:GetDesignPresetLabel((db and db.ui and db.ui.designPreset) or "classic"), 1, 0.82, 0.2, true)
+    end
+    GameTooltip:Show()
+  end)
+  designBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  RefreshDesignButton()
+
+  local viewModeButtons = {}
+  local function MakeViewGlyph(btn, kind)
+    local pieces = {}
+    local function piece(x, y, w, h)
+      local tex = btn:CreateTexture(nil, "OVERLAY")
+      tex:SetPoint("LEFT", btn, "LEFT", x, y)
+      tex:SetSize(w, h)
+      tex:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.95)
+      pieces[#pieces + 1] = tex
+      return tex
+    end
+
+    if kind == "grid" then
+      piece(8, 4, 3, 3); piece(13, 4, 3, 3)
+      piece(8, -1, 3, 3); piece(13, -1, 3, 3)
+    elseif kind == "text" then
+      piece(8, 4, 12, 2)
+      piece(8, 0, 16, 2)
+      piece(8, -4, 10, 2)
+    else
+      piece(8, 4, 3, 3); piece(14, 4, 13, 2)
+      piece(8, -1, 3, 3); piece(14, -1, 13, 2)
+      piece(8, -6, 3, 3); piece(14, -6, 13, 2)
+    end
+
+    btn.iconPieces = pieces
+  end
+
+  local function TintViewGlyph(btn, selected)
+    if not (btn and btn.iconPieces) then return end
+    local a = selected and 1 or 0.72
+    for i = 1, #btn.iconPieces do
+      local tex = btn.iconPieces[i]
+      if tex and tex.SetColorTexture then
+        tex:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], a)
+      end
+    end
+  end
+
+  local function MakeViewModeButton(parent, width, label, glyphKind, mode)
+    local b = CreateFrame("Button", nil, parent, "BackdropTemplate")
+    Backdrop(b, T.panel, T.border)
+    SkinBtn(b)
+    Hover(b, T.panel, T.hover)
+    b:SetSize(width, 24)
+    b._viewMode = mode
+
+    MakeViewGlyph(b, glyphKind)
+
+    b.text = NewFS(b, "GameFontNormalSmall")
+    b.text:SetPoint("LEFT", b, "LEFT", (glyphKind == "list") and 31 or 27, 0)
+    b.text:SetPoint("RIGHT", b, "RIGHT", -6, 0)
+    b.text:SetJustifyH("LEFT")
+    b.text:SetWordWrap(false)
+    b.text:SetText(label)
+    TextColor(b.text, "text")
+
+    b:SetScript("OnEnter", function(self)
+      GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+      GameTooltip:SetText(label .. " View", 1, 1, 1)
+      if mode == "Icon" then
+        GameTooltip:AddLine("Show decor as image cards.", 0.72, 0.72, 0.72, true)
+      elseif mode == "Text List" then
+        GameTooltip:AddLine("Show a cleaner text-first list.", 0.72, 0.72, 0.72, true)
+      else
+        GameTooltip:AddLine("Show decor as detailed rows.", 0.72, 0.72, 0.72, true)
+      end
+      GameTooltip:Show()
+    end)
+    b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+    viewModeButtons[#viewModeButtons + 1] = b
+    return b
+  end
+
+  header.viewModeGroup = CreateFrame("Frame", nil, header)
+  header.viewModeGroup:SetSize(222, 24)
+  header.iconViewBtn = MakeViewModeButton(header.viewModeGroup, 68, "Grid", "grid", "Icon")
+  header.listViewBtn = MakeViewModeButton(header.viewModeGroup, 64, "List", "list", "List")
+  header.textListViewBtn = MakeViewModeButton(header.viewModeGroup, 90, "Text List", "text", "Text List")
+  header.iconViewBtn:SetPoint("LEFT", header.viewModeGroup, "LEFT", 0, 0)
+  header.listViewBtn:SetPoint("LEFT", header.iconViewBtn, "RIGHT", 0, 0)
+  header.textListViewBtn:SetPoint("LEFT", header.listViewBtn, "RIGHT", 0, 0)
 
   local left = CreateFrame("Frame", nil, f, "BackdropTemplate")
   Backdrop(left, T.panel, T.border)
@@ -564,34 +816,151 @@ function L:CreateShell()
   end
   left:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -1)
   left:SetPoint("BOTTOMLEFT", 8, 46)
-  left:SetWidth(200)
+  left:SetWidth(204)
 
-  local cats = { "Achievements", "Quests", "Vendors", "Drops", "Professions", "PvP" }
+  local cats = {
+    "All Sources",
+    "Achievements",
+    "Quests",
+    "Vendors",
+    "Drops",
+    "Professions",
+    "PvP",
+    "Decor Pricing",
+    "Events",
+    "Decor Tracker",
+    "Gather Tracker",
+    "Alts Professions",
+    "Endeavors",
+  }
+  local catIcons = {
+    ["All Sources"] = "Interface\\Icons\\INV_Misc_Map_01",
+    Achievements = "Interface\\Icons\\Achievement_General",
+    Quests = "Interface\\Icons\\INV_Misc_Note_02",
+    Vendors = "Interface\\Icons\\INV_Misc_Coin_01",
+    Drops = "Interface\\Icons\\INV_Box_01",
+    Professions = "Interface\\Icons\\Trade_BlackSmithing",
+    ["PvP"] = "Interface\\Icons\\INV_BannerPVP_02",
+    Events = "Interface\\Icons\\INV_Misc_PocketWatch_01",
+    ["Decor Tracker"] = "Interface\\Icons\\Ability_Hunter_BeastCall",
+    ["Gather Tracker"] = "Interface\\Icons\\INV_Misc_Map_01",
+    ["Decor Pricing"] = "Interface\\Icons\\INV_Misc_Coin_01",
+    ["Alts Professions"] = "Interface\\Icons\\INV_Misc_Book_11",
+    Endeavors = "Interface\\Icons\\Achievement_Zone_Cataclysm",
+  }
   left.buttons = {}
 
+  local function CreateSideSection(label)
+    local section = CreateFrame("Frame", nil, left)
+    section:SetHeight(16)
+
+    section.text = NewFS(section, "GameFontNormalSmall")
+    section.text:SetPoint("LEFT", section, "LEFT", 0, 0)
+    section.text:SetText(label)
+    section.text:SetFont(STANDARD_TEXT_FONT, 10, "OUTLINE")
+    section.text:SetShadowColor(0, 0, 0, 0)
+    section.text:SetShadowOffset(0, 0)
+    TextColor(section.text, "accent", 0.92)
+
+    section.line = section:CreateTexture(nil, "ARTWORK")
+    section.line:SetPoint("LEFT", section.text, "RIGHT", 8, 0)
+    section.line:SetPoint("RIGHT", section, "RIGHT", 0, 0)
+    section.line:SetHeight(1)
+    section.line:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.28)
+
+    return section
+  end
+
+  left.sections = {
+    quick = CreateSideSection("QUICK ACCESS"),
+    catalog = CreateSideSection("CATALOG"),
+    featured = CreateSideSection("FEATURED"),
+    trackers = CreateSideSection("TRACKERS"),
+    account = CreateSideSection("ACCOUNT"),
+    filters = CreateSideSection("FILTERS"),
+    links = CreateSideSection("LINKS"),
+  }
+
+  local function PlaceSideSection(section, yPos)
+    if not section then return yPos end
+    section:ClearAllPoints()
+    section:SetPoint("TOPLEFT", left, "TOPLEFT", 10, yPos)
+    section:SetPoint("TOPRIGHT", left, "TOPRIGHT", -10, yPos)
+    section:Show()
+    return yPos - 18
+  end
+
+  local navTips = {
+    ["Saved Items"] = "Items you pinned for quick reference.",
+    ["All"] = "Browse every known decor source.",
+    Achievements = "Decor unlocked from achievements.",
+    Quests = "Decor earned from quests.",
+    Vendors = "Decor sold by vendors and quartermasters.",
+    Drops = "Decor found as drops or rewards.",
+    Professions = "Decor crafted or gathered through professions.",
+    ["PvP"] = "Decor tied to PvP sources.",
+    Events = "Open active and seasonal event decor.",
+    ["Decor Tracker"] = "Open your decor tracker.",
+    ["Gather Tracker"] = "Open your gather tracker.",
+    ["Decor Pricing"] = "Open the pricing window.",
+    ["Alts Professions"] = "Open profession coverage for your alts.",
+    Endeavors = "Open endeavor progress and rewards.",
+  }
+
+  local function SetupNavTooltip(btn)
+    btn:HookScript("OnEnter", function(self)
+      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      GameTooltip:SetText(self._tooltipTitle or self._fullText or self._category or "", 1, 1, 1)
+      if self._fullText and self._tooltipTitle ~= self._fullText then
+        GameTooltip:AddLine(self._fullText, 1, 0.82, 0.2, true)
+      end
+      local tip = navTips[self._category]
+      if tip then
+        GameTooltip:AddLine(tip, 0.72, 0.72, 0.72, true)
+      end
+      GameTooltip:Show()
+    end)
+    btn:HookScript("OnLeave", function() GameTooltip:Hide() end)
+  end
+
+  local function RaiseNavContent(btn)
+    if btn and btn.icon and btn.icon.SetDrawLayer then btn.icon:SetDrawLayer("OVERLAY", 7) end
+    if btn and btn.text and btn.text.SetDrawLayer then btn.text:SetDrawLayer("OVERLAY", 7) end
+  end
+
   local function applyCategoryText(btn, cname)
+    if cname == "All Sources" then
+      btn._fullText = "All Sources"
+      btn._tooltipTitle = "All Sources"
+      btn.text:SetText(btn._fullText)
+      return
+    end
     local collected, total = 0, 0
     if GlobalIndex and GlobalIndex.GetCounts then
       collected, total = GlobalIndex:GetCounts(cname)
     end
     if total > 0 then
-      btn.text:SetText(format("%s (%d / %d)", cname, collected, total))
+      btn._fullText = format("%s (%d / %d)", cname, collected, total)
     else
-      btn.text:SetText(cname)
+      btn._fullText = cname
     end
+    btn._tooltipTitle = btn._fullText
+    btn.text:SetText(btn._fullText)
   end
 
   local function RefreshCategoryTexts()
     for i = 1, #left.buttons do
       local btn = left.buttons[i]
       local cname = btn and btn._category
-      if cname and cname ~= "Saved Items" and applyCategoryText then
-        applyCategoryText(btn, cname)
+      if cname and cname ~= "Saved Items" and cname ~= "Decor Tracker" and cname ~= "Gather Tracker" and applyCategoryText then
+        applyCategoryText(btn, cname == "All" and "All Sources" or cname)
+        RaiseNavContent(btn)
       end
     end
   end
 
   local y = -12
+  y = PlaceSideSection(left.sections.quick, y)
 
   local savedItemsBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
   Backdrop(savedItemsBtn, T.panel, T.border)
@@ -617,18 +986,21 @@ function L:CreateShell()
   TextColor(savedItemsTxt, "accent")
   savedItemsBtn.text = savedItemsTxt
   savedItemsBtn._category = "Saved Items"
+  savedItemsBtn._fullText = Loc["SAVED_ITEMS"] or "Saved Items"
+  savedItemsBtn._tooltipTitle = savedItemsBtn._fullText
 
   CreateCategoryIndicators(savedItemsBtn)
+  ApplyNavArt(savedItemsBtn)
+  RaiseNavContent(savedItemsBtn)
   Hover(savedItemsBtn, T.panel, T.hover)
+  SetupNavTooltip(savedItemsBtn)
   left.buttons[#left.buttons + 1] = savedItemsBtn
   y = y - 36
 
-  local savedDivider = left:CreateTexture(nil, "ARTWORK")
-  savedDivider:SetColorTexture(1, 1, 1, 0.15)
-  savedDivider:SetHeight(1)
-  savedDivider:SetPoint("TOPLEFT", 10, y)
-  savedDivider:SetPoint("TOPRIGHT", -10, y)
-  y = y - 10
+  local utilityDivider = left:CreateTexture(nil, "ARTWORK")
+  utilityDivider:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.28)
+  utilityDivider:SetHeight(1)
+  utilityDivider:Hide()
 
   for i = 1, #cats do
     local cname = cats[i]
@@ -640,23 +1012,46 @@ function L:CreateShell()
     b:SetPoint("RIGHT", -10, y)
     b:SetHeight(28)
 
+    local icon = b:CreateTexture(nil, "OVERLAY")
+    icon:SetSize(15, 15)
+    icon:SetPoint("LEFT", b, "LEFT", 9, 0)
+    icon:SetTexture(catIcons[cname] or "Interface\\Icons\\INV_Misc_QuestionMark")
+    icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    C:TextureColor(icon, "accent", 0.95)
+    b.icon = icon
+
     local txt = NewFS(b, "GameFontNormal")
     b.text = txt
-    txt:SetPoint("CENTER")
-    b._category = cname
+    txt:SetPoint("LEFT", icon, "RIGHT", 6, 0)
+    txt:SetPoint("RIGHT", b, "RIGHT", -8, 0)
+    txt:SetJustifyH("LEFT")
+    txt:SetWordWrap(false)
+    if txt.SetMaxLines then txt:SetMaxLines(1) end
+    b._category = (cname == "All Sources") and "All" or cname
+    if cname == "All Sources" then
+      b._sectionBefore = left.sections.catalog
+    elseif cname == "Decor Pricing" then
+      b._sectionBefore = left.sections.featured
+    elseif cname == "Decor Tracker" then
+      b._sectionBefore = left.sections.trackers
+    elseif cname == "Alts Professions" then
+      b._sectionBefore = left.sections.account
+    end
+    if cname == "Decor Tracker" or cname == "Gather Tracker" then b._utilityAction = true end
 
     CreateCategoryIndicators(b)
+    ApplyNavArt(b)
     applyCategoryText(b, cname)
+    RaiseNavContent(b)
     Hover(b, T.panel, T.hover)
+    SetupNavTooltip(b)
 
     left.buttons[#left.buttons + 1] = b
     y = y - 32
   end
 
-  local filtersTitle = NewFS(left, "GameFontNormal")
+  local filtersTitle = left.sections.filters
   filtersTitle:SetPoint("TOPLEFT", 10, y - 10)
-  filtersTitle:SetText(Loc["FILTERS"])
-  TextColor(filtersTitle, "accent")
   y = y - 24
 
   local filtersLine = left:CreateTexture(nil, "ARTWORK")
@@ -698,7 +1093,10 @@ function L:CreateShell()
       local db2 = NS.db and NS.db.profile
       if not db2 then return end
       local flt = db2.filters or {}
-      flt.expansion, flt.zone, flt.category, flt.subcategory, flt.faction = "ALL", "ALL", "ALL", "ALL", "ALL"
+      flt.expansion, flt.zone, flt.color, flt.category, flt.subcategory, flt.faction = "ALL", "ALL", "ALL", "ALL", "ALL", "ALL"
+      flt.colors = {}
+      flt.budgetCosts = {}
+      flt.sizes = {}
       flt.hideCollected, flt.onlyCollected = false, false
       flt.availableRepOnly = false
       flt.questsCompleted = false
@@ -706,6 +1104,12 @@ function L:CreateShell()
       if Filters then
         Filters.expansion, Filters.zone, Filters.category, Filters.subcategory, Filters.faction =
           flt.expansion, flt.zone, flt.category, flt.subcategory, flt.faction
+        Filters.color = "ALL"
+        Filters.colors = flt.colors
+        Filters.budgetCosts = flt.budgetCosts
+        Filters.sizes = flt.sizes
+        Filters.hideCollected = false
+        Filters.onlyCollected = false
         Filters.availableRepOnly = false
         Filters.questsCompleted = false
         Filters.achievementCompleted = false
@@ -715,6 +1119,7 @@ function L:CreateShell()
       if rerender then rerender() end
     end
   end)
+  resetFiltersBtn:Hide()
 
   local divider2 = left:CreateTexture(nil, "ARTWORK")
   divider2:SetColorTexture(1, 1, 1, 0.15)
@@ -757,7 +1162,8 @@ function L:CreateShell()
 
   local filterScroll = CreateFrame("ScrollFrame", nil, left, "ScrollFrameTemplate")
   filterScroll:SetPoint("TOPLEFT", 8, y)
-  filterScroll:SetPoint("BOTTOMRIGHT", resetFiltersBtn, "TOPRIGHT", -10, -8)
+  filterScroll:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -26, 92)
+  left.filterScroll = filterScroll
 
   local filterContent = CreateFrame("Frame", nil, filterScroll)
   filterContent:SetPoint("TOPLEFT", 0, 0)
@@ -773,35 +1179,27 @@ function L:CreateShell()
   end
 
   local function RefreshLeftLayout()
-    local fh = f:GetHeight() or 680
-    local ratio = fh / 680
-    if ratio > 1 then ratio = 1 end
-    if ratio < 0.65 then ratio = 0.65 end
-
-    local panelW = math.floor(200 * ratio + 0.5)
+    local panelW = 204
     left:SetWidth(panelW)
 
-    local btnH = math.floor(28 * ratio + 0.5)
-    if btnH < 20 then btnH = 20 end
-    local gap  = math.floor(32 * ratio + 0.5)
-    if gap < 23 then gap = 23 end
+    local btnH = 25
+    local gap  = 28
+    local cy = -12
 
-    local cy = -math.floor(12 * ratio + 0.5)
+    cy = PlaceSideSection(left.sections and left.sections.quick, cy)
 
     savedItemsBtn:ClearAllPoints()
     savedItemsBtn:SetPoint("TOPLEFT", 10, cy)
     savedItemsBtn:SetPoint("RIGHT", -10, cy)
     savedItemsBtn:SetHeight(btnH)
-    cy = cy - (btnH + math.floor(8 * ratio + 0.5))
-
-    savedDivider:ClearAllPoints()
-    savedDivider:SetPoint("TOPLEFT",  10, cy)
-    savedDivider:SetPoint("TOPRIGHT", -10, cy)
-    cy = cy - math.floor(10 * ratio + 0.5)
+    cy = cy - (btnH + 10)
 
     for i = 1, #left.buttons do
       local b = left.buttons[i]
       if b ~= savedItemsBtn then
+        if b._sectionBefore then
+          cy = PlaceSideSection(b._sectionBefore, cy)
+        end
         b:ClearAllPoints()
         b:SetPoint("TOPLEFT", 10, cy)
         b:SetPoint("RIGHT", -10, cy)
@@ -809,31 +1207,18 @@ function L:CreateShell()
         cy = cy - gap
       end
     end
+    utilityDivider:Hide()
 
-    filtersTitle:ClearAllPoints()
-    filtersTitle:SetPoint("TOPLEFT", 10, cy - math.floor(8 * ratio + 0.5))
+    if filtersTitle then filtersTitle:Hide() end
+    filtersLine:Hide()
+    filterScroll:Hide()
 
-    local lineY = cy - math.floor(22 * ratio + 0.5)
-    filtersLine:ClearAllPoints()
-    filtersLine:SetPoint("TOPLEFT",  10, lineY)
-    filtersLine:SetPoint("TOPRIGHT", -10, lineY)
-
-    local scrollTopY = lineY - math.floor(6 * ratio + 0.5)
-    filterScroll:ClearAllPoints()
-    filterScroll:SetPoint("TOPLEFT", 8, scrollTopY)
-    filterScroll:SetPoint("BOTTOMRIGHT", resetFiltersBtn, "TOPRIGHT", -10, -8)
-
-    local bottomBtnH = math.floor(26 * ratio + 0.5)
-    if bottomBtnH < 20 then bottomBtnH = 20 end
-    local b1Off = math.floor(86 * ratio + 0.5)
-    if b1Off < 68 then b1Off = 68 end
-    local b2Off = math.floor(50 * ratio + 0.5)
-    if b2Off < 40 then b2Off = 40 end
-    local b3Off = math.floor(10 * ratio + 0.5)
-    local d1Off = math.floor(80 * ratio + 0.5)
-    if d1Off < 63 then d1Off = 63 end
-    local d2Off = math.floor(44 * ratio + 0.5)
-    if d2Off < 35 then d2Off = 35 end
+    local bottomBtnH = 26
+    local b1Off = 86
+    local b2Off = 50
+    local b3Off = 10
+    local d1Off = 100
+    local d2Off = 44
 
     divider:ClearAllPoints()
     divider:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  12, d1Off)
@@ -843,10 +1228,18 @@ function L:CreateShell()
     resetFiltersBtn:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  10, b1Off)
     resetFiltersBtn:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -10, b1Off)
     resetFiltersBtn:SetHeight(bottomBtnH)
+    resetFiltersBtn:Hide()
 
     divider2:ClearAllPoints()
     divider2:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  12, d2Off)
     divider2:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -12, d2Off)
+
+    if left.sections and left.sections.links then
+      left.sections.links:ClearAllPoints()
+      left.sections.links:SetPoint("BOTTOMLEFT", left, "BOTTOMLEFT", 10, 78)
+      left.sections.links:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -10, 78)
+      left.sections.links:Show()
+    end
 
     communityBtn:ClearAllPoints()
     communityBtn:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  10, b2Off)
@@ -874,7 +1267,7 @@ function L:CreateShell()
   if C.ApplyHeaderTexture then C:ApplyHeaderTexture(rightToolbar, false) end
   rightToolbar:SetPoint("TOPLEFT", right, "TOPLEFT", 8, -4)
   rightToolbar:SetPoint("TOPRIGHT", right, "TOPRIGHT", -8, -4)
-  rightToolbar:SetHeight(30)
+  rightToolbar:SetHeight(58)
   f.RightToolbar = rightToolbar
 
   local bar = CreateFrame("Frame", nil, header, "BackdropTemplate")
@@ -885,6 +1278,7 @@ function L:CreateShell()
   bar:SetHeight(36)
   f.TopBar = bar
   header.modeBar = bar
+  bar:Hide()
 
   local rightContent = CreateFrame("Frame", nil, right)
   rightContent:SetPoint("TOPLEFT", rightToolbar, "BOTTOMLEFT", 0, -1)
@@ -948,6 +1342,11 @@ function L:CreateShell()
   compactBtn:SetPoint("RIGHT", settingsBtn, "LEFT", -8, 0)
   compactBtn:Show()
 
+  designBtn:SetParent(header)
+  designBtn:ClearAllPoints()
+  designBtn:SetPoint("RIGHT", compactBtn, "LEFT", -8, 0)
+  designBtn:Show()
+
   local decorTrackerBtn = MakeTopButton(bar, 120, 24)
   decorTrackerBtn.icon:SetTexture("Interface\\Icons\\Ability_Hunter_BeastCall")
   decorTrackerBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
@@ -978,6 +1377,9 @@ function L:CreateShell()
   trackersBtn:Hide()
   trackersMenu:Hide()
   header.controls:Hide()
+  eventsBtn:Hide()
+  decorTrackerBtn:Hide()
+  gatherTrackerBtn:Hide()
 
   local decorPricingBtn
   local altProfsTopBtn
@@ -1037,12 +1439,23 @@ function L:CreateShell()
   local UpdateSortVisibility
   local UpdateRightToolbarVisibility
   local ScheduleEventStateRefresh
+  local RefreshQuickFilters
   local modeBtn
   local detailsBtn
 
   local function SetToggleButtonState(btn, active)
     if not btn then return end
     C:SetSelected(btn, active, T.panel, T.row)
+    if btn.__hdBtnSkinned and Textures then
+      if btn.SetNormalTexture then
+        btn:SetNormalTexture(active and (Textures.ButtonPushed or Textures.ButtonNormal) or Textures.ButtonNormal)
+      end
+      local nt = btn.GetNormalTexture and btn:GetNormalTexture()
+      if nt then
+        nt:SetAllPoints(btn)
+        nt:SetAlpha(1)
+      end
+    end
     if btn.text then
       if active then
         TextColor(btn.text, "highlight", 0.95)
@@ -1064,6 +1477,31 @@ function L:CreateShell()
   local function RefreshDetailsButton()
     if not detailsBtn then return end
     SetToggleButtonState(detailsBtn, UI.detailsPanelOpen == true)
+  end
+
+  local function RefreshViewModeButtons()
+    for i = 1, #viewModeButtons do
+      local btn = viewModeButtons[i]
+      local selected = btn and btn._viewMode == UI.viewMode
+      SetToggleButtonState(btn, selected)
+      TintViewGlyph(btn, selected)
+    end
+  end
+
+  local function IsWindowCategory(categoryName)
+    return categoryName == "Events"
+      or categoryName == "Decor Pricing"
+      or categoryName == "Alts Professions"
+      or categoryName == "Endeavors"
+  end
+
+  local function ApplyDetailsPanelForCategory(categoryName, skipRender)
+    local open = (UI.detailsPanelOpen == true) and not IsWindowCategory(categoryName)
+    if db and db.ui then db.ui.detailsPanelOpen = UI.detailsPanelOpen == true end
+    if f.view and f.view.SetInspectorOpen then
+      f.view:SetInspectorOpen(open, skipRender)
+    end
+    RefreshDetailsButton()
   end
 
   header.scaleRightEdge = settingsBtn
@@ -1171,6 +1609,7 @@ function L:CreateShell()
 
     UI.activeCategory = categoryName
     db.ui.activeCategory = categoryName
+    ApplyDetailsPanelForCategory(categoryName, true)
     UI.search = ""
     db.ui.search = ""
     UI._searchNorm = ""
@@ -1217,7 +1656,15 @@ function L:CreateShell()
       SetCategorySelected(bb, sel)
     end
 
+    if categoryName == "Endeavors" and NS.UI and NS.UI.Endeavors and not NS.UI.EndeavorsPanel then
+      NS.UI.EndeavorsPanel = NS.UI.Endeavors:Create(rightContent)
+    end
+
     if UpdateTopTabs then UpdateTopTabs() end
+    if categoryName == "Endeavors" and NS.UI.EndeavorsPanel then
+      if NS.UI.EndeavorsPanel.FullRefresh then NS.UI.EndeavorsPanel:FullRefresh() end
+      NS.UI.EndeavorsPanel:Show()
+    end
     if f.view and f.view.scrollFrame then
       f.view.scrollFrame:SetVerticalScroll(0)
     end
@@ -1234,7 +1681,23 @@ function L:CreateShell()
 
   for i = 1, #left.buttons do
     local b = left.buttons[i]
-    b:SetScript("OnClick", function() SelectCategory(b._category) end)
+    b:SetScript("OnClick", function()
+      if b._category == "Decor Tracker" then
+        local Tr = (NS.UI and NS.UI.Tracker) or (NS.UI and NS.UI.DecorTracker) or NS.Tracker
+        if Tr and Tr.Toggle then Tr:Toggle() end
+        return
+      elseif b._category == "Gather Tracker" then
+        local GT = (NS.UI and NS.UI.GatherTrack)
+        if GT and GT.ToggleAll then
+          GT:ToggleAll()
+        else
+          local LT = (NS.UI and NS.UI.LumberTrack) or NS.LumberTrack
+          if LT and LT.Toggle then LT:Toggle() end
+        end
+        return
+      end
+      SelectCategory(b._category)
+    end)
   end
 
   eventsBtn:SetScript("OnClick", function()
@@ -1251,22 +1714,28 @@ function L:CreateShell()
     SetCategorySelected(b, isSel)
   end
 
-  if header.viewToggle then
-    header.viewToggle.OnValueChanged = function(_, v)
-      UI.viewMode = v
-      if f.view and f.view.SetViewMode then f.view:SetViewMode(v) end
-      rerender()
-    end
-    if header.viewToggle.Refresh then header.viewToggle:Refresh() end
-    header.viewToggle:SetParent(rightToolbar)
-    header.viewToggle:ClearAllPoints()
-    header.viewToggle:SetPoint("RIGHT", rightToolbar, "RIGHT", -8, 0)
+  if header.viewModeGroup then
+    header.viewModeGroup:SetParent(rightToolbar)
+    header.viewModeGroup:ClearAllPoints()
+    header.viewModeGroup:SetPoint("BOTTOMRIGHT", rightToolbar, "BOTTOMRIGHT", -8, 5)
   end
+
+  for i = 1, #viewModeButtons do
+    local b = viewModeButtons[i]
+    b:SetScript("OnClick", function(self)
+      UI.viewMode = self._viewMode or "Icon"
+      if db and db.ui then db.ui.viewMode = UI.viewMode end
+      if f.view and f.view.SetViewMode then f.view:SetViewMode(UI.viewMode) end
+      RefreshViewModeButtons()
+      rerender()
+    end)
+  end
+  RefreshViewModeButtons()
 
   detailsBtn = CreateFrame("Button", nil, rightToolbar, "BackdropTemplate")
   Backdrop(detailsBtn, T.panel, T.border)
   detailsBtn:SetSize(58, 20)
-  detailsBtn:SetPoint("RIGHT", header.viewToggle, "LEFT", -6, 0)
+  detailsBtn:SetPoint("TOPRIGHT", rightToolbar, "TOPRIGHT", -8, -4)
   Hover(detailsBtn, T.panel, T.hover)
 
   detailsBtn.text = NewFS(detailsBtn, "GameFontNormal")
@@ -1276,9 +1745,7 @@ function L:CreateShell()
   detailsBtn:SetScript("OnClick", function()
     UI.detailsPanelOpen = not UI.detailsPanelOpen
     if db and db.ui then db.ui.detailsPanelOpen = UI.detailsPanelOpen end
-    if f.view and f.view.SetInspectorOpen then
-      f.view:SetInspectorOpen(UI.detailsPanelOpen)
-    end
+    ApplyDetailsPanelForCategory(UI.activeCategory or "All")
     RefreshDetailsButton()
     rerender()
   end)
@@ -1293,7 +1760,7 @@ function L:CreateShell()
   modeBtn = CreateFrame("Button", nil, rightToolbar, "BackdropTemplate")
   Backdrop(modeBtn, T.panel, T.border)
   modeBtn:SetSize(64, 20)
-  modeBtn:SetPoint("RIGHT", detailsBtn, "LEFT", -6, 0)
+  modeBtn:SetPoint("TOPRIGHT", detailsBtn, "TOPLEFT", -6, 0)
   Hover(modeBtn, T.panel, T.hover)
 
   modeBtn.text = NewFS(modeBtn, "GameFontNormal")
@@ -1370,7 +1837,6 @@ function L:CreateShell()
     ["Decor Pricing"] = true,
     ["Alts Professions"] = true,
     ["Endeavors"] = true,
-    ["Saved Items"] = true,
   }
 
   local SORT_OPTIONS = {
@@ -1399,23 +1865,317 @@ function L:CreateShell()
   sortDropdown:SetWidth(176)
   sortDropdown:SetParent(rightToolbar)
   sortDropdown:ClearAllPoints()
-  sortDropdown:SetPoint("RIGHT", modeBtn, "LEFT", -8, 0)
-  sortDropdown:SetPoint("TOP", rightToolbar, "TOP", 0, -3)
+  sortDropdown:SetPoint("TOPRIGHT", modeBtn, "TOPLEFT", -8, 0)
   f.SortDropdown = sortDropdown
+
+  local function MakeQuickFilterButton(text, width)
+    local b = CreateFrame("Button", nil, rightToolbar, "BackdropTemplate")
+    Backdrop(b, T.panel, T.border)
+    SkinBtn(b)
+    b:SetSize(width or 58, 20)
+    Hover(b, T.panel, T.hover)
+    b.text = NewFS(b, "GameFontNormal")
+    b.text:SetPoint("CENTER")
+    b.text:SetText(text)
+    TextColor(b.text, "text")
+    return b
+  end
+
+  local ownedQuickBtn = MakeQuickFilterButton("Owned", 58)
+  ownedQuickBtn:SetPoint("RIGHT", sortDropdown, "LEFT", -8, 0)
+
+  local missingQuickBtn = MakeQuickFilterButton("Missing", 64)
+  missingQuickBtn:SetPoint("RIGHT", ownedQuickBtn, "LEFT", -4, 0)
+
+  local allQuickBtn = MakeQuickFilterButton("All", 44)
+  allQuickBtn:SetPoint("RIGHT", missingQuickBtn, "LEFT", -4, 0)
+
+  local moreFiltersBtn = MakeQuickFilterButton("Filters", 66)
+  moreFiltersBtn:SetPoint("RIGHT", allQuickBtn, "LEFT", -6, 0)
+  local moreFiltersIcon = moreFiltersBtn:CreateTexture(nil, "OVERLAY")
+  moreFiltersIcon:SetSize(12, 12)
+  moreFiltersIcon:SetPoint("LEFT", moreFiltersBtn, "LEFT", 7, 0)
+  moreFiltersIcon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
+  C:TextureColor(moreFiltersIcon, "accent")
+  moreFiltersBtn.text:ClearAllPoints()
+  moreFiltersBtn.text:SetPoint("LEFT", moreFiltersIcon, "RIGHT", 4, 0)
+
+  local resetTopBtn = MakeQuickFilterButton("Reset", 58)
+  resetTopBtn:SetPoint("LEFT", moreFiltersBtn, "RIGHT", 6, 0)
+  local resetTopIcon = resetTopBtn:CreateTexture(nil, "OVERLAY")
+  resetTopIcon:SetSize(12, 12)
+  resetTopIcon:SetPoint("LEFT", resetTopBtn, "LEFT", 7, 0)
+  resetTopIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
+  C:TextureColor(resetTopIcon, "accent")
+  resetTopBtn.text:ClearAllPoints()
+  resetTopBtn.text:SetPoint("LEFT", resetTopIcon, "RIGHT", 4, 0)
+
+  local topFactionDropdown
+  local topSourceDropdown
+  local topExpansionDropdown
+  local topZoneDropdown
+  local topCategoryDropdown
+
+  local function syncFilterSurfaces()
+    local filterContent = left and left.filterContent
+    if filterContent and filterContent.SyncVisuals then filterContent:SyncVisuals() end
+    if topSourceDropdown and topSourceDropdown.ApplyText then topSourceDropdown:ApplyText() end
+    if topFactionDropdown and topFactionDropdown.ApplyText then topFactionDropdown:ApplyText() end
+    if topExpansionDropdown and topExpansionDropdown.ApplyText then topExpansionDropdown:ApplyText() end
+    if topZoneDropdown and topZoneDropdown.ApplyText then topZoneDropdown:ApplyText() end
+    if topCategoryDropdown and topCategoryDropdown.ApplyText then topCategoryDropdown:ApplyText() end
+    if RefreshQuickFilters then RefreshQuickFilters() end
+  end
+
+  local function resetHeaderAndRender()
+    local HeaderCtrl = NS.UI and NS.UI.HeaderController
+    if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
+    syncFilterSurfaces()
+    rerender()
+  end
+
+  local function runFullFilterReset()
+    local fc = left and left.filterContent
+    if fc and fc.ResetAllFilters then
+      fc:ResetAllFilters()
+    else
+      local flt = db and db.filters
+      if not flt then return end
+      flt.expansion, flt.zone, flt.color, flt.sourceType, flt.category, flt.subcategory, flt.faction = "ALL", "ALL", "ALL", "ALL", "ALL", "ALL", "ALL"
+      flt.colors = {}
+      flt.budgetCosts = {}
+      flt.sizes = {}
+      flt.hideCollected, flt.onlyCollected = false, false
+      flt.availableRepOnly = false
+      flt.questsCompleted = false
+      flt.achievementCompleted = false
+      flt.hidePvpItems = false
+      if Filters then
+        Filters.expansion, Filters.zone, Filters.sourceType, Filters.category, Filters.subcategory, Filters.faction =
+          flt.expansion, flt.zone, flt.sourceType, flt.category, flt.subcategory, flt.faction
+        Filters.color = "ALL"
+        Filters.colors = flt.colors
+        Filters.budgetCosts = flt.budgetCosts
+        Filters.sizes = flt.sizes
+        Filters.hideCollected = false
+        Filters.onlyCollected = false
+        Filters.availableRepOnly = false
+        Filters.questsCompleted = false
+        Filters.achievementCompleted = false
+        Filters.hidePvpItems = false
+      end
+      resetHeaderAndRender()
+    end
+    syncFilterSurfaces()
+  end
+
+  topFactionDropdown = Dropdown.Create(
+    rightToolbar,
+    "",
+    nil,
+    118,
+    function() return (db.filters and db.filters.faction) or "ALL" end,
+    function(v)
+      db.filters.faction = v or "ALL"
+      if Filters then Filters.faction = db.filters.faction end
+      local FS = LiveFiltersSys()
+      if FS then FS.faction = db.filters.faction end
+      resetHeaderAndRender()
+    end,
+    function()
+      return {
+        { value = "ALL", text = "Faction: All" },
+        { value = "Alliance", text = "Alliance" },
+        { value = "Horde", text = "Horde" },
+      }
+    end,
+    nil,
+    C, T
+  )
+
+  topSourceDropdown = Dropdown.Create(
+    rightToolbar,
+    "",
+    nil,
+    120,
+    function() return (db.filters and db.filters.sourceType) or "ALL" end,
+    function(v)
+      db.filters.sourceType = v or "ALL"
+      if Filters then Filters.sourceType = db.filters.sourceType end
+      local FS = LiveFiltersSys()
+      if FS then FS.sourceType = db.filters.sourceType end
+      resetHeaderAndRender()
+    end,
+    function()
+      return {
+        { value = "ALL", text = "Source: All" },
+        { value = "vendor", text = "Vendors" },
+        { value = "quest", text = "Quests" },
+        { value = "achievement", text = "Achievements" },
+        { value = "drop", text = "Drops" },
+        { value = "profession", text = "Professions" },
+        { value = "event", text = "Events" },
+        { value = "pvp", text = "PvP" },
+      }
+    end,
+    nil,
+    C, T
+  )
+
+  topExpansionDropdown = Dropdown.Create(
+    rightToolbar,
+    "",
+    nil,
+    146,
+    function() return (db.filters and db.filters.expansion) or "ALL" end,
+    function(v)
+      db.filters.expansion = v or "ALL"
+      db.filters.zone = "ALL"
+      if Filters then
+        Filters.expansion = db.filters.expansion
+        Filters.zone = db.filters.zone
+      end
+      local FS = LiveFiltersSys()
+      if FS then
+        FS.expansion = db.filters.expansion
+        FS.zone = db.filters.zone
+      end
+      resetHeaderAndRender()
+    end,
+    function()
+      local FS = LiveFiltersSys()
+      local opts = FS and FS.GetExpansions and FS:GetExpansions() or { { value = "ALL", text = "All" } }
+      if opts and opts[1] and opts[1].value == "ALL" then opts[1].text = "Expansion: All" end
+      return opts
+    end,
+    nil,
+    C, T
+  )
+
+  topZoneDropdown = Dropdown.Create(
+    rightToolbar,
+    "",
+    nil,
+    126,
+    function() return (db.filters and db.filters.zone) or "ALL" end,
+    function(v)
+      db.filters.zone = v or "ALL"
+      if Filters then Filters.zone = db.filters.zone end
+      local FS = LiveFiltersSys()
+      if FS then FS.zone = db.filters.zone end
+      resetHeaderAndRender()
+    end,
+    function()
+      local FS = LiveFiltersSys()
+      local opts = FS and FS.GetZones and FS:GetZones(UI, db) or { { value = "ALL", text = "All Zones" } }
+      if opts and opts[1] and opts[1].value == "ALL" then opts[1].text = "Zone: All" end
+      return opts
+    end,
+    nil,
+    C, T
+  )
+
+  topCategoryDropdown = Dropdown.Create(
+    rightToolbar,
+    "",
+    nil,
+    136,
+    function() return (db.filters and db.filters.category) or "ALL" end,
+    function(v)
+      local FS = LiveFiltersSys()
+      db.filters.category = (FS and FS.ResolveCategoryID and FS:ResolveCategoryID(v)) or v or "ALL"
+      db.filters.subcategory = "ALL"
+      if Filters then
+        Filters.category = db.filters.category
+        Filters.subcategory = db.filters.subcategory
+      end
+      if FS then
+        FS.category = db.filters.category
+        FS.subcategory = db.filters.subcategory
+      end
+      resetHeaderAndRender()
+    end,
+    function()
+      local FS = LiveFiltersSys()
+      local opts = FS and FS.GetCategoryOptions and FS:GetCategoryOptions() or { { value = "ALL", text = "All Categories" } }
+      if opts and opts[1] and opts[1].value == "ALL" then opts[1].text = "Category: All" end
+      return opts
+    end,
+    nil,
+    C, T
+  )
+
+  local function setCompletionFilter(mode)
+    local flt = db and db.filters
+    if not flt then return end
+    local hideCollected = (mode == "missing")
+    local onlyCollected = (mode == "owned")
+    if (flt.hideCollected == true) == hideCollected and (flt.onlyCollected == true) == onlyCollected then
+      syncFilterSurfaces()
+      return
+    end
+    flt.hideCollected = hideCollected
+    flt.onlyCollected = onlyCollected
+    if Filters then
+      Filters.hideCollected = flt.hideCollected
+      Filters.onlyCollected = flt.onlyCollected
+    end
+    syncFilterSurfaces()
+    rerender()
+  end
+
+  allQuickBtn:SetScript("OnClick", function() setCompletionFilter("all") end)
+  missingQuickBtn:SetScript("OnClick", function() setCompletionFilter("missing") end)
+  ownedQuickBtn:SetScript("OnClick", function() setCompletionFilter("owned") end)
+  moreFiltersBtn:SetScript("OnClick", function()
+    if f.FilterDrawer then
+      f.FilterDrawer:SetShown(not f.FilterDrawer:IsShown())
+    end
+  end)
+  resetTopBtn:SetScript("OnClick", runFullFilterReset)
+
+  RefreshQuickFilters = function()
+    local flt = (db and db.filters) or {}
+    SetToggleButtonState(allQuickBtn, not flt.hideCollected and not flt.onlyCollected)
+    SetToggleButtonState(missingQuickBtn, flt.hideCollected == true)
+    SetToggleButtonState(ownedQuickBtn, flt.onlyCollected == true)
+  end
+  RefreshQuickFilters()
 
   UpdateSortVisibility = function()
     local cat = UI.activeCategory or ""
     if SORT_CAT_EXCLUDED[cat] then
       sortDropdown:Hide()
+      if allQuickBtn then allQuickBtn:Hide() end
+      if missingQuickBtn then missingQuickBtn:Hide() end
+      if ownedQuickBtn then ownedQuickBtn:Hide() end
+      if moreFiltersBtn then moreFiltersBtn:Hide() end
+      if resetTopBtn then resetTopBtn:Hide() end
+      if topSourceDropdown then topSourceDropdown:Hide() end
+      if topFactionDropdown then topFactionDropdown:Hide() end
+      if topExpansionDropdown then topExpansionDropdown:Hide() end
+      if topZoneDropdown then topZoneDropdown:Hide() end
+      if topCategoryDropdown then topCategoryDropdown:Hide() end
     else
-      sortDropdown:Show()
+      sortDropdown:Hide()
+      if allQuickBtn then allQuickBtn:Show() end
+      if missingQuickBtn then missingQuickBtn:Show() end
+      if ownedQuickBtn then ownedQuickBtn:Show() end
+      if moreFiltersBtn then moreFiltersBtn:Show() end
+      if resetTopBtn then resetTopBtn:Hide() end
+      if topSourceDropdown then topSourceDropdown:Hide() end
+      if topFactionDropdown then topFactionDropdown:Hide() end
+      if topExpansionDropdown then topExpansionDropdown:Hide() end
+      if topZoneDropdown then topZoneDropdown:Hide() end
+      if topCategoryDropdown then topCategoryDropdown:Hide() end
       if sortDropdown.ApplyText then sortDropdown:ApplyText() end
+      if RefreshQuickFilters then RefreshQuickFilters() end
     end
   end
 
   UpdateRightToolbarVisibility = function()
     local cat = UI.activeCategory or ""
-    local hideToolbar = (cat == "Decor Pricing") or (cat == "Alts Professions") or (cat == "Endeavors")
+    local hideToolbar = IsWindowCategory(cat)
 
     rightContent:ClearAllPoints()
     if hideToolbar then
@@ -1433,13 +2193,55 @@ function L:CreateShell()
   Backdrop(search, T.panel, T.border)
   search:SetParent(rightToolbar)
   search:ClearAllPoints()
-  search:SetPoint("LEFT", rightToolbar, "LEFT", 8, 0)
-  search:SetPoint("RIGHT", sortDropdown, "LEFT", -8, 0)
+  search:SetPoint("TOPLEFT", rightToolbar, "TOPLEFT", 8, -4)
+  search:SetPoint("RIGHT", moreFiltersBtn, "LEFT", -8, 0)
   search:SetHeight(20)
   search:SetAutoFocus(false)
   search:SetFontObject(GameFontHighlightSmall)
   search:SetTextInsets(8, 26, 0, 0)
   search:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+
+  allQuickBtn:ClearAllPoints()
+  allQuickBtn:SetPoint("BOTTOMLEFT", rightToolbar, "BOTTOMLEFT", 8, 5)
+
+  missingQuickBtn:ClearAllPoints()
+  missingQuickBtn:SetPoint("LEFT", allQuickBtn, "RIGHT", 4, 0)
+
+  ownedQuickBtn:ClearAllPoints()
+  ownedQuickBtn:SetPoint("LEFT", missingQuickBtn, "RIGHT", 4, 0)
+
+  topExpansionDropdown:ClearAllPoints()
+  topExpansionDropdown:SetPoint("LEFT", ownedQuickBtn, "RIGHT", 8, 0)
+  topExpansionDropdown:SetPoint("BOTTOM", rightToolbar, "BOTTOM", 0, 4)
+  topExpansionDropdown:SetWidth(146)
+  topExpansionDropdown:Hide()
+
+  topCategoryDropdown:ClearAllPoints()
+  topCategoryDropdown:SetPoint("RIGHT", header.viewModeGroup or rightToolbar, "LEFT", -8, 0)
+  topCategoryDropdown:SetPoint("BOTTOM", rightToolbar, "BOTTOM", 0, 4)
+  topCategoryDropdown:SetWidth(136)
+
+  topZoneDropdown:ClearAllPoints()
+  topZoneDropdown:SetPoint("RIGHT", topCategoryDropdown, "LEFT", -6, 0)
+  topZoneDropdown:SetPoint("BOTTOM", rightToolbar, "BOTTOM", 0, 4)
+  topZoneDropdown:SetWidth(126)
+
+  topFactionDropdown:ClearAllPoints()
+  topFactionDropdown:SetPoint("RIGHT", topZoneDropdown, "LEFT", -6, 0)
+  topFactionDropdown:SetPoint("BOTTOM", rightToolbar, "BOTTOM", 0, 4)
+  topFactionDropdown:SetWidth(118)
+
+  topSourceDropdown:ClearAllPoints()
+  topSourceDropdown:SetPoint("RIGHT", topFactionDropdown, "LEFT", -6, 0)
+  topSourceDropdown:SetPoint("BOTTOM", rightToolbar, "BOTTOM", 0, 4)
+  topSourceDropdown:SetWidth(120)
+
+  resetTopBtn:ClearAllPoints()
+  resetTopBtn:SetPoint("TOPRIGHT", sortDropdown, "TOPLEFT", -6, 0)
+  resetTopBtn:Hide()
+
+  moreFiltersBtn:ClearAllPoints()
+  moreFiltersBtn:SetPoint("TOPRIGHT", modeBtn, "TOPLEFT", -8, 0)
 
   local placeholder = search:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
   placeholder:SetPoint("LEFT", search, "LEFT", 8, 0)
@@ -1476,6 +2278,11 @@ function L:CreateShell()
     if q == "drop" or q == "drops" then return "Drops" end
     if q == "profession" or q == "professions" then return "Professions" end
     if q == "pvp" then return "PvP" end
+    if q == "all" or q == "everything" or q == "all sources" then return "All" end
+    if q == "event" or q == "events" then return "Events" end
+    if q == "pricing" or q == "decor pricing" or q == "price" then return "Decor Pricing" end
+    if q == "alts" or q == "alts professions" or q == "professions alts" then return "Alts Professions" end
+    if q == "endeavor" or q == "endeavors" then return "Endeavors" end
     return nil
   end
 
@@ -1564,8 +2371,104 @@ function L:CreateShell()
     })
   end
 
+  local filterDrawer = CreateFrame("Frame", nil, f, "BackdropTemplate")
+  f.FilterDrawer = filterDrawer
+  Backdrop(filterDrawer, T.panel, T.border)
+  if C.ApplyBackground and Textures and Textures.GalleryPanel then
+    C:ApplyBackground(filterDrawer, Textures.GalleryPanel, 0, 1)
+  end
+  filterDrawer:SetFrameStrata("FULLSCREEN_DIALOG")
+  filterDrawer:SetFrameLevel((f:GetFrameLevel() or 100) + 40)
+  filterDrawer:SetSize(360, 560)
+  filterDrawer:SetMovable(true)
+  filterDrawer:EnableMouse(true)
+  filterDrawer:SetClampedToScreen(true)
+  filterDrawer:RegisterForDrag("LeftButton")
+  filterDrawer:SetScript("OnDragStart", function(self)
+    self:StartMoving()
+  end)
+  filterDrawer:SetScript("OnDragStop", function(self)
+    self:StopMovingOrSizing()
+    local db2 = NS.db and NS.db.profile
+    if db2 and db2.ui then
+      db2.ui.filterDrawerPoint = nil
+      db2.ui.filterDrawerX = self:GetLeft()
+      db2.ui.filterDrawerY = self:GetTop()
+    end
+  end)
+  filterDrawer:SetPoint("TOPLEFT", rightToolbar, "BOTTOMLEFT", 0, -4)
+  filterDrawer:SetScript("OnShow", function(self)
+    local db2 = NS.db and NS.db.profile
+    local ui2 = db2 and db2.ui
+    if ui2 and ui2.filterDrawerX and ui2.filterDrawerY then
+      self:ClearAllPoints()
+      self:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", ui2.filterDrawerX, ui2.filterDrawerY)
+    end
+  end)
+  filterDrawer:Hide()
+
+  local drawerTitle = NewFS(filterDrawer, "GameFontNormal")
+  drawerTitle:SetPoint("TOPLEFT", 10, -8)
+  drawerTitle:SetText("Filters")
+  TextColor(drawerTitle, "accent")
+
+  local drawerClose = CreateFrame("Button", nil, filterDrawer, "BackdropTemplate")
+  Backdrop(drawerClose, T.panel, T.border)
+  drawerClose:SetSize(20, 20)
+  drawerClose:SetPoint("TOPRIGHT", -8, -6)
+  Hover(drawerClose, T.panel, T.hover)
+  local drawerCloseIcon = drawerClose:CreateTexture(nil, "OVERLAY")
+  drawerCloseIcon:SetSize(12, 12)
+  drawerCloseIcon:SetPoint("CENTER")
+  drawerCloseIcon:SetTexture("Interface\\Buttons\\UI-StopButton")
+  C:TextureColor(drawerCloseIcon, "accent")
+  drawerClose:SetScript("OnClick", function() filterDrawer:Hide() end)
+
+  local drawerReset = CreateFrame("Button", nil, filterDrawer, "BackdropTemplate")
+  Backdrop(drawerReset, T.panel, T.border)
+  drawerReset:SetPoint("BOTTOMLEFT", 8, 8)
+  drawerReset:SetPoint("BOTTOMRIGHT", -8, 8)
+  drawerReset:SetHeight(26)
+  Hover(drawerReset, T.panel, T.hover)
+  local drawerResetIcon = drawerReset:CreateTexture(nil, "OVERLAY")
+  drawerResetIcon:SetSize(14, 14)
+  drawerResetIcon:SetPoint("LEFT", 10, 0)
+  drawerResetIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
+  C:TextureColor(drawerResetIcon, "accent")
+  local drawerResetText = NewFS(drawerReset, "GameFontNormal")
+  drawerResetText:SetPoint("LEFT", drawerResetIcon, "RIGHT", 6, 0)
+  drawerResetText:SetText(Loc["RESET_ALL_FILTERS"] or "Reset All Filters")
+  TextColor(drawerResetText, "accent")
+  drawerReset:SetScript("OnClick", function()
+    local fc = left and left.filterContent
+    if fc and fc.ResetAllFilters then
+      fc:ResetAllFilters()
+    end
+  end)
+
+  local drawerScroll = CreateFrame("ScrollFrame", nil, filterDrawer, "ScrollFrameTemplate")
+  drawerScroll:SetPoint("TOPLEFT", 8, -34)
+  drawerScroll:SetPoint("BOTTOMRIGHT", -26, 42)
+  drawerScroll:SetScrollChild(filterContent)
+  drawerScroll:SetScript("OnSizeChanged", function(self, w)
+    filterContent:SetWidth((w or 0) - 2)
+    if filterContent.Refresh then filterContent:Refresh() end
+  end)
+  if C and C.SkinScrollFrame then C:SkinScrollFrame(drawerScroll) end
+
+  filterContent:SetParent(drawerScroll)
+  filterContent:ClearAllPoints()
+  filterContent:SetPoint("TOPLEFT", 0, 0)
+  filterContent:SetWidth(248)
+  if filterContent.Refresh then filterContent:Refresh() end
+
+  filterScroll:Hide()
+  filtersTitle:Hide()
+  filtersLine:Hide()
+
   if NS.UI and NS.UI.ResizeBar then
     NS.UI.ResizeBar:Attach(f, header)
+    dockScale(f, header)
   end
 
   if header then
@@ -1579,9 +2482,11 @@ function L:CreateShell()
 
   if NS.UI and NS.UI.ViewFactory and NS.UI.ViewFactory.Create then
     f.view = NS.UI.ViewFactory:Create(f, UI, db)
+  elseif NS.UI and NS.UI.Viewer and NS.UI.Viewer.Create then
+    f.view = NS.UI.Viewer:Create(rightContent or right)
   end
   if f.view and f.view.SetInspectorOpen then
-    f.view:SetInspectorOpen(UI.detailsPanelOpen, true)
+    ApplyDetailsPanelForCategory(UI.activeCategory or "All", true)
   end
   if f.view and f.view.OnShow then f.view:OnShow() end
   rerender()
@@ -1612,6 +2517,7 @@ function L:CreateShell()
   if UpdateSortVisibility then UpdateSortVisibility() end
   if UpdateRightToolbarVisibility then UpdateRightToolbarVisibility() end
   RefreshModeButton()
+  RefreshViewModeButtons()
   RefreshDetailsButton()
 
   if Collection and Collection.RegisterListener and not f._hdCategoryCountsListener then

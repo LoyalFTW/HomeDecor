@@ -43,7 +43,7 @@ function UI:CreateMainFrame()
     end
   end
 
-  frame.view = View:Create(frame.RightContent or frame.Right)
+  frame.view = frame.view or View:Create(frame.RightContent or frame.Right)
 
   if self.SettingsPopup and self.SettingsPopup.Apply then
     self.SettingsPopup:Apply(frame)
@@ -52,6 +52,8 @@ function UI:CreateMainFrame()
   frame:SetScript("OnShow", function()
     if UI.SettingsPopup and UI.SettingsPopup.Apply then
       UI.SettingsPopup:Apply(frame)
+    elseif frame.view and frame.view.RequestRender then
+      frame.view:RequestRender(true)
     elseif frame.view and frame.view.Render then
       frame.view:Render()
     end

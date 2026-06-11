@@ -14,7 +14,12 @@ local CreateFrame = _G.CreateFrame
 local Controls = NS.UI.Controls
 local RowStyles = NS.UI.RowStyles
 
-local rowPool = {}
+local rowPools = {
+  section = {},
+  subsection = {},
+  vendor = {},
+  item = {},
+}
 local activeRows = {}
 
 local function GetTheme()
@@ -186,13 +191,14 @@ function Rows.CreateItemRow(parent)
 end
 
 function Rows.GetOrCreate(kind, parent)
-  if #rowPool > 0 then
-    local row = rowPool[#rowPool]
-    rowPool[#rowPool] = nil
-    if row.kind == kind then
-      return row
-    end
-    rowPool[#rowPool + 1] = row
+  kind = rowPools[kind] and kind or "item"
+
+  local pool = rowPools[kind]
+  if pool and #pool > 0 then
+    local row = pool[#pool]
+    pool[#pool] = nil
+    if parent and row.SetParent then row:SetParent(parent) end
+    return row
   end
 
   if kind == "section" then
@@ -216,7 +222,8 @@ function Rows.Release(row)
   row.fullItem = nil
   row.interactionData = nil
   row.interactionContext = nil
-  rowPool[#rowPool + 1] = row
+  local pool = rowPools[row.kind] or rowPools.item
+  pool[#pool + 1] = row
   activeRows[row] = nil
 end
 

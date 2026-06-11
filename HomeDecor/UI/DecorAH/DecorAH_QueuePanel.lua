@@ -32,16 +32,36 @@ local function NewFS(parent, template)
   return parent:CreateFontString(nil, "OVERLAY", template or "GameFontNormal")
 end
 
+local function FormatGoldText(value, suffix, decimals)
+  local text = format("%." .. tostring(decimals or 0) .. "f", value)
+  text = text:gsub("(%..-)0+$", "%1"):gsub("%.$", "")
+  return text .. (suffix or "") .. " g"
+end
+
 local function FormatMoney(copper)
   if not copper or copper == 0 then return "|cff888888-|r" end
-  local gold   = math.floor(copper / 10000)
-  local silver = math.floor((copper % 10000) / 100)
-  local cop    = copper % 100
-  local str = ""
-  if gold > 0 then str = str .. "|cffffd700" .. gold .. "g|r " end
-  if silver > 0 or gold > 0 then str = str .. "|cffc7c7cf" .. silver .. "s|r " end
-  str = str .. "|cffeda55f" .. cop .. "c|r"
-  return str
+  local sign = copper < 0 and "-" or ""
+  copper = math.abs(copper)
+
+  local gold = copper / 10000
+  local text
+  if gold >= 1000000 then
+    text = FormatGoldText(gold / 1000000, "m", 1)
+  elseif gold >= 1000 then
+    text = FormatGoldText(gold / 1000, "k", 1)
+  elseif gold >= 100 then
+    text = FormatGoldText(gold, nil, 0)
+  elseif gold >= 10 then
+    text = FormatGoldText(gold, nil, 1)
+  elseif gold >= 1 then
+    text = FormatGoldText(gold, nil, 2)
+  else
+    local silver = math.floor(copper / 100)
+    local cop = copper % 100
+    text = silver > 0 and format("%d.%02d s", silver, cop) or format("%d c", cop)
+  end
+
+  return "|cffffd700" .. sign .. text .. "|r"
 end
 
 local function CreateStyledButton(parent, width, height, text, color)

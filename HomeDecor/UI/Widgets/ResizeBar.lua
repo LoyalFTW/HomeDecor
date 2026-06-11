@@ -18,18 +18,9 @@ local function clamp(v, a, b)
   return v
 end
 
-local function ApplyCanvasScale(frame)
-  if not frame or not frame.canvas then return end
-  local c = frame.canvas
-  local bw, bh = c._baseW or c:GetWidth() or 1, c._baseH or c:GetHeight() or 1
-  local w, h = frame:GetWidth() or 1, frame:GetHeight() or 1
-  local sx, sy = (w / bw), (h / bh)
-  local s = math.min(sx, sy)
-  if s < 0.70 then s = 0.70 end
-  if s > 1.35 then s = 1.35 end
-  c:SetScale(s)
-  c:ClearAllPoints()
-  c:SetPoint("CENTER")
+local function ApplyRootScale(frame, scale)
+  if not frame or not frame.SetScale then return end
+  frame:SetScale(scale or 1)
 end
 
 function RB:Attach(rootFrame, headerFrame)
@@ -56,7 +47,7 @@ function RB:Attach(rootFrame, headerFrame)
   return w, h
 end
 
-local BASE_W, BASE_H = GetSmartBaseSize()
+local BASE_W, BASE_H = 1320, 760
   local MIN_W, MAX_W = 880, 1700
   local MIN_S, MAX_S = 0, 200
 
@@ -101,8 +92,8 @@ end
     startH = floor(BASE_H * (startW / BASE_W))
   end
 
-  rootFrame:SetSize(startW, startH)
-  ApplyCanvasScale(rootFrame)
+  rootFrame:SetSize(BASE_W, BASE_H)
+  ApplyRootScale(rootFrame, startW / BASE_W)
 
   local parent = headerFrame.controls or headerFrame
 
@@ -159,12 +150,14 @@ end
 
     local w = floor(scaleToWidth(displayToEffective(s)))
     local h = floor(BASE_H * (w / BASE_W))
+    local rootScale = w / BASE_W
 
-    rootFrame:SetSize(w, h)
-    ApplyCanvasScale(rootFrame)
+    rootFrame:SetSize(BASE_W, BASE_H)
+    ApplyRootScale(rootFrame, rootScale)
 
     db.ui.width = w
     db.ui.height = h
+    db.ui.windowScale = rootScale
 
     if NS.UI and NS.UI.Viewer and NS.UI.Viewer.RequestRender then
       NS.UI.Viewer:RequestRender(true)

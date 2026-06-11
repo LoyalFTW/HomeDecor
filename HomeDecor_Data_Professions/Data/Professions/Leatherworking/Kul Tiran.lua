@@ -6,6 +6,6 @@ NS.Data.Professions = NS.Data.Professions or {}
 NS.Data.Professions["Leatherworking"] = NS.Data.Professions["Leatherworking"] or {}
 
 NS.Data.Professions["Leatherworking"]["Kul Tiran"] = {
-  {decorID=1241, decorType="Ornamental", source={type="profession", skillID=1260485, itemID=245412}},
-  {decorID=12162, decorType="Miscellaneous - All", source={type="profession", skillID=1263859, itemID=258558}},
+  {decorID=1241, decorType="Ornamental", source={type="profession", skillID=1260485, itemID=245412}, colors={"Dark Brown","Tan","Teal"}, budgetCost=5, size="Large"},
+  {decorID=12162, decorType="Miscellaneous - All", source={type="profession", skillID=1263859, itemID=258558}, colors={"Dark Gray","Royal Blue","Teal"}, budgetCost=3, size="Large"},
 }

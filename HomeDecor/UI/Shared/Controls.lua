@@ -157,6 +157,23 @@ function C:SolidColor(texture, role, alpha)
   end
 end
 
+function C:ApplyBackground(frame, texturePath, inset, alpha)
+  if not (frame and frame.CreateTexture and texturePath) then return nil end
+  local tex = frame.__hdBgTexture
+  if not tex then
+    tex = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
+    frame.__hdBgTexture = tex
+  end
+  inset = inset or 0
+  tex:ClearAllPoints()
+  tex:SetPoint("TOPLEFT", frame, "TOPLEFT", inset, -inset)
+  tex:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -inset, inset)
+  tex:SetTexture(texturePath)
+  tex:SetAlpha(alpha or 1)
+  tex:Show()
+  return tex
+end
+
 function NS.UI.Util.SetFont(fontString, size, flags)
   if not fontString or not fontString.SetFont then return end
   local appearance = GetAppearance()
@@ -201,16 +218,18 @@ function C:ApplyHover(btn, bgNormal, bgHover, borderNormal, borderHover)
 
   btn:HookScript("OnEnter", function() setColors(hbg, hbd) end)
   btn:HookScript("OnLeave", function() setColors(nbg, nbd) end)
-  btn:HookScript("OnMouseDown", function()
-    setColors({ hbg[1] * 0.85, hbg[2] * 0.85, hbg[3] * 0.85, hbg[4] }, hbd)
-  end)
-  btn:HookScript("OnMouseUp", function()
-    if btn.IsMouseOver and btn:IsMouseOver() then
-      setColors(hbg, hbd)
-    else
-      setColors(nbg, nbd)
-    end
-  end)
+  if not btn.__hdBtnSkinned then
+    btn:HookScript("OnMouseDown", function()
+      setColors({ hbg[1] * 0.85, hbg[2] * 0.85, hbg[3] * 0.85, hbg[4] }, hbd)
+    end)
+    btn:HookScript("OnMouseUp", function()
+      if btn.IsMouseOver and btn:IsMouseOver() then
+        setColors(hbg, hbd)
+      else
+        setColors(nbg, nbd)
+      end
+    end)
+  end
   btn:HookScript("OnDisable", function()
     setColors({ nbg[1], nbg[2], nbg[3], 0.55 }, { nbd[1], nbd[2], nbd[3], 0.35 })
   end)
@@ -355,19 +374,21 @@ function C:ApplyHeaderTexture(frame, big)
   if not frame or frame.__hdHeaderSkinned then return end
   local _, _, X = GetTheme()
   if not X then return end
+  local path = big and (X.BigHeaderBar or X.HeaderBar) or X.HeaderBar
+  if not path then return end
 
   frame.__hdHeaderSkinned = true
 
   local tex = frame:CreateTexture(nil, "BACKGROUND", nil, 0)
   frame.__hdHeaderTex = tex
   tex:SetAllPoints(frame)
-  tex:SetTexture(big and (X.BigHeaderBar or X.HeaderBar) or X.HeaderBar)
+  tex:SetTexture(path)
   tex:SetAlpha(1)
 
   local hover = frame:CreateTexture(nil, "ARTWORK", nil, 1)
   frame.__hdHeaderHover = hover
   hover:SetAllPoints(frame)
-  hover:SetTexture(big and (X.BigHeaderBar or X.HeaderBar) or X.HeaderBar)
+  hover:SetTexture(path)
   hover:SetAlpha(0)
 
   if frame.EnableMouse then

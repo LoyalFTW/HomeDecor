@@ -4,8 +4,8 @@ NS.UI.StatusIcon = NS.UI.StatusIcon or {}
 
 local TEX_CHECKBOX = "Interface\\Buttons\\UI-CheckBox-Check"
 local TEX_READY    = "Interface\\RaidFrame\\ReadyCheck-Ready"
-local TEX_ALLI     = "Interface\\Icons\\INV_BannerPVP_02"
-local TEX_HORDE    = "Interface\\Icons\\INV_BannerPVP_01"
+local TEX_ALLI     = "Interface\\FriendsFrame\\PlusManz-Alliance"
+local TEX_HORDE    = "Interface\\FriendsFrame\\PlusManz-Horde"
 
 NS.UI.StatusIcon.TEX_CHECK = TEX_CHECKBOX
 NS.UI.StatusIcon.TEX_ALLI  = TEX_ALLI
@@ -15,6 +15,14 @@ local function IsCollectedState(state)
     return state == "COLLECTED"
         or state == true
         or (type(state) == "table" and state.collected)
+end
+
+local function NormalizeFaction(value)
+    if type(value) ~= "string" then return nil end
+    local v = value:gsub("^%s+", ""):gsub("%s+$", ""):lower()
+    if v == "alliance" then return "Alliance" end
+    if v == "horde" then return "Horde" end
+    return nil
 end
 
 function NS.UI.StatusIcon:Attach(parent, state, it)
@@ -34,13 +42,15 @@ function NS.UI.StatusIcon:Attach(parent, state, it)
             end
         end
 
-        local faction = it and (it.faction or (it.source and it.source.faction))
+        local faction = it and NormalizeFaction(it.faction or (it.source and it.source.faction))
         if parent.faction then
             if faction == "Alliance" then
                 parent.faction:SetTexture(TEX_ALLI)
+                if parent.faction.SetTexCoord then parent.faction:SetTexCoord(0, 1, 0, 1) end
                 parent.faction:Show()
             elseif faction == "Horde" then
                 parent.faction:SetTexture(TEX_HORDE)
+                if parent.faction.SetTexCoord then parent.faction:SetTexCoord(0, 1, 0, 1) end
                 parent.faction:Show()
             else
                 parent.faction:Hide()

@@ -211,18 +211,50 @@ end
 
 function R.AddMiniPinsForMap(mapID)
   if not HBDPins then return end
-  P.ClearMiniPins()
   local vendorList = D.GetVendorsForMap(mapID)
-  if type(vendorList) ~= "table" or #vendorList == 0 then return end
+  if type(vendorList) ~= "table" or #vendorList == 0 then
+    P.ClearMiniPins()
+    return
+  end
 
-  D.ResolveNamesFor(vendorList)
   local style, color, size = U.GetPinSettings()
   local PIN_SIZE = U and U.PIN_SIZE_MINI or 14
   local hideCompletedMini = IsHideCompletedVendors()
+  local visibleVendors = {}
+  local sigParts = {
+    tostring(mapID or ""),
+    tostring(style or ""),
+    tostring(size or ""),
+    tostring(hideCompletedMini and 1 or 0),
+    tostring(color and color.r or ""),
+    tostring(color and color.g or ""),
+    tostring(color and color.b or ""),
+  }
 
   for vendorIndex = 1, #vendorList do
     local vendor = vendorList[vendorIndex]
     if IsEventVendorActive(vendor) and not (hideCompletedMini and IsVendorFullyCompleted(vendor.id)) then
+      visibleVendors[#visibleVendors + 1] = vendor
+      sigParts[#sigParts + 1] = tostring(vendor.id or "")
+      sigParts[#sigParts + 1] = tostring(vendor.x or "")
+      sigParts[#sigParts + 1] = tostring(vendor.y or "")
+    end
+  end
+
+  local signature = table.concat(sigParts, "|")
+  if P.miniSignature == signature then
+    return
+  end
+
+  P.ClearMiniPins()
+  P.miniSignature = signature
+
+  if #visibleVendors == 0 then return end
+
+  D.ResolveNamesFor(visibleVendors)
+
+  for vendorIndex = 1, #visibleVendors do
+    local vendor = visibleVendors[vendorIndex]
       local pinFrame = P.EnsurePool()
       pinFrame.vendor = vendor
       pinFrame:SetSize(PIN_SIZE * size, PIN_SIZE * size)
@@ -298,7 +330,6 @@ function R.AddMiniPinsForMap(mapID)
         local floatOnEdge = not (IsIndoors and IsIndoors())
         HBDPins:AddMinimapIconMap(ADDON, pinFrame, mapID, vendor.x, vendor.y, true, floatOnEdge)
       end)
-    end
   end
 end
 

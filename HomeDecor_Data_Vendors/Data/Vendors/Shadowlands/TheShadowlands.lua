@@ -16,7 +16,7 @@ NS.Data.Vendors["Shadowlands"]["TheShadowlands"] = {
       worldmap="1543:4680:4160"
     },
     items={
-      {decorID=4181, source={type="vendor", itemID=248125, currency="10000", currencytype=1767}, requirements={achievement={id=20501}, rep="true"}},
+      {decorID=4181, source={type="vendor", itemID=248125, currency="10000", currencytype=1767}, requirements={achievement={id=20501}, rep="true"}, colors={"Blue","Cyan","Royal Blue"}, budgetCost=5, size="Huge"},
     }
   },
 
@@ -29,7 +29,7 @@ NS.Data.Vendors["Shadowlands"]["TheShadowlands"] = {
       worldmap="1699:5400:2560"
     },
     items={
-      {decorID=756, source={type="vendor", itemID=245501, currency="1500", currencytype=1813}, requirements={rep="true"}},
+      {decorID=756, source={type="vendor", itemID=245501, currency="1500", currencytype=1813}, colors={"Dark Brown","Deep Red","Light Brown"}, requirements={rep="true"}, budgetCost=1, size="Small"},
     }
   },
 

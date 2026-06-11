@@ -49,7 +49,7 @@ local function apply(tex, on)
 end
 
 function Star:Attach(parent, itemID, onChanged)
-    if not parent or not itemID then return end
+    if not parent then return end
     local b = CreateFrame("Button", nil, parent)
     b:SetSize(20, 20)
 
@@ -57,18 +57,33 @@ function Star:Attach(parent, itemID, onChanged)
     tex:SetAllPoints()
 
     local function refresh()
-        apply(tex, isFav(itemID))
+        apply(tex, b.itemID and isFav(b.itemID))
     end
 
     b:SetScript("OnClick", function()
-        toggle(itemID)
+        local id = b.itemID
+        if not id then return end
+        toggle(id)
         refresh()
         NotifyListeners()
-        if onChanged then onChanged(itemID) end
+        if b.onChanged then b.onChanged(id) end
     end)
 
-    refresh()
     b.Refresh = refresh
+    b.SetItemID = function(self, id, changedCallback)
+        self.itemID = id
+        if changedCallback ~= nil then
+            self.onChanged = changedCallback
+        end
+        if id then
+            refresh()
+            self:Show()
+        else
+            self:Hide()
+        end
+    end
+
+    b:SetItemID(itemID, onChanged)
     return b
 end
 

@@ -12,6 +12,24 @@ local function ThemeColors()
   return (NS.UI and NS.UI.Theme and NS.UI.Theme.colors) or {}
 end
 
+local function ThemeTextures()
+  return (NS.UI and NS.UI.Theme and NS.UI.Theme.textures) or {}
+end
+
+local function SetFrameTexture(frame, key, path, layer, subLevel, alpha)
+  if not (frame and frame.CreateTexture and path) then return nil end
+  local tex = frame[key]
+  if not tex then
+    tex = frame:CreateTexture(nil, layer or "BACKGROUND", nil, subLevel or -5)
+    frame[key] = tex
+  end
+  tex:SetAllPoints(frame)
+  tex:SetTexture(path)
+  tex:SetAlpha(alpha or 1)
+  tex:Show()
+  return tex
+end
+
 local function ClampAlpha(x)
   x = tonumber(x) or 0
   if x < 0 then return 0 end
@@ -168,12 +186,18 @@ function RS:ApplyHover(frame, baseAlpha)
 
   frame:HookScript("OnEnter", function(self)
     if self._rsSelected then return end
+    local X = ThemeTextures()
+    if self.__galleryCardTex and X.GalleryCardHover then self.__galleryCardTex:SetTexture(X.GalleryCardHover) end
+    if self.__galleryNavTex and X.GalleryNavHover then self.__galleryNavTex:SetTexture(X.GalleryNavHover) end
     local a = GetInheritedAlpha(self) * (tonumber(self._rsHoverBase) or 0.14)
     SetHighlight(self, a, true)
   end)
 
   frame:HookScript("OnLeave", function(self)
     if self._rsSelected then return end
+    local X = ThemeTextures()
+    if self.__galleryCardTex and X.GalleryCard then self.__galleryCardTex:SetTexture(X.GalleryCard) end
+    if self.__galleryNavTex and X.GalleryNav then self.__galleryNavTex:SetTexture(X.GalleryNav) end
     if self._rsHL then self._rsHL:Hide() end
   end)
 end
@@ -183,6 +207,14 @@ function RS:SetSelected(frame, selected, alpha)
   EnsureHighlight(frame)
 
   frame._rsSelected = selected and true or false
+  if frame.__galleryCardTex then
+    local X = ThemeTextures()
+    frame.__galleryCardTex:SetTexture(frame._rsSelected and (X.GalleryCardSelected or X.GalleryCard) or (X.GalleryCard or ""))
+  end
+  if frame.__galleryNavTex then
+    local X = ThemeTextures()
+    frame.__galleryNavTex:SetTexture(frame._rsSelected and (X.GalleryNavSelected or X.GalleryNav) or (X.GalleryNav or ""))
+  end
   if frame._rsSelected then
     local a = GetInheritedAlpha(frame) * (tonumber(alpha) or 0.22)
     SetHighlight(frame, a, true)
@@ -389,6 +421,10 @@ function RS:SkinTile(row, hoverAlpha)
   self:Reset(row)
 
   self:ApplyBackdrop(row, "item")
+  do
+    local X = ThemeTextures()
+    row.__galleryCardTex = SetFrameTexture(row, "__galleryCardTex", X.GalleryCard, "BACKGROUND", -6, 1)
+  end
   self:ApplyHover(row, hoverAlpha or 0.14)
   self:ApplyFonts(row)
 
@@ -397,7 +433,7 @@ function RS:SkinTile(row, hoverAlpha)
   self:ApplyDivider(row.titleDiv, 0.08)
 
   if row.mediaBg then
-    self:ApplyAccent(row.mediaBg, 0.055)
+    row.mediaBg:SetColorTexture(0, 0, 0, 0.18)
   end
 end
 

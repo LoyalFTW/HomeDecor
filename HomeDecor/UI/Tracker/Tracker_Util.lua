@@ -14,6 +14,7 @@ local DecorIconCache = {}
 local DecorNameCache = {}
 local QuestTitleCache = {}
 local AchTitleCache = {}
+local QUEST_TITLE_PENDING = {}
 
 local C_HousingCatalog = C_HousingCatalog
 local C_QuestLog = C_QuestLog
@@ -166,8 +167,15 @@ local function GetQuestTitle(id)
   if not id then return end
 
   local cached = QuestTitleCache[id]
-  if cached ~= nil then
+  if cached ~= nil and cached ~= QUEST_TITLE_PENDING then
     return cached or nil
+  end
+
+  local titles = NS.Data and NS.Data.QuestTitles
+  local localTitle = titles and titles[id]
+  if localTitle and localTitle ~= "" then
+    QuestTitleCache[id] = localTitle
+    return localTitle
   end
 
   local title
@@ -178,7 +186,18 @@ local function GetQuestTitle(id)
     end
   end
 
-  QuestTitleCache[id] = title or false
+  if title then
+    QuestTitleCache[id] = title
+    return title
+  end
+
+  if C_QuestLog and C_QuestLog.RequestLoadQuestByID then
+    pcall(C_QuestLog.RequestLoadQuestByID, id)
+    QuestTitleCache[id] = QUEST_TITLE_PENDING
+  else
+    QuestTitleCache[id] = nil
+  end
+
   return title
 end
 

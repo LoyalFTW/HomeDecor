@@ -47,6 +47,7 @@ end
 
 local achNameCache = {}
 local questNameCache = {}
+local QUEST_TITLE_PENDING = {}
 
 local function GetAchievementTitleSafe(id)
   id = tonumber(id)
@@ -76,34 +77,46 @@ local function GetQuestTitleSafe(id)
     return D.GetQuestTitle(id)
   end
 
+  local titles = NS.Data and NS.Data.QuestTitles
+  local localTitle = titles and titles[id]
+  if localTitle and localTitle ~= "" then
+    questNameCache[id] = localTitle
+    return localTitle
+  end
+
   if questNameCache[id] ~= nil then
-    return questNameCache[id] or nil
+    local cached = questNameCache[id]
+    if cached ~= QUEST_TITLE_PENDING then
+      return cached or nil
+    end
   end
 
   if C_QuestLog and C_QuestLog.GetTitleForQuestID then
-    local title = C_QuestLog.GetTitleForQuestID(id)
-    if title and title ~= "" then
+    local ok, title = pcall(C_QuestLog.GetTitleForQuestID, id)
+    if ok and title and title ~= "" then
       questNameCache[id] = title
       return title
     end
   end
 
   if C_QuestLog and C_QuestLog.RequestLoadQuestByID then
-    C_QuestLog.RequestLoadQuestByID(id)
-    C_Timer.After(0.1, function()
-      if C_QuestLog and C_QuestLog.GetTitleForQuestID then
-        local title = C_QuestLog.GetTitleForQuestID(id)
-        if title and title ~= "" then
-          questNameCache[id] = title
-          RequestAsyncRefresh()
-        else
-          questNameCache[id] = false
+    pcall(C_QuestLog.RequestLoadQuestByID, id)
+    if questNameCache[id] ~= QUEST_TITLE_PENDING and C_Timer and C_Timer.After then
+      C_Timer.After(0.1, function()
+        if C_QuestLog and C_QuestLog.GetTitleForQuestID then
+          local ok, title = pcall(C_QuestLog.GetTitleForQuestID, id)
+          if ok and title and title ~= "" then
+            questNameCache[id] = title
+            RequestAsyncRefresh()
+          else
+            questNameCache[id] = nil
+          end
         end
-      end
-    end)
+      end)
+    end
   end
 
-  questNameCache[id] = false
+  questNameCache[id] = QUEST_TITLE_PENDING
   return nil
 end
 
@@ -144,13 +157,14 @@ local function GetRequirementLink(it)
   end
   if not r then return nil end
 
-  if r.quest and r.quest.id then
-    local id = r.quest.id
+  if r.quest and (type(r.quest) == "number" or r.quest.id) then
+    local id = (type(r.quest) == "number") and r.quest or r.quest.id
     local completed = IsQuestComplete(id)
+    local title = (type(r.quest) == "table") and (r.quest.name or r.quest.title) or nil
     return {
       kind = "quest",
       id = id,
-      text = r.quest.title or GetQuestTitleSafe(id) or ("Quest " .. tostring(id)),
+      text = title or GetQuestTitleSafe(id) or ("Quest #" .. tostring(id)),
       completed = completed
     }
   end
@@ -394,9 +408,10 @@ local function GetQuestRequirement(it)
     end
 
     local isComplete = IsQuestComplete(questID)
+    local questName = GetQuestTitleSafe(questID)
 
     return {
-      text = "Quest #" .. tostring(questID),
+      text = questName or ("Quest #" .. tostring(questID)),
       questID = questID,
       met = isComplete
     }

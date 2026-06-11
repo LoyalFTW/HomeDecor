@@ -196,6 +196,7 @@ function P.ClearMiniPins()
     P.RecycleFrame(icon)
   end
   wipe(P.usedMini)
+  P.miniSignature = nil
 end
 
 return P

@@ -270,6 +270,10 @@ end
 local function GetPreviewCostText(entry)
     if not entry then return nil end
 
+    local currencyFallbacks = {
+        [1792] = "Honor",
+    }
+
     local item = entry.item or entry
     local src = item and item.source or {}
     local currencyAmount = tonumber(src.currency or src.currencyText or src.costText)
@@ -280,15 +284,22 @@ local function GetPreviewCostText(entry)
         if tostring(currencyTypeID) == "gold" then
             return "Cost: " .. tostring(currencyAmount) .. "g"
         end
+        if tostring(currencyTypeID) == "money" and _G.GetCoinTextureString then
+            return "Cost: " .. _G.GetCoinTextureString(currencyAmount)
+        end
 
         local currencyName = nil
-        if type(currencyTypeID) == "string" and not tonumber(currencyTypeID) then
+        local numericID = tonumber(currencyTypeID)
+        if type(currencyTypeID) == "string" and not numericID then
             currencyName = currencyTypeID
         elseif _G.C_CurrencyInfo and _G.C_CurrencyInfo.GetCurrencyInfo then
-            local ok, info = pcall(_G.C_CurrencyInfo.GetCurrencyInfo, tonumber(currencyTypeID))
+            local ok, info = pcall(_G.C_CurrencyInfo.GetCurrencyInfo, numericID)
             if ok and info and info.name then
                 currencyName = info.name
             end
+        end
+        if not currencyName and numericID then
+            currencyName = currencyFallbacks[numericID]
         end
 
         return "Cost: " .. tostring(currencyAmount) .. " " .. (currencyName or "Currency")
@@ -484,9 +495,47 @@ local function BuildVendorGroupedList()
     return out
 end
 
+local function BuildPvPList()
+    local out, seen = {}, {}
+    local Loader = NS.Systems and NS.Systems.DataLoader
+    if Loader and Loader.EnsureForCategory then Loader:EnsureForCategory("PvP") end
+
+    local VD = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
+    local data = VD and VD.GetActiveData and VD.GetActiveData({ activeCategory = "PvP" })
+    if type(data) ~= "table" then return out end
+
+    for exp, expTbl in pairs(data) do
+        if type(expTbl) == "table" then
+            for zone, vendorList in pairs(expTbl) do
+                if type(vendorList) == "table" then
+                    for _, vendorNode in ipairs(vendorList) do
+                        if type(vendorNode) == "table" and type(vendorNode.items) == "table" then
+                            for _, leaf in ipairs(vendorNode.items) do
+                                if type(leaf) == "table" and leaf.decorID then
+                                    if VD and VD.AttachVendorCtx then VD.AttachVendorCtx(leaf, vendorNode) end
+                                    leaf.source = leaf.source or {}
+                                    leaf.source.type = "pvp"
+                                    leaf._expansion = leaf._expansion or exp
+                                    leaf._navZoneKey = leaf._navZoneKey or zone
+                                    ScanNode(leaf, exp, out, seen)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return out
+end
+
 local function BuildRawList(category)
     if category == "Vendors" then return BuildVendorGroupedList() end
+    if category == "PvP" or category == "PVP" then return BuildPvPList() end
     local out, seen = {}, {}
+    local Loader = NS.Systems and NS.Systems.DataLoader
+    if Loader and Loader.EnsureForCategory then Loader:EnsureForCategory(category) end
     local catData = NS.Data and NS.Data[category]
     if type(catData) == "table" then
         ScanNode(catData, nil, out, seen)
@@ -1369,8 +1418,8 @@ function CM:_Build()
         previewMeta:SetText(GetPreviewSummaryText(d))
         do
             local detailLines = {}
-            local costText = GetPreviewCostText(d)
-            local reqText = GetPreviewRequirementText(d)
+            local costText = GetPreviewCostText(enriched)
+            local reqText = GetPreviewRequirementText(enriched)
             if costText then detailLines[#detailLines + 1] = costText end
             if reqText and reqText ~= "" then
                 reqText = tostring(reqText):gsub("\r", " "):gsub("\n.*", "")
@@ -1651,12 +1700,17 @@ function CM:_Build()
 
             SortList(rawList, vendorGrouped)
 
-            progTotal   = 0
-            progCollected = 0
-            for _, it in ipairs(rawList) do
-                if it.kind ~= "vendorHeader" then
-                    progTotal = progTotal + 1
-                    if it.collected then progCollected = progCollected + 1 end
+            local GI = NS.Systems and NS.Systems.GlobalIndex
+            if GI and GI.GetCounts then
+                progCollected, progTotal = GI:GetCounts(activeCategory)
+            else
+                progTotal   = 0
+                progCollected = 0
+                for _, it in ipairs(rawList) do
+                    if it.kind ~= "vendorHeader" then
+                        progTotal = progTotal + 1
+                        if it.collected then progCollected = progCollected + 1 end
+                    end
                 end
             end
 

@@ -57,7 +57,7 @@ local M = {}
 NS.UI.FilterPopup = M
 
 function M:Build(popup, env)
-    local C, T, Dropdown, Filters, FiltersSys = env.C, env.T, env.Dropdown, env.Filters, env.FiltersSys
+    local C, T, Dropdown, Filters, FiltersSys, UI = env.C, env.T, env.Dropdown, env.Filters, env.FiltersSys, env.UI
     local HeaderCtrl = NS.UI and NS.UI.HeaderController
     local rerender = env.rerender
     local function TextColor(fs, role, alpha)
@@ -108,7 +108,9 @@ function M:Build(popup, env)
     local function syncAll()
         for i = 1, #popup._rows do
             local r = popup._rows[i]
-            if r and r._get and r.dd then
+            if r and r.refresh then
+                r.refresh()
+            elseif r and r._get and r.dd then
                 if r.isCheck then
                     if r.dd.indicator then
                         if r._get() == true then
@@ -232,6 +234,52 @@ function M:Build(popup, env)
         popup._allElements[#popup._allElements + 1] = b.indicator
     end
 
+    local function quickGroup(defs)
+        local r = { isQuickGroup = true, buttons = {} }
+
+        for i = 1, #defs do
+            local def = defs[i]
+            local b = CreateFrame("Button", nil, popup, "BackdropTemplate")
+            b:SetHeight(26)
+            U.Backdrop(b, C, T.panel, T.border)
+            U.BindBorderHover(b, T.accent, T.border)
+
+            b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            b.text:SetPoint("CENTER")
+            b.text:SetText(def.text)
+            TextColor(b.text, "text")
+
+            b:SetScript("OnClick", function()
+                if def.onClick then def.onClick() end
+                syncAll()
+                rebuild()
+            end)
+
+            r.buttons[#r.buttons + 1] = { button = b, active = def.active }
+            popup._allElements[#popup._allElements + 1] = b
+            popup._allElements[#popup._allElements + 1] = b.text
+        end
+
+        r.refresh = function()
+            for i = 1, #r.buttons do
+                local item = r.buttons[i]
+                local b = item.button
+                local selected = item.active and item.active()
+                if selected then
+                    U.Backdrop(b, C, T.row, T.accent)
+                    TextColor(b.text, "highlight")
+                else
+                    U.Backdrop(b, C, T.panel, T.border)
+                    TextColor(b.text, "text", 0.9)
+                end
+            end
+        end
+
+        popup._rows[#popup._rows + 1] = r
+        r.refresh()
+        return r
+    end
+
     local function ddRow(titleText, get, set, valuesFn, resetsCategory)
         local r = headerRow(titleText)
         r._get = get
@@ -256,6 +304,339 @@ function M:Build(popup, env)
         setDDText(dd, get())
 
         popup._allElements[#popup._allElements + 1] = dd
+    end
+
+    local COLOR_SWATCHES = {
+        Black = {0.02, 0.02, 0.02, 1},
+        Gray = {0.38, 0.38, 0.38, 1},
+        Grey = {0.38, 0.38, 0.38, 1},
+        Silver = {0.62, 0.62, 0.6, 1},
+        ["Light Gray"] = {0.68, 0.68, 0.66, 1},
+        ["Light Grey"] = {0.68, 0.68, 0.66, 1},
+        ["Dark Gray"] = {0.22, 0.22, 0.22, 1},
+        ["Dark Grey"] = {0.22, 0.22, 0.22, 1},
+        White = {0.95, 0.95, 0.9, 1},
+        OffWhite = {0.86, 0.86, 0.78, 1},
+        ["Off White"] = {0.86, 0.86, 0.78, 1},
+        Ivory = {0.9, 0.88, 0.72, 1},
+        Cream = {0.9, 0.86, 0.66, 1},
+        Beige = {0.74, 0.62, 0.44, 1},
+        Red = {0.95, 0.05, 0.04, 1},
+        ["Light Red"] = {0.95, 0.28, 0.28, 1},
+        ["Deep Red"] = {0.62, 0.02, 0.03, 1},
+        ["Dark Red"] = {0.5, 0.02, 0.03, 1},
+        Maroon = {0.5, 0.03, 0.08, 1},
+        Crimson = {0.75, 0.03, 0.18, 1},
+        Pink = {0.95, 0.04, 0.7, 1},
+        ["Light Pink"] = {0.95, 0.48, 0.72, 1},
+        Rose = {0.72, 0.16, 0.32, 1},
+        Magenta = {0.86, 0.02, 0.85, 1},
+        Purple = {0.48, 0.34, 0.78, 1},
+        ["Light Purple"] = {0.58, 0.43, 0.82, 1},
+        ["Dark Purple"] = {0.26, 0.04, 0.42, 1},
+        Violet = {0.32, 0.04, 0.5, 1},
+        Lavender = {0.58, 0.45, 0.82, 1},
+        Blue = {0.08, 0.1, 0.92, 1},
+        ["Light Blue"] = {0.25, 0.45, 0.9, 1},
+        ["Deep Blue"] = {0.05, 0.06, 0.46, 1},
+        ["Dark Blue"] = {0.04, 0.05, 0.42, 1},
+        Navy = {0.03, 0.05, 0.24, 1},
+        Cyan = {0.08, 0.86, 0.9, 1},
+        Aqua = {0.08, 0.78, 0.82, 1},
+        Teal = {0.03, 0.48, 0.47, 1},
+        Turquoise = {0.03, 0.68, 0.66, 1},
+        ["Dark Teal"] = {0.02, 0.32, 0.32, 1},
+        Green = {0.02, 0.9, 0.05, 1},
+        ["Light Green"] = {0.35, 0.8, 0.28, 1},
+        ["Deep Green"] = {0.13, 0.48, 0.14, 1},
+        ["Dark Green"] = {0.05, 0.34, 0.08, 1},
+        Lime = {0.78, 0.86, 0.02, 1},
+        Olive = {0.46, 0.48, 0.05, 1},
+        Yellow = {1, 0.95, 0.02, 1},
+        ["Light Yellow"] = {0.96, 0.88, 0.28, 1},
+        Gold = {1, 0.66, 0.04, 1},
+        Orange = {0.93, 0.48, 0.08, 1},
+        ["Dark Orange"] = {0.76, 0.3, 0.04, 1},
+        Brown = {0.39, 0.24, 0.1, 1},
+        ["Light Brown"] = {0.56, 0.34, 0.15, 1},
+        ["Dark Brown"] = {0.26, 0.13, 0.05, 1},
+        Copper = {0.62, 0.28, 0.09, 1},
+        Bronze = {0.68, 0.4, 0.17, 1},
+        Rust = {0.58, 0.22, 0.08, 1},
+        Tan = {0.78, 0.65, 0.43, 1},
+    }
+
+    local function colorForName(name)
+        if COLOR_SWATCHES[name] then return COLOR_SWATCHES[name] end
+
+        local key = tostring(name or ""):lower():gsub("[_%-%s]+", " ")
+        if key:find("black", 1, true) then return COLOR_SWATCHES.Black end
+        if key:find("white", 1, true) then return COLOR_SWATCHES.White end
+        if key:find("ivory", 1, true) then return COLOR_SWATCHES.Ivory end
+        if key:find("cream", 1, true) then return COLOR_SWATCHES.Cream end
+        if key:find("beige", 1, true) then return COLOR_SWATCHES.Beige end
+        if key:find("gray", 1, true) or key:find("grey", 1, true) then
+            if key:find("light", 1, true) then return COLOR_SWATCHES["Light Gray"] end
+            if key:find("dark", 1, true) or key:find("deep", 1, true) then return COLOR_SWATCHES["Dark Gray"] end
+            return COLOR_SWATCHES.Gray
+        end
+        if key:find("silver", 1, true) then return COLOR_SWATCHES.Silver end
+        if key:find("red", 1, true) or key:find("crimson", 1, true) then
+            if key:find("light", 1, true) then return COLOR_SWATCHES["Light Red"] end
+            if key:find("dark", 1, true) or key:find("deep", 1, true) then return COLOR_SWATCHES["Deep Red"] end
+            return COLOR_SWATCHES.Red
+        end
+        if key:find("pink", 1, true) or key:find("rose", 1, true) then return COLOR_SWATCHES.Pink end
+        if key:find("magenta", 1, true) then return COLOR_SWATCHES.Magenta end
+        if key:find("purple", 1, true) or key:find("violet", 1, true) or key:find("lavender", 1, true) then
+            if key:find("dark", 1, true) or key:find("deep", 1, true) then return COLOR_SWATCHES["Dark Purple"] end
+            if key:find("light", 1, true) then return COLOR_SWATCHES["Light Purple"] end
+            return COLOR_SWATCHES.Purple
+        end
+        if key:find("teal", 1, true) then
+            if key:find("dark", 1, true) or key:find("deep", 1, true) then return COLOR_SWATCHES["Dark Teal"] end
+            return COLOR_SWATCHES.Teal
+        end
+        if key:find("turquoise", 1, true) or key:find("aqua", 1, true) or key:find("cyan", 1, true) then return COLOR_SWATCHES.Cyan end
+        if key:find("blue", 1, true) or key:find("navy", 1, true) then
+            if key:find("light", 1, true) then return COLOR_SWATCHES["Light Blue"] end
+            if key:find("dark", 1, true) or key:find("deep", 1, true) or key:find("navy", 1, true) then return COLOR_SWATCHES["Dark Blue"] end
+            return COLOR_SWATCHES.Blue
+        end
+        if key:find("green", 1, true) then
+            if key:find("light", 1, true) then return COLOR_SWATCHES["Light Green"] end
+            if key:find("dark", 1, true) or key:find("deep", 1, true) then return COLOR_SWATCHES["Deep Green"] end
+            return COLOR_SWATCHES.Green
+        end
+        if key:find("lime", 1, true) then return COLOR_SWATCHES.Lime end
+        if key:find("olive", 1, true) then return COLOR_SWATCHES.Olive end
+        if key:find("yellow", 1, true) then return COLOR_SWATCHES.Yellow end
+        if key:find("gold", 1, true) then return COLOR_SWATCHES.Gold end
+        if key:find("orange", 1, true) then return COLOR_SWATCHES.Orange end
+        if key:find("copper", 1, true) then return COLOR_SWATCHES.Copper end
+        if key:find("bronze", 1, true) then return COLOR_SWATCHES.Bronze end
+        if key:find("rust", 1, true) then return COLOR_SWATCHES.Rust end
+        if key:find("tan", 1, true) then return COLOR_SWATCHES.Tan end
+        if key:find("brown", 1, true) then
+            if key:find("light", 1, true) then return COLOR_SWATCHES["Light Brown"] end
+            if key:find("dark", 1, true) or key:find("deep", 1, true) then return COLOR_SWATCHES["Dark Brown"] end
+            return COLOR_SWATCHES.Brown
+        end
+
+        return {0.45, 0.45, 0.45, 1}
+    end
+
+    local function hasColorSelection(colors)
+        if type(colors) ~= "table" then return false end
+        for _, selected in pairs(colors) do
+            if selected == true then return true end
+        end
+        return false
+    end
+
+    local function selectedColors()
+        local f = F()
+        if not f then return nil end
+
+        f.colors = type(f.colors) == "table" and f.colors or {}
+        if f.color and f.color ~= "ALL" then
+            f.colors[f.color] = true
+            f.color = "ALL"
+        end
+
+        return f.colors, f
+    end
+
+    local function colorSelected(value)
+        local colors = selectedColors()
+        return type(colors) == "table" and colors[value] == true
+    end
+
+    local function colorGrid(titleText, get, set, valuesFn)
+        local r = headerRow(titleText)
+        r.isColorGrid = true
+        r._get = get
+        r.swatches = {}
+
+        local function ensureSwatches()
+            local opts = valuesFn and valuesFn() or {}
+            local needed = 0
+
+            for i = 1, #opts do
+                local opt = opts[i]
+                if opt and not opt.separator and opt.value ~= "ALL" then
+                    needed = needed + 1
+                    local b = r.swatches[needed]
+                    if not b then
+                        b = CreateFrame("Button", nil, popup, "BackdropTemplate")
+                        b:SetSize(34, 34)
+                        b.fill = b:CreateTexture(nil, "ARTWORK")
+                        b.fill:SetPoint("TOPLEFT", 3, -3)
+                        b.fill:SetPoint("BOTTOMRIGHT", -3, 3)
+                        b.fill:SetTexture("Interface\\Buttons\\WHITE8x8")
+                        b.check = b:CreateTexture(nil, "OVERLAY")
+                        b.check:SetSize(22, 22)
+                        b.check:SetPoint("CENTER", 0, 0)
+                        b.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
+                        b.check:Hide()
+                        r.swatches[needed] = b
+                        popup._allElements[#popup._allElements + 1] = b
+                        popup._allElements[#popup._allElements + 1] = b.fill
+                        popup._allElements[#popup._allElements + 1] = b.check
+                    end
+
+                    local value = opt.value
+                    local swatch = colorForName(value)
+                    b._value = value
+                    b.fill:SetColorTexture(swatch[1], swatch[2], swatch[3], swatch[4] or 1)
+                    b:SetScript("OnClick", function(self)
+                        local colors, f = selectedColors()
+                        if not colors or not f then return end
+                        local colorValue = self._value
+                        if colors[colorValue] == true then
+                            colors[colorValue] = nil
+                        else
+                            colors[colorValue] = true
+                        end
+                        f.color = "ALL"
+                        set(colors)
+                        if Filters then
+                            Filters.colors = colors
+                            Filters.color = "ALL"
+                        end
+                        if r.refresh then r.refresh() end
+                        rebuild()
+                    end)
+                    b:SetScript("OnEnter", function(self)
+                        self:SetBackdropBorderColor(unpack(T.accent))
+                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                        GameTooltip:SetText(value, nil, nil, nil, nil, true)
+                        GameTooltip:Show()
+                    end)
+                    b:SetScript("OnLeave", function(self)
+                        local selected = colorSelected(self._value)
+                        local border = selected and T.accent or T.border
+                        self:SetBackdropBorderColor(unpack(border))
+                        GameTooltip:Hide()
+                    end)
+                end
+            end
+
+            for i = needed + 1, #r.swatches do
+                r.swatches[i]:Hide()
+            end
+
+            r.count = needed
+        end
+
+        r.refresh = function()
+            ensureSwatches()
+            for i = 1, #r.swatches do
+                local b = r.swatches[i]
+                if b and b._value then
+                    local selected = colorSelected(b._value)
+                    U.Backdrop(b, C, selected and T.row or T.panel, selected and T.accent or T.border)
+                    if b.check then b.check:SetShown(selected) end
+                end
+            end
+        end
+
+        popup._rows[#popup._rows + 1] = r
+        r.refresh()
+    end
+
+    local function multiCheckGroup(titleText, selectedKey, valuesFn)
+        local r = headerRow(titleText)
+        r.isMultiCheckGroup = true
+        r.buttons = {}
+        r.selectedKey = selectedKey
+
+        local function selectedTable()
+            local f = F()
+            if not f then return nil end
+            f[selectedKey] = type(f[selectedKey]) == "table" and f[selectedKey] or {}
+            return f[selectedKey], f
+        end
+
+        local function ensureButtons()
+            local opts = valuesFn and valuesFn() or {}
+            local needed = 0
+
+            for i = 1, #opts do
+                local opt = opts[i]
+                if opt and not opt.separator then
+                    needed = needed + 1
+                    local b = r.buttons[needed]
+                    if not b then
+                        b = CreateFrame("Button", nil, popup, "BackdropTemplate")
+                        b:SetHeight(24)
+                        U.Backdrop(b, C, T.panel, T.border)
+                        U.BindBorderHover(b, T.accent, T.border)
+
+                        b.check = b:CreateTexture(nil, "OVERLAY")
+                        b.check:SetSize(16, 16)
+                        b.check:SetPoint("LEFT", 8, 0)
+                        b.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
+                        b.check:Hide()
+
+                        b.label = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                        b.label:SetPoint("LEFT", b.check, "RIGHT", 6, 0)
+                        b.label:SetPoint("RIGHT", -56, 0)
+                        b.label:SetJustifyH("LEFT")
+                        TextColor(b.label, "text")
+
+                        b.count = b:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+                        b.count:SetPoint("RIGHT", -8, 0)
+                        TextColor(b.count, "muted", 0.85)
+
+                        r.buttons[needed] = b
+                        popup._allElements[#popup._allElements + 1] = b
+                        popup._allElements[#popup._allElements + 1] = b.check
+                        popup._allElements[#popup._allElements + 1] = b.label
+                        popup._allElements[#popup._allElements + 1] = b.count
+                    end
+
+                    b._value = opt.value
+                    b.label:SetText(opt.text or tostring(opt.value))
+                    b.count:SetText(opt.count and ("(" .. tostring(opt.count) .. ")") or "")
+                    b:SetScript("OnClick", function(self)
+                        local selected, f = selectedTable()
+                        if not selected or not f then return end
+                        local value = self._value
+                        if selected[value] == true then
+                            selected[value] = nil
+                        else
+                            selected[value] = true
+                        end
+                        if Filters then Filters[selectedKey] = selected end
+                        if r.refresh then r.refresh() end
+                        rebuild()
+                    end)
+                end
+            end
+
+            for i = needed + 1, #r.buttons do
+                r.buttons[i]:Hide()
+            end
+            r.count = needed
+        end
+
+        r.refresh = function()
+            ensureButtons()
+            local selected = selectedTable() or {}
+            for i = 1, #r.buttons do
+                local b = r.buttons[i]
+                if b and b._value then
+                    local active = selected[b._value] == true
+                    U.Backdrop(b, C, active and T.row or T.panel, active and T.accent or T.border)
+                    if b.check then b.check:SetShown(active) end
+                    TextColor(b.label, active and "highlight" or "text")
+                end
+            end
+        end
+
+        popup._rows[#popup._rows + 1] = r
+        r.refresh()
     end
 
     local function collapsibleSection(titleText, isExpanded, onToggle)
@@ -316,7 +697,10 @@ function M:Build(popup, env)
         local f = db and db.filters
         if not f then return end
 
-        f.expansion, f.zone, f.category, f.subcategory, f.faction = "ALL", "ALL", "ALL", "ALL", "ALL"
+        f.expansion, f.zone, f.color, f.sourceType, f.category, f.subcategory, f.faction = "ALL", "ALL", "ALL", "ALL", "ALL", "ALL", "ALL"
+        f.colors = {}
+        f.budgetCosts = {}
+        f.sizes = {}
         f.hideCollected, f.onlyCollected = false, false
 
         f.availableRepOnly = false
@@ -327,6 +711,13 @@ function M:Build(popup, env)
         if Filters then
             Filters.expansion, Filters.zone, Filters.category, Filters.subcategory, Filters.faction =
                 f.expansion, f.zone, f.category, f.subcategory, f.faction
+            Filters.color = "ALL"
+            Filters.colors = f.colors
+            Filters.budgetCosts = f.budgetCosts
+            Filters.sizes = f.sizes
+            Filters.sourceType = "ALL"
+            Filters.hideCollected = false
+            Filters.onlyCollected = false
             Filters.availableRepOnly = false
             Filters.questsCompleted = false
             Filters.achievementCompleted = false
@@ -403,9 +794,30 @@ function M:Build(popup, env)
         wipe(popup._allElements)
 
         if self._activeTab == "filters" then
+            ddRow("Sort",
+                function()
+                    local db = ensureDB()
+                    db.ui = db.ui or {}
+                    return db.ui.sortMode or "expAsc"
+                end,
+                function(v)
+                    local db = ensureDB()
+                    if not db then return end
+                    db.ui = db.ui or {}
+                    db.ui.sortMode = v or "expAsc"
+                end,
+                function()
+                    return {
+                        { value = "expAsc", text = "Expansion: Old to New" },
+                        { value = "expDesc", text = "Expansion: New to Old" },
+                    }
+                end)
+
+            spacer(8)
+
             checkRow(L["FILTER_HIDE_COMPLETED_ROW"],
                 function() local f = F(); return (f and f.hideCollected) == true end,
-                function(v) local f = F(); if f then f.hideCollected = (v == true) end end,
+                function(v) local f = F(); if f then f.hideCollected = (v == true); if v then f.onlyCollected = false end end end,
                 true)
 
             spacer(8)
@@ -431,6 +843,28 @@ function M:Build(popup, env)
                         { value = "ALL", text = L["ALL_FACTIONS"] },
                         { value = "Alliance", text = L["FILTER_ALLIANCE"] },
                         { value = "Horde", text = L["FILTER_HORDE"] },
+                    }
+                end,
+                true)
+
+            ddRow("Source",
+                function() local f = F(); return (f and f.sourceType) or "ALL" end,
+                function(v)
+                    local f = F()
+                    if not f then return end
+                    f.sourceType = v or "ALL"
+                    if Filters then Filters.sourceType = f.sourceType end
+                end,
+                function()
+                    return {
+                        { value = "ALL", text = "Source: All" },
+                        { value = "vendor", text = "Vendors" },
+                        { value = "quest", text = "Quests" },
+                        { value = "achievement", text = "Achievements" },
+                        { value = "drop", text = "Drops" },
+                        { value = "profession", text = "Professions" },
+                        { value = "event", text = "Events" },
+                        { value = "pvp", text = "PvP" },
                     }
                 end,
                 true)
@@ -516,6 +950,56 @@ function M:Build(popup, env)
                     return insertAllSeparator(out)
                 end,
                 true)
+
+            colorGrid("Colors",
+                function()
+                    local f = F()
+                    if f then f.colors = type(f.colors) == "table" and f.colors or {} end
+                    if Filters and f then
+                        Filters.colors = f.colors
+                        Filters.color = (f and f.color) or "ALL"
+                    end
+                    return f and f.colors or {}
+                end,
+                function(colors)
+                    local f = F()
+                    if not f then return end
+                    f.colors = type(colors) == "table" and colors or {}
+                    f.color = "ALL"
+                    if Filters then
+                        Filters.colors = f.colors
+                        Filters.color = f.color
+                    end
+                end,
+                function()
+                    local FS = NS and NS.Systems and NS.Systems.Filters
+                    return FS and FS.GetColorOptions and FS:GetColorOptions(UI) or { { value = "ALL", text = "All Colors" } }
+                end)
+
+            spacer(8)
+
+            multiCheckGroup("Budget Cost", "budgetCosts", function()
+                local FS = NS and NS.Systems and NS.Systems.Filters
+                return FS and FS.GetBudgetCostOptions and FS:GetBudgetCostOptions() or {
+                    { value = "low", text = "1-2 (Low)" },
+                    { value = "medium", text = "3-4 (Medium)" },
+                    { value = "high", text = "5+ (High)" },
+                    { value = "none", text = "No Budget Cost" },
+                }
+            end)
+
+            spacer(8)
+
+            multiCheckGroup("Size", "sizes", function()
+                local FS = NS and NS.Systems and NS.Systems.Filters
+                return FS and FS.GetSizeOptions and FS:GetSizeOptions() or {
+                    { value = "Huge", text = "Huge" },
+                    { value = "Large", text = "Large" },
+                    { value = "Medium", text = "Medium" },
+                    { value = "Small", text = "Small" },
+                    { value = "Tiny", text = "Tiny" },
+                }
+            end)
 
             ddRow(L["FILTER_CATEGORY_ROW"],
                 function()
@@ -671,6 +1155,88 @@ function M:Build(popup, env)
                 r.dd:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
                 r.dd:SetHeight(r.isCheck and 26 or 24)
                 y = y - (r.isCheck and 32 or 30)
+            elseif r.isQuickGroup then
+                local count = #r.buttons
+                local gap = 4
+                local totalGap = gap * (count - 1)
+                local width = ((self:GetWidth() or 200) - left - right - totalGap) / count
+                for j = 1, count do
+                    local btn = r.buttons[j].button
+                    btn:Show()
+                    btn:ClearAllPoints()
+                    btn:SetWidth(width)
+                    btn:SetHeight(26)
+                    if j == 1 then
+                        btn:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
+                    else
+                        btn:SetPoint("LEFT", r.buttons[j - 1].button, "RIGHT", gap, 0)
+                    end
+                end
+                if r.refresh then r.refresh() end
+                y = y - 32
+            elseif r.isColorGrid then
+                if r.refresh then r.refresh() end
+
+                r.title:Show()
+                r.line:Show()
+
+                r.title:ClearAllPoints()
+                r.title:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
+                y = y - 20
+
+                r.line:ClearAllPoints()
+                r.line:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
+                r.line:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
+                y = y - 10
+
+                local count = r.count or 0
+                local cols, gap, size = 5, 8, 34
+                for j = 1, #r.swatches do
+                    local btn = r.swatches[j]
+                    if j <= count then
+                        btn:Show()
+                        btn:ClearAllPoints()
+                        btn:SetSize(size, size)
+                        local col = (j - 1) % cols
+                        local row = math.floor((j - 1) / cols)
+                        btn:SetPoint("TOPLEFT", self, "TOPLEFT", left + (col * (size + gap)), y - (row * (size + gap)))
+                    else
+                        btn:Hide()
+                    end
+                end
+
+                local rows = math.max(1, math.ceil(count / cols))
+                y = y - (rows * size) - ((rows - 1) * gap) - 10
+            elseif r.isMultiCheckGroup then
+                if r.refresh then r.refresh() end
+
+                r.title:Show()
+                r.line:Show()
+
+                r.title:ClearAllPoints()
+                r.title:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
+                y = y - 20
+
+                r.line:ClearAllPoints()
+                r.line:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
+                r.line:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
+                y = y - 8
+
+                local count = r.count or 0
+                for j = 1, #r.buttons do
+                    local btn = r.buttons[j]
+                    if j <= count then
+                        btn:Show()
+                        btn:ClearAllPoints()
+                        btn:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
+                        btn:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
+                        btn:SetHeight(24)
+                        y = y - 28
+                    else
+                        btn:Hide()
+                    end
+                end
+                y = y - 4
             else
                 r.title:Show()
                 r.line:Show()

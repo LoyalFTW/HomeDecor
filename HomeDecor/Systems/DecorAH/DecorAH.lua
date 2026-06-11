@@ -58,7 +58,7 @@ local COLS = {
   { key = "sell",       label = "Sell",       x = 700, w = 72,  align = "LEFT" },
   { key = "profit",     label = "Profit",     x = 780, w = 78,  align = "LEFT" },
   { key = "ppl",        label = "Per Lbr",   x = 866, w = 68,  align = "LEFT" },
-  { key = "margin",     label = "Margin",     x = 942, w = 60,  align = "LEFT", optional = true, priority = 6 },
+  { key = "margin",     label = "%",          x = 942, w = 60,  align = "LEFT", optional = true, priority = 6 },
 }
 
 local COLS_BY_KEY = {}

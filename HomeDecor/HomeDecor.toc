@@ -41,6 +41,8 @@ HomeDecor.xml
 
 Changelog.lua
 
+Data\QuestTitles.lua
+Data\DecorCatalogMeta.lua
 Systems\NPCNames.lua
 Systems\HousingBootstrap.lua
 Systems\EditMode\EditMode_API.lua

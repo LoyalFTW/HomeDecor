@@ -39,23 +39,103 @@ local defaults = {
     grayLight   = { 0.45, 0.45, 0.48, 1 },
 }
 
+local DESIGN_PRESETS = {
+  classic = {
+    label = "Classic",
+    colors = {},
+  },
+  gallery = {
+    label = "Gallery",
+    colors = {
+      bg = { 0.025, 0.030, 0.034, 1 },
+      header = { 0.040, 0.046, 0.052, 1 },
+      panel = { 0.060, 0.067, 0.075, 1 },
+      row = { 0.095, 0.105, 0.118, 1 },
+      hover = { 0.140, 0.155, 0.170, 1 },
+      border = { 0.280, 0.245, 0.165, 1 },
+      accent = { 0.950, 0.730, 0.270, 1 },
+      text = { 0.930, 0.935, 0.940, 1 },
+      textMuted = { 0.630, 0.680, 0.720, 1 },
+      placeholder = { 0.520, 0.570, 0.610, 1 },
+      rowBG = { 0.035, 0.045, 0.052, 0.72 },
+      counterBG = { 0.040, 0.055, 0.066, 0.90 },
+      iconBG = { 0.055, 0.060, 0.070, 0.88 },
+    },
+  },
+  workshop = {
+    label = "Workshop",
+    colors = {
+      bg = { 0.035, 0.034, 0.030, 1 },
+      header = { 0.072, 0.061, 0.045, 1 },
+      panel = { 0.095, 0.083, 0.064, 1 },
+      row = { 0.145, 0.125, 0.092, 1 },
+      hover = { 0.185, 0.158, 0.110, 1 },
+      border = { 0.325, 0.235, 0.125, 1 },
+      accent = { 0.930, 0.610, 0.190, 1 },
+      text = { 0.945, 0.920, 0.865, 1 },
+      textMuted = { 0.710, 0.670, 0.590, 1 },
+      placeholder = { 0.570, 0.530, 0.465, 1 },
+      rowBG = { 0.075, 0.058, 0.040, 0.62 },
+      counterBG = { 0.090, 0.064, 0.038, 0.88 },
+      iconBG = { 0.105, 0.082, 0.058, 0.86 },
+    },
+  },
+  arcane = {
+    label = "Arcane",
+    colors = {
+      bg = { 0.025, 0.026, 0.045, 1 },
+      header = { 0.040, 0.042, 0.078, 1 },
+      panel = { 0.060, 0.062, 0.100, 1 },
+      row = { 0.095, 0.092, 0.145, 1 },
+      hover = { 0.135, 0.130, 0.190, 1 },
+      border = { 0.250, 0.255, 0.430, 1 },
+      accent = { 0.525, 0.780, 1.000, 1 },
+      text = { 0.900, 0.930, 0.975, 1 },
+      textMuted = { 0.610, 0.670, 0.780, 1 },
+      placeholder = { 0.485, 0.535, 0.650, 1 },
+      rowBG = { 0.035, 0.040, 0.075, 0.65 },
+      counterBG = { 0.035, 0.045, 0.090, 0.88 },
+      iconBG = { 0.050, 0.052, 0.088, 0.86 },
+    },
+  },
+}
+
+local DESIGN_ORDER = { "classic", "gallery", "workshop", "arcane" }
+
 local Theme = {
   colors = {},
   defaults = defaults,
+  designPresets = DESIGN_PRESETS,
+  designOrder = DESIGN_ORDER,
   MEDIA_DEFAULT_TOKEN = MEDIA_DEFAULT_TOKEN,
 
   textures = {
     Logo = "Interface\\AddOns\\HomeDecor\\Media\\UI\\logo.tga",
 
-    ButtonNormal   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\button_normal.tga",
-    ButtonHover    = "Interface\\AddOns\\HomeDecor\\Media\\UI\\button_hover.tga",
-    ButtonPushed   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\button_pushed.tga",
-    ButtonDisabled = "Interface\\AddOns\\HomeDecor\\Media\\UI\\button_disabled.tga",
+    ButtonNormal   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_button_normal.png",
+    ButtonHover    = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_button_hover.png",
+    ButtonPushed   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_button_pushed.png",
+    ButtonDisabled = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_button_disabled.png",
 
-    TabNormal   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\tab_normal.tga",
-    TabHover    = "Interface\\AddOns\\HomeDecor\\Media\\UI\\tab_hover.tga",
-    TabPushed   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\tab_pushed.tga",
-    TabDisabled = "Interface\\AddOns\\HomeDecor\\Media\\UI\\tab_disabled.tga",
+    TabNormal   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_tab_normal.png",
+    TabHover    = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_tab_hover.png",
+    TabPushed   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_tab_pushed.png",
+    TabDisabled = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_tab_disabled.png",
+
+    HeaderBar = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_toolbar.png",
+    BigHeaderBar = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_toolbar.png",
+    MainBackground = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_main_bg.png",
+    LeftPanelBG = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_panel.png",
+    ModelBG = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_panel.png",
+    GalleryPanel = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_panel.png",
+    GalleryToolbar = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_toolbar.png",
+    GalleryPreview = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_preview_bg.png",
+    GalleryCard = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_card_normal.png",
+    GalleryCardHover = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_card_hover.png",
+    GalleryCardSelected = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_card_selected.png",
+    GalleryNav = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_nav_normal.png",
+    GalleryNavHover = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_nav_hover.png",
+    GalleryNavSelected = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_nav_selected.png",
 
     ScrollTrack = "Interface\\AddOns\\HomeDecor\\Media\\UI\\scroll_track.tga",
     ScrollThumb = "Interface\\AddOns\\HomeDecor\\Media\\UI\\scroll_thumb.tga",
@@ -96,6 +176,14 @@ local function appearance()
   end
   profile.ui.appearance.colors = profile.ui.appearance.colors or {}
   return profile.ui.appearance
+end
+
+local function getUIOptions()
+  local profile = NS.db and NS.db.profile
+  if not profile then return nil end
+  profile.ui = profile.ui or {}
+  if not profile.ui.designPreset then profile.ui.designPreset = "gallery" end
+  return profile.ui
 end
 
 local BUILTIN_FONTS = {
@@ -209,13 +297,16 @@ end
 function Theme:ApplyProfile()
   local opts = appearance()
   local saved = opts and opts.colors or {}
+  local ui = getUIOptions()
+  local preset = ui and DESIGN_PRESETS[ui.designPreset or "classic"]
+  local presetColors = preset and preset.colors or nil
 
   for key, base in pairs(defaults) do
     self.colors[key] = self.colors[key] or {}
-    copyInto(self.colors[key], saved[key] or base)
+    copyInto(self.colors[key], (presetColors and presetColors[key]) or saved[key] or base)
   end
 
-  local accent = saved.accent
+  local accent = (presetColors and presetColors.accent) or saved.accent
   if accent then
     copyInto(self.colors.accentSoft, { accent[1], accent[2], accent[3], 0.28 })
     copyInto(self.colors.accentBright, {
@@ -241,6 +332,33 @@ function Theme:ApplyProfile()
       1,
     })
   end
+end
+
+function Theme:GetDesignPresetLabel(key)
+  local preset = DESIGN_PRESETS[key or (getUIOptions() and getUIOptions().designPreset) or "classic"]
+  return preset and preset.label or "Classic"
+end
+
+function Theme:SetDesignPreset(key)
+  local ui = getUIOptions()
+  if not ui then return end
+  ui.designPreset = DESIGN_PRESETS[key] and key or "classic"
+  self:ApplyProfile()
+end
+
+function Theme:CycleDesignPreset()
+  local ui = getUIOptions()
+  if not ui then return "classic" end
+  local cur = ui.designPreset or "classic"
+  local nextKey = DESIGN_ORDER[1]
+  for i = 1, #DESIGN_ORDER do
+    if DESIGN_ORDER[i] == cur then
+      nextKey = DESIGN_ORDER[(i % #DESIGN_ORDER) + 1]
+      break
+    end
+  end
+  self:SetDesignPreset(nextKey)
+  return nextKey
 end
 
 function Theme:SetColor(key, r, g, b)

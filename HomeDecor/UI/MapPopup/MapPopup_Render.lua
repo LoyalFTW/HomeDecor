@@ -333,11 +333,27 @@ function Render:RefreshContent(popup, frame, vendors)
                 elseif req.quest and req.quest.id then
                   local questID = tonumber(req.quest.id)
                   local questName = req.quest.title or req.quest.name
+                  local ViewerData = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
+
+                  if not questName and questID and ViewerData and ViewerData.GetQuestTitle then
+                    questName = ViewerData.GetQuestTitle(questID)
+                  end
 
                   if not questName and questID and _G.C_QuestLog and _G.C_QuestLog.GetTitleForQuestID then
                     local ok, name = pcall(_G.C_QuestLog.GetTitleForQuestID, questID)
                     if ok and type(name) == "string" and name ~= "" then
                       questName = name
+                    end
+                  end
+
+                  if not questName and questID and _G.C_QuestLog and _G.C_QuestLog.RequestLoadQuestByID then
+                    pcall(_G.C_QuestLog.RequestLoadQuestByID, questID)
+                    if C_Timer and C_Timer.After and popup and popup.Refresh then
+                      C_Timer.After(0.1, function()
+                        if frame and frame:IsShown() then
+                          popup:Refresh()
+                        end
+                      end)
                     end
                   end
 

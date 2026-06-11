@@ -31,10 +31,10 @@ local tremove = table.remove
 local sort = table.sort
 local floor = math.floor
 
-local ROW_H = 28
-local MIN_W, MIN_H = 720, 420
+local ROW_H = 32
+local MIN_W, MIN_H = 980, 560
 local MAX_W, MAX_H = 1400, 900
-local DEFAULT_W, DEFAULT_H = 920, 580
+local DEFAULT_W, DEFAULT_H = 1180, 680
 
 local LUMBER_IDS = {
   [245586]=true, [242691]=true, [251762]=true, [251764]=true, [251763]=true,
@@ -48,17 +48,18 @@ local LUMBER_NAMES = {
 }
 
 local COLS = {
-  { key = "star",       label = "",           x = 0,   w = 20,  align = "LEFT" },
-  { key = "name",       label = "Name",       x = 26,  w = 220, align = "LEFT", flex = true },
-  { key = "profession", label = "Profession", x = 254, w = 88,  align = "LEFT", optional = true, priority = 1 },
-  { key = "expansion",  label = "Expansion",  x = 350, w = 78,  align = "LEFT", optional = true, priority = 5 },
-  { key = "crafter",    label = "Crafter",    x = 436, w = 80,  align = "LEFT", optional = true, priority = 4 },
-  { key = "lumberType", label = "Lumber",     x = 524, w = 88,  align = "LEFT", priority = 2 },
-  { key = "cost",       label = "Cost",       x = 620, w = 72,  align = "LEFT", priority = 3 },
-  { key = "sell",       label = "Sell",       x = 700, w = 72,  align = "LEFT" },
-  { key = "profit",     label = "Profit",     x = 780, w = 78,  align = "LEFT" },
-  { key = "ppl",        label = "Per Lbr",   x = 866, w = 68,  align = "LEFT" },
-  { key = "margin",     label = "Margin",     x = 942, w = 60,  align = "LEFT", optional = true, priority = 6 },
+  { key = "star",       label = "",           w = 22, align = "CENTER" },
+  { key = "icon",       label = "",           w = 28, align = "CENTER" },
+  { key = "name",       label = "Name",       w = 180, align = "LEFT", flex = true },
+  { key = "profession", label = "Profession", w = 92, align = "LEFT" },
+  { key = "crafter",    label = "Craft",      w = 54, align = "LEFT" },
+  { key = "lumberType", label = "Lumber",     w = 78, align = "LEFT" },
+  { key = "cost",       label = "Cost",       w = 62, align = "RIGHT" },
+  { key = "sell",       label = "Sell",       w = 62, align = "RIGHT" },
+  { key = "profit",     label = "Profit",     w = 70, align = "RIGHT" },
+  { key = "ppl",        label = "Per Lbr",    w = 70, align = "RIGHT" },
+  { key = "margin",     label = "%",          w = 46, align = "RIGHT" },
+  { key = "expansion",  label = "Exp.",       w = 58, align = "LEFT", optional = true, priority = 1 },
 }
 
 local COLS_BY_KEY = {}
@@ -67,13 +68,15 @@ for _, col in ipairs(COLS) do
 end
 
 local function GetVisibleColumns(availWidth)
-  local essential = { "star", "name", "lumberType", "cost", "sell", "profit", "ppl" }
+  local essential = { "star", "icon", "name", "profession", "crafter", "lumberType", "cost", "sell", "profit", "ppl", "margin" }
   local essentialSet = {}
   for _, k in ipairs(essential) do essentialSet[k] = true end
 
   for _, col in ipairs(COLS) do
     col._visible = false
     col._displayX = nil
+    col.w = col._baseW or col.w
+    col._baseW = col.w
   end
 
   for _, col in ipairs(COLS) do
@@ -82,21 +85,26 @@ local function GetVisibleColumns(availWidth)
 
   local prioritized = {}
   for _, col in ipairs(COLS) do
-    if col.priority and not essentialSet[col.key] then
+    if col.optional and col.priority and not essentialSet[col.key] then
       tinsert(prioritized, col)
     end
   end
   sort(prioritized, function(a, b) return (a.priority or 99) < (b.priority or 99) end)
 
   local usedWidth = 0
+  local visibleCount = 0
   for _, col in ipairs(COLS) do
-    if col._visible and col.key ~= "name" then usedWidth = usedWidth + col.w + 8 end
+    if col._visible then
+      visibleCount = visibleCount + 1
+      if col.key ~= "name" then usedWidth = usedWidth + col.w end
+    end
   end
+  usedWidth = usedWidth + math.max(0, visibleCount - 1) * 4
 
   for _, col in ipairs(prioritized) do
-    if availWidth >= usedWidth + col.w + 8 + 120 then
+    if availWidth >= usedWidth + col.w + 4 + 220 then
       col._visible = true
-      usedWidth = usedWidth + col.w + 8
+      usedWidth = usedWidth + col.w + 4
     end
   end
 
@@ -105,9 +113,9 @@ local function GetVisibleColumns(availWidth)
     if col._visible then
       col._displayX = currentX
       if col.flex then
-        col.w = math.max(140, availWidth - usedWidth - 8)
+        col.w = math.max(130, availWidth - usedWidth)
       end
-      currentX = currentX + col.w + 8
+      currentX = currentX + col.w + 4
     end
   end
 
@@ -115,7 +123,7 @@ local function GetVisibleColumns(availWidth)
 end
 
 local function GetColX(col)
-  return col._displayX or col.x
+  return col._displayX or col.x or 0
 end
 
 local frame
@@ -135,6 +143,12 @@ local headerButtons = {}
 local rowPool = {}
 local activeRows = {}
 local dataRows = {}
+local selectedItemData = nil
+local detailPanel
+local detailWidgets = {}
+local UpdateDetailPanel
+local RenderVisibleRows
+local selectedQueueQty = 1
 local dataRowsDirty = true
 local cachedCurrentRecipes = nil
 local preferredSource
@@ -207,6 +221,29 @@ local function ItemName(itemID)
   if name then return name end
   RequestItemName(itemID)
   return nil
+end
+
+local function ItemIcon(itemID)
+  if not itemID then return "Interface\\Icons\\INV_Misc_QuestionMark" end
+  if C_Item and C_Item.GetItemIconByID then
+    local ok, icon = pcall(C_Item.GetItemIconByID, itemID)
+    if ok and icon then return icon end
+  end
+  if GetItemIcon then
+    local ok, icon = pcall(GetItemIcon, itemID)
+    if ok and icon then return icon end
+  end
+  return "Interface\\Icons\\INV_Misc_QuestionMark"
+end
+
+local function FormatMoney(value)
+  if value == nil then return "---" end
+  return PriceSource and PriceSource.FormatGold and PriceSource.FormatGold(value) or tostring(value)
+end
+
+local function ProfitColor(value)
+  if value == nil then return T.textMuted or { 0.65, 0.65, 0.68, 1 } end
+  return value >= 0 and (T.success or { 0.30, 0.80, 0.40, 1 }) or (T.danger or { 0.80, 0.28, 0.28, 1 })
 end
 
 local itemLoadFrame = CreateFrame("Frame")
@@ -510,6 +547,15 @@ local function AcquireRow()
       end
     end
 
+    row.itemIconBG = CreateFrame("Frame", nil, row, "BackdropTemplate")
+    row.itemIconBG:SetSize(28, 28)
+    Backdrop(row.itemIconBG, T.iconBG or T.panel, T.border)
+
+    row.itemIcon = row.itemIconBG:CreateTexture(nil, "ARTWORK")
+    row.itemIcon:SetPoint("CENTER")
+    row.itemIcon:SetSize(24, 24)
+    row.itemIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
     row:SetScript("OnEnter", function(self)
       if self.itemID and GameTooltip then
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -558,9 +604,10 @@ local function AcquireRow()
         end
 
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("|cffaaaaaa[Left Click]|r  View Item",      1, 1, 1)
-        GameTooltip:AddLine("|cffaaaaaa[Star]|r         Favorite",      1, 1, 1)
-        GameTooltip:AddLine("|cffaaaaaa[Right Click]|r Add to Queue",   1, 1, 1)
+        GameTooltip:AddLine("|cffaaaaaa[Left Click]|r  Select",        1, 1, 1)
+        GameTooltip:AddLine("|cffaaaaaa[Shift Click]|r View Item",     1, 1, 1)
+        GameTooltip:AddLine("|cffaaaaaa[Star]|r        Favorite",      1, 1, 1)
+        GameTooltip:AddLine("|cffaaaaaa[Right Click]|r Add to Queue",  1, 1, 1)
         GameTooltip:Show()
       end
     end)
@@ -574,9 +621,10 @@ local function AcquireRow()
       local selfX = self:GetLeft()
 
       if button == "RightButton" then
-        if self.itemData and Queue then
+        local Q = Queue or GetQueue()
+        if self.itemData and Q then
           local data = self.itemData
-          Queue.AddToQueue(data.itemID, data.name, 1, data.profit, data.reagents)
+          Q.AddToQueue(data.itemID, data.name, 1, data.profit, data.reagents)
           if DecorAH._updateQueueCount then DecorAH._updateQueueCount() end
           local QP = NS.UI and NS.UI.DecorAH_Queue
           if QP and QP.frame and QP.frame:IsShown() then QP:Refresh() end
@@ -590,8 +638,9 @@ local function AcquireRow()
           local starLeft = selfX + GetColX(starCol)
           local starRight = starLeft + starCol.w
           if mouseX >= starLeft and mouseX <= starRight then
-            if Favorites and self.itemID then
-              Favorites.ToggleFavorite(self.itemID)
+            local F = Favorites or GetFavorites()
+            if F and self.itemID then
+              F.ToggleFavorite(self.itemID)
               InvalidateFilteredCache()
               if DecorAH.refreshTableFn then DecorAH.refreshTableFn() end
             end
@@ -599,8 +648,17 @@ local function AcquireRow()
           end
         end
 
+        UpdateDetailPanel(self.itemData)
+        if C_Timer and C_Timer.After then
+          C_Timer.After(0, function()
+            if frame and frame:IsShown() and RenderVisibleRows then RenderVisibleRows() end
+          end)
+        elseif RenderVisibleRows then
+          RenderVisibleRows()
+        end
+
         local IA = NS.UI and NS.UI.ItemInteractions
-        if IA and self.itemData then
+        if IA and self.itemData and IsShiftKeyDown and IsShiftKeyDown() then
           local it = {
             itemID = self.itemData.itemID,
             id     = self.itemData.itemID,
@@ -635,7 +693,136 @@ InvalidateFilteredCache = function()
   cachedFilteredDirty = true
 end
 
-local function RenderVisibleRows()
+local function SetTextColor(fs, color)
+  if fs and fs.SetTextColor then fs:SetTextColor(unpack(color or T.text or { 0.92, 0.92, 0.92, 1 })) end
+end
+
+UpdateDetailPanel = function(data)
+  selectedItemData = data or selectedItemData
+  if not detailPanel or not detailWidgets then return end
+
+  local w = detailWidgets
+  data = selectedItemData
+
+  if not data then
+    if w.name then w.name:SetText("Select a recipe") end
+    if w.meta then w.meta:SetText("Click a pricing row to inspect materials and queue actions.") end
+    if w.icon then w.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark") end
+    if w.profit then w.profit:SetText("") end
+    if w.cost then w.cost:SetText("") end
+    if w.sell then w.sell:SetText("") end
+    if w.materials then
+      for _, row in ipairs(w.materials) do row:Hide() end
+    end
+    if w.materialContent then w.materialContent:SetHeight(1) end
+    if w.materialScroll and w.materialScroll.SetVerticalScroll then w.materialScroll:SetVerticalScroll(0) end
+    if w.starIcon then
+      if w.starIcon.SetAtlas then w.starIcon:SetAtlas("auctionhouse-icon-favorite-off", false) end
+      w.starIcon:SetAlpha(0.5)
+    end
+    return
+  end
+
+  if w.starIcon then
+    local F = Favorites or GetFavorites()
+    local fav = F and F.IsFavorite and F.IsFavorite(data.itemID)
+    if w.starIcon.SetAtlas then
+      w.starIcon:SetAtlas(fav and "auctionhouse-icon-favorite" or "auctionhouse-icon-favorite-off", false)
+    end
+    w.starIcon:SetAlpha(fav and 1 or 0.55)
+  end
+
+  if w.icon then w.icon:SetTexture(ItemIcon(data.itemID)) end
+  if w.name then
+    w.name:SetText(data.name or ("Item " .. tostring(data.itemID or "?")))
+    SetTextColor(w.name, T.accent or { 0.9, 0.72, 0.18, 1 })
+  end
+  if w.meta then
+    local parts = {}
+    if data.profession and data.profession ~= "" then parts[#parts + 1] = data.profession end
+    if data.expansion and data.expansion ~= "" then parts[#parts + 1] = data.expansion end
+    if data.lumberTypeName and data.lumberTypeName ~= "" then parts[#parts + 1] = "Lumber: " .. data.lumberTypeName end
+    w.meta:SetText(table.concat(parts, "\n"))
+  end
+
+  local queueQty = math.max(1, tonumber(selectedQueueQty) or 1)
+  local totalCost = data.cost and (data.cost * queueQty) or nil
+  local totalSell = data.sell and (data.sell * queueQty) or nil
+  local totalProfit = data.profit and (data.profit * queueQty) or nil
+
+  if w.cost then w.cost:SetText(FormatMoney(totalCost)) end
+  if w.sell then w.sell:SetText(FormatMoney(totalSell)) end
+  if w.profit then
+    local profitText = FormatMoney(totalProfit)
+    if data.margin ~= nil then profitText = profitText .. " (" .. format("%.0f%%", data.margin) .. ")" end
+    w.profit:SetText(profitText)
+    SetTextColor(w.profit, ProfitColor(totalProfit))
+  end
+
+  if w.materials then
+    local reagents = data.reagents or {}
+    local function ensureMaterialRow(i)
+      if w.materials[i] then return w.materials[i] end
+      local parent = w.materialContent or detailPanel
+      local row = CreateFrame("Frame", nil, parent)
+      row:SetHeight(24)
+      if i == 1 then
+        row:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0)
+      else
+        row:SetPoint("TOPLEFT", w.materials[i - 1], "BOTTOMLEFT", 0, -2)
+      end
+      row:SetPoint("RIGHT", parent, "RIGHT", 0, 0)
+
+      row.icon = row:CreateTexture(nil, "ARTWORK")
+      row.icon:SetSize(20, 20)
+      row.icon:SetPoint("LEFT", 0, 0)
+      row.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
+      row.name = NewFS(row, "GameFontNormalSmall")
+      row.name:SetPoint("LEFT", row.icon, "RIGHT", 8, 0)
+      row.name:SetPoint("RIGHT", -78, 0)
+      row.name:SetJustifyH("LEFT")
+      row.name:SetTextColor(unpack(T.text or { 0.92, 0.92, 0.92, 1 }))
+
+      row.cost = NewFS(row, "GameFontNormalSmall")
+      row.cost:SetPoint("RIGHT", 0, 0)
+      row.cost:SetWidth(74)
+      row.cost:SetJustifyH("RIGHT")
+      row.cost:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+
+      w.materials[i] = row
+      return row
+    end
+
+    for i = 1, #reagents do
+      ensureMaterialRow(i)
+    end
+
+    for i, row in ipairs(w.materials) do
+      local reagent = reagents[i]
+      if reagent then
+        local price = PriceSource and PriceSource.GetItemPrice and PriceSource.GetItemPrice(reagent.itemID)
+        local qty = (reagent.count or reagent.qty or reagent.amount or 1) * queueQty
+        if row.icon then row.icon:SetTexture(ItemIcon(reagent.itemID)) end
+        if row.name then row.name:SetText((ItemName(reagent.itemID) or ("Item " .. tostring(reagent.itemID))) .. "  x" .. tostring(qty)) end
+        if row.cost then row.cost:SetText(price and FormatMoney(price * qty) or "---") end
+        row:Show()
+      else
+        row:Hide()
+      end
+    end
+    if w.materialContent then
+      local sw = w.materialScroll and w.materialScroll.GetWidth and w.materialScroll:GetWidth()
+      if sw and sw > 20 then w.materialContent:SetWidth(sw - 4) end
+      w.materialContent:SetHeight(math.max(1, (#reagents * 26) - 2))
+    end
+    if w.materialScroll and w.materialScroll.SetVerticalScroll then
+      w.materialScroll:SetVerticalScroll(0)
+    end
+  end
+end
+
+RenderVisibleRows = function()
   if not frame or not scrollChild then return end
   if not cachedFiltered then return end
 
@@ -658,8 +845,24 @@ local function RenderVisibleRows()
     row:SetPoint("TOPRIGHT", 0, y)
     row.itemID   = rowData.itemID
     row.itemData = rowData
+    if row.SetBackdropColor then
+      if selectedItemData and selectedItemData.itemID == rowData.itemID then
+        row:SetBackdropColor(unpack(T.accentDark or { 0.28, 0.24, 0.10, 1 }))
+      elseif (i % 2) == 0 then
+        row:SetBackdropColor(unpack(T.rowBG or { 0.05, 0.07, 0.09, 0.55 }))
+      else
+        row:SetBackdropColor(0, 0, 0, 0.18)
+      end
+    end
 
     local c = row.cells
+    if row.itemIconBG then
+      local iconCol = COLS_BY_KEY.icon or COLS_BY_KEY.name
+      row.itemIconBG:ClearAllPoints()
+      row.itemIconBG:SetPoint("LEFT", GetColX(iconCol) + 2, 0)
+      row.itemIconBG:Show()
+      if row.itemIcon then row.itemIcon:SetTexture(ItemIcon(rowData.itemID)) end
+    end
     for key, cell in pairs(c) do
       local col = COLS_BY_KEY[key]
       if col then
@@ -670,6 +873,7 @@ local function RenderVisibleRows()
             cell:SetPoint("LEFT", GetColX(col) + 3, 0)
           else
             cell:SetPoint("LEFT", GetColX(col) + 2, 0)
+            cell:SetWidth(math.max(10, col.w - 4))
           end
         else
           cell:Hide()
@@ -678,7 +882,8 @@ local function RenderVisibleRows()
     end
 
     if c.star and c.star:IsShown() then
-      local isFav = Favorites and Favorites.IsFavorite(rowData.itemID)
+      local F = Favorites or GetFavorites()
+      local isFav = F and F.IsFavorite and F.IsFavorite(rowData.itemID)
       if c.star._isTexture then
         if c.star.SetAtlas then
           c.star:SetAtlas(isFav and "auctionhouse-icon-favorite" or "auctionhouse-icon-favorite-off", false)
@@ -693,6 +898,12 @@ local function RenderVisibleRows()
     if c.name and c.name:IsShown() then
       c.name:SetText(rowData.name or "?")
       c.name:SetTextColor(unpack(accent or {0.9,0.72,0.18,1}))
+      c.name:ClearAllPoints()
+      c.name:SetPoint("LEFT", GetColX(COLS_BY_KEY.name) + 2, 0)
+      c.name:SetWidth(math.max(80, (COLS_BY_KEY.name.w or 180) - 4))
+    end
+    if c.icon then
+      c.icon:Hide()
     end
     if c.profession and c.profession:IsShown() then
       c.profession:SetText(rowData.profession or "")
@@ -705,11 +916,6 @@ local function RenderVisibleRows()
     if c.lumberType and c.lumberType:IsShown() then
       c.lumberType:SetText(rowData.lumberTypeName or "-")
       c.lumberType:SetTextColor(unpack(muted or {0.65,0.65,0.68,1}))
-    end
-    if c.name and c.name:IsShown() and contentWidth > 0 then
-      local lastCol = COLS[#COLS]
-      local nameW = contentWidth - GetColX(lastCol) - lastCol.w - 16
-      if nameW > 80 then c.name:SetWidth(nameW) end
     end
     if c.cost and c.cost:IsShown() then
       c.cost:SetText(PriceSource and PriceSource.FormatGold(rowData.cost) or "?")
@@ -775,6 +981,7 @@ local function RefreshTable()
         btn:Show()
         btn:ClearAllPoints()
         btn:SetPoint("LEFT", GetColX(col), 0)
+        btn:SetSize(col.w, ROW_H)
       else
         btn:Hide()
       end
@@ -842,6 +1049,7 @@ local function RefreshTable()
   end
 
   scrollChild:SetHeight(math.max(#filtered * ROW_H, 1))
+  if selectedItemData then UpdateDetailPanel(selectedItemData) end
 
   if #filtered == 0 then
     if not DecorAH._emptyLabel then
@@ -899,7 +1107,11 @@ end
 local function CreateHeaderRow(parent, y)
   local header = CreateFrame("Frame", nil, parent, "BackdropTemplate")
   header:SetPoint("TOPLEFT", 0, y)
-  header:SetPoint("TOPRIGHT", 0, y)
+  if detailPanel then
+    header:SetPoint("TOPRIGHT", detailPanel, "TOPLEFT", -4, 0)
+  else
+    header:SetPoint("TOPRIGHT", 0, y)
+  end
   header:SetHeight(ROW_H)
   header:SetFrameLevel(parent:GetFrameLevel() + 2)
   Backdrop(header, T.header, T.border)
@@ -978,6 +1190,15 @@ end
 
 function DH:Create(parentFrame, embedded)
   if frame then return end
+
+  sourceButtons = {}
+  headerButtons = {}
+  rowPool = {}
+  activeRows = {}
+  selectedItemData = nil
+  selectedQueueQty = 1
+  detailPanel = nil
+  detailWidgets = {}
 
   local g = GetDB()
   local win = g and g.window or {}
@@ -1073,7 +1294,8 @@ function DH:Create(parentFrame, embedded)
       c:SetScale(s)
       c:ClearAllPoints()
       c:SetPoint("CENTER")
-      contentWidth = math.max(100, (bw - 40))
+      local sw = scrollFrame and scrollFrame.GetWidth and scrollFrame:GetWidth()
+      contentWidth = math.max(100, (sw and sw > 0 and (sw - 4)) or (bw - 340))
       if scrollChild then
         scrollChild:SetWidth(contentWidth + 20)
       end
@@ -1112,13 +1334,13 @@ function DH:Create(parentFrame, embedded)
     topBar:SetPoint("TOPLEFT", 0, -44)
     topBar:SetPoint("TOPRIGHT", 0, -44)
   end
-  topBar:SetHeight(40)
+  topBar:SetHeight(34)
   topBar:SetFrameLevel(canvas:GetFrameLevel() + 5)
   Backdrop(topBar, T.header, T.border)
 
   local sourceLabel = NewFS(topBar, "GameFontNormal")
   sourceLabel:SetPoint("LEFT", 14, 0)
-  sourceLabel:SetText(L["DECOR_AH_USE_PRICES_FROM"])
+  sourceLabel:SetText("Prices:")
   sourceLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
 
   local sources = PriceSource and PriceSource.GetAvailableSources and PriceSource.GetAvailableSources() or { "Scan" }
@@ -1130,7 +1352,7 @@ function DH:Create(parentFrame, embedded)
 
   local function MakeSourceButton(parent, label, srcKey, tooltip)
     local btn = CreateFrame("Button", nil, parent, "BackdropTemplate")
-    btn:SetSize(82, 26)
+    btn:SetSize(86, 24)
     btn:SetFrameLevel(parent:GetFrameLevel() + 1)
     Backdrop(btn, T.panel, T.border)
     Hover(btn)
@@ -1172,7 +1394,7 @@ function DH:Create(parentFrame, embedded)
     return btn
   end
 
-  local srcX = 120
+  local srcX = 62
   local sourceNames = { TSM = "TSM", Auctionator = "Auctionator" }
   local sourceTips = {
     TSM = "Use TSM market data. No AH scan needed.",
@@ -1264,7 +1486,7 @@ function DH:Create(parentFrame, embedded)
   NS.UI.DecorAH._updateScanTime = UpdateScanTimeDisplay
 
   local queueBtn = CreateFrame("Button", nil, topBar, "BackdropTemplate")
-  queueBtn:SetSize(100, 26)
+  queueBtn:SetSize(94, 24)
   queueBtn:SetPoint("RIGHT", -12, 0)
   queueBtn:SetFrameLevel(topBar:GetFrameLevel() + 1)
   Backdrop(queueBtn, T.panel, T.border)
@@ -1290,7 +1512,7 @@ function DH:Create(parentFrame, embedded)
   end)
 
   local salesBtn = CreateFrame("Button", nil, topBar, "BackdropTemplate")
-  salesBtn:SetSize(80, 26)
+  salesBtn:SetSize(76, 24)
   salesBtn:SetPoint("RIGHT", queueBtn, "LEFT", -5, 0)
   salesBtn:SetFrameLevel(topBar:GetFrameLevel() + 1)
   Backdrop(salesBtn, T.panel, T.border)
@@ -1332,13 +1554,13 @@ function DH:Create(parentFrame, embedded)
   RefreshSourceHighlights()
   local filterRow = CreateFrame("Frame", nil, canvas, "BackdropTemplate")
   if embedded then
-    filterRow:SetPoint("TOPLEFT", canvas, "TOPLEFT", 14, -62)
-    filterRow:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -14, -62)
+    filterRow:SetPoint("TOPLEFT", canvas, "TOPLEFT", 14, -56)
+    filterRow:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -14, -56)
   else
-    filterRow:SetPoint("TOPLEFT", 14, -90)
-    filterRow:SetPoint("TOPRIGHT", -14, -90)
+    filterRow:SetPoint("TOPLEFT", 14, -82)
+    filterRow:SetPoint("TOPRIGHT", -14, -82)
   end
-  filterRow:SetHeight(32)
+  filterRow:SetHeight(28)
   Backdrop(filterRow, T.panel, nil)
 
   local profs = { "All", "Alchemy", "Blacksmithing", "Cooking", "Enchanting", "Engineering", "Inscription", "Jewelcrafting", "Leatherworking", "Tailoring" }
@@ -1356,7 +1578,7 @@ function DH:Create(parentFrame, embedded)
   local MENU_ITEM_H = 26
   local function MakeDropdown(parent, options, default, width, onChange)
     local dd = CreateFrame("Button", nil, parent, "BackdropTemplate")
-    dd:SetSize(width or 100, 30)
+    dd:SetSize(width or 100, 24)
     Backdrop(dd, T.row or T.panel, T.border)
     Hover(dd)
     dd._value = default or options[1]
@@ -1414,37 +1636,37 @@ function DH:Create(parentFrame, embedded)
   profLabel:SetPoint("LEFT", 8, 0)
   profLabel:SetText(L["DECOR_AH_PROFESSION_COLON"])
   profLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
-  professionDropdown = MakeDropdown(filterRow, profs, L["FILTER_ALL"], 124, nil)
+  professionDropdown = MakeDropdown(filterRow, profs, L["FILTER_ALL"], 126, nil)
   professionDropdown:SetPoint("LEFT", profLabel, "RIGHT", 6, 0)
 
   local expLabel = NewFS(filterRow, "GameFontNormal")
   expLabel:SetPoint("LEFT", professionDropdown, "RIGHT", 14, 0)
   expLabel:SetText(L["DECOR_AH_EXPANSION_COLON"])
   expLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
-  expansionDropdown = MakeDropdown(filterRow, expansions, L["FILTER_ALL"], 108, nil)
+  expansionDropdown = MakeDropdown(filterRow, expansions, L["FILTER_ALL"], 126, nil)
   expansionDropdown:SetPoint("LEFT", expLabel, "RIGHT", 6, 0)
 
   local lumberLabel = NewFS(filterRow, "GameFontNormal")
   lumberLabel:SetPoint("LEFT", expansionDropdown, "RIGHT", 14, 0)
   lumberLabel:SetText(L["DECOR_AH_LUMBER_COLON"])
   lumberLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
-  lumberTypeDropdown = MakeDropdown(filterRow, lumberTypes, L["FILTER_ALL"], 100, nil)
+  lumberTypeDropdown = MakeDropdown(filterRow, lumberTypes, L["FILTER_ALL"], 108, nil)
   lumberTypeDropdown:SetPoint("LEFT", lumberLabel, "RIGHT", 6, 0)
 
   local filterRow2 = CreateFrame("Frame", nil, canvas, "BackdropTemplate")
   if embedded then
-    filterRow2:SetPoint("TOPLEFT", canvas, "TOPLEFT", 14, -98)
-    filterRow2:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -14, -98)
+    filterRow2:SetPoint("TOPLEFT", canvas, "TOPLEFT", 14, -86)
+    filterRow2:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -14, -86)
   else
-    filterRow2:SetPoint("TOPLEFT", 14, -126)
-    filterRow2:SetPoint("TOPRIGHT", -14, -126)
+    filterRow2:SetPoint("TOPLEFT", 14, -112)
+    filterRow2:SetPoint("TOPRIGHT", -14, -112)
   end
-  filterRow2:SetHeight(28)
+  filterRow2:SetHeight(24)
   Backdrop(filterRow2, T.panel, nil)
 
   local function MakeCheck(parent, label, xAnchor, xOff)
     local chk = CreateFrame("Button", nil, parent)
-    chk:SetSize(22, 22)
+    chk:SetSize(20, 20)
     if xAnchor then
       chk:SetPoint("LEFT", xAnchor, "RIGHT", xOff, 0)
     else
@@ -1452,7 +1674,7 @@ function DH:Create(parentFrame, embedded)
     end
     chk.checked = false
     local tex = chk:CreateTexture(nil, "ARTWORK")
-    tex:SetSize(16, 16)
+    tex:SetSize(14, 14)
     tex:SetPoint("LEFT", 0, 0)
     tex:SetTexture("Interface\\Buttons\\UI-CheckBox-Up")
     local fs = NewFS(chk, "GameFontNormal")
@@ -1473,7 +1695,7 @@ function DH:Create(parentFrame, embedded)
   searchLabel:SetText(L["DECOR_AH_SEARCH_COLON"])
   searchLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
   searchBox = CreateFrame("EditBox", nil, filterRow2, "BackdropTemplate")
-  searchBox:SetSize(120, 22)
+  searchBox:SetSize(178, 20)
   searchBox:SetPoint("LEFT", searchLabel, "RIGHT", 6, 0)
   Backdrop(searchBox, T.row or T.panel, T.border)
   searchBox:SetAutoFocus(false)
@@ -1482,8 +1704,8 @@ function DH:Create(parentFrame, embedded)
   searchBox:SetScript("OnTextChanged", QueueSearchRefresh)
   searchBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
 
-  knownOnlyCheck = MakeCheck(filterRow2, "Known only", searchBox, 14)
-  altProfessionsCheck = MakeCheck(filterRow2, "Alt Professions", knownOnlyCheck, 100)
+  knownOnlyCheck = MakeCheck(filterRow2, "Known", searchBox, 14)
+  altProfessionsCheck = MakeCheck(filterRow2, "Alts", knownOnlyCheck, 74)
 
   recipeCountLabel = NewFS(filterRow2, "GameFontNormal")
   recipeCountLabel:SetPoint("RIGHT", -8, 0)
@@ -1491,20 +1713,234 @@ function DH:Create(parentFrame, embedded)
   recipeCountLabel:SetText("0 / 0 recipes")
   recipeCountLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
 
-  local headerY = embedded and (-98 - 28 - 4) or (-126 - 28 - 4)
+  local inspectorW = 260
+  local headerY = embedded and -116 or -144
+
+  detailPanel = CreateFrame("Frame", nil, canvas, "BackdropTemplate")
+  detailPanel:SetWidth(inspectorW)
+  detailPanel:SetPoint("TOPRIGHT", canvas, "TOPRIGHT", -8, headerY)
+  detailPanel:SetPoint("BOTTOMRIGHT", canvas, "BOTTOMRIGHT", -8, 14)
+  detailPanel:SetFrameLevel(canvas:GetFrameLevel() + 4)
+  Backdrop(detailPanel, T.panel, T.border)
+
+  local detailTitle = NewFS(detailPanel, "GameFontNormal")
+  detailTitle:SetPoint("TOPLEFT", 12, -10)
+  detailTitle:SetText("Selected Item")
+  detailTitle:SetTextColor(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+
+  local detailStar = CreateFrame("Button", nil, detailPanel)
+  detailStar:SetSize(24, 24)
+  detailStar:SetPoint("TOPRIGHT", -8, -6)
+  detailStar.icon = detailStar:CreateTexture(nil, "ARTWORK")
+  detailStar.icon:SetSize(16, 16)
+  detailStar.icon:SetPoint("CENTER")
+  if detailStar.icon.SetAtlas then
+    detailStar.icon:SetAtlas("auctionhouse-icon-favorite-off", false)
+  else
+    detailStar.icon:SetTexture("Interface\\Common\\ReputationStar")
+  end
+  if C and C.TextureColor then C:TextureColor(detailStar.icon, "accent") end
+  detailWidgets.starIcon = detailStar.icon
+  detailStar:SetScript("OnClick", function()
+    local F = Favorites or GetFavorites()
+    if F and selectedItemData and selectedItemData.itemID then
+      F.ToggleFavorite(selectedItemData.itemID)
+      InvalidateFilteredCache()
+      UpdateDetailPanel(selectedItemData)
+      RefreshTable()
+    end
+  end)
+  detailStar:SetScript("OnEnter", function(self)
+    if GameTooltip then
+      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      GameTooltip:SetText(L["DECOR_AH_CLICK_STAR"] or "Click star to favorite")
+      GameTooltip:Show()
+    end
+  end)
+  detailStar:SetScript("OnLeave", function()
+    if GameTooltip then GameTooltip:Hide() end
+  end)
+
+  local iconBox = CreateFrame("Frame", nil, detailPanel, "BackdropTemplate")
+  iconBox:SetSize(50, 50)
+  iconBox:SetPoint("TOPLEFT", 12, -34)
+  Backdrop(iconBox, T.iconBG or T.row, T.border)
+
+  detailWidgets.icon = iconBox:CreateTexture(nil, "ARTWORK")
+  detailWidgets.icon:SetPoint("CENTER")
+  detailWidgets.icon:SetSize(42, 42)
+  detailWidgets.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
+  detailWidgets.name = NewFS(detailPanel, "GameFontNormal")
+  detailWidgets.name:SetPoint("TOPLEFT", iconBox, "TOPRIGHT", 10, -2)
+  detailWidgets.name:SetPoint("RIGHT", -12, 0)
+  detailWidgets.name:SetJustifyH("LEFT")
+
+  detailWidgets.meta = NewFS(detailPanel, "GameFontNormalSmall")
+  detailWidgets.meta:SetPoint("TOPLEFT", detailWidgets.name, "BOTTOMLEFT", 0, -6)
+  detailWidgets.meta:SetPoint("RIGHT", -12, 0)
+  detailWidgets.meta:SetJustifyH("LEFT")
+  detailWidgets.meta:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+
+  local div1 = detailPanel:CreateTexture(nil, "ARTWORK")
+  div1:SetHeight(1)
+  div1:SetPoint("TOPLEFT", 12, -96)
+  div1:SetPoint("TOPRIGHT", -12, -96)
+  div1:SetColorTexture(unpack(T.border or { 0.24, 0.24, 0.28, 1 }))
+
+  local matsTitle = NewFS(detailPanel, "GameFontNormal")
+  matsTitle:SetPoint("TOPLEFT", 12, -112)
+  matsTitle:SetText(L["DECOR_AH_MATERIALS_COLON"] or "Materials:")
+  matsTitle:SetTextColor(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+
+  detailWidgets.materials = {}
+  detailWidgets.materialScroll = CreateFrame("ScrollFrame", nil, detailPanel, "ScrollFrameTemplate")
+  detailWidgets.materialScroll:SetPoint("TOPLEFT", 12, -134)
+  detailWidgets.materialScroll:SetPoint("TOPRIGHT", -28, -134)
+  detailWidgets.materialScroll:SetHeight(132)
+  if C and C.SkinScrollFrame then C:SkinScrollFrame(detailWidgets.materialScroll) end
+
+  detailWidgets.materialContent = CreateFrame("Frame", nil, detailWidgets.materialScroll)
+  detailWidgets.materialContent:SetSize(inspectorW - 50, 1)
+  detailWidgets.materialScroll:SetScrollChild(detailWidgets.materialContent)
+  detailWidgets.materialScroll:SetScript("OnMouseWheel", function(self, delta)
+    local cur = self:GetVerticalScroll() or 0
+    local maxScroll = self.GetVerticalScrollRange and self:GetVerticalScrollRange() or 0
+    local nextScroll = cur - (delta * 26)
+    if nextScroll < 0 then nextScroll = 0 end
+    if nextScroll > maxScroll then nextScroll = maxScroll end
+    self:SetVerticalScroll(nextScroll)
+  end)
+
+  local div2 = detailPanel:CreateTexture(nil, "ARTWORK")
+  div2:SetHeight(1)
+  div2:SetPoint("TOPLEFT", 12, -278)
+  div2:SetPoint("TOPRIGHT", -12, -278)
+  div2:SetColorTexture(unpack(T.border or { 0.24, 0.24, 0.28, 1 }))
+
+  local estTitle = NewFS(detailPanel, "GameFontNormal")
+  estTitle:SetPoint("TOPLEFT", 12, -292)
+  estTitle:SetText("Estimated Profit")
+  estTitle:SetTextColor(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+
+  local costLabel = NewFS(detailPanel, "GameFontNormalSmall")
+  costLabel:SetPoint("TOPLEFT", 12, -316)
+  costLabel:SetText(L["DECOR_AH_COST_COLON"] or "Cost:")
+  costLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  detailWidgets.cost = NewFS(detailPanel, "GameFontNormalSmall")
+  detailWidgets.cost:SetPoint("TOPRIGHT", detailPanel, "TOPRIGHT", -12, -316)
+  detailWidgets.cost:SetJustifyH("RIGHT")
+
+  local sellLabel = NewFS(detailPanel, "GameFontNormalSmall")
+  sellLabel:SetPoint("TOPLEFT", 12, -336)
+  sellLabel:SetText("Sell:")
+  sellLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  detailWidgets.sell = NewFS(detailPanel, "GameFontNormalSmall")
+  detailWidgets.sell:SetPoint("TOPRIGHT", detailPanel, "TOPRIGHT", -12, -336)
+  detailWidgets.sell:SetJustifyH("RIGHT")
+
+  local profitLabel = NewFS(detailPanel, "GameFontNormal")
+  profitLabel:SetPoint("TOPLEFT", 12, -362)
+  profitLabel:SetText(L["DECOR_AH_PROFIT_COLON"] or "Profit:")
+  profitLabel:SetTextColor(unpack(T.success or { 0.30, 0.80, 0.40, 1 }))
+  detailWidgets.profit = NewFS(detailPanel, "GameFontNormal")
+  detailWidgets.profit:SetPoint("TOPRIGHT", detailPanel, "TOPRIGHT", -12, -362)
+  detailWidgets.profit:SetJustifyH("RIGHT")
+
+  local function DetailButton(label, y, role, onClick)
+    local btn = CreateFrame("Button", nil, detailPanel, "BackdropTemplate")
+    btn:SetPoint("BOTTOMLEFT", 12, y)
+    btn:SetPoint("BOTTOMRIGHT", -12, y)
+    btn:SetHeight(28)
+    Backdrop(btn, role == "primary" and (T.accentDark or T.row) or T.row, T.border)
+    Hover(btn, role == "primary" and (T.accentDark or T.row) or T.row, T.hover)
+    local fs = NewFS(btn, "GameFontNormal")
+    fs:SetPoint("CENTER")
+    fs:SetText(label)
+    fs:SetTextColor(unpack(role == "primary" and (T.accentBright or T.accent or { 1, 0.95, 0.6, 1 }) or (T.text or { 0.92, 0.92, 0.92, 1 })))
+    btn:SetScript("OnClick", onClick)
+    return btn
+  end
+
+  local qtyBox = CreateFrame("Frame", nil, detailPanel, "BackdropTemplate")
+  qtyBox:SetPoint("BOTTOMLEFT", 12, 74)
+  qtyBox:SetPoint("BOTTOMRIGHT", -12, 74)
+  qtyBox:SetHeight(24)
+  Backdrop(qtyBox, T.row or T.panel, T.border)
+
+  local qtyLabel = NewFS(qtyBox, "GameFontNormalSmall")
+  qtyLabel:SetPoint("LEFT", 8, 0)
+  qtyLabel:SetText("Queue Qty")
+  qtyLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+
+  local qtyMinus = CreateFrame("Button", nil, qtyBox, "BackdropTemplate")
+  qtyMinus:SetSize(22, 18)
+  qtyMinus:SetPoint("RIGHT", -72, 0)
+  Backdrop(qtyMinus, T.panel, T.border)
+  Hover(qtyMinus, T.panel, T.hover)
+  qtyMinus.text = NewFS(qtyMinus, "GameFontNormal")
+  qtyMinus.text:SetPoint("CENTER")
+  qtyMinus.text:SetText("-")
+
+  local qtyText = NewFS(qtyBox, "GameFontNormal")
+  qtyText:SetPoint("RIGHT", -38, 0)
+  qtyText:SetWidth(26)
+  qtyText:SetJustifyH("CENTER")
+  qtyText:SetText(tostring(selectedQueueQty))
+  detailWidgets.qtyText = qtyText
+
+  local qtyPlus = CreateFrame("Button", nil, qtyBox, "BackdropTemplate")
+  qtyPlus:SetSize(22, 18)
+  qtyPlus:SetPoint("RIGHT", -8, 0)
+  Backdrop(qtyPlus, T.panel, T.border)
+  Hover(qtyPlus, T.panel, T.hover)
+  qtyPlus.text = NewFS(qtyPlus, "GameFontNormal")
+  qtyPlus.text:SetPoint("CENTER")
+  qtyPlus.text:SetText("+")
+
+  local function SetQueueQty(v)
+    selectedQueueQty = math.max(1, math.min(99, tonumber(v) or 1))
+    if detailWidgets.qtyText then detailWidgets.qtyText:SetText(tostring(selectedQueueQty)) end
+    if selectedItemData then UpdateDetailPanel(selectedItemData) end
+  end
+  qtyMinus:SetScript("OnClick", function() SetQueueQty(selectedQueueQty - 1) end)
+  qtyPlus:SetScript("OnClick", function() SetQueueQty(selectedQueueQty + 1) end)
+
+  DetailButton("Add to Queue", 42, "primary", function()
+    local Q = Queue or GetQueue()
+    if selectedItemData and Q then
+      Q.AddToQueue(selectedItemData.itemID, selectedItemData.name, selectedQueueQty, selectedItemData.profit, selectedItemData.reagents)
+      if DecorAH._updateQueueCount then DecorAH._updateQueueCount() end
+      local QP = NS.UI and NS.UI.DecorAH_Queue
+      if QP and QP.frame and QP.frame:IsShown() then QP:Refresh() end
+    end
+  end)
+
+  DetailButton(L["DECOR_AH_EXPORT"] or "Export", 8, nil, function()
+    local ExportMod = GetExport()
+    if selectedItemData and ExportMod and ExportMod.ExportSingleItem then
+      local txt = ExportMod.ExportSingleItem(selectedItemData.itemID, selectedItemData.reagents, 1)
+      if DEFAULT_CHAT_FRAME and txt and txt ~= "" then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor export:|r " .. txt:gsub("\n", "  "))
+      end
+    end
+  end)
+
+  UpdateDetailPanel(nil)
+
   CreateHeaderRow(canvas, headerY)
   for _, b in ipairs(headerButtons) do
     if b.UpdateSortIndicator then b:UpdateSortIndicator() end
   end
 
-  local scrollBottom, scrollRight = 14, 14
+  local scrollBottom, scrollRight = 14, 4
   scrollFrame = CreateFrame("ScrollFrame", nil, canvas, "ScrollFrameTemplate")
   if embedded then
     scrollFrame:SetPoint("TOPLEFT", canvas, "TOPLEFT", 14, headerY - ROW_H)
-    scrollFrame:SetPoint("BOTTOMRIGHT", canvas, "BOTTOMRIGHT", -scrollRight - 24, scrollBottom + 24)
+    scrollFrame:SetPoint("BOTTOMRIGHT", detailPanel, "BOTTOMLEFT", -scrollRight - 18, 0)
   else
     scrollFrame:SetPoint("TOPLEFT", 14, headerY - ROW_H)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -scrollRight - 24, scrollBottom + 24)
+    scrollFrame:SetPoint("BOTTOMRIGHT", detailPanel, "BOTTOMLEFT", -scrollRight - 18, 0)
   end
   scrollChild = CreateFrame("Frame", nil, scrollFrame)
   contentWidth = (scrollFrame:GetWidth() or 400) - 4

@@ -41,9 +41,9 @@ local defaults = {
     eventTimers = {},
     ui = {
       viewMode = "Icon",
-      catalogMode = "Sections",
-      detailsPanelOpen = false,
-      activeCategory = "Achievements",
+      catalogMode = "All Items",
+      detailsPanelOpen = true,
+      activeCategory = "All",
       compactActiveCategory = "Achievements",
       search = "",
       compactMode = false,
@@ -60,6 +60,10 @@ local defaults = {
       onlyCollected = false,
       expansion = "ALL",
       zone = "ALL",
+      color = "ALL",
+      colors = {},
+      budgetCosts = {},
+      sizes = {},
       faction = "ALL",
       category = "ALL",
       subcategory = "ALL",
@@ -444,6 +448,16 @@ function Addon:OnEnable()
   if NS.UI and NS.UI.MinimapVendor then
     pcall(function()
       NS.UI.MinimapVendor:Create()
+    end)
+  end
+
+  if C_Timer and C_Timer.After then
+    C_Timer.After(3.0, function()
+      local profile = NS.db and NS.db.profile
+      if not profile or (profile.ui and profile.ui.compactMode) then return end
+      if NS.UI and NS.UI.CreateMainFrame and not NS.UI.MainFrame then
+        pcall(function() NS.UI:CreateMainFrame() end)
+      end
     end)
   end
 end
