@@ -66,7 +66,7 @@ NS.Data.Vendors["Midnight"]["StormwindCity"] = {
       {decorID=15554, source={type="vendor", itemID=264282}, colors={"Bronze","Dark Brown","Dark Purple"}, budgetCost=1, size="Small"},
       {decorID=15555, source={type="vendor", itemID=264283}, colors={"Dark Gray","Silver","Tan"}, budgetCost=1, size="Small"},
       {decorID=15668, source={type="vendor", itemID=264396, currency="5000000", currencytype="money"}, dyeable=true, colors={"Gray","Royal Blue","Silver"}, budgetCost=1, size="Small"},
-      {decorID=15669, source={type="vendor", itemID=264397}, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
+      {decorID=15669, source={type="vendor", itemID=264397}, dyeable=true, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
     }
   },
 

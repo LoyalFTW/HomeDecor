@@ -544,7 +544,7 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       {decorID=15554, source={type="vendor", itemID=264282}, colors={"Bronze","Dark Brown","Dark Purple"}, budgetCost=1, size="Small"},
       {decorID=15555, source={type="vendor", itemID=264283}, colors={"Dark Gray","Silver","Tan"}, budgetCost=1, size="Small"},
       {decorID=15668, source={type="vendor", itemID=264396, currency="5000000", currencytype="money"}, dyeable=true, colors={"Gray","Royal Blue","Silver"}, budgetCost=1, size="Small"},
-      {decorID=15669, source={type="vendor", itemID=264397}, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
+      {decorID=15669, source={type="vendor", itemID=264397}, dyeable=true, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -736,6 +736,21 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
     items={
 --       {decorID=25565, source={type="vendor", itemID=276318}, budgetCost=5, size="Large"}, -- missing verified worldmap
 --       {decorID=25664, source={type="vendor", itemID=276432}, budgetCost=5, size="Huge"}, -- missing verified worldmap
+    }
+  },
+
+  {
+    source={
+      id=267859,
+      type="vendor",
+      faction="Neutral",
+      zone="Silvermoon City",
+      worldmap="2393:3934:5913"
+    },
+    items={
+      {decorID=23706, source={type="vendor", itemID=274731}, budgetCost=1, size="Small"},
+      {decorID=24193, source={type="vendor", itemID=274734}, budgetCost=1, size="Small"},
+      {decorID=24194, source={type="vendor", itemID=274736}, budgetCost=1, size="Small"},
     }
   },
 
