@@ -93,6 +93,7 @@ Systems\Vendor\VendorChecks.lua
 Systems\Vendor\VendorNPCTooltip.lua
 Systems\Endeavors.lua
 Systems\Architect.lua
+Systems\RoomNameNotices.lua
 UI\Endeavors\Endeavors.lua
 UI\Architect\Architect.lua
 UI\Shared\Theme.lua

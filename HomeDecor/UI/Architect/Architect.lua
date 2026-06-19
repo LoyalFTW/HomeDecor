@@ -274,6 +274,9 @@ local function DrawShape(parent, roomOrTemplate, pool, selected, scaleGlow)
 
   local shape = (roomOrTemplate and roomOrTemplate.shape) or "rect"
   local art = roomOrTemplate and roomOrTemplate.art
+  if type(art) == "string" and art:find("Interface\\AddOns\\HomeDecor\\Media\\Architect\\", 1, true) == 1 then
+    art = nil
+  end
   local rects = ShapeRects(shape)
   local w, h = parent:GetWidth() or 1, parent:GetHeight() or 1
 
@@ -1060,8 +1063,19 @@ function UIA:Create(parent)
   local rotateRoom = Button(right, "Rotate 90", 86)
   rotateRoom:SetPoint("LEFT", deleteRoom, "RIGHT", 8, 0)
 
+  local markRoom = Button(right, "Mark Room", 98)
+  markRoom:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -8)
+  panel.markRoom = markRoom
+
+  local markStatus = FS(right, "GameFontNormalSmall")
+  markStatus:SetPoint("LEFT", markRoom, "RIGHT", 8, 0)
+  markStatus:SetPoint("RIGHT", right, "RIGHT", -12, 0)
+  markStatus:SetJustifyH("LEFT")
+  TextColor(markStatus, "textMuted")
+  panel.markStatus = markStatus
+
   local changesTitle = FS(right, "GameFontNormal")
-  changesTitle:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -18)
+  changesTitle:SetPoint("TOPLEFT", markRoom, "BOTTOMLEFT", 0, -14)
   changesTitle:SetText("House Changes")
   TextColor(changesTitle, "accent")
 
@@ -1891,6 +1905,10 @@ function UIA:Create(parent)
       self.inspectorTitle:SetText("Room")
       self.roomName:SetText("")
       self.roomStats:SetText("Select a room on the canvas.")
+      self.markRoom:Hide()
+      self.markStatus:Hide()
+      changesTitle:ClearAllPoints()
+      changesTitle:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -18)
       DrawGrid(self.selectedPreview, self.selectedPreview.gridPool, 8, 6, 2, 0.035)
       DrawShape(self.selectedPreview, selectedTemplate(), self.selectedPreview.pool, true, 0.72)
       return
@@ -1901,6 +1919,27 @@ function UIA:Create(parent)
     self.roomStats:SetText("Cost: " .. tostring(sys:GetRoomCost(room)) ..
       "   Connections: " .. tostring(#(sys:GetRoomConnections(room) or {})) ..
       "   Rotation: " .. tostring(room.rotation or 0))
+    local capturedRoom = room.capture and room.capture.roomGUID ~= nil
+    self.markRoom:SetShown(capturedRoom)
+    self.markStatus:SetShown(capturedRoom)
+    changesTitle:ClearAllPoints()
+    if capturedRoom then
+      changesTitle:SetPoint("TOPLEFT", markRoom, "BOTTOMLEFT", 0, -14)
+    else
+      changesTitle:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -18)
+    end
+    local notices = NS.Systems and NS.Systems.RoomNameNotices
+    local state = notices and notices:GetMappingState(room, activeLayout()) or "unmapped"
+    if state == "first" then
+      self.markRoom.text:SetText("Save Corner 2")
+      self.markStatus:SetText("Corner 1 saved")
+    elseif state == "mapped" then
+      self.markRoom.text:SetText("Remap Room")
+      self.markStatus:SetText("Mapped")
+    else
+      self.markRoom.text:SetText("Mark Room")
+      self.markStatus:SetText("Not mapped")
+    end
     DrawGrid(self.selectedPreview, self.selectedPreview.gridPool, 8, 6, 2, 0.035)
     DrawShape(self.selectedPreview, room, self.selectedPreview.pool, true, 0.72)
   end
@@ -2006,6 +2045,25 @@ function UIA:Create(parent)
       panel:RefreshChanges()
     end
   end)
+
+  markRoom:SetScript("OnClick", function()
+    local notices = NS.Systems and NS.Systems.RoomNameNotices
+    if not notices then return end
+    local ok, message = notices:MarkRoom(selectedRoom(), activeLayout())
+    if message then
+      local color = ok and "|cff33ff99" or "|cffff6666"
+      print(color .. "HomeDecor:|r " .. message)
+    end
+    panel:RefreshInspector()
+  end)
+
+  markRoom:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetText("Map Room Location")
+    GameTooltip:AddLine("Stand at one corner and click, then move to the opposite corner and click again.", 0.85, 0.85, 0.85, true)
+    GameTooltip:Show()
+  end)
+  markRoom:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
   clearBtn:SetScript("OnClick", function()
     local layout = activeLayout()
