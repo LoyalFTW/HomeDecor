@@ -2686,4 +2686,6 @@ NS.Data.DecorCatalogMeta = {
   [25665] = {budgetCost=5, size="Large"},
 }
 NS.Data.DecorCatalogCounts = {
+  budget = {["low"]=1071, ["medium"]=787, ["high"]=678, ["none"]=147},
+  size = {["Huge"]=196, ["Large"]=765, ["Medium"]=722, ["Small"]=674, ["Tiny"]=173},
 }

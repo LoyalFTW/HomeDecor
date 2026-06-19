@@ -29,7 +29,15 @@ local bundles = {
   },
   Drops = {
     addon = "HomeDecor_Data_Drops",
-    mergeKeys = { "Drops" },
+    mergeKeys = { "Drops", "Shops", "Treasures" },
+  },
+  Shops = {
+    addon = "HomeDecor_Data_Drops",
+    mergeKeys = { "Drops", "Shops", "Treasures" },
+  },
+  Treasures = {
+    addon = "HomeDecor_Data_Drops",
+    mergeKeys = { "Drops", "Shops", "Treasures" },
   },
   Professions = {
     addon = "HomeDecor_Data_Professions",
@@ -149,6 +157,14 @@ function Loader:EnsureDrops()
   return self:EnsureBundle("Drops")
 end
 
+function Loader:EnsureShops()
+  return self:EnsureBundle("Shops")
+end
+
+function Loader:EnsureTreasures()
+  return self:EnsureBundle("Treasures")
+end
+
 function Loader:EnsureProfessions()
   return self:EnsureBundle("Professions")
 end
@@ -165,6 +181,8 @@ function Loader:EnsureAllCatalogData()
   self:EnsureVendors()
   self:EnsureDerivedRequirements()
   self:EnsureDrops()
+  self:EnsureShops()
+  self:EnsureTreasures()
   self:EnsureProfessions()
   self:EnsureEvents()
   self:EnsureTrainers()
@@ -179,6 +197,12 @@ function Loader:EnsureForCategory(category)
   end
   if category == "Drops" then
     return self:EnsureDrops()
+  end
+  if category == "Shop" or category == "Shops" then
+    return self:EnsureShops()
+  end
+  if category == "Treasures" then
+    return self:EnsureTreasures()
   end
   if category == "Professions" then
     return self:EnsureProfessions()

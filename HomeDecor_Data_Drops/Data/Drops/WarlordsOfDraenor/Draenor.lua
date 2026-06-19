@@ -6,10 +6,10 @@ NS.Data.Drops = NS.Data.Drops or {}
 NS.Data.Drops["WarlordsOfDraenor"] = NS.Data.Drops["WarlordsOfDraenor"] or {}
 
 NS.Data.Drops["WarlordsOfDraenor"]["Draenor"] = {
-	{decorID=925,   source={ type="drop", zone="Draenor", itemID=241043, worldmap="539:5000:5000", faction="alliance" }},
-	{decorID=8176,  source={ type="drop", zone="Draenor", itemID=251329, worldmap="539:5000:5000", faction="alliance" }},
-	{decorID=8238,  source={ type="drop", zone="Draenor", itemID=251547, worldmap="539:5000:5000", faction="alliance" }},
-	{decorID=8178,  source={ type="drop", zone="Draenor", itemID=251331, npcID=77734, npc="Teron'gor", worldmap="535:4594:7359" }},
-	{decorID=1323,  source={ type="drop", zone="Draenor", itemID=245434, npcID=83612, npc="Skulloc", worldmap="543:4525:1329" }},
+	{decorID=925,   source={ type="drop", zone="Draenor", itemID=241043, worldmap="539:5000:5000", faction="alliance" }, colors={"Dark Gray","Gray"}, budgetCost=1, size="Small"},
+	{decorID=8176,  source={ type="drop", zone="Draenor", itemID=251329, worldmap="539:5000:5000", faction="alliance" }, colors={"Dark Gray","Gray"}, budgetCost=5, size="Large"},
+	{decorID=8238,  source={ type="drop", zone="Draenor", itemID=251547, worldmap="539:5000:5000", faction="alliance" }, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=5, size="Huge"},
+	{decorID=8178,  source={ type="drop", zone="Draenor", itemID=251331, npcID=77734, npc="Teron'gor", worldmap="535:4594:7359" }, colors={"Dark Purple","Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+	{decorID=1323,  source={ type="drop", zone="Draenor", itemID=245434, npcID=83612, npc="Skulloc", worldmap="543:4525:1329" }, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
 	{decorID=12204, source={ type="drop", zone="Draenor", itemID=258744, npcID=76266, npc="High Sage Viryx" }}
 }

@@ -657,6 +657,8 @@ local GROUPED_ALL_CATEGORIES = {
     "Quests",
     "Vendors",
     "Drops",
+    "Treasures",
+    "Shop",
     "Professions",
     "PvP",
 }
@@ -1122,6 +1124,7 @@ local function RebuildEntries(f, content)
     local isSpecialCategory = (cat == "Events") or
                               (cat == "Decor Pricing") or
                               (cat == "Alts Professions") or
+                              (cat == "Architect") or
                               (cat == "Endeavors") or
                               (cat == "Saved Items")
     local forcedFlatMode = (ui.catalogMode == "All Items")
@@ -1188,7 +1191,8 @@ local function RebuildEntries(f, content)
 
             local key = "all:category:" .. categoryName .. ":" .. tostring(sortMode)
             local open = HeaderCtrl and HeaderCtrl.IsOpen and HeaderCtrl:IsOpen("exp", key) or false
-            addHeader(12, 44, categoryName, c, t, open, "exp", { key = key })
+            local categoryLabel = (categoryName == "Drops") and "Drops/Encounters" or categoryName
+            addHeader(12, 44, categoryLabel, c, t, open, "exp", { key = key })
 
             if open then
                 if viewMode == "Icon" then

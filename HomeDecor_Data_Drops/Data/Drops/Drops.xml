@@ -1,34 +1,43 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
+    <!-- BattleForAzeroth -->
+    <Script file="BattleForAzeroth/KulTiras.lua"/>
+
+    <!-- BattleforAzerothMidnight -->
+    <Script file="BattleforAzerothMidnight/Unknown.lua"/>
+
+    <!-- BurningCrusade -->
+    <Script file="BurningCrusade/Outland.lua"/>
+
     <!-- Classic -->
     <Script file="Classic/EasternKingdoms.lua"/>
     <Script file="Classic/Kalimdor.lua"/>
 
-    <!-- MoP -->
-    <Script file="MistsOfPandaria/Pandaria.lua"/>
-
-    <!-- WoD -->
-    <Script file="WarlordsOfDraenor/Draenor.lua"/>
-
-    <!-- Wrath -->
-    <Script file="WrathOfTheLichKing/Northrend.lua"/>
+    <!-- Dragonflight -->
+    <Script file="Dragonflight/DragonIsles.lua"/>
 
     <!-- Legion -->
     <Script file="Legion/BrokenIsles.lua"/>
 
-    <!-- BfA -->
-    <Script file="BattleForAzeroth/KulTiras.lua"/>
-
-    <!-- Dragonflight -->
-    <Script file="Dragonflight/DragonIsles.lua"/>
-
-    <!-- The War Within -->
-    <Script file="TheWarWithin/KhazAlgar.lua"/>
-
     <!-- Midnight -->
     <Script file="Midnight/QuelThalas.lua"/>
 
+    <!-- MistsOfPandaria -->
+    <Script file="MistsOfPandaria/Pandaria.lua"/>
+
+    <!-- TheWarWithin -->
+    <Script file="TheWarWithin/KhazAlgar.lua"/>
+
+    <!-- WarlordsOfDraenor -->
+    <Script file="WarlordsOfDraenor/Draenor.lua"/>
+
+    <!-- WrathOfTheLichKing -->
+    <Script file="WrathOfTheLichKing/Northrend.lua"/>
+
     <!-- Global decorID -> mob list mapping (built automatically at runtime) -->
     <Script file="DropSources.lua"/>
+
+    <Script file="../Shops/Shops.lua"/>
+    <Script file="../Treasures/Treasures.lua"/>
 
 </Ui>

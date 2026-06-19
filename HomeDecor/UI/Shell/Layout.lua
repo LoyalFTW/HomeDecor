@@ -824,8 +824,11 @@ function L:CreateShell()
     "Quests",
     "Vendors",
     "Drops",
+    "Treasures",
+    "Shop",
     "Professions",
     "PvP",
+    "Architect",
     "Decor Pricing",
     "Events",
     "Decor Tracker",
@@ -839,8 +842,11 @@ function L:CreateShell()
     Quests = "Interface\\Icons\\INV_Misc_Note_02",
     Vendors = "Interface\\Icons\\INV_Misc_Coin_01",
     Drops = "Interface\\Icons\\INV_Box_01",
+    Treasures = "Interface\\Icons\\INV_Misc_TreasureChest04b",
+    Shop = "Interface\\Icons\\INV_Misc_Coin_02",
     Professions = "Interface\\Icons\\Trade_BlackSmithing",
     ["PvP"] = "Interface\\Icons\\INV_BannerPVP_02",
+    Architect = "Interface\\Icons\\INV_Inscription_Tradeskill01",
     Events = "Interface\\Icons\\INV_Misc_PocketWatch_01",
     ["Decor Tracker"] = "Interface\\Icons\\Ability_Hunter_BeastCall",
     ["Gather Tracker"] = "Interface\\Icons\\INV_Misc_Map_01",
@@ -881,13 +887,13 @@ function L:CreateShell()
     links = CreateSideSection("LINKS"),
   }
 
-  local function PlaceSideSection(section, yPos)
+  local function PlaceSideSection(section, yPos, step)
     if not section then return yPos end
     section:ClearAllPoints()
     section:SetPoint("TOPLEFT", left, "TOPLEFT", 10, yPos)
     section:SetPoint("TOPRIGHT", left, "TOPRIGHT", -10, yPos)
     section:Show()
-    return yPos - 18
+    return yPos - (step or 18)
   end
 
   local navTips = {
@@ -896,9 +902,12 @@ function L:CreateShell()
     Achievements = "Decor unlocked from achievements.",
     Quests = "Decor earned from quests.",
     Vendors = "Decor sold by vendors and quartermasters.",
-    Drops = "Decor found as drops or rewards.",
+    Drops = "Decor found from creature drops and encounters.",
+    Treasures = "Decor found in treasures and world chests.",
+    Shop = "Decor from store packs, editions, and preorder bonuses.",
     Professions = "Decor crafted or gathered through professions.",
     ["PvP"] = "Decor tied to PvP sources.",
+    Architect = "Plan rooms, decor budgets, and reusable furnishing ideas.",
     Events = "Open active and seasonal event decor.",
     ["Decor Tracker"] = "Open your decor tracker.",
     ["Gather Tracker"] = "Open your gather tracker.",
@@ -935,14 +944,15 @@ function L:CreateShell()
       btn.text:SetText(btn._fullText)
       return
     end
+    local displayName = (cname == "Drops") and "Drops/Encounters" or cname
     local collected, total = 0, 0
     if GlobalIndex and GlobalIndex.GetCounts then
       collected, total = GlobalIndex:GetCounts(cname)
     end
     if total > 0 then
-      btn._fullText = format("%s (%d / %d)", cname, collected, total)
+      btn._fullText = format("%s (%d / %d)", displayName, collected, total)
     else
-      btn._fullText = cname
+      btn._fullText = displayName
     end
     btn._tooltipTitle = btn._fullText
     btn.text:SetText(btn._fullText)
@@ -1030,7 +1040,7 @@ function L:CreateShell()
     b._category = (cname == "All Sources") and "All" or cname
     if cname == "All Sources" then
       b._sectionBefore = left.sections.catalog
-    elseif cname == "Decor Pricing" then
+    elseif cname == "Architect" then
       b._sectionBefore = left.sections.featured
     elseif cname == "Decor Tracker" then
       b._sectionBefore = left.sections.trackers
@@ -1182,23 +1192,26 @@ function L:CreateShell()
     local panelW = 204
     left:SetWidth(panelW)
 
-    local btnH = 25
-    local gap  = 28
+    local compactNav = (left:GetHeight() or 0) < 700
+    local sectionStep = compactNav and 15 or 18
+    local btnH = compactNav and 22 or 25
+    local gap = compactNav and 24 or 28
+    local savedGap = compactNav and 7 or 10
     local cy = -12
 
-    cy = PlaceSideSection(left.sections and left.sections.quick, cy)
+    cy = PlaceSideSection(left.sections and left.sections.quick, cy, sectionStep)
 
     savedItemsBtn:ClearAllPoints()
     savedItemsBtn:SetPoint("TOPLEFT", 10, cy)
     savedItemsBtn:SetPoint("RIGHT", -10, cy)
     savedItemsBtn:SetHeight(btnH)
-    cy = cy - (btnH + 10)
+    cy = cy - (btnH + savedGap)
 
     for i = 1, #left.buttons do
       local b = left.buttons[i]
       if b ~= savedItemsBtn then
         if b._sectionBefore then
-          cy = PlaceSideSection(b._sectionBefore, cy)
+          cy = PlaceSideSection(b._sectionBefore, cy, sectionStep)
         end
         b:ClearAllPoints()
         b:SetPoint("TOPLEFT", 10, cy)
@@ -1490,6 +1503,7 @@ function L:CreateShell()
 
   local function IsWindowCategory(categoryName)
     return categoryName == "Events"
+      or categoryName == "Architect"
       or categoryName == "Decor Pricing"
       or categoryName == "Alts Professions"
       or categoryName == "Endeavors"
@@ -1537,11 +1551,16 @@ function L:CreateShell()
       TextColor(endeavorsTopBtn.text, "text")
     end
 
+    local isArchitectSelected = UI.activeCategory == "Architect"
+    if NS.UI.ArchitectPanel then
+      NS.UI.ArchitectPanel:SetShown(isArchitectSelected)
+    end
+
     if NS.UI.EndeavorsPanel then
       NS.UI.EndeavorsPanel:SetShown(isEndeavorsSelected)
     end
     if f.view then
-      f.view:SetShown(not isEndeavorsSelected)
+      f.view:SetShown(not isEndeavorsSelected and not isArchitectSelected)
     end
 
     C:SetSelected(eventsBtn, UI.activeCategory == "Events", T.panel, T.row)
@@ -1659,8 +1678,15 @@ function L:CreateShell()
     if categoryName == "Endeavors" and NS.UI and NS.UI.Endeavors and not NS.UI.EndeavorsPanel then
       NS.UI.EndeavorsPanel = NS.UI.Endeavors:Create(rightContent)
     end
+    if categoryName == "Architect" and NS.UI and NS.UI.Architect and not NS.UI.ArchitectPanel then
+      NS.UI.ArchitectPanel = NS.UI.Architect:Create(rightContent)
+    end
 
     if UpdateTopTabs then UpdateTopTabs() end
+    if categoryName == "Architect" and NS.UI.ArchitectPanel then
+      if NS.UI.ArchitectPanel.Refresh then NS.UI.ArchitectPanel:Refresh() end
+      NS.UI.ArchitectPanel:Show()
+    end
     if categoryName == "Endeavors" and NS.UI.EndeavorsPanel then
       if NS.UI.EndeavorsPanel.FullRefresh then NS.UI.EndeavorsPanel:FullRefresh() end
       NS.UI.EndeavorsPanel:Show()
@@ -1834,6 +1860,7 @@ function L:CreateShell()
 
   local SORT_CAT_EXCLUDED = {
     ["Events"] = true,
+    ["Architect"] = true,
     ["Decor Pricing"] = true,
     ["Alts Professions"] = true,
     ["Endeavors"] = true,
@@ -2281,6 +2308,7 @@ function L:CreateShell()
     if q == "all" or q == "everything" or q == "all sources" then return "All" end
     if q == "event" or q == "events" then return "Events" end
     if q == "pricing" or q == "decor pricing" or q == "price" then return "Decor Pricing" end
+    if q == "architect" or q == "planner" or q == "blueprint" or q == "layouts" then return "Architect" end
     if q == "alts" or q == "alts professions" or q == "professions alts" then return "Alts Professions" end
     if q == "endeavor" or q == "endeavors" then return "Endeavors" end
     return nil
@@ -2484,6 +2512,11 @@ function L:CreateShell()
     f.view = NS.UI.ViewFactory:Create(f, UI, db)
   elseif NS.UI and NS.UI.Viewer and NS.UI.Viewer.Create then
     f.view = NS.UI.Viewer:Create(rightContent or right)
+  end
+  if UI.activeCategory == "Architect" and NS.UI and NS.UI.Architect and not NS.UI.ArchitectPanel then
+    NS.UI.ArchitectPanel = NS.UI.Architect:Create(rightContent)
+    if NS.UI.ArchitectPanel and NS.UI.ArchitectPanel.Refresh then NS.UI.ArchitectPanel:Refresh() end
+    if NS.UI.ArchitectPanel then NS.UI.ArchitectPanel:Show() end
   end
   if f.view and f.view.SetInspectorOpen then
     ApplyDetailsPanelForCategory(UI.activeCategory or "All", true)

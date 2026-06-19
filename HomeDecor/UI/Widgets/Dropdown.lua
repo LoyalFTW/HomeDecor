@@ -150,6 +150,34 @@ local function ensureBtn(dd, pool, i, parentFrame, isSub, T)
         b.text:SetWordWrap(false)
         if b.text.SetMaxLines then b.text:SetMaxLines(1) end
 
+        b.delete = CreateFrame("Button", nil, b)
+        b.delete:SetSize(20, dd._rowH)
+        b.delete:SetPoint("RIGHT", -2, 0)
+        b.delete.text = b.delete:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        b.delete.text:SetPoint("CENTER")
+        b.delete.text:SetText("X")
+        b.delete.text:SetTextColor(1.0, 0.30, 0.22, 0.95)
+        b.delete:Hide()
+        b.delete:SetScript("OnEnter", function(self)
+            if GameTooltip then
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                GameTooltip:SetText(self.tooltipText or "Delete", 1, 1, 1)
+                GameTooltip:Show()
+            end
+        end)
+        b.delete:SetScript("OnLeave", function()
+            if GameTooltip then GameTooltip:Hide() end
+        end)
+        b.delete:SetScript("OnClick", function()
+            local opt = b.opt
+            if opt and opt.onDelete then
+                opt.onDelete(b.value, opt, dd)
+                if dd.UpdateMain then dd:UpdateMain() end
+                if dd.RefreshStates then dd:RefreshStates() end
+                if dd.ApplyText then dd:ApplyText() end
+            end
+        end)
+
         b:SetScript("OnEnter", function()
             b.hl:Show()
             if (not isSub) and b.children then
@@ -309,7 +337,7 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
             if opt.separator then
                 b.text:SetText("")
                 b.div:Show()
-                b.box:Hide(); b.check:Hide(); b.sel:Hide(); b.arrow:Hide()
+                b.box:Hide(); b.check:Hide(); b.sel:Hide(); b.arrow:Hide(); b.delete:Hide()
             else
                 b.div:Hide()
                 b.text:SetText(opt.text or "")
@@ -322,7 +350,10 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
                     b.box:Hide(); b.check:Hide()
                     b.text:SetPoint("LEFT", 12, 0)
                 end
-                b.text:SetPoint("RIGHT", -18, 0)
+                local showDelete = opt.onDelete and true or false
+                b.delete.tooltipText = opt.deleteTooltip or "Delete"
+                b.delete:SetShown(showDelete)
+                b.text:SetPoint("RIGHT", showDelete and -40 or -18, 0)
                 b.arrow:Hide()
             end
 
@@ -372,7 +403,7 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
             if opt.separator then
                 b.text:SetText("")
                 b.div:Show()
-                b.box:Hide(); b.check:Hide(); b.sel:Hide(); b.arrow:Hide()
+                b.box:Hide(); b.check:Hide(); b.sel:Hide(); b.arrow:Hide(); b.delete:Hide()
             else
                 b.div:Hide()
                 b.text:SetText(opt.text or "")
@@ -385,7 +416,10 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
                     b.box:Hide(); b.check:Hide()
                     b.text:SetPoint("LEFT", 12, 0)
                 end
-                b.text:SetPoint("RIGHT", -18, 0)
+                local showDelete = opt.onDelete and true or false
+                b.delete.tooltipText = opt.deleteTooltip or "Delete"
+                b.delete:SetShown(showDelete)
+                b.text:SetPoint("RIGHT", showDelete and -40 or -18, 0)
                 b.arrow:SetShown(opt.children and true or false)
             end
 

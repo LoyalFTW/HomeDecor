@@ -103,8 +103,8 @@ local function buildVendorCategories()
     end
 end
 
-local function walkCategory(cat)
-    local data = NS.Data and NS.Data[cat]
+local function walkCategory(cat, dataKey)
+    local data = NS.Data and NS.Data[dataKey or cat]
     if type(data) ~= "table" then return end
 
     local function walk(node)
@@ -139,6 +139,8 @@ function GI:Build()
     walkCategory("Quests")
     walkCategory("Professions")
     walkCategory("Drops")
+    walkCategory("Shop", "Shops")
+    walkCategory("Treasures")
     walkCategory("Saved Items")
 
     for cat, set in pairs(self._categoryScratch) do

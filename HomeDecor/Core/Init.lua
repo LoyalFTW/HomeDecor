@@ -152,6 +152,37 @@ local defaults = {
     favorites = {},
     collection = { completedItems = {} },
 
+    architect = {
+      activeLayoutID = 1,
+      nextLayoutID = 2,
+      nextRoomID = 2,
+      nextItemID = 1,
+      layouts = {
+        {
+          id = 1,
+          name = "First Home",
+          gridW = 24,
+          gridH = 16,
+          budgetLimit = 250,
+          yardBudgetLimit = 100,
+          rooms = {
+            {
+              id = 1,
+              name = "Great Room",
+              design = "Welcome",
+              x = 2,
+              y = 2,
+              w = 8,
+              h = 5,
+              color = 1,
+              budgetLimit = 40,
+              items = {},
+            },
+          },
+        },
+      },
+    },
+
     decorAH = {
       window = {},
       preferredSource = nil,

@@ -128,6 +128,8 @@ function DecorIndex:Build()
     ingestCategory(self, D.Quests, "quest")
     ingestCategory(self, D.Achievements, "achievement")
     ingestCategory(self, D.Drops, "drop")
+    ingestCategory(self, D.Shops, "shop")
+    ingestCategory(self, D.Treasures, "treasure")
     ingestCategory(self, D.Professions, "profession")
 
     self._built = true

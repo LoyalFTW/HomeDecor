@@ -212,6 +212,9 @@ local function BuildGlobalSearchResults(ui, db)
   end
 
   Scan(data.Drops, "drop")
+  Scan(data.Shops, "shop")
+  Scan(data.Treasures, "treasure")
+  Scan(data.Events, "event")
   Scan(data.Professions, "profession")
   Scan(data.SavedItems or data["Saved Items"], "saved")
 

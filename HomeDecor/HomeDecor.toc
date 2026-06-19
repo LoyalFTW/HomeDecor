@@ -80,7 +80,6 @@ Systems\AuctionScan.lua
 Systems\ProfessionScanner.lua
 Systems\ProfessionTracker.lua
 Systems\RecipeTracker.lua
-Systems\DecorAH\DecorAH.lua
 Systems\DecorAH\DecorAH_Sales.lua
 Systems\DecorAH\DecorAH_Queue.lua
 Systems\DecorAH\DecorAH_History.lua
@@ -93,7 +92,9 @@ Systems\Vendor\DecorCounts_System.lua
 Systems\Vendor\VendorChecks.lua
 Systems\Vendor\VendorNPCTooltip.lua
 Systems\Endeavors.lua
+Systems\Architect.lua
 UI\Endeavors\Endeavors.lua
+UI\Architect\Architect.lua
 UI\Shared\Theme.lua
 UI\Shared\Controls.lua
 UI\Shared\Options.lua

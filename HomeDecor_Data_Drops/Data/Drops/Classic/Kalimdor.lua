@@ -14,8 +14,8 @@ Darkshore_Rares={
 [149665]={name="Scalefiend",worldmap="62:4740:4460"}}}
 
 NS.Data.Drops["Classic"]["Kalimdor"]={
-	{decorID=840, source={type="drop",zone="Darkshore",itemID=245462,mobSet="Darkshore_Rares",_mobSets=MOBSETS}},
-	{decorID=2000, source={type="drop",zone="Darkshore",itemID=246110,mobSet="Darkshore_Rares",_mobSets=MOBSETS}},
-	{decorID=1836, source={type="drop",zone="Darkshore",itemID=245627,mobSet="Darkshore_Rares",_mobSets=MOBSETS}},
+	{decorID=840, source={type="drop",zone="Darkshore",itemID=245462,mobSet="Darkshore_Rares",_mobSets=MOBSETS}, colors={"Dark Gray","Gray"}, budgetCost=5, size="Large"},
+	{decorID=2000, source={type="drop",zone="Darkshore",itemID=246110,mobSet="Darkshore_Rares",_mobSets=MOBSETS}, colors={"Cyan","Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+	{decorID=1836, source={type="drop",zone="Darkshore",itemID=245627,mobSet="Darkshore_Rares",_mobSets=MOBSETS}, colors={"Cyan","Dark Gray","Royal Blue"}, budgetCost=1, size="Small"},
 	{decorID=948, source={type="drop",zone="Darkshore",itemID=241066,mobSet="Darkshore_Rares",_mobSets=MOBSETS}}
 }
