@@ -12,4 +12,5 @@ NS.Data.Professions["Tailoring"]["Midnight"] = {
      {decorID=14619, decorType="Ornamental", source={type="profession", skillID=1246919, itemID=262593}, colors={"Amber","Dark Purple","Light Purple"}, budgetCost=1, size="Tiny"},
      {decorID=14624, decorType="Misc Accents", source={type="profession", skillID=1229000, itemID=262599}, colors={"Deep Red","Red"}, budgetCost=5, size="Large"},
      {decorID=14636, decorType="Storage", source={type="profession", skillID=1246929, itemID=262611}, colors={"Dark Purple","Navy Blue","Royal Blue"}, budgetCost=1, size="Tiny"},
+--   {decorID=26495, decorType="Ornamental", source={type="profession", skillID=1306591, itemID=279350}, budgetCost=1, size="Small"}, -- DNT / do not use
 }

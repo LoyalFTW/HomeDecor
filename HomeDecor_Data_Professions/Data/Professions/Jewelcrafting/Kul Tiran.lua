@@ -8,4 +8,6 @@ NS.Data.Professions["Jewelcrafting"] = NS.Data.Professions["Jewelcrafting"] or {
 NS.Data.Professions["Jewelcrafting"]["Kul Tiran"] = {
   {decorID=1161, decorType="Wall Hangings", source={type="profession", skillID=1260501, itemID=245496}, colors={"Gold","Navy Blue","Olive"}, budgetCost=1, size="Small"},
   {decorID=1200, decorType="Wall Lights", source={type="profession", skillID=1260492, itemID=245414}, colors={"Dark Brown","Red","Yellow"}, budgetCost=3, size="Medium"},
+  {decorID=26488, decorType="Ornamental", source={type="profession", skillID=1306598, itemID=279356}, budgetCost=1, size="Small"},
+  {decorID=26489, decorType="Ornamental", source={type="profession", skillID=1306574, itemID=279343}, budgetCost=1, size="Small"},
 }

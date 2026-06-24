@@ -422,4 +422,42 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
     }
   },
 
+  {
+    source={
+      id=262726,
+      type="vendor",
+      faction="Neutral",
+      zone="Unknown",
+      worldmap="21:8214:5952"
+    },
+    items={
+      {decorID=26492, source={type="vendor", itemID=278696}, budgetCost=1, size="Small"},
+      {decorID=26494, source={type="vendor", itemID=278701}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=271165,
+      type="vendor",
+      faction="Neutral",
+      zone="Unknown",
+      worldmap="21:8214:5952"
+    },
+    items={
+      {decorID=23553, source={type="vendor", itemID=280142}, budgetCost=1, size="Small"},
+      {decorID=23554, source={type="vendor", itemID=280144}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23555, source={type="vendor", itemID=280146}, budgetCost=1, size="Small"},
+      {decorID=23556, source={type="vendor", itemID=280148}, budgetCost=3, size="Medium"},
+      {decorID=23557, source={type="vendor", itemID=280150}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23558, source={type="vendor", itemID=280152}, dyeable=true, budgetCost=1, size="Small"},
+      {decorID=23559, source={type="vendor", itemID=280154}, dyeable=true, budgetCost=1, size="Small"},
+      {decorID=23560, source={type="vendor", itemID=280156}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23707, source={type="vendor", itemID=280158}, dyeable=true, budgetCost=1, size="Small"},
+      {decorID=23708, source={type="vendor", itemID=280160}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23709, source={type="vendor", itemID=280162}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23710, source={type="vendor", itemID=280164}, dyeable=true, budgetCost=3, size="Medium"},
+    }
+  },
+
 }

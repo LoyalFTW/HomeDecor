@@ -486,4 +486,96 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
     }
   },
 
+  {
+    source={
+      id=260485,
+      type="vendor",
+      faction="Neutral",
+      zone="Founder's Point",
+      worldmap="2351:5427:5605"
+    },
+    items={
+      {decorID=22916, source={type="vendor", itemID=274518}, budgetCost=3, size="Large"},
+      {decorID=22918, source={type="vendor", itemID=274523}, budgetCost=3, size="Medium"},
+      {decorID=22924, source={type="vendor", itemID=274533}, budgetCost=3, size="Medium"},
+      {decorID=22925, source={type="vendor", itemID=274535}, budgetCost=5, size="Huge"},
+      {decorID=22926, source={type="vendor", itemID=274537}, budgetCost=5, size="Huge"},
+    }
+  },
+
+  {
+    source={
+      id=265551,
+      type="vendor",
+      faction="Neutral",
+      zone="Founder's Point",
+      worldmap="2351:5420:5597"
+    },
+    items={
+      {decorID=23176, source={type="vendor", itemID=276650}, size="Huge"},
+      {decorID=23177, source={type="vendor", itemID=276626}, size="Huge"},
+      {decorID=23178, source={type="vendor", itemID=276669}, size="Medium"},
+      {decorID=23181, source={type="vendor", itemID=276658}, size="Large"},
+      {decorID=23182, source={type="vendor", itemID=276663}, size="Large"},
+      {decorID=23184, source={type="vendor", itemID=276667}, size="Large"},
+      {decorID=23185, source={type="vendor", itemID=276661}, size="Large"},
+      {decorID=23186, source={type="vendor", itemID=276652}, size="Huge"},
+    }
+  },
+
+  {
+    source={
+      id=267795,
+      type="vendor",
+      faction="Neutral",
+      zone="Founder's Point",
+      worldmap="2352:5316:4004"
+    },
+    items={
+      {decorID=25101, source={type="vendor", itemID=277142}, budgetCost=5, size="Small"},
+      {decorID=25102, source={type="vendor", itemID=277144}, budgetCost=5, size="Small"},
+      {decorID=25103, source={type="vendor", itemID=277149}, budgetCost=5, size="Small"},
+      {decorID=25105, source={type="vendor", itemID=277138}, budgetCost=5, size="Medium"},
+      {decorID=25106, source={type="vendor", itemID=277160}, budgetCost=5, size="Medium"},
+      {decorID=25121, source={type="vendor", itemID=277121}, budgetCost=5, size="Small"},
+      {decorID=25122, source={type="vendor", itemID=277163}, budgetCost=5, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=268106,
+      type="vendor",
+      faction="Neutral",
+      zone="Founder's Point",
+      worldmap="2351:5487:5730"
+    },
+    items={
+      {decorID=26365, source={type="vendor", itemID=280240}, budgetCost=3, size="Medium"},
+      {decorID=26371, source={type="vendor", itemID=280234}, budgetCost=3, size="Medium"},
+      {decorID=26386, source={type="vendor", itemID=280238}, budgetCost=3, size="Medium"},
+      {decorID=26387, source={type="vendor", itemID=280232}, budgetCost=5, size="Large"},
+      {decorID=26483, source={type="vendor", itemID=280223}, budgetCost=5, size="Large"},
+      {decorID=26564, source={type="vendor", itemID=280225}, budgetCost=5, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=271173,
+      type="vendor",
+      faction="Neutral",
+      zone="Founder's Point",
+      worldmap="2351:5489:5728"
+    },
+    items={
+      {decorID=26613, source={type="vendor", itemID=280246}, budgetCost=5, size="Large"},
+      {decorID=26614, source={type="vendor", itemID=280249}, budgetCost=1, size="Small"},
+      {decorID=26621, source={type="vendor", itemID=280257}, budgetCost=3, size="Medium"},
+      {decorID=26789, source={type="vendor", itemID=280265}, budgetCost=3, size="Medium"},
+      {decorID=26936, source={type="vendor", itemID=280273}, budgetCost=5, size="Large"},
+      {decorID=26937, source={type="vendor", itemID=280271}, budgetCost=5, size="Large"},
+    }
+  },
+
 }

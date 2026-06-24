@@ -27,6 +27,9 @@ NS.Data.Vendors["Midnight"]["Arcantina"] = {
       {decorID=9441, source={type="vendor", itemID=253544, currency="150", currencytype=3316}, requirements={quest={id=92325}}, colors={"Dark Brown"}, budgetCost=1, size="Tiny"},
       {decorID=9475, source={type="vendor", itemID=253598, currency="500", currencytype=3316}, requirements={quest={id=92321}}, colors={"Navy Blue","Purple"}, budgetCost=1, size="Medium"},
       {decorID=9624, source={type="vendor", itemID=253700, currency="250", currencytype=3316}, requirements={quest={id=92326}}, colors={"Dark Brown","Tan"}, budgetCost=3, size="Medium"},
+      {decorID=26201, source={type="vendor", itemID=278044}, budgetCost=3, size="Medium"},
+      {decorID=26202, source={type="vendor", itemID=278038}, budgetCost=1, size="Tiny"},
+      {decorID=26651, source={type="vendor", itemID=278694}, budgetCost=5, size="Large"},
     }
   },
 

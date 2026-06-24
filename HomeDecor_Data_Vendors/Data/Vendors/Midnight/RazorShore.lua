@@ -593,4 +593,115 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
     }
   },
 
+  {
+    source={
+      id=257168,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:3908:7409"
+    },
+    items={
+      {decorID=26477, source={type="vendor", itemID=279458}, budgetCost=1, size="Tiny"},
+      {decorID=26491, source={type="vendor", itemID=279455}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=260485,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5427:5605"
+    },
+    items={
+      {decorID=22917, source={type="vendor", itemID=274521}, budgetCost=3, size="Medium"},
+      {decorID=22919, source={type="vendor", itemID=274525}, budgetCost=1, size="Medium"},
+      {decorID=22920, source={type="vendor", itemID=274527}, budgetCost=1, size="Tiny"},
+      {decorID=22921, source={type="vendor", itemID=274529}, size="Medium"},
+      {decorID=22922, source={type="vendor", itemID=274531}, size="Medium"},
+      {decorID=22927, source={type="vendor", itemID=274505}, budgetCost=5, size="Huge"},
+      {decorID=23188, source={type="vendor", itemID=274539}, budgetCost=5, size="Huge"},
+    }
+  },
+
+  {
+    source={
+      id=265551,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5420:5597"
+    },
+    items={
+      {decorID=23179, source={type="vendor", itemID=276671}, size="Medium"},
+      {decorID=23180, source={type="vendor", itemID=276656}, size="Large"},
+      {decorID=23183, source={type="vendor", itemID=276665}, size="Large"},
+      {decorID=23548, source={type="vendor", itemID=276654}, size="Small"},
+      {decorID=23549, source={type="vendor", itemID=276677}, size="Small"},
+      {decorID=23550, source={type="vendor", itemID=276673}, size="Small"},
+      {decorID=23551, source={type="vendor", itemID=276675}, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=267794,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5540:5752"
+    },
+    items={
+      {decorID=25101, source={type="vendor", itemID=277142}, budgetCost=5, size="Small"},
+      {decorID=25102, source={type="vendor", itemID=277144}, budgetCost=5, size="Small"},
+      {decorID=25103, source={type="vendor", itemID=277149}, budgetCost=5, size="Small"},
+      {decorID=25105, source={type="vendor", itemID=277138}, budgetCost=5, size="Medium"},
+      {decorID=25106, source={type="vendor", itemID=277160}, budgetCost=5, size="Medium"},
+      {decorID=25121, source={type="vendor", itemID=277121}, budgetCost=5, size="Small"},
+      {decorID=25122, source={type="vendor", itemID=277163}, budgetCost=5, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=268106,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5487:5730"
+    },
+    items={
+      {decorID=26364, source={type="vendor", itemID=280244}, budgetCost=1, size="Tiny"},
+      {decorID=26370, source={type="vendor", itemID=280230}, budgetCost=5, size="Large"},
+      {decorID=26373, source={type="vendor", itemID=280242}, budgetCost=3, size="Medium"},
+      {decorID=26389, source={type="vendor", itemID=280227}, budgetCost=3, size="Medium"},
+      {decorID=26478, source={type="vendor", itemID=280236}, budgetCost=5, size="Large"},
+      {decorID=26482, source={type="vendor", itemID=280221}, budgetCost=3, size="Medium"},
+      {decorID=26871, source={type="vendor", itemID=280215}, budgetCost=5, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=271173,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5489:5728"
+    },
+    items={
+      {decorID=26617, source={type="vendor", itemID=280253}, budgetCost=5, size="Large"},
+      {decorID=26618, source={type="vendor", itemID=280255}, budgetCost=1, size="Small"},
+      {decorID=26619, source={type="vendor", itemID=280251}, budgetCost=1, size="Small"},
+      {decorID=26785, source={type="vendor", itemID=280259}, budgetCost=1, size="Small"},
+      {decorID=26786, source={type="vendor", itemID=280261}, budgetCost=5, size="Large"},
+      {decorID=26787, source={type="vendor", itemID=280263}, budgetCost=3, size="Medium"},
+      {decorID=26788, source={type="vendor", itemID=280267}, budgetCost=5, size="Large"},
+      {decorID=26938, source={type="vendor", itemID=280269}, budgetCost=1, size="Small"},
+      {decorID=26939, source={type="vendor", itemID=280275}, budgetCost=5, size="Large"},
+    }
+  },
+
 }
