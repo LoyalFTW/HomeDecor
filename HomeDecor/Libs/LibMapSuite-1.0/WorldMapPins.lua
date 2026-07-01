@@ -110,7 +110,11 @@ function Pins:Reposition(pin)
     local data, canvas = pin.pinData, Canvas()
     if not canvas or data.hidden then pin:Hide(); return end
     if pin:GetParent() ~= canvas then pin:SetParent(canvas) end
-    pin:SetFrameLevel((canvas:GetFrameLevel() or 0) + (data.frameLevel or 100))
+    -- Frame strata/level are set once, absolutely, in CreatePin (matching
+    -- Blizzard's own Area POI pin level). Do not recompute a canvas-relative
+    -- level here -- that silently reset the CreatePin value on every
+    -- reposition (map show/zoom/pan), which is why raising CreatePin's level
+    -- alone did not fix zone-map pin visibility.
     local x, y = ResolvePosition(data, CurrentMapID())
     if not x or x < 0 or x > 1 or y < 0 or y > 1 then pin:Hide(); return end
     local width, height = canvas:GetSize()
