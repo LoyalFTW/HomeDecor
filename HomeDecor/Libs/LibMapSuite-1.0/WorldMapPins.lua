@@ -37,7 +37,11 @@ local function ApplyAppearance(pin)
     local data = pin.pinData
     local size = data.size or data.scale or 20
     if not pin.LibMapSuiteProvidedFrame or data.size or data.scale then pin:SetSize(size, size) end
-    if pin.icon then
+    -- A caller-provided frame may already own an `.icon` field (e.g. its own
+    -- pre-textured icon texture) that the library never created. Only
+    -- (re)texture it if the library owns it (no caller frame) or the caller
+    -- explicitly opted in via data.icon.
+    if pin.icon and (not pin.LibMapSuiteProvidedFrame or data.icon) then
         pin.icon:SetTexture(type(data.icon) == "function" and data.icon(pin) or data.icon or "Interface\\Icons\\INV_Misc_QuestionMark")
         if data.iconCoords then pin.icon:SetTexCoord(unpack(data.iconCoords)) else pin.icon:SetTexCoord(0, 1, 0, 1) end
     end

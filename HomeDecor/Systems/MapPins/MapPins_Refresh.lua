@@ -44,25 +44,9 @@ local function IsVendorFullyCompleted(vendorID)
   end
   return true
 end
-local mapSupportCache = {}
-local function IsMapSupported(mapID)
-  if mapSupportCache[mapID] ~= nil then return mapSupportCache[mapID] end
-  local supported = Map and (Map:GetWorldCoordinatesFromZone(0.5, 0.5, mapID) ~= nil)
-  mapSupportCache[mapID] = supported
-  return supported
-end
-
 local function AddWorldMapPin(frame, mapID, x, y)
-  if IsMapSupported(mapID) then
-    Map:AddWorldMapPin(ADDON, frame, { frame = frame, mapID = mapID, x = x, y = y })
-    return
-  end
-  local currentMapID = WorldMapFrame and WorldMapFrame.GetMapID and WorldMapFrame:GetMapID()
-  if currentMapID == mapID then
-    pcall(function()
-      WorldMapFrame:AcquirePin("PIN_FRAME_LEVEL_AREA_POI", frame, x, y)
-    end)
-  end
+  if not Map then return end
+  Map:AddWorldMapPin(ADDON, frame, { frame = frame, mapID = mapID, x = x, y = y })
 end
 
 local function IsEventVendorActive(vendor)
