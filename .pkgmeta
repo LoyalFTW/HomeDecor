@@ -10,9 +10,6 @@ externals:
   Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1.git
   Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
   Libs/AceLocale-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0
-  # LibMapSuite-1.0 is vendored directly in Libs/LibMapSuite-1.0 (no external
-  # host yet) — replaces HereBeDragons, HereBeDragons-Pins, Krowi_WorldMapButtons,
-  # and LibDBIcon-1.0.
 
 ignore:
   - .github
