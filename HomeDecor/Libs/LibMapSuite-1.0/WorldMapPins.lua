@@ -105,12 +105,22 @@ function Pins:Reposition(pin)
     if not x or x < 0 or x > 1 or y < 0 or y > 1 then pin:Hide(); return end
     local width, height = canvas:GetSize()
     if not width or width <= 0 or not height or height <= 0 then pin:Hide(); return end
-    pin:ClearAllPoints()
-    pin:SetPoint("CENTER", canvas, "TOPLEFT", x * width, -y * height)
     local zoom = WorldMapFrame and WorldMapFrame.GetCanvasScale and WorldMapFrame:GetCanvasScale() or 1
     local minZoom, maxZoom = data.minZoom, data.maxZoom
     if (minZoom and zoom < minZoom) or (maxZoom and zoom > maxZoom) then pin:Hide(); return end
-    pin:SetScale(data.scaleWithZoom and (data.baseScale or 1) / math.max(zoom, 0.01) or (data.frameScale or 1))
+    -- The world-map canvas runs at a much smaller effective scale than the
+    -- screen (it's a large virtual space compressed for the zoom/pan system),
+    -- so a pin parented to it needs to counter-scale against that, or it
+    -- renders far smaller on screen than its SetSize implies.
+    local canvasEffectiveScale = canvas:GetEffectiveScale() or 1
+    local uiEffectiveScale = UIParent:GetEffectiveScale() or 1
+    local counterScale = canvasEffectiveScale > 0 and (uiEffectiveScale / canvasEffectiveScale) or 1
+    local styleScale = data.scaleWithZoom and (data.baseScale or 1) / math.max(zoom, 0.01) or (data.frameScale or 1)
+    local pinScale = counterScale * styleScale
+    if not pinScale or pinScale <= 0 then pinScale = 1 end
+    pin:SetScale(pinScale)
+    pin:ClearAllPoints()
+    pin:SetPoint("CENTER", canvas, "TOPLEFT", (x * width) / pinScale, -(y * height) / pinScale)
     pin:Show()
 end
 
