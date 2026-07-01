@@ -3,14 +3,15 @@ package-as: HomeDecor
 enable-nolib-creation: no
 
 externals:
-  Libs/AceAddon-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceAddon-3.0
   Libs/AceConsole-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceConsole-3.0
   Libs/AceDB-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceDB-3.0
   Libs/CallbackHandler-1.0: https://repos.curseforge.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+  Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
   Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1.git
   Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
   Libs/AceLocale-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0
-  Libs/LibMapSuite-1.0: https://github.com/LoyalFTW/LibMapSuite-1.0.git
+  Libs/HereBeDragons: https://repos.wowace.com/wow/herebedragons
+  Libs/Krowi_WorldMapButtons: https://github.com/TheKrowi/Krowi_WorldMapButtons.git
 
 ignore:
   - .github
