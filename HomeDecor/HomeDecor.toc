@@ -26,7 +26,6 @@ Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\AceDB-3.0\AceDB-3.0.lua
 Libs\AceConsole-3.0\AceConsole-3.0.lua
 Libs\AceLocale-3.0\AceLocale-3.0.lua
-Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibMapSuite-1.0\Core.lua
 Libs\LibMapSuite-1.0\Compat.lua
 Libs\LibMapSuite-1.0\Menu.lua
