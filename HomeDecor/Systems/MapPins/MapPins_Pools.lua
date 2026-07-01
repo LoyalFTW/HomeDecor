@@ -12,7 +12,7 @@ local CreateFrame = CreateFrame
 local pairs = pairs
 local wipe = wipe or function(t) for k in pairs(t) do t[k] = nil end end
 local LibStub = LibStub
-local Map = LibStub and LibStub("LibMapSuite-1.0", true)
+local HBDPins = LibStub and LibStub("HereBeDragons-Pins-2.0", true)
 local U = NS.Systems.MapPinsUtil
 
 P.pooled = {}
@@ -172,27 +172,27 @@ function P.RecycleFrame(frame)
 end
 
 function P.ClearWorldPins()
-  if not Map then return end
+  if not HBDPins then return end
   for icon in pairs(P.usedWorld) do
-    Map:RemoveWorldMapPin(ADDON, icon)
+    HBDPins:RemoveWorldMapIcon(ADDON, icon)
     P.RecycleFrame(icon)
   end
   wipe(P.usedWorld)
 end
 
 function P.ClearBadges()
-  if not Map then return end
+  if not HBDPins then return end
   for icon in pairs(P.usedBadges) do
-    Map:RemoveWorldMapPin(ADDON, icon)
+    HBDPins:RemoveWorldMapIcon(ADDON, icon)
     P.RecycleFrame(icon)
   end
   wipe(P.usedBadges)
 end
 
 function P.ClearMiniPins()
-  if not Map then return end
+  if not HBDPins then return end
   for icon in pairs(P.usedMini) do
-    Map:RemoveMinimapPin(ADDON, icon)
+    HBDPins:RemoveMinimapIcon(ADDON, icon)
     P.RecycleFrame(icon)
   end
   wipe(P.usedMini)
