@@ -54,8 +54,14 @@ local function CreatePin(name, data)
     local pin = data.frame or CreateFrame("Button", nil, canvas)
     pin.LibMapSuiteProvidedFrame = data.frame and true or nil
     pin.LibMapSuiteOriginalParent = data.frame and pin:GetParent() or nil
-    pin:SetFrameStrata(data.strata or "HIGH")
-    pin:SetFrameLevel((canvas:GetFrameLevel() or 0) + (data.frameLevel or 100))
+    -- Blizzard's own map pins sit at MEDIUM strata with an absolute frame
+    -- level around 2023 (Area POI) / 2737 (Event POI) -- see Blizzard's
+    -- WorldMapFrame pin-level constants. A level computed relative to the
+    -- canvas's own (very low, ~3) frame level lands far below that and
+    -- renders underneath the map's own terrain/decoration layers, making
+    -- the pin technically shown but invisible.
+    pin:SetFrameStrata(data.strata or "MEDIUM")
+    pin:SetFrameLevel(data.frameLevel or 2023)
     if pin.RegisterForClicks then pin:RegisterForClicks("LeftButtonUp", "RightButtonUp") end
     local icon = pin.icon
     if not icon and (not data.frame or data.icon) then
