@@ -7,12 +7,12 @@ externals:
   Libs/AceConsole-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceConsole-3.0
   Libs/AceDB-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceDB-3.0
   Libs/CallbackHandler-1.0: https://repos.curseforge.com/wow/callbackhandler/trunk/CallbackHandler-1.0
-  Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
   Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1.git
   Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
   Libs/AceLocale-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0
-  Libs/HereBeDragons: https://repos.wowace.com/wow/herebedragons
-  Libs/Krowi_WorldMapButtons: https://github.com/TheKrowi/Krowi_WorldMapButtons.git
+  # LibMapSuite-1.0 is vendored directly in Libs/LibMapSuite-1.0 (no external
+  # host yet) — replaces HereBeDragons, HereBeDragons-Pins, Krowi_WorldMapButtons,
+  # and LibDBIcon-1.0.
 
 ignore:
   - .github

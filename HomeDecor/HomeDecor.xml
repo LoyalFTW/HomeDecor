@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <!-- World Map Button template (used by Krowi_WorldMapButtons) -->
+    <!-- World Map Button template (used by LibMapSuite-1.0's world-map button rail) -->
     <Button name="HomeDecorWorldMapButtonTemplate"
             frameStrata="HIGH"
             mixin="HomeDecorWorldMapButtonMixin"

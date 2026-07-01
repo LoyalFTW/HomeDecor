@@ -14,8 +14,7 @@ local IsShiftKeyDown = IsShiftKeyDown
 local IsIndoors = IsIndoors
 local WorldMapFrame = WorldMapFrame
 local LibStub = LibStub
-local HBD = LibStub and LibStub("HereBeDragons-2.0", true)
-local HBDPins = LibStub and LibStub("HereBeDragons-Pins-2.0", true)
+local Map = LibStub and LibStub("LibMapSuite-1.0", true)
 local C_Map = C_Map
 local U = NS.Systems.MapPinsUtil
 local D = NS.Systems.MapPinsData
@@ -45,25 +44,9 @@ local function IsVendorFullyCompleted(vendorID)
   end
   return true
 end
-local hbdMapSupport = {}
-local function IsHBDSupported(mapID)
-  if hbdMapSupport[mapID] ~= nil then return hbdMapSupport[mapID] end
-  local supported = HBD and (HBD:GetWorldCoordinatesFromZone(0.5, 0.5, mapID) ~= nil)
-  hbdMapSupport[mapID] = supported
-  return supported
-end
-
-local function AddWorldMapPin(frame, mapID, x, y, showFlag)
-  if IsHBDSupported(mapID) then
-    HBDPins:AddWorldMapIconMap(ADDON, frame, mapID, x, y, showFlag)
-    return
-  end
-  local currentMapID = WorldMapFrame and WorldMapFrame.GetMapID and WorldMapFrame:GetMapID()
-  if currentMapID == mapID then
-    pcall(function()
-      WorldMapFrame:AcquirePin("PIN_FRAME_LEVEL_AREA_POI", frame, x, y)
-    end)
-  end
+local function AddWorldMapPin(frame, mapID, x, y)
+  if not Map then return end
+  Map:AddWorldMapPin(ADDON, frame, { frame = frame, mapID = mapID, x = x, y = y })
 end
 
 local function IsEventVendorActive(vendor)
@@ -121,7 +104,7 @@ local function OpenWorldMapOverlay(mapID, vendorID)
 end
 
 function R.AddWorldPinsForMap(mapID)
-  if not HBDPins then return end
+  if not Map then return end
   P.ClearWorldPins()
   local vendorList = D.GetVendorsForMap(mapID)
   if type(vendorList) ~= "table" or #vendorList == 0 then return end
@@ -203,14 +186,14 @@ function R.AddWorldPinsForMap(mapID)
       pinFrame:Show()
       P.usedWorld[pinFrame] = true
       pcall(function()
-        AddWorldMapPin(pinFrame, mapID, vendor.x, vendor.y, HBD_PINS_WORLDMAP_SHOW_PARENT)
+        AddWorldMapPin(pinFrame, mapID, vendor.x, vendor.y)
       end)
     end
   end
 end
 
 function R.AddMiniPinsForMap(mapID)
-  if not HBDPins then return end
+  if not Map then return end
   local vendorList = D.GetVendorsForMap(mapID)
   if type(vendorList) ~= "table" or #vendorList == 0 then
     P.ClearMiniPins()
@@ -328,7 +311,7 @@ function R.AddMiniPinsForMap(mapID)
       P.usedMini[pinFrame] = true
       pcall(function()
         local floatOnEdge = not (IsIndoors and IsIndoors())
-        HBDPins:AddMinimapIconMap(ADDON, pinFrame, mapID, vendor.x, vendor.y, true, floatOnEdge)
+        Map:AddMinimapPin(ADDON, pinFrame, { frame = pinFrame, mapID = mapID, x = vendor.x, y = vendor.y, showOnEdge = floatOnEdge })
       end)
   end
 end
@@ -399,7 +382,7 @@ function R.ShowZoneBadges(continentMapID)
       frame:Show()
       P.usedBadges[frame] = true
       pcall(function()
-        HBDPins:AddWorldMapIconMap(ADDON, frame, continentMapID, zoneCenter.x, zoneCenter.y, HBD_PINS_WORLDMAP_SHOW_CONTINENT)
+        Map:AddWorldMapPin(ADDON, frame, { frame = frame, mapID = continentMapID, x = zoneCenter.x, y = zoneCenter.y })
       end)
     end
   end
@@ -464,7 +447,7 @@ function R.ShowZoneBadges(continentMapID)
                 frame:Show()
                 P.usedBadges[frame] = true
                 pcall(function()
-                  HBDPins:AddWorldMapIconMap(ADDON, frame, continentMapID, zoneCenter.x, zoneCenter.y, HBD_PINS_WORLDMAP_SHOW_CONTINENT)
+                  Map:AddWorldMapPin(ADDON, frame, { frame = frame, mapID = continentMapID, x = zoneCenter.x, y = zoneCenter.y })
                 end)
               end
             end
@@ -540,7 +523,7 @@ function R.ShowContinentBadges()
     frame:Show()
     P.usedBadges[frame] = true
     pcall(function()
-      HBDPins:AddWorldMapIconMap(ADDON, frame, continentID, 0.5, 0.5, HBD_PINS_WORLDMAP_SHOW_WORLD)
+      Map:AddWorldMapPin(ADDON, frame, { frame = frame, mapID = continentID, x = 0.5, y = 0.5 })
     end)
   end
 
@@ -595,7 +578,7 @@ function R.ShowContinentBadges()
       local x, y = 0.5, 0.5
       if specialZoneID == 2352 then x, y = 0.35, 0.35 elseif specialZoneID == 2351 then x, y = 0.65, 0.35 end
       pcall(function()
-        HBDPins:AddWorldMapIconMap(ADDON, frame, specialZoneID, x, y, HBD_PINS_WORLDMAP_SHOW_WORLD)
+        Map:AddWorldMapPin(ADDON, frame, { frame = frame, mapID = specialZoneID, x = x, y = y })
       end)
     end
   end

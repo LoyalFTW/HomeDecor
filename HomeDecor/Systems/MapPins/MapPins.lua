@@ -10,8 +10,7 @@ local MapPinsData = NS.Systems.MapPinsData
 local MapPinsPools = NS.Systems.MapPinsPools
 local MapPinsRefresh = NS.Systems.MapPinsRefresh
 local LibStub = LibStub
-local HBD = LibStub and LibStub("HereBeDragons-2.0", true)
-local HBDPins = LibStub and LibStub("HereBeDragons-Pins-2.0", true)
+local Map = LibStub and LibStub("LibMapSuite-1.0", true)
 local C_Map = C_Map
 
 local activeWaypointRef = {}
@@ -78,12 +77,12 @@ function MapPins:UpdateWaypointMonitor()
       return
     end
 
-    if HBD and type(HBD.GetPlayerZonePosition) == "function" then
-      local playerX, playerY, playerMap = HBD:GetPlayerZonePosition(true)
+    if Map and type(Map.GetPlayerZonePosition) == "function" then
+      local playerX, playerY, playerMap = Map:GetPlayerZonePosition(true)
       if playerMap == activeWaypoint.mapID and playerX and playerY then
         local distance
-        if type(HBD.GetZoneDistance) == "function" then
-          distance = select(1, HBD:GetZoneDistance(activeWaypoint.mapID, playerX, playerY, activeWaypoint.mapID, activeWaypoint.x, activeWaypoint.y))
+        if type(Map.GetZoneDistance) == "function" then
+          distance = select(1, Map:GetZoneDistance(activeWaypoint.mapID, playerX, playerY, activeWaypoint.mapID, activeWaypoint.x, activeWaypoint.y))
         end
         if not distance then
           local deltaX = activeWaypoint.x - playerX
@@ -219,7 +218,7 @@ end
 
 function MapPins:Enable()
   if self.enabled then return end
-  if not HBDPins or not HBD then return end
+  if not Map then return end
 
   self:PrimeHooks()
 
