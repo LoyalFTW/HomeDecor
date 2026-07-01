@@ -31,7 +31,7 @@ local AceAddon = LibStub("AceAddon-3.0")
 local AceDB    = LibStub("AceDB-3.0")
 local AceConsole = LibStub("AceConsole-3.0")
 local LDB      = LibStub("LibDataBroker-1.1")
-local LDBIcon  = LibStub("LibDBIcon-1.0")
+local LDBIcon  = LibStub("LibMapSuite-1.0")
 
 local Addon = AceAddon:NewAddon(ADDON, "AceConsole-3.0")
 NS.Addon = Addon
@@ -328,8 +328,8 @@ end
 local function SetMinimapHidden(db, hide)
   if not db or not db.profile then return end
   db.profile.minimap.hide = hide and true or false
-  if LDBIcon:IsRegistered(ADDON) then
-    if hide then LDBIcon:Hide(ADDON) else LDBIcon:Show(ADDON) end
+  if LDBIcon:IsMinimapButtonRegistered(ADDON) then
+    if hide then LDBIcon:HideMinimapButton(ADDON) else LDBIcon:ShowMinimapButton(ADDON) end
   end
 end
 
@@ -430,8 +430,8 @@ function Addon:OnInitialize()
     end)
   end
 
-  if not LDBIcon:IsRegistered(ADDON) then
-    LDBIcon:Register(ADDON, minimapObject, self.db.profile.minimap)
+  if not LDBIcon:IsMinimapButtonRegistered(ADDON) then
+    LDBIcon:RegisterMinimapButton(ADDON, minimapObject, self.db.profile.minimap)
   end
 
   self:RegisterChatCommand("hd",        "HandleSlash")

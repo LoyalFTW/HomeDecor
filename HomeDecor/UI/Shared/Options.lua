@@ -408,9 +408,9 @@ function Options:Ensure()
     if NS.UI and NS.UI.SetMinimapHidden then
       pcall(NS.UI.SetMinimapHidden, NS.db, not show)
     else
-      local LDBIcon = _G.LibStub and _G.LibStub("LibDBIcon-1.0", true)
-      if LDBIcon and LDBIcon:IsRegistered(ADDON) then
-        if show then LDBIcon:Show(ADDON) else LDBIcon:Hide(ADDON) end
+      local LDBIcon = _G.LibStub and _G.LibStub("LibMapSuite-1.0", true)
+      if LDBIcon and LDBIcon:IsMinimapButtonRegistered(ADDON) then
+        if show then LDBIcon:ShowMinimapButton(ADDON) else LDBIcon:HideMinimapButton(ADDON) end
       end
     end
   end)

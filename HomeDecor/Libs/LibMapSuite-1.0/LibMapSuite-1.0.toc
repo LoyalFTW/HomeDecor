@@ -1,0 +1,11 @@
+## Interface: 120007, 50504, 30403, 20505, 11508
+## Title: Lib: MapSuite-1.0
+## Notes: Modular minimap, coordinate, pin, and world-map button suite. Full or selective embedding.
+## Author: Azro
+## Version: 1.4.1
+## X-Curse-Project-Name: LibMapSuite-1.0
+## X-License: MIT
+## OptionalDeps: LibDataBroker-1.1
+## SavedVariables: LibMapSuiteLDBBridgeDB
+
+LibMapSuite-1.0.xml
