@@ -37,10 +37,7 @@ local function ApplyAppearance(pin)
     local data = pin.pinData
     local size = data.size or data.scale or 20
     if not pin.LibMapSuiteProvidedFrame or data.size or data.scale then pin:SetSize(size, size) end
-    -- A caller-provided frame may already own an `.icon` field (e.g. its own
-    -- pre-textured icon texture) that the library never created. Only
-    -- (re)texture it if the library owns it (no caller frame) or the caller
-    -- explicitly opted in via data.icon.
+    -- Don't stomp a caller-provided frame's own pre-textured icon unless it opts in via data.icon.
     if pin.icon and (not pin.LibMapSuiteProvidedFrame or data.icon) then
         pin.icon:SetTexture(type(data.icon) == "function" and data.icon(pin) or data.icon or "Interface\\Icons\\INV_Misc_QuestionMark")
         if data.iconCoords then pin.icon:SetTexCoord(unpack(data.iconCoords)) else pin.icon:SetTexCoord(0, 1, 0, 1) end
@@ -54,18 +51,12 @@ local function CreatePin(name, data)
     local pin = data.frame or CreateFrame("Button", nil, canvas)
     pin.LibMapSuiteProvidedFrame = data.frame and true or nil
     pin.LibMapSuiteOriginalParent = data.frame and pin:GetParent() or nil
-    -- A caller-provided frame (data.frame) may still be parented to whatever
-    -- pool/owner created it. Reparent to the canvas BEFORE setting strata/
-    -- level: WoW resets a frame's level to (newParent:GetFrameLevel() + 1)
-    -- on SetParent, so setting the level first and reparenting afterward
-    -- (as Reposition used to do) silently wiped this back to a low value.
+    -- Reparent to canvas BEFORE setting strata/level: SetParent() resets a
+    -- frame's level to (newParent:GetFrameLevel() + 1), which would wipe an
+    -- explicit level set beforehand.
     if pin:GetParent() ~= canvas then pin:SetParent(canvas) end
-    -- Blizzard's own map pins sit at MEDIUM strata with an absolute frame
-    -- level around 2023 (Area POI) / 2737 (Event POI) -- see Blizzard's
-    -- WorldMapFrame pin-level constants. A level computed relative to the
-    -- canvas's own (very low, ~3) frame level lands far below that and
-    -- renders underneath the map's own terrain/decoration layers, making
-    -- the pin technically shown but invisible.
+    -- Match Blizzard's own Area POI pin level (~2023); a level relative to
+    -- canvas's own low (~3) level renders underneath the map's terrain art.
     pin:SetFrameStrata(data.strata or "MEDIUM")
     pin:SetFrameLevel(data.frameLevel or 2023)
     if pin.RegisterForClicks then pin:RegisterForClicks("LeftButtonUp", "RightButtonUp") end
@@ -115,12 +106,7 @@ function Pins:Reposition(pin)
     end
     local data, canvas = pin.pinData, Canvas()
     if not canvas or data.hidden then pin:Hide(); return end
-    -- Frame strata/level are set once, absolutely, in CreatePin (matching
-    -- Blizzard's own Area POI pin level), immediately after the pin is
-    -- parented to the canvas there. Do not reparent or relevel here --
-    -- SetParent() resets a frame's level to (newParent:GetFrameLevel() + 1),
-    -- so reparenting after CreatePin already set the level (as this
-    -- function used to do) silently wiped the level back down.
+    -- Strata/level are set once in CreatePin, right after that reparent; don't touch them here.
     local x, y = ResolvePosition(data, CurrentMapID())
     if not x or x < 0 or x > 1 or y < 0 or y > 1 then pin:Hide(); return end
     local width, height = canvas:GetSize()
@@ -128,10 +114,7 @@ function Pins:Reposition(pin)
     local zoom = WorldMapFrame and WorldMapFrame.GetCanvasScale and WorldMapFrame:GetCanvasScale() or 1
     local minZoom, maxZoom = data.minZoom, data.maxZoom
     if (minZoom and zoom < minZoom) or (maxZoom and zoom > maxZoom) then pin:Hide(); return end
-    -- The world-map canvas runs at a much smaller effective scale than the
-    -- screen (it's a large virtual space compressed for the zoom/pan system),
-    -- so a pin parented to it needs to counter-scale against that, or it
-    -- renders far smaller on screen than its SetSize implies.
+    -- The canvas runs at a much smaller effective scale than the screen; counter-scale or the pin renders far smaller than SetSize implies.
     local canvasEffectiveScale = canvas:GetEffectiveScale() or 1
     local uiEffectiveScale = UIParent:GetEffectiveScale() or 1
     local counterScale = canvasEffectiveScale > 0 and (uiEffectiveScale / canvasEffectiveScale) or 1

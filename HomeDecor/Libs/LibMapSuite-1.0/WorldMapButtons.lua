@@ -123,14 +123,16 @@ function Lib:SetWorldMapButtonOffsets(x, y, spacing)
     Rail:RecalculateLayout()
 end
 
+-- A caller-provided frame (e.g. an XML-bound template) owns its own click
+-- mask, icon/texture layers, and highlight unless it opts in via
+-- data.icon/data.highlight; only the library's own default-style frame gets
+-- those imposed here. Its scripts are hooked rather than replaced so its
+-- existing behavior keeps firing alongside buttonData callbacks.
 local function Configure(button, name, data, callerProvidedFrame)
     button.LibMapSuiteName, button.buttonData = name, data
     button:SetSize(data.size or 32, data.size or 32)
     button:SetFrameStrata(data.strata or "HIGH")
     local defaultStyle = data.style == "DEFAULT" or (data.style == nil and not callerProvidedFrame)
-    -- A caller-provided frame owns its own click mask (e.g. a template that only
-    -- wants left-click). Only the library's own default-style frame gets a mask
-    -- imposed on it here.
     if defaultStyle then
         button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     end
@@ -142,9 +144,6 @@ local function Configure(button, name, data, callerProvidedFrame)
         button.LibMapSuiteBackground = background
     end
 
-    -- A caller-provided frame keeps its own icon/texture layers untouched unless
-    -- it explicitly opts in via data.icon; the library only owns the icon it
-    -- creates itself (defaultStyle, or when a caller passes data.icon).
     local icon = button.icon
     if not icon and (not callerProvidedFrame or data.icon) then
         icon = button:CreateTexture(nil, "ARTWORK")
@@ -171,14 +170,9 @@ local function Configure(button, name, data, callerProvidedFrame)
         border:ClearAllPoints(); border:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0)
         button.LibMapSuiteBorder = border
     end
-    -- A caller-provided frame keeps its own highlight texture unless it opts in
-    -- via data.highlight = true.
     if (defaultStyle and data.highlight ~= false) or data.highlight == true then
         button:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
     end
-    -- A caller-provided frame's own scripts (e.g. XML-bound mixin methods) must
-    -- keep firing, so they're hooked instead of replaced; buttonData callbacks
-    -- fire alongside them, matching WorldMapPins.lua's CreatePin convention.
     local function AttachScript(script, handler)
         if callerProvidedFrame and button.HookScript then
             button:HookScript(script, handler)
