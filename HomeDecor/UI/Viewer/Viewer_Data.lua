@@ -313,9 +313,10 @@ function Data.GetDecorIcon(decorID)
 
   local info = C_HousingCatalog.GetCatalogEntryInfoByRecordID(1, decorID, true)
   local icon = info and info.iconTexture
-  if icon then
-    DecorIconCache[decorID] = icon
-    return icon
+  local iconNum = tonumber(icon)
+  if iconNum and iconNum ~= 0 then
+    DecorIconCache[decorID] = iconNum
+    return iconNum
   end
 
   DecorIconCache[decorID] = false

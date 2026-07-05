@@ -94,7 +94,13 @@ local function IsValid(it)
   if did == 0 or iid == 0 then return false end
   if did and did < 0 then return false end
   if iid and iid < 0 then return false end
-  if (did and did > 0) then return true end
+  if did and did > 0 then
+    local Availability = NS.Systems and NS.Systems.CatalogAvailability
+    if Availability and Availability.IsDecorAvailable and not Availability:IsDecorAvailable(did) then
+      return false
+    end
+    return true
+  end
   local title = it.title
   if type(title) ~= "string" then return false end
   return title:gsub("%s+", "") ~= ""

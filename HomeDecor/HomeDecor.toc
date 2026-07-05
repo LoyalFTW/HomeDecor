@@ -20,17 +20,18 @@
 ## Category-zhCN: 住宅
 ## Category-zhTW: 房屋
 
-Libs\Krowi_WorldMapButtons\Krowi_WorldMapButtons.lua
 Libs\LibStub\LibStub.lua
 Libs\AceAddon-3.0\AceAddon-3.0.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\AceDB-3.0\AceDB-3.0.lua
 Libs\AceConsole-3.0\AceConsole-3.0.lua
 Libs\AceLocale-3.0\AceLocale-3.0.lua
-Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 Libs\HereBeDragons\HereBeDragons-2.0.lua
 Libs\HereBeDragons\HereBeDragons-Pins-2.0.lua
+Libs\Krowi_WorldMapButtons-1.4\Krowi_WorldMapButtons.lua
+
 
 Localization\Localization.xml
 Core\EventBus.lua
@@ -42,7 +43,7 @@ HomeDecor.xml
 Changelog.lua
 
 Data\QuestTitles.lua
-Data\DecorCatalogMeta.lua
+Systems\CatalogAvailability.lua
 Systems\NPCNames.lua
 Systems\HousingBootstrap.lua
 Systems\EditMode\EditMode_API.lua
@@ -59,8 +60,6 @@ Systems\QuickBar\QuickBar.lua
 Systems\QuickBar\QuickBar_Keys.lua
 Systems\QuickBar\QuickBar_ModeBar.lua
 Systems\QuickBar\QuickBar_UI.lua
-Data\MapPins\MapLocations.lua
-Data\NPC\DecorByNPC.lua
 Systems\Collection.lua
 Systems\GlobalIndex.lua
 Systems\Changelog.lua

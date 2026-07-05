@@ -7,6 +7,11 @@ NS.Systems.DecorIndex = DecorIndex
 local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
 local tonumber, type, pairs, ipairs = tonumber, type, pairs, ipairs
 
+local function ShouldShowDecor(decorID)
+    local Availability = NS.Systems and NS.Systems.CatalogAvailability
+    return not Availability or not Availability.IsDecorAvailable or Availability:IsDecorAvailable(decorID)
+end
+
 local function clearIndex(self)
     for k, v in pairs(self) do
         if type(v) ~= "function" then
@@ -27,6 +32,7 @@ end
 
 local function upsert(self, it, expName, zoneName, vendor)
     if type(it) ~= "table" or not it.decorID then return end
+    if not ShouldShowDecor(it.decorID) then return end
 
     local did = it.decorID
     local e = self[did]

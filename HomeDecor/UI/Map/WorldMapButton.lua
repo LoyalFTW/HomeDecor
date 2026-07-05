@@ -1191,8 +1191,9 @@ end
 local function CreateWorldMapButton()
     if buttonCreated then return end
     buttonCreated = true
-    local KWB = LibStub("Krowi_WorldMapButtons-1.4")
-    NS.UI.worldMapButton = KWB:Add("HomeDecorWorldMapButtonTemplate", "Button")
+    local KrowiWMB = LibStub("Krowi_WorldMapButtons-1.4", true)
+    if not KrowiWMB then return end
+    NS.UI.worldMapButton = KrowiWMB:Add("HomeDecorWorldMapButtonTemplate", "Button")
     InstallWorldMapHooks()
     local p = ensureProfile()
     if p and p.mapPins then

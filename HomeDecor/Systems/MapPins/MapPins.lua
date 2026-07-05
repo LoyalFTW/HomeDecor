@@ -11,7 +11,6 @@ local MapPinsPools = NS.Systems.MapPinsPools
 local MapPinsRefresh = NS.Systems.MapPinsRefresh
 local LibStub = LibStub
 local HBD = LibStub and LibStub("HereBeDragons-2.0", true)
-local HBDPins = LibStub and LibStub("HereBeDragons-Pins-2.0", true)
 local C_Map = C_Map
 
 local activeWaypointRef = {}
@@ -219,7 +218,7 @@ end
 
 function MapPins:Enable()
   if self.enabled then return end
-  if not HBDPins or not HBD then return end
+  if not HBD then return end
 
   self:PrimeHooks()
 

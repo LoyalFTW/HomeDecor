@@ -247,6 +247,7 @@ local defaults = {
     mapPins = {
       worldmap = true,
       minimap = true,
+      showDistantPins = false,
       pinStyle = "house",
       pinSize = 1.0,
       pinTooltipAnchor = "ANCHOR_RIGHT",
@@ -465,30 +466,30 @@ function Addon:OnEnable()
   if NS.Systems.MapPins and NS.Systems.MapPins.PrimeHooks then
     pcall(function() NS.Systems.MapPins:PrimeHooks() end)
   end
-
+  
+  if NS.Systems.MapPins and NS.Systems.MapPins.RefreshCurrentZone then
+    pcall(function() NS.Systems.MapPins:RefreshCurrentZone() end)
+  end
+  
   if NS.UI and NS.UI.CreateWorldMapButton then
     pcall(function() NS.UI.CreateWorldMapButton() end)
   end
-
+  
   local prof = self.db and self.db.profile
-
-  if prof and prof.tracker and prof.tracker.open and NS.UI and NS.UI.Tracker and NS.UI.Tracker.Create then
-    NS.UI.Tracker:Create()
+  
   end
-
+ 
+  if prof and prof.tracker and prof.tracker.open and NS.UI and NS.UI.Tracker and NS.UI.Tracker.Create then
+    if C_Timer and C_Timer.After then
+      C_Timer.After(2.0, function()
+        pcall(function() NS.UI.Tracker:Create() end)
+      end)
+    else
+      NS.UI.Tracker:Create()
+    end
+  end
   if NS.UI and NS.UI.MinimapVendor then
     pcall(function()
       NS.UI.MinimapVendor:Create()
     end)
   end
-
-  if C_Timer and C_Timer.After then
-    C_Timer.After(3.0, function()
-      local profile = NS.db and NS.db.profile
-      if not profile or (profile.ui and profile.ui.compactMode) then return end
-      if NS.UI and NS.UI.CreateMainFrame and not NS.UI.MainFrame then
-        pcall(function() NS.UI:CreateMainFrame() end)
-      end
-    end)
-  end
-end

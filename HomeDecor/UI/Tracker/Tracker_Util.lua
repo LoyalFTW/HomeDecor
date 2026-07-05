@@ -103,8 +103,13 @@ function U.GetDecorIcon(decorID)
 
   local info = GetCatalogInfo(decorID)
   local icon = info and info.iconTexture
-  DecorIconCache[decorID] = icon or false
-  return icon
+  local iconNum = tonumber(icon)
+  if iconNum and iconNum ~= 0 then
+    DecorIconCache[decorID] = iconNum
+    return iconNum
+  end
+
+  DecorIconCache[decorID] = false
 end
 
 function U.GetDecorName(decorID)

@@ -103,11 +103,13 @@ local function BuildVendorItemsCache()
           end
         end
 
+        local Availability = NS.Systems and NS.Systems.CatalogAvailability
         for itemIndex = 1, #vendor.items do
           local item = vendor.items[itemIndex]
           if item and item.source and item.source.itemID then
             local itemID = tonumber(item.source.itemID)
-            if itemID and not seenItemIDs[itemID] then
+            local available = not (Availability and Availability.IsDecorAvailable) or Availability:IsDecorAvailable(item.decorID)
+            if itemID and available and not seenItemIDs[itemID] then
               seenItemIDs[itemID] = true
               items[#items + 1] = {
                 itemID = itemID,
@@ -155,6 +157,13 @@ function Util.GetVendorItems(vendorID)
   if not vendorID then return {} end
   BuildVendorItemsCache()
   return vendorItemsCache[tonumber(vendorID)] or {}
+end
+
+function Util.InvalidateVendorItemsCache()
+  Util._vendorItemsCacheBuilt = false
+  for k in pairs(vendorItemsCache) do
+    vendorItemsCache[k] = nil
+  end
 end
 
 function Util.VendorKey(vendorID)

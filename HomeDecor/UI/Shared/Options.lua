@@ -20,6 +20,7 @@ local function ensureProfile()
   prof.mapPins = prof.mapPins or {}
   if prof.mapPins.minimap == nil then prof.mapPins.minimap = true end
   if prof.mapPins.worldmap == nil then prof.mapPins.worldmap = true end
+  if prof.mapPins.showDistantPins == nil then prof.mapPins.showDistantPins = false end
   if prof.mapPins.pinStyle == nil then prof.mapPins.pinStyle = "house" end
   if prof.mapPins.pinSize == nil then prof.mapPins.pinSize = 1.0 end
   if prof.mapPins.pinTooltipAnchor == nil then prof.mapPins.pinTooltipAnchor = "ANCHOR_RIGHT" end
@@ -223,6 +224,10 @@ function Options:Ensure()
   cbMiniPins:SetPoint("TOPLEFT", 32, y)
   y = y - 34
 
+  local cbShowDistantPins = mkCheckbox(panel, L("OPT_SHOW_DISTANT_PINS"), L("OPT_SHOW_DISTANT_PINS_TIP"))
+  cbShowDistantPins:SetPoint("TOPLEFT", 48, y)
+  y = y - 34
+
   local worldmapHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   worldmapHeader:SetPoint("TOPLEFT", 16, y)
   worldmapHeader:SetText(L("OPT_WORLD_MAP"))
@@ -372,6 +377,7 @@ function Options:Ensure()
     if not prof then return end
     cbMinimapButton:SetChecked(not bool(prof.minimap.hide))
     cbMiniPins:SetChecked(bool(prof.mapPins.minimap))
+    cbShowDistantPins:SetChecked(bool(prof.mapPins.showDistantPins))
     cbWorldPins:SetChecked(bool(prof.mapPins.worldmap))
     cbHideCollected:SetChecked(bool(prof.filters and prof.filters.hideCollected))
 
@@ -408,9 +414,9 @@ function Options:Ensure()
     if NS.UI and NS.UI.SetMinimapHidden then
       pcall(NS.UI.SetMinimapHidden, NS.db, not show)
     else
-      local LDBIcon = _G.LibStub and _G.LibStub("LibDBIcon-1.0", true)
-      if LDBIcon and LDBIcon:IsRegistered(ADDON) then
-        if show then LDBIcon:Show(ADDON) else LDBIcon:Hide(ADDON) end
+      local LDBIcon = _G.LibStub and _G.LibStub("LibMapSuite-1.0", true)
+      if LDBIcon and LDBIcon:IsMinimapButtonRegistered(ADDON) then
+        if show then LDBIcon:ShowMinimapButton(ADDON) else LDBIcon:HideMinimapButton(ADDON) end
       end
     end
   end)
@@ -419,6 +425,13 @@ function Options:Ensure()
     local prof = ensureProfile()
     if not prof then return end
     prof.mapPins.minimap = self:GetChecked() and true or false
+    refreshPins()
+  end)
+
+  cbShowDistantPins:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    prof.mapPins.showDistantPins = self:GetChecked() and true or false
     refreshPins()
   end)
 

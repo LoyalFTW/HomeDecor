@@ -14,7 +14,6 @@ local IsShiftKeyDown = IsShiftKeyDown
 local IsIndoors = IsIndoors
 local WorldMapFrame = WorldMapFrame
 local LibStub = LibStub
-local HBD = LibStub and LibStub("HereBeDragons-2.0", true)
 local HBDPins = LibStub and LibStub("HereBeDragons-Pins-2.0", true)
 local C_Map = C_Map
 local U = NS.Systems.MapPinsUtil
@@ -45,25 +44,9 @@ local function IsVendorFullyCompleted(vendorID)
   end
   return true
 end
-local hbdMapSupport = {}
-local function IsHBDSupported(mapID)
-  if hbdMapSupport[mapID] ~= nil then return hbdMapSupport[mapID] end
-  local supported = HBD and (HBD:GetWorldCoordinatesFromZone(0.5, 0.5, mapID) ~= nil)
-  hbdMapSupport[mapID] = supported
-  return supported
-end
-
-local function AddWorldMapPin(frame, mapID, x, y, showFlag)
-  if IsHBDSupported(mapID) then
-    HBDPins:AddWorldMapIconMap(ADDON, frame, mapID, x, y, showFlag)
-    return
-  end
-  local currentMapID = WorldMapFrame and WorldMapFrame.GetMapID and WorldMapFrame:GetMapID()
-  if currentMapID == mapID then
-    pcall(function()
-      WorldMapFrame:AcquirePin("PIN_FRAME_LEVEL_AREA_POI", frame, x, y)
-    end)
-  end
+local function AddWorldMapPin(frame, mapID, x, y)
+  if not HBDPins then return end
+  HBDPins:AddWorldMapIconMap(ADDON, frame, mapID, x, y)
 end
 
 local function IsEventVendorActive(vendor)
@@ -203,7 +186,7 @@ function R.AddWorldPinsForMap(mapID)
       pinFrame:Show()
       P.usedWorld[pinFrame] = true
       pcall(function()
-        AddWorldMapPin(pinFrame, mapID, vendor.x, vendor.y, HBD_PINS_WORLDMAP_SHOW_PARENT)
+        AddWorldMapPin(pinFrame, mapID, vendor.x, vendor.y)
       end)
     end
   end
@@ -220,12 +203,15 @@ function R.AddMiniPinsForMap(mapID)
   local style, color, size = U.GetPinSettings()
   local PIN_SIZE = U and U.PIN_SIZE_MINI or 14
   local hideCompletedMini = IsHideCompletedVendors()
+  local profile = NS.Addon and NS.Addon.db and NS.Addon.db.profile
+  local showDistant = U.IsEnabled(profile, "showDistantPins", false)
   local visibleVendors = {}
   local sigParts = {
     tostring(mapID or ""),
     tostring(style or ""),
     tostring(size or ""),
     tostring(hideCompletedMini and 1 or 0),
+    tostring(showDistant and 1 or 0),
     tostring(color and color.r or ""),
     tostring(color and color.g or ""),
     tostring(color and color.b or ""),
@@ -327,7 +313,7 @@ function R.AddMiniPinsForMap(mapID)
       pinFrame:Show()
       P.usedMini[pinFrame] = true
       pcall(function()
-        local floatOnEdge = not (IsIndoors and IsIndoors())
+        local floatOnEdge = showDistant and not (IsIndoors and IsIndoors())
         HBDPins:AddMinimapIconMap(ADDON, pinFrame, mapID, vendor.x, vendor.y, true, floatOnEdge)
       end)
   end
@@ -399,7 +385,7 @@ function R.ShowZoneBadges(continentMapID)
       frame:Show()
       P.usedBadges[frame] = true
       pcall(function()
-        HBDPins:AddWorldMapIconMap(ADDON, frame, continentMapID, zoneCenter.x, zoneCenter.y, HBD_PINS_WORLDMAP_SHOW_CONTINENT)
+        HBDPins:AddWorldMapIconMap(ADDON, frame, continentMapID, zoneCenter.x, zoneCenter.y)
       end)
     end
   end
@@ -464,7 +450,7 @@ function R.ShowZoneBadges(continentMapID)
                 frame:Show()
                 P.usedBadges[frame] = true
                 pcall(function()
-                  HBDPins:AddWorldMapIconMap(ADDON, frame, continentMapID, zoneCenter.x, zoneCenter.y, HBD_PINS_WORLDMAP_SHOW_CONTINENT)
+                  HBDPins:AddWorldMapIconMap(ADDON, frame, continentMapID, zoneCenter.x, zoneCenter.y)
                 end)
               end
             end

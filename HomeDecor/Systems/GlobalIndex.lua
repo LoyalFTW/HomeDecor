@@ -10,6 +10,7 @@ GI.collected  = {}
 GI._built     = false
 
 local Collection = NS.Systems and NS.Systems.Collection
+local Availability = NS.Systems and NS.Systems.CatalogAvailability
 local PVP_VENDOR_IDS = {
     [254603] = true,
     [254606] = true,
@@ -49,6 +50,7 @@ end
 local function AddToCategory(cat, it)
     if type(it) ~= "table" then return end
     local decorID = it.decorID
+    if Availability and Availability.IsDecorAvailable and not Availability:IsDecorAvailable(decorID) then return end
     local key = GetVariantKey(it)
     if not key then return end
     cat = NormalizeCategory(cat)
@@ -124,24 +126,44 @@ local function walkCategory(cat, dataKey)
 end
 
 function GI:Build()
-    local DataLoader = NS.Systems and NS.Systems.DataLoader
-    if DataLoader and DataLoader.EnsureAllCatalogData then
-        DataLoader:EnsureAllCatalogData()
-    end
-
     wipe(self.byItemID)
     wipe(self.counts)
     wipe(self.collected)
     self._categoryScratch = {}
 
-    buildVendorCategories()
-    walkCategory("Achievements")
-    walkCategory("Quests")
-    walkCategory("Professions")
-    walkCategory("Drops")
-    walkCategory("Shop", "Shops")
-    walkCategory("Treasures")
-    walkCategory("Saved Items")
+    if NS.Data and NS.Data.Vendors then
+        buildVendorCategories()
+    end
+
+    if NS.Data then
+        if NS.Data.Achievements then
+            walkCategory("Achievements")
+        end
+
+        if NS.Data.Quests then
+            walkCategory("Quests")
+        end
+
+        if NS.Data.Professions then
+            walkCategory("Professions")
+        end
+
+        if NS.Data.Drops then
+            walkCategory("Drops")
+        end
+
+        if NS.Data.Shops then
+            walkCategory("Shop", "Shops")
+        end
+
+        if NS.Data.Treasures then
+            walkCategory("Treasures")
+        end
+
+        if NS.Data["Saved Items"] then
+            walkCategory("Saved Items")
+        end
+    end
 
     for cat, set in pairs(self._categoryScratch) do
         self.counts[cat] = CountSet(set)

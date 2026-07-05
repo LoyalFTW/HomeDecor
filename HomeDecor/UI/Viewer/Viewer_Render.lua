@@ -22,7 +22,7 @@ local LAYOUT = {
         GAP = 10,
         ASPECT = 1.10,
         ICON_RATIO = 0.50,
-        FIXED_HEIGHT = 252
+        FIXED_HEIGHT = 276
     },
     ICON = {
         MIN = 82,
@@ -39,6 +39,7 @@ local Systems = NS.Systems or {}
 local FiltersSys = Systems.Filters
 local Collection = Systems.Collection
 local DataLoader = Systems.DataLoader
+local Availability = Systems.CatalogAvailability
 
 local UI = NS.UI or {}
 local TT = UI.Tooltips
@@ -263,6 +264,7 @@ end
 
 local function AddToFlat(out, seen, it)
     if type(it) ~= "table" then return end
+    if Availability and Availability.IsDecorAvailable and not Availability:IsDecorAvailable(it.decorID) then return end
 
     local id = it.decorID or (it.source and (it.source.id or it.source.itemID or it.source.itemId)) or it.itemID
     if not id then return end
@@ -668,6 +670,7 @@ local function CountItems(items, vendorCtx)
 
     local function countOne(it, vctx)
         if not it then return end
+        if Availability and Availability.IsDecorAvailable and not Availability:IsDecorAvailable(it.decorID) then return end
         local rit = it
         if vctx and D and D.AttachVendorCtx then D.AttachVendorCtx(rit, vctx) end
         if U and U.Passes and U.Passes(rit) then
