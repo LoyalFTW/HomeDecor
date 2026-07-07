@@ -18,4 +18,6 @@ NS.Data.Professions["Inscription"]["Midnight"] = {
      {decorID=14641, decorType="Ornamental", source={type="profession", skillID=1248623, itemID=262616}, colors={"Dark Brown","Tan","Teal"}, budgetCost=1, size="Small"},
      {decorID=14731, decorType="Seating", source={type="profession", skillID=1248620, itemID=262790}, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
      {decorID=14820, decorType="Storage", source={type="profession", skillID=1248631, itemID=263034}, colors={"Bronze","Copper","Dark Brown"}, budgetCost=5, size="Huge"},
+  {decorID=26380, decorType="Ornamental", source={type="profession", skillID=1296506, itemID=280757}, budgetCost=1, size="Small"},
+  {decorID=26384, decorType="Wall Hangings", source={type="profession", skillID=1296505, itemID=280752}, budgetCost=5, size="Huge"},
 }

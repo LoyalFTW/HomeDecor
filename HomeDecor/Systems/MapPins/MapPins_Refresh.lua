@@ -50,21 +50,7 @@ local function AddWorldMapPin(frame, mapID, x, y)
 end
 
 local function IsEventVendorActive(vendor)
-  if not vendor.isEvent then return true end
-  local ev = vendor.eventRef
-  if not ev then return true end
-  if ev.active == true then return true end
-  local Events = NS.Systems and NS.Systems.Events
-  if not Events then return true end
-  local now = time and time() or 0
-  local eEpoch = (ev.endsAt and tonumber(ev.endsAt))
-              or (ev.endsOn and Events.ParseDateEpoch and Events:ParseDateEpoch(ev.endsOn, true))
-  local sEpoch = (ev.startsAt and tonumber(ev.startsAt))
-              or (ev.startsOn and Events.ParseDateEpoch and Events:ParseDateEpoch(ev.startsOn, false))
-  if eEpoch then
-    return (now <= eEpoch) and (not sEpoch or now >= sEpoch)
-  end
-  return true
+  return not vendor.isEvent
 end
 
 local function GetMapPinTooltipAnchor()

@@ -41,19 +41,6 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
 
   {
     source={
-      id=78564,
-      type="vendor",
-      faction="Alliance",
-      zone="Lunarfall Garrison",
-      worldmap="539:3850:3140"
-    },
-    items={
-      {decorID=126, source={type="vendor", itemID=245275, currency="100", currencytype=824}, colors={"Dark Gray","Light Purple","Tan"}, budgetCost=1, size="Tiny"},
-    }
-  },
-
-  {
-    source={
       id=79774,
       type="vendor",
       faction="Neutral",
@@ -120,14 +107,14 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="622:4640:7460"
     },
     items={
-      {decorID=927, source={type="vendor", itemID=245423, currency="250", currencytype=824}, colors={"Dark Brown","Dark Gray","Light Purple"}, budgetCost=3, size="Medium"},
-      {decorID=8185, source={type="vendor", itemID=251476, currency="1000", currencytype=824}, colors={"Dark Gray","Dark Purple","Royal Blue"}, requirements={rep="true"}, budgetCost=5, size="Huge"},
-      {decorID=8188, source={type="vendor", itemID=251479, currency="1500", currencytype=824}, colors={"Dark Gray","Royal Blue"}, requirements={rep="true"}, budgetCost=5, size="Huge"},
-      {decorID=8190, source={type="vendor", itemID=251481, currency="500", currencytype=824}, colors={"Blue","Dark Gray","Tan"}, requirements={rep="true"}, budgetCost=5, size="Large"},
-      {decorID=8192, source={type="vendor", itemID=251483, currency="250", currencytype=824}, colors={"Dark Brown","Dark Purple","Navy Blue"}, requirements={rep="true"}, budgetCost=1, size="Small"},
-      {decorID=8193, source={type="vendor", itemID=251484, currency="1000", currencytype=824}, colors={"Dark Brown","Dark Purple","Light Purple"}, requirements={rep="true"}, budgetCost=5, size="Large"},
-      {decorID=8194, source={type="vendor", itemID=251493, currency="500", currencytype=824}, colors={"Dark Gray","Gray","Royal Blue"}, requirements={rep="true"}, budgetCost=5, size="Large"},
-      {decorID=8242, source={type="vendor", itemID=251551, currency="1500", currencytype=824}, colors={"Copper","Dark Gray","Purple"}, requirements={rep="true"}, budgetCost=5, size="Large"},
+      {decorID=927, source={type="vendor", itemID=245423, currency="250", currencytype=824}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Light Purple"}, budgetCost=3, size="Medium"},
+      {decorID=8185, source={type="vendor", itemID=251476, currency="1000", currencytype=824}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Royal Blue"}, budgetCost=5, size="Huge"},
+      {decorID=8188, source={type="vendor", itemID=251479, currency="1500", currencytype=824}, requirements={rep="true"}, colors={"Dark Gray","Royal Blue"}, budgetCost=5, size="Huge"},
+      {decorID=8190, source={type="vendor", itemID=251481, currency="500", currencytype=824}, requirements={rep="true"}, colors={"Blue","Dark Gray","Tan"}, budgetCost=5, size="Large"},
+      {decorID=8192, source={type="vendor", itemID=251483, currency="250", currencytype=824}, requirements={rep="true"}, colors={"Dark Brown","Dark Purple","Navy Blue"}, budgetCost=1, size="Small"},
+      {decorID=8193, source={type="vendor", itemID=251484, currency="1000", currencytype=824}, requirements={rep="true"}, colors={"Dark Brown","Dark Purple","Light Purple"}, budgetCost=5, size="Large"},
+      {decorID=8194, source={type="vendor", itemID=251493, currency="500", currencytype=824}, requirements={rep="true"}, colors={"Dark Gray","Gray","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=8242, source={type="vendor", itemID=251551, currency="1500", currencytype=824}, requirements={rep="true"}, colors={"Copper","Dark Gray","Purple"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -140,9 +127,9 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap=""
     },
     items={
---       {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
---       {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
---       {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
+--       {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
+--       {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
+--       {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
     }
   },
 
@@ -176,25 +163,9 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap=""
     },
     items={
---       {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
---       {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
---       {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
-    }
-  },
-
-  {
-    source={
-      id=86776,
-      type="vendor",
-      faction="Neutral",
-      zone="Frostwall",
-      worldmap="585:5140:6200"
-    },
-    items={
-      {decorID=1354, source={type="vendor", itemID=245444, currency="250", currencytype=824}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
-      {decorID=1355, source={type="vendor", itemID=245445, currency="150", currencytype=824}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Large"},
-      {decorID=1413, source={type="vendor", itemID=244321, currency="100", currencytype=824}, colors={"Dark Brown","Gray"}, budgetCost=1, size="Small"},
-      {decorID=1414, source={type="vendor", itemID=244322, currency="100", currencytype=824}, colors={"Dark Brown","Dark Gray","Silver"}, budgetCost=1, size="Small"},
+--       {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
+--       {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
+--       {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
     }
   },
 
@@ -223,8 +194,8 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="525:4800:6600"
     },
     items={
-      {decorID=1317, source={type="vendor", itemID=245431, costs={{currency="5000000", currencytype="money"},{currency="1000", currencytype=823}}}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
-      {decorID=1322, source={type="vendor", itemID=245433, costs={{currency="5000000", currencytype="money"},{currency="1000", currencytype=823}}}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=1317, source={type="vendor", itemID=245431, costs={{currency="5000000", currencytype="money"},{currency="1000", currencytype=823}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=1322, source={type="vendor", itemID=245433, costs={{currency="5000000", currencytype="money"},{currency="1000", currencytype=823}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -280,7 +251,7 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="582:3773:3589"
     },
     items={
-      {decorID=126, source={type="vendor", itemID=245275, currency="100", currencytype=824}, colors={"Dark Gray","Light Purple","Tan"}, budgetCost=1, size="Tiny"},
+      {decorID=126, source={type="vendor", itemID=245275}, colors={"Dark Gray","Light Purple","Tan"}, budgetCost=1, size="Tiny"},
       {decorID=4403, source={type="vendor", itemID=248334, costs={{currency="1600000", currencytype="money"},{currency="300", currencytype=824}}}, requirements={quest={id=36404}}, colors={"Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"},
       {decorID=4404, source={type="vendor", itemID=248335, costs={{currency="400000", currencytype="money"},{currency="100", currencytype=824}}}, requirements={quest={id=36202}}, colors={"Dark Brown"}, budgetCost=1, size="Small"},
       {decorID=4485, source={type="vendor", itemID=248660, costs={{currency="1600000", currencytype="money"},{currency="300", currencytype=824}}}, requirements={quest={id=34192}}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},

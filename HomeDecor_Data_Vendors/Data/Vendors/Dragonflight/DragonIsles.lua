@@ -16,23 +16,11 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       worldmap=""
     },
     items={
---       {decorID=720, source={type="vendor", itemID=238975, currency="750", currencytype=2003}, colors={"Dark Brown","Orange","Teal"}, budgetCost=1, size="Small"}, -- missing verified worldmap
-    }
-  },
-
-  {
-    source={
-      id=188265,
-      type="vendor",
-      faction="Neutral",
-      zone="Dragonscale Basecamp",
-      worldmap="2022:4800:8220"
-    },
-    items={
-      {decorID=716, source={type="vendor", itemID=245285, currency="100", currencytype=2003}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
+--       {decorID=716, source={type="vendor", itemID=245285, currency="100", currencytype=2003}, requirements={rep="true"}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"}, -- missing verified worldmap
       {decorID=717, source={type="vendor", itemID=245287, currency="250", currencytype=2003}, colors={"Brown","Copper","Dark Brown"}, budgetCost=5, size="Large"},
       {decorID=718, source={type="vendor", itemID=245288, currency="250", currencytype=2003}, colors={"Brown","Copper","Dark Brown"}, budgetCost=3, size="Medium"},
-      {decorID=1177, source={type="vendor", itemID=245283, currency="400", currencytype=2003}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Medium"},
+--       {decorID=720, source={type="vendor", itemID=238975, currency="750", currencytype=2003}, requirements={rep="true"}, colors={"Dark Brown","Orange","Teal"}, budgetCost=1, size="Small"}, -- missing verified worldmap
+--       {decorID=1177, source={type="vendor", itemID=245283, currency="400", currencytype=2003}, requirements={rep="true"}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Medium"}, -- missing verified worldmap
       {decorID=1181, source={type="vendor", itemID=245286, currency="250", currencytype=2003}, colors={"Bronze","Brown","Dark Brown"}, budgetCost=5, size="Large"},
     }
   },
@@ -46,9 +34,9 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       worldmap=""
     },
     items={
---       {decorID=716, source={type="vendor", itemID=245285, currency="100", currencytype=2003}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"}, -- missing verified worldmap
---       {decorID=720, source={type="vendor", itemID=238975, currency="750", currencytype=2003}, colors={"Dark Brown","Orange","Teal"}, budgetCost=1, size="Small"}, -- missing verified worldmap
---       {decorID=1177, source={type="vendor", itemID=245283, currency="400", currencytype=2003}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Medium"}, -- missing verified worldmap
+--       {decorID=716, source={type="vendor", itemID=245285, currency="100", currencytype=2003}, requirements={rep="true"}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"}, -- missing verified worldmap
+--       {decorID=720, source={type="vendor", itemID=238975, currency="750", currencytype=2003}, requirements={rep="true"}, colors={"Dark Brown","Orange","Teal"}, budgetCost=1, size="Small"}, -- missing verified worldmap
+--       {decorID=1177, source={type="vendor", itemID=245283, currency="400", currencytype=2003}, requirements={rep="true"}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Medium"}, -- missing verified worldmap
     }
   },
 
@@ -86,7 +74,7 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Ruby Lifeshrine, The Waking Shores",
-      worldmap="2022:6180:7380"
+      worldmap=""
     },
     items={
       {decorID=2529, source={type="vendor", itemID=246863, currency="500", currencytype=2003}, requirements={quest={id=66001}}, colors={"Copper","Dark Brown","Tan"}, budgetCost=1, size="Small"},
@@ -102,11 +90,11 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       worldmap=""
     },
     items={
---       {decorID=4159, source={type="vendor", itemID=248103, currency="300", currencytype=2003}, colors={"Bronze","Dark Brown","Gray"}, budgetCost=5, size="Large"}, -- missing verified worldmap
---       {decorID=4168, source={type="vendor", itemID=248112, currency="400", currencytype=2003}, colors={"Dark Brown","Silver","Tan"}, budgetCost=3, size="Large"}, -- missing verified worldmap
---       {decorID=4171, source={type="vendor", itemID=248115, currency="100000", currencytype="money"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Large"}, -- DNT / do not use
---       {decorID=4478, source={type="vendor", itemID=248652, currency="250", currencytype=2003}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Large"}, -- missing verified worldmap
---       {decorID=10963, source={type="vendor", itemID=256169, currency="500", currencytype=2003}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"}, -- missing verified worldmap
+      {decorID=4159, source={type="vendor", itemID=248103, currency="300", currencytype=2003}, requirements={rep="true"}, colors={"Bronze","Dark Brown","Gray"}, budgetCost=5, size="Large"},
+      {decorID=4168, source={type="vendor", itemID=248112, currency="400", currencytype=2003}, requirements={rep="true"}, colors={"Dark Brown","Silver","Tan"}, budgetCost=3, size="Large"},
+--       {decorID=4171, source={type="vendor", itemID=248115, currency="100000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Large"}, -- DNT / do not use
+      {decorID=4478, source={type="vendor", itemID=248652, currency="250", currencytype=2003}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
+      {decorID=10963, source={type="vendor", itemID=256169, currency="500", currencytype=2003}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -159,7 +147,7 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Valdrakken",
-      worldmap="2112:5840:5720"
+      worldmap="2112:2660:3400"
     },
     items={
       {decorID=4180, source={type="vendor", itemID=248124, currency="7500", currencytype=2003}, requirements={achievement={id=19458}}, colors={"Dark Brown","Olive","Royal Blue"}, budgetCost=5, size="Large"},
@@ -184,8 +172,8 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       id=209220,
       type="vendor",
       faction="Neutral",
-      zone="Eon's Fringe, Thaldraszus",
-      worldmap="2025:5220:8080"
+      zone="Valdrakken",
+      worldmap="2112:3200:4620"
     },
     items={
       {decorID=4161, source={type="vendor", itemID=248105, currency="150", currencytype=2003}, requirements={achievement={id=19507}}, colors={"Amber","Dark Brown","Gray"}, budgetCost=3, size="Medium"},
@@ -229,7 +217,6 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
     },
     items={
       {decorID=1834, source={type="vendor", itemID=245625, currency="350", currencytype=2003}, colors={"Dark Brown","Light Brown","Royal Blue"}, budgetCost=3, size="Medium"},
-      {decorID=1861, source={type="vendor", itemID=245655, currency="10", currencytype=2003}, colors={"Cyan","Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
       {decorID=1888, source={type="vendor", itemID=245704, currency="250", currencytype=2003}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
       {decorID=1987, source={type="vendor", itemID=246089, currency="350", currencytype=2003}, colors={"Dark Brown","Light Purple","Purple"}, budgetCost=3, size="Medium"},
       {decorID=1990, source={type="vendor", itemID=246100, currency="500", currencytype=2003}, colors={"Dark Brown","Dark Purple","Gray"}, budgetCost=5, size="Huge"},
@@ -286,7 +273,7 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       worldmap="2215:1830:2050"
     },
     items={
-      {decorID=763, source={type="vendor", itemID=245293, currency="1200", currencytype=2815}, colors={"Copper","Dark Brown","Tan"}, budgetCost=1, size="Tiny"},
+      {decorID=763, source={type="vendor", itemID=245293, currency="1200", currencytype=2815}, requirements={rep="true"}, colors={"Copper","Dark Brown","Tan"}, budgetCost=1, size="Tiny"},
     }
   },
 
@@ -314,10 +301,10 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       worldmap="2112:3360:5700"
     },
     items={
-      {decorID=4159, source={type="vendor", itemID=248103, currency="300", currencytype=2003}, colors={"Bronze","Dark Brown","Gray"}, budgetCost=5, size="Large"},
-      {decorID=4168, source={type="vendor", itemID=248112, currency="400", currencytype=2003}, colors={"Dark Brown","Silver","Tan"}, budgetCost=3, size="Large"},
-      {decorID=4478, source={type="vendor", itemID=248652, currency="250", currencytype=2003}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
-      {decorID=10963, source={type="vendor", itemID=256169, currency="500", currencytype=2003}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
+      {decorID=4159, source={type="vendor", itemID=248103, currency="300", currencytype=2003}, requirements={rep="true"}, colors={"Bronze","Dark Brown","Gray"}, budgetCost=5, size="Large"},
+      {decorID=4168, source={type="vendor", itemID=248112, currency="400", currencytype=2003}, requirements={rep="true"}, colors={"Dark Brown","Silver","Tan"}, budgetCost=3, size="Large"},
+      {decorID=4478, source={type="vendor", itemID=248652, currency="250", currencytype=2003}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
+      {decorID=10963, source={type="vendor", itemID=256169, currency="500", currencytype=2003}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -345,8 +332,8 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       id=253086,
       type="vendor",
       faction="Neutral",
-      zone="The Forbidden Reach",
-      worldmap="2151:3520:5680"
+      zone="Valdrakken",
+      worldmap="2112:3400:5760"
     },
     items={
       {decorID=4482, source={type="vendor", itemID=248656, currency="1500", currencytype=2118}, requirements={achievement={id=17529}}, colors={"Dark Brown","Gray"}, budgetCost=3, size="Medium"},

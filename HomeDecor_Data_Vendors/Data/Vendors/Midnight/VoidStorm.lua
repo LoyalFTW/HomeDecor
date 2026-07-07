@@ -58,9 +58,9 @@ NS.Data.Vendors["Midnight"]["VoidStorm"] = {
       worldmap="2444:3935:8095"
     },
     items={
-      {decorID=3922, source={type="vendor", itemID=247785, currency="250", currencytype=3316}, colors={"Dark Gray","Royal Blue","Tan"}, requirements={rep="true"}, budgetCost=5, size="Large"},
-      {decorID=15488, source={type="vendor", itemID=264253, currency="250", currencytype=3316}, colors={"Dark Brown","Royal Blue","Tan"}, requirements={rep="true"}, budgetCost=5, size="Large"},
-      {decorID=15585, source={type="vendor", itemID=264345, currency="250", currencytype=3316}, colors={"Navy Blue","Royal Blue","Tan"}, requirements={rep="true"}, budgetCost=1, size="Small"},
+      {decorID=3922, source={type="vendor", itemID=247785, currency="250", currencytype=3316}, colors={"Dark Gray","Royal Blue","Tan"}, budgetCost=5, size="Large"},
+      {decorID=15488, source={type="vendor", itemID=264253, currency="250", currencytype=3316}, colors={"Dark Brown","Royal Blue","Tan"}, budgetCost=5, size="Large"},
+      {decorID=15585, source={type="vendor", itemID=264345, currency="250", currencytype=3316}, colors={"Navy Blue","Royal Blue","Tan"}, budgetCost=1, size="Small"},
     }
   },
 

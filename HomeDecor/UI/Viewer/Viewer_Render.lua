@@ -22,7 +22,7 @@ local LAYOUT = {
         GAP = 10,
         ASPECT = 1.10,
         ICON_RATIO = 0.50,
-        FIXED_HEIGHT = 276
+        FIXED_HEIGHT = 252
     },
     ICON = {
         MIN = 82,
@@ -39,7 +39,6 @@ local Systems = NS.Systems or {}
 local FiltersSys = Systems.Filters
 local Collection = Systems.Collection
 local DataLoader = Systems.DataLoader
-local Availability = Systems.CatalogAvailability
 
 local UI = NS.UI or {}
 local TT = UI.Tooltips
@@ -264,7 +263,6 @@ end
 
 local function AddToFlat(out, seen, it)
     if type(it) ~= "table" then return end
-    if Availability and Availability.IsDecorAvailable and not Availability:IsDecorAvailable(it.decorID) then return end
 
     local id = it.decorID or (it.source and (it.source.id or it.source.itemID or it.source.itemId)) or it.itemID
     if not id then return end
@@ -615,7 +613,7 @@ local function BuildFlatResults(f, ui, db, scopeKey)
 
     if scopeKey == "GLOBAL" then
         for k, v in pairs(data) do
-            if type(k) == "string" and type(v) == "table" and k ~= "Events" then
+            if type(k) == "string" and type(v) == "table" then
                 scanCategory(k)
             end
         end
@@ -670,7 +668,6 @@ local function CountItems(items, vendorCtx)
 
     local function countOne(it, vctx)
         if not it then return end
-        if Availability and Availability.IsDecorAvailable and not Availability:IsDecorAvailable(it.decorID) then return end
         local rit = it
         if vctx and D and D.AttachVendorCtx then D.AttachVendorCtx(rit, vctx) end
         if U and U.Passes and U.Passes(rit) then
@@ -1124,8 +1121,7 @@ local function RebuildEntries(f, content)
 
     local q = U and U.trim and U.trim(ui.search) or (ui.search or "")
     local fdb = db.filters or {}
-    local isSpecialCategory = (cat == "Events") or
-                              (cat == "Decor Pricing") or
+    local isSpecialCategory = (cat == "Decor Pricing") or
                               (cat == "Alts Professions") or
                               (cat == "Architect") or
                               (cat == "Endeavors") or
@@ -1356,97 +1352,6 @@ local function RebuildEntries(f, content)
             local sf = f.scrollFrame or f._scrollFrame
             sf:Show()
         end
-    end
-
-    if cat == "Events" then
-        local Ev = Systems.Events
-        local list = (Ev and Ev.GetActive and Ev:GetActive()) or
-                     (NS.Data and type(NS.Data.Events) == "table" and NS.Data.Events) or {}
-
-        if #list == 0 then
-            addListItem(0, {
-                title = L["NO_ACTIVE_EVENTS_TITLE"],
-                decorType = L["EVENTS_PLACEHOLDER_BODY"],
-                source = { type = "event", icon = "Interface\\Icons\\INV_Misc_PocketWatch_01" }
-            }, nil)
-            SyncInspectorSelection(f, entries)
-            f.totalHeight = y + LAYOUT.PAD_BOTTOM
-            return
-        end
-
-        for _, ev in ipairs(list) do
-            local eTitle = ev.title or ev.name or "Event"
-            local evKey = "event:" .. tostring(ev.id or ev.key or eTitle)
-
-            if not db.eventHeaderStates then db.eventHeaderStates = {} end
-            local savedOpen = db.eventHeaderStates[evKey]
-
-            local open
-            if savedOpen ~= nil then
-                open = savedOpen
-            elseif ev._uiOpen ~= nil then
-                open = ev._uiOpen
-            else
-                open = false
-            end
-
-            ev._uiOpen = open
-
-            local group = {}
-            local cEv, tEv = 0, 0
-
-            if type(ev.items) == "table" then
-                for _, it0 in ipairs(ev.items) do
-                    if type(it0) == "table" then
-                        local it = U and U.copyShallow and U.copyShallow(it0) or it0
-                        it._isEventTimed = true
-                        it._eventTitle = eTitle
-
-                        if not FiltersSys or not FiltersSys.Passes or FiltersSys:Passes(it, ui, db) then
-                            if U and U.Passes and U.Passes(it) then
-                                tEv = tEv + 1
-                                if U.IsCollectedSafe and U.IsCollectedSafe(it) then
-                                    cEv = cEv + 1
-                                end
-                            end
-                            group[#group + 1] = it
-                        end
-                    end
-                end
-            end
-
-            local timerText = nil
-            if Ev and Ev.GetEventTimeText then
-                timerText = Ev:GetEventTimeText(ev, _G.time and _G.time() or 0)
-            end
-
-            addHeader(12, 44, eTitle, cEv, tEv, open, "event", { key = evKey, event = ev, timerText = timerText })
-
-            if open and #group > 0 then
-                if viewMode == "Icon" then
-                    local cols, startX, tileW, tileH = ComputeGrid(28, contentW)
-                    local col = 0
-                    for _, it in ipairs(group) do
-                        local h = CalculateTileHeight(it, tileH)
-                        addTile(28, it, ev, col, startX, tileW, tileH)
-                        col = col + 1
-                        if col >= cols then
-                            col = 0
-                            y = y + h + LAYOUT.TILE.GAP
-                        end
-                    end
-                    if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
-                else
-                    for _, it in ipairs(group) do
-                        addListItem(28, it, ev)
-                    end
-                end
-            end
-        end
-
-        SyncInspectorSelection(f, entries)
-        f.totalHeight = y + LAYOUT.PAD_BOTTOM
-        return
     end
 
     local data = D and D.GetActiveData and D.GetActiveData(ui)
@@ -2135,43 +2040,6 @@ function Render:Create(parent)
         end)
     end
 
-    if C_Timer and C_Timer.NewTicker then
-        function f:ScheduleEventTimerRefresh()
-            if self._eventTimer and self._eventTimer.Cancel then
-                self._eventTimer:Cancel()
-            end
-            self._eventTimer = nil
-
-            if not self:IsShown() then return end
-
-            local db = U and U.DB and U.DB()
-            local ui = db and db.ui or {}
-            if ui.activeCategory ~= "Events" then return end
-
-            local Ev = Systems.Events
-            local now = time and time() or 0
-            local delay = 60
-
-            if Ev and Ev.RecalcStatus then
-                Ev:RecalcStatus(now)
-                local cache = Ev.cache and Ev.cache.status
-                if cache and type(cache.nextCheck) == "number" and cache.nextCheck > now then
-                    delay = cache.nextCheck - now + 1
-                end
-            end
-
-            if delay < 1 then delay = 1 end
-
-            self._eventTimer = C_Timer.NewTimer(delay, function()
-                if not f or not f:IsShown() then return end
-                if f.RequestRender then
-                    f:RequestRender(true)
-                end
-                f:ScheduleEventTimerRefresh()
-            end)
-        end
-    end
-
     f._poolHeader, f._poolList, f._poolTile, f._active = {}, {}, {}, {}
 
     local Frames = View.Frames
@@ -2227,21 +2095,10 @@ function Render:Create(parent)
         end
     end
 
-    f:HookScript("OnShow", function(self)
-        if self.ScheduleEventTimerRefresh then
-            self:ScheduleEventTimerRefresh()
-        end
-    end)
-
     f:HookScript("OnHide", function(self)
         self._renderQueued = nil
         self._pendingFullRender = nil
         self._renderToken = (self._renderToken or 0) + 1
-
-        if self._eventTimer and self._eventTimer.Cancel then
-            self._eventTimer:Cancel()
-        end
-        self._eventTimer = nil
     end)
 
     function f:UpdateVisible()

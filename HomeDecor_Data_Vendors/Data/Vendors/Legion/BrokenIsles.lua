@@ -9,19 +9,6 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
 
   {
     source={
-      id=89939,
-      type="vendor",
-      faction="Neutral",
-      zone="Azsuna",
-      worldmap="630:4780:2340"
-    },
-    items={
-      {decorID=2530, source={type="vendor", itemID=246864, currency="1000", currencytype=1220}, requirements={quest={id=37470}}, colors={"Olive","Silver","Teal"}, budgetCost=1, size="Small"},
-    }
-  },
-
-  {
-    source={
       id=93971,
       type="vendor",
       faction="Neutral",
@@ -43,14 +30,14 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:3713:4655"
     },
     items={
-      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
-      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
-      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
-      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
-      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
-      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
+      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
+      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
+      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -63,7 +50,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="739:4456:4888"
     },
     items={
-      {decorID=1740, source={type="vendor", itemID=245549, currency="500", currencytype=1220}, colors={"Copper","Dark Gray","Deep Red"}, requirements={rep="true"}, budgetCost=5, size="Huge"},
+      {decorID=1740, source={type="vendor", itemID=245549, currency="500", currencytype=1220}, colors={"Copper","Dark Gray","Deep Red"}, budgetCost=5, size="Huge"},
       {decorID=5877, source={type="vendor", itemID=250110, currency="500", currencytype=1220}, colors={"Dark Brown","Dark Purple","Light Purple"}, budgetCost=3, size="Medium"},
       {decorID=5891, source={type="vendor", itemID=250126, currency="2000", currencytype=1220}, requirements={achievement={id=60984}}, colors={"Dark Brown","Forest Green","Tan"}, budgetCost=1, size="Small"},
       {decorID=5893, source={type="vendor", itemID=250128, currency="1000", currencytype=1220}, colors={"Dark Gray","Forest Green","Tan"}, budgetCost=3, size="Medium"},
@@ -95,12 +82,12 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="641:5470:7325"
     },
     items={
-      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220},{currency="8000000", currencytype="money"}}}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=3, size="Medium"},
-      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=5, size="Large"},
+      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220},{currency="8000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=3, size="Medium"},
+      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=5, size="Large"},
 --       {decorID=678, source={type="vendor", itemID=238862}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"}, -- DNT / do not use
-      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="7000000", currencytype="money"},{currency="1000", currencytype=1220},{currency="5000000", currencytype="money"}}}, colors={"Dark Brown","Gray","Purple"}, budgetCost=1, size="Small"},
-      {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, colors={"Dark Brown","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
-      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
+      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="7000000", currencytype="money"},{currency="1000", currencytype=1220},{currency="5000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Gray","Purple"}, budgetCost=1, size="Small"},
+      {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, requirements={rep="true"}, colors={"Dark Brown","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
+      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -113,14 +100,14 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="750:3860:4540"
     },
     items={
-      {decorID=1231, source={type="vendor", itemID=245452, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, colors={"Dark Brown"}, budgetCost=5, size="Huge"},
-      {decorID=1252, source={type="vendor", itemID=243290, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, colors={"Black"}, budgetCost=5, size="Huge"},
-      {decorID=1292, source={type="vendor", itemID=243359, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, colors={"Dark Brown","Dark Gray"}, budgetCost=5, size="Huge"},
-      {decorID=1293, source={type="vendor", itemID=245454, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, colors={"Dark Brown","Tan"}, budgetCost=1, size="Small"},
-      {decorID=1295, source={type="vendor", itemID=245458, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, colors={"Dark Brown"}, budgetCost=3, size="Small"},
-      {decorID=1297, source={type="vendor", itemID=245450, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, colors={"Dark Brown","Tan"}, budgetCost=5, size="Huge"},
-      {decorID=1703, source={type="vendor", itemID=245270, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, colors={"Copper","Dark Brown"}, budgetCost=5, size="Large"},
-      {decorID=5136, source={type="vendor", itemID=248985, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, colors={"Copper","Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
+      {decorID=1231, source={type="vendor", itemID=245452, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown"}, budgetCost=5, size="Huge"},
+      {decorID=1252, source={type="vendor", itemID=243290, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}, colors={"Black"}, budgetCost=5, size="Huge"},
+      {decorID=1292, source={type="vendor", itemID=243359, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray"}, budgetCost=5, size="Huge"},
+      {decorID=1293, source={type="vendor", itemID=245454, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Tan"}, budgetCost=1, size="Small"},
+      {decorID=1295, source={type="vendor", itemID=245458, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown"}, budgetCost=3, size="Small"},
+      {decorID=1297, source={type="vendor", itemID=245450, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Tan"}, budgetCost=5, size="Huge"},
+      {decorID=1703, source={type="vendor", itemID=245270, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Copper","Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=5136, source={type="vendor", itemID=248985, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -130,7 +117,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Highmountain",
-      worldmap="650:5260:7780"
+      worldmap="650:5320:7980"
     },
     items={
       {decorID=15741, source={type="vendor", itemID=264477, currency="80000", currencytype="money"}, requirements={quest={id=39487}}, colors={"Copper","Dark Brown","Light Brown"}, budgetCost=3, size="Medium"},
@@ -301,7 +288,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     },
     items={
       {decorID=5894, source={type="vendor", itemID=250130, currency="500", currencytype=1220}, colors={"Copper","Dark Brown","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=5895, source={type="vendor", itemID=250131, currency="1500", currencytype=1220}, requirements={achievement={id=60985}}, colors={"Cyan","Dark Brown","Royal Blue"}, budgetCost=1, size="Large"},
+      {decorID=5895, source={type="vendor", itemID=250131}, requirements={achievement={id=60985}}, colors={"Cyan","Dark Brown","Royal Blue"}, budgetCost=1, size="Large"},
       {decorID=5896, source={type="vendor", itemID=250132, currency="500", currencytype=1220}, colors={"Bronze","Dark Gray","Light Purple"}, budgetCost=1, size="Small"},
       {decorID=7579, source={type="vendor", itemID=250239, currency="1000", currencytype=1220}, colors={"Dark Brown","Dark Purple","Royal Blue"}, budgetCost=5, size="Large"},
     }
@@ -343,14 +330,14 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:3680:4660"
     },
     items={
-      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
-      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
-      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
-      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
-      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
-      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
+      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
+      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
+      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -363,12 +350,12 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:5090:7778"
     },
     items={
-      {decorID=1444, source={type="vendor", itemID=244654, currency="100", currencytype=1155}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=1464, source={type="vendor", itemID=244676, currency="200", currencytype=1155}, colors={"Dark Purple","Teal"}, budgetCost=1, size="Small"},
-      {decorID=1465, source={type="vendor", itemID=244677, currency="300", currencytype=1155}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=1, size="Small"},
-      {decorID=1466, source={type="vendor", itemID=244678, currency="100", currencytype=1155}, colors={"Brown","Crimson","Purple"}, budgetCost=1, size="Small"},
-      {decorID=1919, source={type="vendor", itemID=246001, currency="200", currencytype=1155}, colors={"Copper","Deep Red","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=1920, source={type="vendor", itemID=246002, currency="300", currencytype=1155}, colors={"Brown","Copper","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=1444, source={type="vendor", itemID=244654, currency="100", currencytype=1155}, requirements={rep="true"}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=1464, source={type="vendor", itemID=244676, currency="200", currencytype=1155}, requirements={rep="true"}, colors={"Dark Purple","Teal"}, budgetCost=1, size="Small"},
+      {decorID=1465, source={type="vendor", itemID=244677, currency="300", currencytype=1155}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=1, size="Small"},
+      {decorID=1466, source={type="vendor", itemID=244678, currency="100", currencytype=1155}, requirements={rep="true"}, colors={"Brown","Crimson","Purple"}, budgetCost=1, size="Small"},
+      {decorID=1919, source={type="vendor", itemID=246001, currency="200", currencytype=1155}, requirements={rep="true"}, colors={"Copper","Deep Red","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=1920, source={type="vendor", itemID=246002, currency="300", currencytype=1155}, requirements={rep="true"}, colors={"Brown","Copper","Dark Purple"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -381,23 +368,23 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="619:5506:7797"
     },
     items={
-      {decorID=7610, source={type="vendor", itemID=250307, costs={{currency="10000", itemID=3252},{currency="6000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42318}}, colors={"Copper","Dark Brown","Forest Green"}, budgetCost=1, size="Small"},
-      {decorID=7620, source={type="vendor", itemID=250402, costs={{currency="20000", itemID=3252},{currency="12000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42658}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
-      {decorID=7621, source={type="vendor", itemID=250403, costs={{currency="30000", itemID=3252},{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42692}}, colors={"Forest Green","Green"}, budgetCost=5, size="Large"},
-      {decorID=7622, source={type="vendor", itemID=250404, costs={{currency="5000", itemID=3252},{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, colors={"Black","Teal"}, budgetCost=5, size="Large"},
-      {decorID=7623, source={type="vendor", itemID=250405, costs={{currency="5000", itemID=3252},{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=61060}}, colors={"Dark Brown","Forest Green","Green"}, budgetCost=3, size="Medium"},
-      {decorID=7624, source={type="vendor", itemID=250406, costs={{currency="30000", itemID=3252},{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42321}}, colors={"Forest Green","Green"}, budgetCost=5, size="Large"},
-      {decorID=7625, source={type="vendor", itemID=250407, costs={{currency="5000", itemID=3252},{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42619}}, colors={"Black","Forest Green","Green"}, budgetCost=1, size="Small"},
-      {decorID=7658, source={type="vendor", itemID=250622, costs={{currency="5000", itemID=3252},{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42675}}, colors={"Black","Teal"}, budgetCost=5, size="Large"},
-      {decorID=7686, source={type="vendor", itemID=250689, costs={{currency="10000", itemID=3252},{currency="6000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=61054}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
-      {decorID=7687, source={type="vendor", itemID=250690, costs={{currency="5000", itemID=3252},{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42627}}, colors={"Dark Brown","Forest Green","Green"}, budgetCost=5, size="Large"},
-      {decorID=7690, source={type="vendor", itemID=250693, costs={{currency="30000", itemID=3252},{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42674}}, colors={"Dark Brown","Green","Olive"}, budgetCost=3, size="Large"},
-      {decorID=8810, source={type="vendor", itemID=251778, costs={{currency="30000", itemID=3252},{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=61218}}, colors={"Cyan","Tan","Teal"}, budgetCost=5, size="Large"},
-      {decorID=8811, source={type="vendor", itemID=251779, costs={{currency="30000", itemID=3252},{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42689}}, colors={"Forest Green","Green"}, budgetCost=5, size="Large"},
-      {decorID=9165, source={type="vendor", itemID=252753, costs={{currency="5000", itemID=3252},{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42655}}, colors={"Dark Brown","Olive"}, budgetCost=1, size="Small"},
-      {decorID=11278, source={type="vendor", itemID=256677, costs={{currency="5000", itemID=3252},{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42628}}, colors={"Dark Brown","Forest Green","Olive"}, budgetCost=1, size="Tiny"},
-      {decorID=11279, source={type="vendor", itemID=256678, costs={{currency="2500", itemID=3252},{currency="1500", currencytype=1220},{currency="50", currencytype=1508}}}, colors={"Dark Brown","Forest Green","Olive"}, budgetCost=1, size="Tiny"},
-      {decorID=11942, source={type="vendor", itemID=258299, costs={{currency="20000", itemID=3252},{currency="12000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42547}}, colors={"Black","Teal"}, budgetCost=5, size="Huge"},
+      {decorID=7610, source={type="vendor", itemID=250307, costs={{currency="6000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42318}}, colors={"Copper","Dark Brown","Forest Green"}, budgetCost=1, size="Small"},
+      {decorID=7620, source={type="vendor", itemID=250402, costs={{currency="12000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42658}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
+      {decorID=7621, source={type="vendor", itemID=250403, costs={{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42692}}, colors={"Forest Green","Green"}, budgetCost=5, size="Large"},
+      {decorID=7622, source={type="vendor", itemID=250404, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, colors={"Black","Teal"}, budgetCost=5, size="Large"},
+      {decorID=7623, source={type="vendor", itemID=250405, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=61060}}, colors={"Dark Brown","Forest Green","Green"}, budgetCost=3, size="Medium"},
+      {decorID=7624, source={type="vendor", itemID=250406, costs={{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42321}}, colors={"Forest Green","Green"}, budgetCost=5, size="Large"},
+      {decorID=7625, source={type="vendor", itemID=250407, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42619}}, colors={"Black","Forest Green","Green"}, budgetCost=1, size="Small"},
+      {decorID=7658, source={type="vendor", itemID=250622, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42675}}, colors={"Black","Teal"}, budgetCost=5, size="Large"},
+      {decorID=7686, source={type="vendor", itemID=250689, costs={{currency="6000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=61054}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
+      {decorID=7687, source={type="vendor", itemID=250690, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42627}}, colors={"Dark Brown","Forest Green","Green"}, budgetCost=5, size="Large"},
+      {decorID=7690, source={type="vendor", itemID=250693, costs={{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42674}}, colors={"Dark Brown","Green","Olive"}, budgetCost=3, size="Large"},
+      {decorID=8810, source={type="vendor", itemID=251778, costs={{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=61218}}, colors={"Cyan","Tan","Teal"}, budgetCost=5, size="Large"},
+      {decorID=8811, source={type="vendor", itemID=251779, costs={{currency="18000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42689}}, colors={"Forest Green","Green"}, budgetCost=5, size="Large"},
+      {decorID=9165, source={type="vendor", itemID=252753, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42655}}, colors={"Dark Brown","Olive"}, budgetCost=1, size="Small"},
+      {decorID=11278, source={type="vendor", itemID=256677, costs={{currency="3000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42628}}, colors={"Dark Brown","Forest Green","Olive"}, budgetCost=1, size="Tiny"},
+      {decorID=11279, source={type="vendor", itemID=256678, costs={{currency="1500", currencytype=1220},{currency="50", currencytype=1508}}}, colors={"Dark Brown","Forest Green","Olive"}, budgetCost=1, size="Tiny"},
+      {decorID=11942, source={type="vendor", itemID=258299, costs={{currency="12000", currencytype=1220},{currency="50", currencytype=1508}}}, requirements={achievement={id=42547}}, colors={"Black","Teal"}, budgetCost=5, size="Huge"},
     }
   },
 
@@ -438,7 +425,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:4920:7700"
     },
     items={
-      {decorID=752, source={type="vendor", itemID=245448, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={achievement={id=11124}}, colors={"Dark Purple","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
+      {decorID=752, source={type="vendor", itemID=245448, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={achievement={id=11124}, rep="true"}, colors={"Dark Purple","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -489,11 +476,11 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="641:5540:7280"
     },
     items={
-      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220},{currency="8000000", currencytype="money"}}}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=3, size="Medium"},
-      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=5, size="Large"},
-      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="7000000", currencytype="money"},{currency="1000", currencytype=1220},{currency="5000000", currencytype="money"}}}, colors={"Dark Brown","Gray","Purple"}, budgetCost=1, size="Small"},
-      {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, colors={"Dark Brown","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
-      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
+      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220},{currency="8000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=3, size="Medium"},
+      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=5, size="Large"},
+      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="7000000", currencytype="money"},{currency="1000", currencytype=1220},{currency="5000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Gray","Purple"}, budgetCost=1, size="Small"},
+      {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, requirements={rep="true"}, colors={"Dark Brown","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
+      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -519,7 +506,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:4558:6915"
     },
     items={
-      {decorID=11483, source={type="vendor", itemID=257393, currency="50", currencytype=1155}, colors={"Dark Gray","Gray"}, budgetCost=1, size="Large"},
+      {decorID=11483, source={type="vendor", itemID=257393}, colors={"Dark Gray","Gray"}, budgetCost=1, size="Large"},
       {decorID=11708, source={type="vendor", itemID=257598, currency="125", currencytype=1155}, colors={"Dark Gray","Gray"}, budgetCost=1, size="Large"},
     }
   },

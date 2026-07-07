@@ -48,15 +48,15 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
 
   {
     source={
-      id=50307,
+      id=50304,
       type="vendor",
-      faction="Alliance",
-      zone="Darnassus",
-      worldmap="89:5630:1350"
+      faction="Neutral",
+      zone="Undercity, Orgrimmar",
+      worldmap="85:5660:9020"
     },
     items={
-      {decorID=1794, source={type="vendor", itemID=245603, currency="3500000", currencytype="money"}, colors={"Black"}, budgetCost=3, size="Large"},
-      {decorID=1796, source={type="vendor", itemID=245605, currency="3000000", currencytype="money"}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
+      {decorID=923, source={type="vendor", itemID=245504, currency="1275000", currencytype="money"}, requirements={quest={id=27098}}, colors={"Black","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=924, source={type="vendor", itemID=245505, currency="850000", currencytype="money"}, requirements={quest={id=27098}}, colors={"Black","Dark Gray"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -64,9 +64,23 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
     source={
       id=50307,
       type="vendor",
-      faction="Neutral",
+      faction="Alliance",
       zone="Darnassus",
-      worldmap="89:3720:4800"
+      worldmap="89:5630:1350"
+    },
+    items={
+      {decorID=1794, source={type="vendor", itemID=245603, currency="3500000", currencytype="money"}, requirements={rep="true"}, colors={"Black"}, budgetCost=3, size="Large"},
+      {decorID=1796, source={type="vendor", itemID=245605, currency="3000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=50307,
+      type="vendor",
+      faction="Alliance",
+      zone="Darnassus (via Zidormi)",
+      worldmap="89:4860:6380"
     },
     items={
       {decorID=858, source={type="vendor", itemID=245518, currency="1500000", currencytype="money"}, requirements={quest={id=24675}}, colors={"Copper","Dark Brown"}, budgetCost=3, size="Medium"},
@@ -109,9 +123,9 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       worldmap=""
     },
     items={
---       {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"}, -- missing verified worldmap
---       {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"}, -- missing verified worldmap
---       {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"}, -- missing verified worldmap
+      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -124,9 +138,9 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       worldmap=""
     },
     items={
---       {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"}, -- missing verified worldmap
---       {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"}, -- missing verified worldmap
---       {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"}, -- missing verified worldmap
+      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -139,9 +153,9 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       worldmap="369:5000:2900"
     },
     items={
-      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
-      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
-      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
+      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -182,6 +196,23 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       type="vendor",
       faction="Neutral",
       zone="Orgrimmar",
+      worldmap="85:3880:7190"
+    },
+    items={
+      {decorID=3867, source={type="vendor", itemID=247727, currency="5000", currencytype=1792}, requirements={achievement={id=5223}}, colors={"Dark Purple","Light Purple","Silver"}, budgetCost=5, size="Huge"},
+      {decorID=3885, source={type="vendor", itemID=247745, currency="1000", currencytype=1792}, requirements={achievement={id=229}}, colors={"Dark Gray","Deep Red","Tan"}, budgetCost=3, size="Medium"},
+      {decorID=3887, source={type="vendor", itemID=247747, currency="800", currencytype=1792}, requirements={achievement={id=167}}, colors={"Brown","Copper","Deep Red"}, budgetCost=3, size="Medium"},
+      {decorID=3896, source={type="vendor", itemID=247759, currency="600", currencytype=1792}, requirements={achievement={id=1153}}, colors={"Dark Brown","Dark Gray","Deep Red"}, budgetCost=3, size="Large"},
+      {decorID=3897, source={type="vendor", itemID=247760, currency="1200", currencytype=1792}, requirements={achievement={id=222}}, colors={"Dark Brown","Dark Gray","Deep Red"}, budgetCost=3, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=254606,
+      type="vendor",
+      faction="Neutral",
+      zone="Orgrimmar",
       worldmap="85:3880:7193"
     },
     items={
@@ -199,23 +230,6 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       {decorID=3907, source={type="vendor", itemID=247770, costs={{currency="2", itemID=137642}}}, requirements={achievement={id=61686}}, colors={"Royal Blue","Yellow"}, budgetCost=3, size="Medium"},
       {decorID=9244, source={type="vendor", itemID=253170, currency="750", currencytype=1792}, requirements={achievement={id=40210}}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
       {decorID=11296, source={type="vendor", itemID=256896, currency="450", currencytype=1792}, requirements={achievement={id=5245}}, colors={"Copper","Dark Brown"}, budgetCost=5, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=254606,
-      type="vendor",
-      faction="Neutral",
-      zone="Orgrimmar",
-      worldmap="85:3880:7240"
-    },
-    items={
-      {decorID=3867, source={type="vendor", itemID=247727, currency="5000", currencytype=1792}, requirements={achievement={id=5223}}, colors={"Dark Purple","Light Purple","Silver"}, budgetCost=5, size="Huge"},
-      {decorID=3885, source={type="vendor", itemID=247745, currency="1000", currencytype=1792}, requirements={achievement={id=229}}, colors={"Dark Gray","Deep Red","Tan"}, budgetCost=3, size="Medium"},
-      {decorID=3887, source={type="vendor", itemID=247747, currency="800", currencytype=1792}, requirements={achievement={id=167}}, colors={"Brown","Copper","Deep Red"}, budgetCost=3, size="Medium"},
-      {decorID=3896, source={type="vendor", itemID=247759, currency="600", currencytype=1792}, requirements={achievement={id=1153}}, colors={"Dark Brown","Dark Gray","Deep Red"}, budgetCost=3, size="Large"},
-      {decorID=3897, source={type="vendor", itemID=247760, currency="1200", currencytype=1792}, requirements={achievement={id=222}}, colors={"Dark Brown","Dark Gray","Deep Red"}, budgetCost=3, size="Large"},
     }
   },
 
@@ -282,8 +296,10 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       {decorID=15553, source={type="vendor", itemID=264281}, colors={"Bronze","Brown","Dark Gray"}, budgetCost=1, size="Small"},
       {decorID=15554, source={type="vendor", itemID=264282}, colors={"Bronze","Dark Brown","Dark Purple"}, budgetCost=1, size="Small"},
       {decorID=15555, source={type="vendor", itemID=264283}, colors={"Dark Gray","Silver","Tan"}, budgetCost=1, size="Small"},
+      {decorID=15654, source={type="vendor", itemID=264384}, colors={"Gray","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
       {decorID=15668, source={type="vendor", itemID=264396, currency="5000000", currencytype="money"}, dyeable=true, colors={"Gray","Royal Blue","Silver"}, budgetCost=1, size="Small"},
       {decorID=15669, source={type="vendor", itemID=264397}, dyeable=true, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
+      {decorID=16813, source={type="vendor", itemID=265389}, colors={"Royal Blue","Tan","Teal"}, budgetCost=1, size="Tiny"},
     }
   },
 

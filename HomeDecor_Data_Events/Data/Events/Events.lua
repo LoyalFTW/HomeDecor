@@ -15,6 +15,7 @@ NS.Data.Events["Midnight"]["QuelThalas"] = {
     {decorID=15148, source={type="event", zone="Twitch drop (Feb 26 to Mar 24)", itemID=263298, name="Twitch drop (Feb 26 to Mar 24)"}, colors={"Navy Blue","Olive","Royal Blue"}, budgetCost=1, size="Tiny"},
     {decorID=15149, source={type="event", zone="Twitch drop (Feb 26 to Mar 24)", itemID=263299, name="Twitch drop (Feb 26 to Mar 24)"}, colors={"Crimson","Dark Gray","Deep Red"}, budgetCost=1, size="Tiny"},
     {decorID=15151, source={type="event", zone="Twitch drop (Jan 20 - Feb 17)", itemID=263301, name="Twitch drop (Jan 20 - Feb 17)"}, colors={"Brown","Dark Brown","Green"}, budgetCost=1, size="Tiny"},
+    {decorID=16813, source={type="event", zone="Twitch drop (June 16 to July 14)", itemID=265389, name="Twitch drop (June 16 to July 14)"}, colors={"Royal Blue","Tan","Teal"}, budgetCost=1, size="Tiny"},
     {decorID=15668, source={type="event", zone="Zillow & Warcraft collab", itemID=264396, name="Zillow & Warcraft collab"}, dyeable=true, colors={"Gray","Royal Blue","Silver"}, budgetCost=1, size="Small"},
     {decorID=15669, source={type="event", zone="Zillow & Warcraft collab", itemID=264397, name="Zillow & Warcraft collab"}, dyeable=true, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
 }

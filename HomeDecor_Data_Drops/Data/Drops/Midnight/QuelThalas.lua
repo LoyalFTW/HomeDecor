@@ -62,7 +62,7 @@ NS.Data.Drops["Midnight"]["QuelThalas"] = {
     {decorID=24889, source={type="drop", zone="Delves", itemID=275855, name="Delves"}, budgetCost=3, size="Medium"},
     {decorID=22147, source={type="drop", zone="Ral'kala", itemID=278374, name="Ral'kala"}, budgetCost=3, size="Medium"},
     {decorID=24890, source={type="drop", zone="Ral'kala", itemID=278378, name="Ral'kala"}, budgetCost=3, size="Medium"},
-    {decorID=21956, source={type="drop", zone="The Bargained Crown", itemID=272365, name="The Bargained Crown"}, budgetCost=1, size="Huge"},
+    -- {decorID=21956, source={type="drop", zone="The Bargained Crown", itemID=272365, name="The Bargained Crown"}, budgetCost=1, size="Huge"}, -- HIDDENCATALOG
     {decorID=25293, source={type="drop", zone="Zul'jan's Strongbox", itemID=279211, name="Zul'jan's Strongbox"}, budgetCost=5, size="Huge"},
     {decorID=25293, source={type="encounter", zone="Altar of Fangs - Zul'jan", itemID=279211, name="Altar of Fangs - Zul'jan"}, budgetCost=5, size="Huge"},
     {decorID=26205, source={type="encounter", zone="The Venomous Abyss - Nek'zali the Soulcoiler", itemID=279115, name="The Venomous Abyss - Nek'zali the Soulcoiler"}, budgetCost=1, size="Small"},
@@ -74,5 +74,5 @@ NS.Data.Drops["Midnight"]["QuelThalas"] = {
     {decorID=27043, source={type="encounter", zone="The Venomous Abyss - Ula'tek", itemID=279500, name="The Venomous Abyss - Ula'tek"}, budgetCost=5, size="Huge"},
     {decorID=21952, source={type="encounter", zone="The Venomous Abyss - Vashnik the Malignant", itemID=272361, name="The Venomous Abyss - Vashnik the Malignant"}, budgetCost=5, size="Large"},
     {decorID=16813, source={type="drop", zone="Drop", itemID=265389, name="Drop"}, colors={"Royal Blue","Tan","Teal"}, budgetCost=1, size="Tiny"},
-    {decorID=2606, source={type="encounter", zone="Encounter", itemID=247235, name="Encounter"}, colors={"Beige","Copper","Deep Red"}, size="Medium"},
+    {decorID=2606, source={type="encounter", zone="Encounter", itemID=247235, name="Encounter"}, colors={"Beige","Copper","Deep Red"}, budgetCost=1, size="Medium"},
 }

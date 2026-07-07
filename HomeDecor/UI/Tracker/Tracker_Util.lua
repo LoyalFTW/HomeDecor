@@ -12,6 +12,10 @@ local RepAlts = NS.Systems and NS.Systems.ReputationAlts
 
 local DecorIconCache = {}
 local DecorNameCache = {}
+local INVALID_DECOR_ICON_IDS = {
+  [0] = true,
+  [134400] = true,
+}
 local QuestTitleCache = {}
 local AchTitleCache = {}
 local QUEST_TITLE_PENDING = {}
@@ -88,6 +92,19 @@ local function GetCatalogInfo(decorID)
   return C_HousingCatalog.GetCatalogEntryInfoByRecordID(1, decorID, true)
 end
 
+local function IsValidDecorIcon(icon)
+  local iconNum = tonumber(icon)
+  if not iconNum or INVALID_DECOR_ICON_IDS[iconNum] then return nil end
+
+  local TextureAPI = _G.C_Texture
+  if TextureAPI and TextureAPI.GetFilenameFromFileDataID then
+    local ok, filename = pcall(TextureAPI.GetFilenameFromFileDataID, iconNum)
+    if ok and (filename == nil or filename == "") then return nil end
+  end
+
+  return iconNum
+end
+
 function U.GetDecorIcon(decorID)
   local Data = GetViewerHooks()
   if Data and Data.GetDecorIcon then
@@ -102,9 +119,9 @@ function U.GetDecorIcon(decorID)
   end
 
   local info = GetCatalogInfo(decorID)
-  local icon = info and info.iconTexture
-  local iconNum = tonumber(icon)
-  if iconNum and iconNum ~= 0 then
+  local icon = info and (info.iconTexture or info.iconFileID or info.icon)
+  local iconNum = IsValidDecorIcon(icon)
+  if iconNum then
     DecorIconCache[decorID] = iconNum
     return iconNum
   end

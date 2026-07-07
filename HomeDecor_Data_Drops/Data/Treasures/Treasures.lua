@@ -11,6 +11,8 @@ NS.Data.Treasures["Legion"]["BrokenIsles"] = {
 NS.Data.Treasures["Midnight"] = NS.Data.Treasures["Midnight"] or {}
 NS.Data.Treasures["Midnight"]["QuelThalas"] = {
     {decorID=15746, source={type="treasure", zone="Malignant Chest", itemID=264482, name="Malignant Chest"}, colors={"Dark Gray","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
+    {decorID=25546, source={type="treasure", zone="Pepe (Alliance) (Visible if you own a Trans-Dimensional Bird Whistle)", itemID=276230, name="Pepe (Alliance) (Visible if you own a Trans-Dimensional Bird Whistle)"}, budgetCost=1, size="Small"},
+    {decorID=25546, source={type="treasure", zone="Pepe (Horde) (Visible if you own a Trans-Dimensional Bird Whistle)", itemID=276230, name="Pepe (Horde) (Visible if you own a Trans-Dimensional Bird Whistle)"}, budgetCost=1, size="Small"},
     {decorID=14597, source={type="treasure", zone="Stellar Stash", itemID=262467, name="Stellar Stash"}, colors={"Gray","Light Purple","Navy Blue"}, budgetCost=3, size="Medium"},
     {decorID=8875, source={type="treasure", zone="Stone Vat", itemID=251912, name="Stone Vat"}, colors={"Beige","Olive","Purple"}, budgetCost=1, size="Small"},
 }

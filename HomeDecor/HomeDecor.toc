@@ -73,7 +73,6 @@ Systems\Reputation.lua
 Systems\ReputationAlts.lua
 Systems\QuestsAlts.lua
 Systems\Quests.lua
-Systems\Events.lua
 Systems\PriceSource.lua
 Systems\AuctionScan.lua
 Systems\ProfessionScanner.lua

@@ -47,10 +47,6 @@ local bundles = {
     addon = "HomeDecor_Data_Professions",
     mergeKeys = { "Professions", "Prof_Reagents" },
   },
-  Events = {
-    addon = "HomeDecor_Data_Events",
-    mergeKeys = { "Events" },
-  },
   Trainers = {
     addon = "HomeDecor_Data_Trainers",
     mergeKeys = { "Trainers" },
@@ -169,10 +165,6 @@ function Loader:EnsureProfessions()
   return self:EnsureBundle("Professions")
 end
 
-function Loader:EnsureEvents()
-  return self:EnsureBundle("Events")
-end
-
 function Loader:EnsureTrainers()
   return self:EnsureBundle("Trainers")
 end
@@ -184,7 +176,6 @@ function Loader:EnsureAllCatalogData()
   self:EnsureShops()
   self:EnsureTreasures()
   self:EnsureProfessions()
-  self:EnsureEvents()
   self:EnsureTrainers()
 end
 
@@ -206,9 +197,6 @@ function Loader:EnsureForCategory(category)
   end
   if category == "Professions" then
     return self:EnsureProfessions()
-  end
-  if category == "Events" then
-    return self:EnsureEvents()
   end
   if category == "Search" or category == "Saved Items" then
     return self:EnsureAllCatalogData()

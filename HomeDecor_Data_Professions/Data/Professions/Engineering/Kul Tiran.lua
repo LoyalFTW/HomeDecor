@@ -11,4 +11,5 @@ NS.Data.Professions["Engineering"]["Kul Tiran"] = {
   {decorID=2436, decorType="Large Structures", source={type="profession", skillID=1260349, itemID=246604}, colors={"Dark Brown","Royal Blue","Tan"}, budgetCost=5, size="Large"},
   {decorID=26372, decorType="Ceiling Lights", source={type="profession", skillID=1306570, itemID=279341}, budgetCost=3, size="Medium"},
   {decorID=26485, decorType="Ornamental", source={type="profession", skillID=1306568, itemID=279339}, budgetCost=1, size="Tiny"},
+  {decorID=26372, decorType="Ceiling Lights", source={type="profession", skillID=1296503, itemID=279341}, budgetCost=3, size="Medium"},
 }

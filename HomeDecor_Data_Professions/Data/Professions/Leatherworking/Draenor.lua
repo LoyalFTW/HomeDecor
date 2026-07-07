@@ -9,4 +9,5 @@ NS.Data.Professions["Leatherworking"]["Draenor"] = {
   {decorID=1321, decorType="Beds", source={type="profession", skillID=1261081, itemID=245432}, colors={"Copper","Dark Brown"}, budgetCost=5, size="Large"},
   {decorID=1415, decorType="Beds", source={type="profession", skillID=1261122, itemID=244323}, colors={"Dark Brown"}, budgetCost=3, size="Medium"},
   {decorID=26363, decorType="Ornamental", source={type="profession", skillID=1306589, itemID=279348}, budgetCost=5, size="Huge"},
+  {decorID=26363, decorType="Ornamental", source={type="profession", skillID=1296511, itemID=279348}, budgetCost=5, size="Huge"},
 }

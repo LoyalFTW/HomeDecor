@@ -17,6 +17,8 @@ NS.Data.Professions["Enchanting"]["Midnight"] = {
      {decorID=19229, decorType="Ornamental", source={type="profession", skillID=1281342, itemID=268038}, colors={"Blue","Dark Brown","Gold"}, budgetCost=3, size="Small"},
      {decorID=19231, decorType="Ornamental", source={type="profession", skillID=1281348, itemID=268039}, colors={"Black","Cyan","Olive"}, budgetCost=3, size="Small"},
      {decorID=19234, decorType="Ornamental", source={type="profession", skillID=1281349, itemID=268041}, colors={"Blue","Dark Brown","Tan"}, budgetCost=3, size="Small"},
-  {decorID=26379, decorType="Wall Hangings", source={type="profession", skillID=1306561, itemID=279332}, budgetCost=5, size="Large"},
+  -- {decorID=26379, decorType="Wall Hangings", source={type="profession", skillID=1306561, itemID=279332}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
   {decorID=26496, decorType="Ornamental", source={type="profession", skillID=1306564, itemID=279335}, budgetCost=5, size="Large"},
+--   {decorID=26379, decorType="Wall Hangings", source={type="profession", skillID=1296498, itemID=279332}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
+  {decorID=26496, decorType="Ornamental", source={type="profession", skillID=1296500, itemID=279335}, budgetCost=5, size="Large"},
 }

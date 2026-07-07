@@ -13,4 +13,5 @@ NS.Data.Professions["Leatherworking"]["Midnight"] = {
      {decorID=14625, decorType="Floor", source={type="profession", skillID=1246941, itemID=262600}, colors={"Dark Brown","Red"}, budgetCost=5, size="Large"},
      {decorID=15479, decorType="Ornamental", source={type="profession", skillID=1246943, itemID=264244}, colors={"Crimson","Deep Red"}, budgetCost=1, size="Small"},
      {decorID=17515, decorType="Beds", source={type="profession", skillID=1246939, itemID=265791}, colors={"Dark Brown","Deep Red","Red"}, budgetCost=5, size="Large"},
+  {decorID=17800, decorType="Misc Accents", source={type="profession", skillID=1296509, itemID=266170}, budgetCost=5, size="Huge"},
 }

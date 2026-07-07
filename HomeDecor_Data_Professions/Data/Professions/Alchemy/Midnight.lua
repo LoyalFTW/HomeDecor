@@ -13,4 +13,5 @@ NS.Data.Professions["Alchemy"]["Midnight"] = {
   {decorID=14558, decorType="Misc Lighting", source={type="profession", skillID=1233132, itemID=262355}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
   {decorID=14559, decorType="Ornamental", source={type="profession", skillID=1233137, itemID=262356}, colors={"Dark Gray","Light Purple","Purple"}, budgetCost=1, size="Small"},
   {decorID=26391, decorType="Ornamental", source={type="profession", skillID=1306557, itemID=279327}, budgetCost=5, size="Large"},
+  {decorID=26391, decorType="Ornamental", source={type="profession", skillID=1306557, itemID=279359}, budgetCost=5, size="Large"},
 }

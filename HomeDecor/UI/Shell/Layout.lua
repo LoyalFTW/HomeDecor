@@ -40,6 +40,7 @@ local function getDB()
   if not ui.catalogMode then ui.catalogMode = "All Items" end
   if ui.detailsPanelOpen == nil then ui.detailsPanelOpen = true end
   if not ui.activeCategory then ui.activeCategory = "All" end
+  if ui.activeCategory == "Events" then ui.activeCategory = "All" end
   if not ui.expanded then ui.expanded = {} end
   if ui.search == nil then ui.search = "" end
   if not ui.sortMode then ui.sortMode = "expAsc" end
@@ -58,6 +59,9 @@ local function getDB()
   profile.filters = profile.filters or {}
   if FiltersSys and FiltersSys.EnsureDefaults then
     FiltersSys:EnsureDefaults(profile)
+  end
+  if profile.filters and profile.filters.sourceType == "event" then
+    profile.filters.sourceType = "ALL"
   end
 
   profile.favorites = profile.favorites or {}
@@ -830,7 +834,6 @@ function L:CreateShell()
     "PvP",
     "Architect",
     "Decor Pricing",
-    "Events",
     "Decor Tracker",
     "Gather Tracker",
     "Alts Professions",
@@ -847,7 +850,6 @@ function L:CreateShell()
     Professions = "Interface\\Icons\\Trade_BlackSmithing",
     ["PvP"] = "Interface\\Icons\\INV_BannerPVP_02",
     Architect = "Interface\\Icons\\INV_Inscription_Tradeskill01",
-    Events = "Interface\\Icons\\INV_Misc_PocketWatch_01",
     ["Decor Tracker"] = "Interface\\Icons\\Ability_Hunter_BeastCall",
     ["Gather Tracker"] = "Interface\\Icons\\INV_Misc_Map_01",
     ["Decor Pricing"] = "Interface\\Icons\\INV_Misc_Coin_01",
@@ -908,7 +910,6 @@ function L:CreateShell()
     Professions = "Decor crafted or gathered through professions.",
     ["PvP"] = "Decor tied to PvP sources.",
     Architect = "Plan rooms, decor budgets, and reusable furnishing ideas.",
-    Events = "Open active and seasonal event decor.",
     ["Decor Tracker"] = "Open your decor tracker.",
     ["Gather Tracker"] = "Open your gather tracker.",
     ["Decor Pricing"] = "Open the pricing window.",
@@ -1314,41 +1315,6 @@ function L:CreateShell()
     return b
   end
 
-  local eventsBtn = MakeTopButton(bar, 96, 24)
-  eventsBtn.icon:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
-  eventsBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-  eventsBtn.icon:SetDesaturated(true)
-  eventsBtn.icon:SetVertexColor(1, 1, 1, 0.9)
-  eventsBtn.text:SetText(Loc["EVENTS"])
-  TextColor(eventsBtn.text, "textMuted")
-
-  local glow = eventsBtn:CreateTexture(nil, "ARTWORK")
-  eventsBtn.glow = glow
-  glow:SetTexture("Interface\\AddOns\\HomeDecor\\Media\\UI\\event_badge_small.tga")
-  glow:SetPoint("CENTER", eventsBtn, "CENTER", 0, 0)
-  glow:SetSize(110, 34)
-  glow:SetBlendMode("ADD")
-  glow:SetAlpha(0)
-
-  local glowAnim = eventsBtn:CreateAnimationGroup()
-  eventsBtn.glowAnim = glowAnim
-  do
-    local a1 = glowAnim:CreateAnimation("Alpha")
-    a1:SetFromAlpha(0.10)
-    a1:SetToAlpha(0.70)
-    a1:SetDuration(0.55)
-    a1:SetSmoothing("IN_OUT")
-    a1:SetOrder(1)
-
-    local a2 = glowAnim:CreateAnimation("Alpha")
-    a2:SetFromAlpha(0.70)
-    a2:SetToAlpha(0.10)
-    a2:SetDuration(0.65)
-    a2:SetSmoothing("IN_OUT")
-    a2:SetOrder(2)
-  end
-  glowAnim:SetLooping("REPEAT")
-
   compactBtn:SetParent(header)
   compactBtn:SetSize(72, 20)
   compactBtn:ClearAllPoints()
@@ -1390,7 +1356,6 @@ function L:CreateShell()
   trackersBtn:Hide()
   trackersMenu:Hide()
   header.controls:Hide()
-  eventsBtn:Hide()
   decorTrackerBtn:Hide()
   gatherTrackerBtn:Hide()
 
@@ -1399,14 +1364,11 @@ function L:CreateShell()
   local endeavorsTopBtn
 
   local function LayoutModeBar()
-    local centerClusterWidth = 96 + 6 + 120 + 6 + 130 + 6 + 110
-
-    eventsBtn:ClearAllPoints()
-    eventsBtn:SetPoint("LEFT", bar, "CENTER", -math.floor(centerClusterWidth / 2), 0)
+    local centerClusterWidth = 120 + 6 + 130 + 6 + 110
 
     if decorPricingBtn then
       decorPricingBtn:ClearAllPoints()
-      decorPricingBtn:SetPoint("LEFT", eventsBtn, "RIGHT", 6, 0)
+      decorPricingBtn:SetPoint("LEFT", bar, "CENTER", -math.floor(centerClusterWidth / 2), 0)
     end
 
     if altProfsTopBtn and decorPricingBtn then
@@ -1426,32 +1388,11 @@ function L:CreateShell()
     decorTrackerBtn:SetPoint("RIGHT", gatherTrackerBtn, "LEFT", -6, 0)
   end
 
-  local EventsSys = NS.Systems and NS.Systems.Events or nil
-  local function getEventState()
-    local Ev = EventsSys or (NS.Systems and NS.Systems.Events)
-    EventsSys = Ev
-    if not Ev then return false, "" end
-
-    if Ev.GetStatus then
-      return Ev:GetStatus()
-    elseif Ev.GetActive then
-      local list = Ev:GetActive()
-      local hasActive = (type(list) == "table" and #list > 0)
-      return hasActive, (hasActive and "active" or "")
-    elseif Ev.HasActive then
-      local hasActive = Ev:HasActive() and true or false
-      return hasActive, (hasActive and "active" or "")
-    end
-
-    return false, ""
-  end
-
   local UpdateTopTabs
   local SelectCategory
   local setSearchUI
   local UpdateSortVisibility
   local UpdateRightToolbarVisibility
-  local ScheduleEventStateRefresh
   local RefreshQuickFilters
   local modeBtn
   local detailsBtn
@@ -1502,8 +1443,7 @@ function L:CreateShell()
   end
 
   local function IsWindowCategory(categoryName)
-    return categoryName == "Events"
-      or categoryName == "Architect"
+    return categoryName == "Architect"
       or categoryName == "Decor Pricing"
       or categoryName == "Alts Professions"
       or categoryName == "Endeavors"
@@ -1563,68 +1503,10 @@ function L:CreateShell()
       f.view:SetShown(not isEndeavorsSelected and not isArchitectSelected)
     end
 
-    C:SetSelected(eventsBtn, UI.activeCategory == "Events", T.panel, T.row)
-
-    local hasActive, sig = getEventState()
-    if UI.activeCategory == "Events" and sig ~= "" then
-      db.ui.eventsSeenSig = sig
-    end
-
-    local seenSig = db.ui.eventsSeenSig or ""
-    local isNew = (sig ~= "" and sig ~= seenSig)
-
-    if hasActive then
-      eventsBtn.icon:SetDesaturated(false)
-      TextColor(eventsBtn.text, "highlight", 0.95)
-      eventsBtn:SetAlpha(1.0)
-
-      if isNew then
-        glow:SetAlpha(0.10)
-        if not glowAnim:IsPlaying() then glowAnim:Play() end
-      else
-        if glowAnim:IsPlaying() then glowAnim:Stop() end
-        glow:SetAlpha(0.25)
-      end
-    else
-      eventsBtn.icon:SetDesaturated(true)
-      TextColor(eventsBtn.text, "textMuted")
-      eventsBtn:SetAlpha(0.85)
-      if glowAnim:IsPlaying() then glowAnim:Stop() end
-      glow:SetAlpha(0)
-      db.ui.eventsSeenSig = ""
-    end
-  end
-
-  ScheduleEventStateRefresh = function()
-    if f.eventTimer and f.eventTimer.Cancel then
-      f.eventTimer:Cancel()
-    end
-    f.eventTimer = nil
-
-    if not f:IsShown() or not C_Timer or not C_Timer.NewTimer then return end
-
-    local EventsSysLocal = EventsSys or (NS.Systems and NS.Systems.Events)
-    local now = time and time() or 0
-    local delay = 60
-
-    if EventsSysLocal and EventsSysLocal.RecalcStatus then
-      EventsSysLocal:RecalcStatus(now)
-      local cache = EventsSysLocal.cache and EventsSysLocal.cache.status
-      if cache and type(cache.nextCheck) == "number" and cache.nextCheck > now then
-        delay = cache.nextCheck - now + 1
-      end
-    end
-
-    if delay < 1 then delay = 1 end
-
-    f.eventTimer = C_Timer.NewTimer(delay, function()
-      if not f or not f:IsShown() then return end
-      if UpdateTopTabs then UpdateTopTabs() end
-      ScheduleEventStateRefresh()
-    end)
   end
 
   SelectCategory = function(categoryName)
+    if categoryName == "Events" then categoryName = "All" end
 
     UI.activeCategory = categoryName
     db.ui.activeCategory = categoryName
@@ -1726,13 +1608,6 @@ function L:CreateShell()
     end)
   end
 
-  eventsBtn:SetScript("OnClick", function()
-    SelectCategory("Events")
-    local _, sig = getEventState()
-    db.ui.eventsSeenSig = sig or ""
-    if UpdateTopTabs then UpdateTopTabs() end
-  end)
-
   for i = 1, #left.buttons do
     local b = left.buttons[i]
     local isSel = (b._category == UI.activeCategory)
@@ -1812,7 +1687,7 @@ function L:CreateShell()
   RefreshDetailsButton()
 
   decorPricingBtn = MakeTopButton(bar, 120, 24)
-  decorPricingBtn:SetPoint("LEFT", eventsBtn, "RIGHT", 6, 0)
+  decorPricingBtn:SetPoint("LEFT", bar, "CENTER", -183, 0)
   decorPricingBtn.icon:SetTexture("Interface\\Icons\\INV_Misc_Coin_01")
   decorPricingBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   decorPricingBtn.icon:SetVertexColor(1, 1, 1, 0.9)
@@ -1859,7 +1734,6 @@ function L:CreateShell()
   end)
 
   local SORT_CAT_EXCLUDED = {
-    ["Events"] = true,
     ["Architect"] = true,
     ["Decor Pricing"] = true,
     ["Alts Professions"] = true,
@@ -2041,7 +1915,6 @@ function L:CreateShell()
         { value = "achievement", text = "Achievements" },
         { value = "drop", text = "Drops" },
         { value = "profession", text = "Professions" },
-        { value = "event", text = "Events" },
         { value = "pvp", text = "PvP" },
       }
     end,
@@ -2306,7 +2179,6 @@ function L:CreateShell()
     if q == "profession" or q == "professions" then return "Professions" end
     if q == "pvp" then return "PvP" end
     if q == "all" or q == "everything" or q == "all sources" then return "All" end
-    if q == "event" or q == "events" then return "Events" end
     if q == "pricing" or q == "decor pricing" or q == "price" then return "Decor Pricing" end
     if q == "architect" or q == "planner" or q == "blueprint" or q == "layouts" then return "Architect" end
     if q == "alts" or q == "alts professions" or q == "professions alts" then return "Alts Professions" end
@@ -2528,22 +2400,10 @@ function L:CreateShell()
     NS.UI.HeaderController:Reset()
   end
 
-  local function CancelTicker()
-    if f.eventTimer and f.eventTimer.Cancel then
-      f.eventTimer:Cancel()
-    end
-    f.eventTimer = nil
-  end
-
   f:HookScript("OnShow", function()
     if UpdateTopTabs then UpdateTopTabs() end
     if UpdateSortVisibility then UpdateSortVisibility() end
     if UpdateRightToolbarVisibility then UpdateRightToolbarVisibility() end
-    if ScheduleEventStateRefresh then ScheduleEventStateRefresh() end
-  end)
-
-  f:HookScript("OnHide", function()
-    CancelTicker()
   end)
 
   if UpdateTopTabs then UpdateTopTabs() end

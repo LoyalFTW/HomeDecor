@@ -9,7 +9,6 @@ local UIParent         = _G.UIParent
 local UISpecialFrames  = _G.UISpecialFrames
 local GameTooltip      = _G.GameTooltip
 local C_HousingCatalog = _G.C_HousingCatalog
-local Availability = NS.Systems and NS.Systems.CatalogAvailability
 local STANDARD_TEXT_FONT = _G.STANDARD_TEXT_FONT
 
 local floor  = math.floor
@@ -387,7 +386,6 @@ local function ScanNode(node, exp, out, seen)
     if type(node) ~= "table" then return end
 
     if node.decorID then
-        if Availability and Availability.IsDecorAvailable and not Availability:IsDecorAvailable(node.decorID) then return end
         local tag = GetSrcTag(node)
         local key = ItemVariantKey(node) or (tostring(node.decorID) .. ":" .. tag)
         if not seen[key] then
@@ -455,42 +453,36 @@ local function BuildVendorGroupedList()
 
                             local npcID = tonumber(vendorNode.source.id)
                             local vKey  = exp .. ":" .. zone .. ":" .. tostring(npcID or "?")
-                            local hasVisibleItem
+                            out[#out + 1] = {
+                                kind        = "vendorHeader",
+                                npcID       = npcID,
+                                _key        = vKey,
+                                title       = "",
+                                zone        = zone,
+                                faction     = vendorNode.source.faction,
+                                exp         = exp,
+                                _vendorNode = vendorNode,
+                            }
+
                             local seenInVendor = {}
                             for _, leaf in ipairs(vendorNode.items) do
                                 if type(leaf) == "table" and leaf.decorID then
-                                    if Availability and Availability.IsDecorAvailable and not Availability:IsDecorAvailable(leaf.decorID) then
-                                    else
-                                        local dkey = tostring(leaf.decorID)
-                                        if not seenInVendor[dkey] then
-                                            seenInVendor[dkey] = true
-                                            if not hasVisibleItem then
-                                                hasVisibleItem = true
-                                                out[#out + 1] = {
-                                                    kind        = "vendorHeader",
-                                                    npcID       = npcID,
-                                                    _key        = vKey,
-                                                    title       = "",
-                                                    zone        = zone,
-                                                    faction     = vendorNode.source.faction,
-                                                    exp         = exp,
-                                                    _vendorNode = vendorNode,
-                                                }
-                                            end
-                                            local VD = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
-                                            if VD and VD.AttachVendorCtx then
-                                                VD.AttachVendorCtx(leaf, vendorNode)
-                                            end
-                                            out[#out + 1] = {
-                                                kind      = "item",
-                                                decorID   = leaf.decorID,
-                                                exp       = exp,
-                                                srcTag    = "Vendor",
-                                                item      = leaf,
-                                                collected = false,
-                                                name      = "",
-                                            }
+                                    local dkey = tostring(leaf.decorID)
+                                    if not seenInVendor[dkey] then
+                                        seenInVendor[dkey] = true
+                                        local VD = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
+                                        if VD and VD.AttachVendorCtx then
+                                            VD.AttachVendorCtx(leaf, vendorNode)
                                         end
+                                        out[#out + 1] = {
+                                            kind      = "item",
+                                            decorID   = leaf.decorID,
+                                            exp       = exp,
+                                            srcTag    = "Vendor",
+                                            item      = leaf,
+                                            collected = false,
+                                            name      = "",
+                                        }
                                     end
                                 end
                             end

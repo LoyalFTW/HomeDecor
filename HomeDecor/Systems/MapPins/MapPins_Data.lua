@@ -19,6 +19,46 @@ local C_Map = C_Map
 local NPCNames = NS.Systems and NS.Systems.NPCNames
 local U = NS.Systems.MapPinsUtil
 
+local function IsDecorAvailable(item)
+  local Availability = NS.Systems and NS.Systems.CatalogAvailability
+  return not Availability or not Availability.ShouldShowItem or Availability:ShouldShowItem(item)
+end
+
+local function RawVendorHasAvailableItems(vendor)
+  local items = vendor and vendor.items
+  if type(items) ~= "table" then return nil end
+
+  for itemIndex = 1, #items do
+    local item = items[itemIndex]
+    if type(item) == "table" and IsDecorAvailable(item) then
+      return true
+    end
+  end
+
+  return false
+end
+
+local function VendorHasAvailableItems(vendor)
+  if type(vendor) ~= "table" then return false end
+
+  if vendor.isEvent then
+    return false
+  end
+
+  local Util = NS.UI and NS.UI.MapPopupUtil
+  if Util and Util.GetVendorItems then
+    local items = Util.GetVendorItems(vendor.id)
+    if type(items) == "table" then
+      return #items > 0
+    end
+  end
+
+  local raw = RawVendorHasAvailableItems(vendor._vendorNode)
+  if raw ~= nil then return raw end
+
+  return true
+end
+
 local function CleanText(text)
   if type(text) ~= "string" then return nil end
 
@@ -81,8 +121,7 @@ local function AddCompactEntries(targetIndex, entries)
         y = entry.y,
         zone = entry.zone,
         faction = entry.faction,
-        isEvent = entry.isEvent or nil,
-        eventRef = entry.eventRef or nil,
+        _vendorNode = entry,
       }
     end
   end
@@ -101,16 +140,6 @@ local function BuildIndexFromCompactData()
     end
   end
 
-  local compactEvents = NS.Data and NS.Data.MapPinEvents
-  if type(compactEvents) == "table" then
-    for mapID, entries in pairs(compactEvents) do
-      local numericMapID = tonumber(mapID)
-      if numericMapID then
-        AddCompactEntries(D.mapIndex, entries)
-      end
-    end
-  end
-
   return true
 end
 
@@ -123,7 +152,7 @@ local function BuildIndexFromLoadedCatalog()
 
   local seenVendorsByMap = {}
 
-  local function indexVendorList(vendorList, isEvent, eventRef)
+  local function indexVendorList(vendorList)
     if type(vendorList) ~= "table" then return end
     for vendorIndex = 1, #vendorList do
       local vendor = vendorList[vendorIndex]
@@ -143,11 +172,10 @@ local function BuildIndexFromLoadedCatalog()
           seenInMap[vendorID] = true
           local mapVendors = D.mapIndex[mapID]
           if not mapVendors then mapVendors = {}; D.mapIndex[mapID] = mapVendors end
-          mapVendors[#mapVendors + 1] = {
+        mapVendors[#mapVendors + 1] = {
             id = vendorID, mapID = mapID, x = x, y = y,
             zone = zone, faction = faction,
-            isEvent = isEvent or nil,
-            eventRef = eventRef or nil,
+            _vendorNode = vendor,
           }
         end
       end
@@ -157,43 +185,7 @@ local function BuildIndexFromLoadedCatalog()
   for regionKey, regions in pairs(Vendors) do
     if type(regions) == "table" then
       for listKey, vendorList in pairs(regions) do
-        indexVendorList(vendorList, false, nil)
-      end
-    end
-  end
-
-  local Events = NS.Data and NS.Data.Events
-  if type(Events) == "table" then
-    for groupKey, eventGroup in pairs(Events) do
-      if type(eventGroup) == "table" then
-        for _, ev in pairs(eventGroup) do
-          if type(ev) == "table" then
-            local source = ev.source
-            local id = source and source.id
-            local zone = source and source.zone
-            local faction = source and source.faction
-            local mapID, x, y = parseWorldmap(source and source.worldmap)
-            if mapID and id then
-              local seenInMap = seenVendorsByMap[mapID]
-              if not seenInMap then
-                seenInMap = {}
-                seenVendorsByMap[mapID] = seenInMap
-              end
-              local vendorID = tonumber(id)
-              if not seenInMap[vendorID] then
-                seenInMap[vendorID] = true
-                local mapVendors = D.mapIndex[mapID]
-                if not mapVendors then mapVendors = {}; D.mapIndex[mapID] = mapVendors end
-                mapVendors[#mapVendors + 1] = {
-                  id = vendorID, mapID = mapID, x = x, y = y,
-                  zone = zone, faction = faction,
-                  isEvent = true,
-                  eventRef = ev,
-                }
-              end
-            end
-          end
-        end
+        indexVendorList(vendorList)
       end
     end
   end
@@ -255,7 +247,19 @@ function D.GetVendorsForMap(mapID)
   mapID = tonumber(mapID)
   if not mapID then return nil end
   D.EnsureBaseIndex()
-  return D.mapIndex[mapID]
+  local list = D.mapIndex[mapID]
+  if type(list) ~= "table" then return nil end
+
+  local out
+  for vendorIndex = 1, #list do
+    local vendor = list[vendorIndex]
+    if VendorHasAvailableItems(vendor) then
+      out = out or {}
+      out[#out + 1] = vendor
+    end
+  end
+
+  return out
 end
 
 function D.GetZoneCenterOnMap(zoneMapID, parentMapID)
@@ -270,6 +274,12 @@ end
 function D.CountVendorsInZone(zoneMapID)
   local list = D.GetVendorsForMap(zoneMapID)
   return list and #list or 0
+end
+
+function D.Invalidate()
+  wipe(D.mapIndex)
+  wipe(D.zoneToContinent)
+  D.worldIndexBuilt = false
 end
 
 function D.ResolveNamesFor(vendorList)

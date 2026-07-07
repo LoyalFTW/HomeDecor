@@ -51,6 +51,25 @@ local function isVendorRecord(t)
   return (wm and wm ~= "") or (zn and zn ~= "")
 end
 
+local function isItemAvailable(it)
+  local Availability = NS.Systems and NS.Systems.CatalogAvailability
+  return not Availability or not Availability.ShouldShowItem or Availability:ShouldShowItem(it)
+end
+
+local function vendorHasAvailableItems(vendor)
+  local items = vendor and vendor.items
+  if type(items) ~= "table" then return false end
+
+  for i = 1, #items do
+    local it = items[i]
+    if type(it) == "table" and isItemAvailable(it) then
+      return true
+    end
+  end
+
+  return false
+end
+
 local function buildIndex()
   if indexBuilt then return end
   local root = NS.Data and NS.Data.Vendors
@@ -60,6 +79,7 @@ local function buildIndex()
     if type(node) ~= "table" or seen[node] then return end
     seen[node] = true
     if isVendorRecord(node) then
+      if not vendorHasAvailableItems(node) then return end
       local vendorID = node.source and tonumber(node.source.id)
       if vendorID then
         if not seenVendorIDs[vendorID] then seenVendorIDs[vendorID] = true; out[#out+1] = node end
@@ -293,7 +313,7 @@ function MapTracker:CountVendor(vendor)
   if type(items) ~= "table" then return 0, 0 end
   for i = 1, #items do
     local it = items[i]
-    if type(it) == "table" then
+    if type(it) == "table" and isItemAvailable(it) then
       total = total + 1
       if isCollected(it) then collected = collected + 1 end
     end

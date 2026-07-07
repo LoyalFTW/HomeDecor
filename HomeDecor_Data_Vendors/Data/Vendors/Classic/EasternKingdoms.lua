@@ -122,8 +122,8 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap=""
     },
     items={
---       {decorID=1998, source={type="vendor", itemID=246108, currency="20000000", currencytype="money"}, colors={"Beige","Copper","Dark Brown"}, budgetCost=1, size="Tiny"}, -- missing verified worldmap
---       {decorID=2242, source={type="vendor", itemID=246425, currency="4000000", currencytype="money"}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"}, -- missing verified worldmap
+      {decorID=1998, source={type="vendor", itemID=246108, currency="20000000", currencytype="money"}, requirements={rep="true"}, colors={"Beige","Copper","Dark Brown"}, budgetCost=1, size="Tiny"},
+      {decorID=2242, source={type="vendor", itemID=246425, currency="4000000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -136,14 +136,14 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap=""
     },
     items={
---       {decorID=4402, source={type="vendor", itemID=248333, currency="950000", currencytype="money"}, colors={"Dark Brown","Dark Gray","Navy Blue"}, budgetCost=5, size="Large"}, -- missing verified worldmap
---       {decorID=4443, source={type="vendor", itemID=248617, currency="1425000", currencytype="money"}, colors={"Dark Gray","Tan"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
---       {decorID=4445, source={type="vendor", itemID=248619, currency="2375000", currencytype="money"}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"}, -- missing verified worldmap
---       {decorID=4446, source={type="vendor", itemID=248620, currency="1425000", currencytype="money"}, colors={"Dark Brown","Tan"}, budgetCost=3, size="Large"}, -- missing verified worldmap
---       {decorID=4490, source={type="vendor", itemID=248665, currency="2375000", currencytype="money"}, colors={"Dark Gray","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"}, -- missing verified worldmap
---       {decorID=4811, source={type="vendor", itemID=248794, currency="475000", currencytype="money"}, colors={"Black","Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"}, -- missing verified worldmap
---       {decorID=4812, source={type="vendor", itemID=248795, currency="712500", currencytype="money"}, colors={"Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"}, -- missing verified worldmap
---       {decorID=5116, source={type="vendor", itemID=248939, currency="950000", currencytype="money"}, colors={"Bronze","Dark Gray"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
+--       {decorID=4402, source={type="vendor", itemID=248333, currency="950000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Navy Blue"}, budgetCost=5, size="Large"}, -- missing verified worldmap
+--       {decorID=4443, source={type="vendor", itemID=248617, currency="1425000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Gray","Tan"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
+--       {decorID=4445, source={type="vendor", itemID=248619, currency="2375000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"}, -- missing verified worldmap
+--       {decorID=4446, source={type="vendor", itemID=248620, currency="1425000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Tan"}, budgetCost=3, size="Large"}, -- missing verified worldmap
+--       {decorID=4490, source={type="vendor", itemID=248665, currency="2375000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Gray","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"}, -- missing verified worldmap
+--       {decorID=4811, source={type="vendor", itemID=248794, currency="475000", currencytype="money"}, requirements={rep="true"}, colors={"Black","Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"}, -- missing verified worldmap
+--       {decorID=4812, source={type="vendor", itemID=248795, currency="712500", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"}, -- missing verified worldmap
+--       {decorID=5116, source={type="vendor", itemID=248939, currency="950000", currencytype="money"}, requirements={rep="true"}, colors={"Bronze","Dark Gray"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
     }
   },
 
@@ -160,7 +160,7 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=4444, source={type="vendor", itemID=248618, currency="1900000", currencytype="money"}, requirements={quest={id=26270}}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
       {decorID=4447, source={type="vendor", itemID=248621, currency="2850000", currencytype="money"}, requirements={quest={id=26390}}, colors={"Black","Dark Brown"}, budgetCost=3, size="Large"},
       {decorID=4487, source={type="vendor", itemID=248662, currency="4750000", currencytype="money"}, requirements={quest={id=543}}, colors={"Navy Blue","Olive","Royal Blue"}, budgetCost=5, size="Huge"},
-      {decorID=4814, source={type="vendor", itemID=248797, currency="400000", currencytype="money"}, requirements={quest={id=26229}}, colors={"Dark Brown","Red","Yellow"}, budgetCost=1, size="Tiny"},
+      {decorID=4814, source={type="vendor", itemID=248797}, requirements={quest={id=26229}}, colors={"Dark Brown","Red","Yellow"}, budgetCost=1, size="Tiny"},
       {decorID=4815, source={type="vendor", itemID=248798, currency="1900000", currencytype="money"}, requirements={quest={id=54}}, colors={"Dark Brown","Dark Gray","Light Gray"}, budgetCost=1, size="Small"},
       {decorID=4819, source={type="vendor", itemID=248801, currency="950000", currencytype="money"}, requirements={quest={id=26297}}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
       {decorID=5115, source={type="vendor", itemID=248938, currency="1425000", currencytype="money"}, requirements={quest={id=60}}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
@@ -183,20 +183,6 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
 
   {
     source={
-      id=50304,
-      type="vendor",
-      faction="Horde",
-      zone="Undercity",
-      worldmap="90:6320:4900"
-    },
-    items={
-      {decorID=923, source={type="vendor", itemID=245504, currency="1275000", currencytype="money"}, requirements={quest={id=27098}}, colors={"Black","Dark Gray"}, budgetCost=1, size="Small"},
-      {decorID=924, source={type="vendor", itemID=245505, currency="850000", currencytype="money"}, requirements={quest={id=27098}}, colors={"Black","Dark Gray"}, budgetCost=1, size="Small"},
-    }
-  },
-
-  {
-    source={
       id=50309,
       type="vendor",
       faction="Alliance",
@@ -204,11 +190,11 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="87:5600:4700"
     },
     items={
-      {decorID=2243, source={type="vendor", itemID=246426, costs={{currency="5700000", currencytype="money"},{currency="6000000", currencytype="money"}}}, colors={"Dark Brown","Royal Blue"}, budgetCost=3, size="Large"},
-      {decorID=2333, source={type="vendor", itemID=246490, costs={{currency="2375000", currencytype="money"},{currency="2500000", currencytype="money"}}}, colors={"Dark Gray"}, budgetCost=1, size="Medium"},
-      {decorID=2334, source={type="vendor", itemID=246491, costs={{currency="1425000", currencytype="money"},{currency="1500000", currencytype="money"}}}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
-      {decorID=8982, source={type="vendor", itemID=252010, costs={{currency="4275000", currencytype="money"},{currency="4500000", currencytype="money"}}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
-      {decorID=11133, source={type="vendor", itemID=256333, costs={{currency="9500000", currencytype="money"},{currency="10000000", currencytype="money"}}}, colors={"Dark Brown","Dark Purple","Gray"}, budgetCost=5, size="Large"},
+      {decorID=2243, source={type="vendor", itemID=246426, costs={{currency="5700000", currencytype="money"},{currency="6000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Royal Blue"}, budgetCost=3, size="Large"},
+      {decorID=2333, source={type="vendor", itemID=246490, costs={{currency="2375000", currencytype="money"},{currency="2500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray"}, budgetCost=1, size="Medium"},
+      {decorID=2334, source={type="vendor", itemID=246491, costs={{currency="1425000", currencytype="money"},{currency="1500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
+      {decorID=8982, source={type="vendor", itemID=252010, costs={{currency="4275000", currencytype="money"},{currency="4500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=11133, source={type="vendor", itemID=256333, costs={{currency="9500000", currencytype="money"},{currency="10000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Purple","Gray"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -221,9 +207,9 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap=""
     },
     items={
---       {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"}, -- missing verified worldmap
---       {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"}, -- missing verified worldmap
---       {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"}, -- missing verified worldmap
+      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -283,9 +269,9 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="241:4960:8120"
     },
     items={
-      {decorID=714, source={type="vendor", itemID=245284, costs={{currency="3000", currencytype=2815},{currency="50", currencytype=3319}}}, colors={"Dark Brown","Purple","Tan"}, requirements={rep="true"}, budgetCost=1, size="Small"},
-      {decorID=1227, source={type="vendor", itemID=251997, costs={{currency="5000", currencytype=2815},{currency="75", currencytype=3319}}}, colors={"Crimson","Dark Brown","Tan"}, requirements={rep="true"}, budgetCost=3, size="Medium"},
-      {decorID=1236, source={type="vendor", itemID=245330, costs={{currency="3000", currencytype=2815},{currency="50", currencytype=3319}}}, colors={"Bronze","Dark Brown","Gold"}, requirements={rep="true"}, budgetCost=1, size="Small"},
+      {decorID=714, source={type="vendor", itemID=245284, costs={{currency="3000", currencytype=2815},{currency="50", currencytype=3319}}}, colors={"Dark Brown","Purple","Tan"}, budgetCost=1, size="Small"},
+      {decorID=1227, source={type="vendor", itemID=251997, costs={{currency="5000", currencytype=2815},{currency="75", currencytype=3319}}}, colors={"Crimson","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
+      {decorID=1236, source={type="vendor", itemID=245330, costs={{currency="3000", currencytype=2815},{currency="50", currencytype=3319}}}, colors={"Bronze","Dark Brown","Gold"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -298,8 +284,8 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="241:4974:2957"
     },
     items={
-      {decorID=1998, source={type="vendor", itemID=246108, currency="20000000", currencytype="money"}, colors={"Beige","Copper","Dark Brown"}, budgetCost=1, size="Tiny"},
-      {decorID=2242, source={type="vendor", itemID=246425, currency="4000000", currencytype="money"}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
+      {decorID=1998, source={type="vendor", itemID=246108, currency="20000000", currencytype="money"}, requirements={rep="true"}, colors={"Beige","Copper","Dark Brown"}, budgetCost=1, size="Tiny"},
+      {decorID=2242, source={type="vendor", itemID=246425, currency="4000000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
       {decorID=2244, source={type="vendor", itemID=246427, currency="10000000", currencytype="money"}, requirements={quest={id=28244}}, colors={"Dark Gray","Royal Blue"}, budgetCost=5, size="Large"},
       {decorID=2245, source={type="vendor", itemID=246428, currency="15000000", currencytype="money"}, requirements={quest={id=28655}}, colors={"Cyan","Dark Gray","Royal Blue"}, budgetCost=5, size="Large"},
     }
@@ -328,11 +314,11 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap=""
     },
     items={
---       {decorID=2243, source={type="vendor", itemID=246426, costs={{currency="5700000", currencytype="money"},{currency="6000000", currencytype="money"}}}, colors={"Dark Brown","Royal Blue"}, budgetCost=3, size="Large"}, -- missing verified worldmap
---       {decorID=2333, source={type="vendor", itemID=246490, costs={{currency="2375000", currencytype="money"},{currency="2500000", currencytype="money"}}}, colors={"Dark Gray"}, budgetCost=1, size="Medium"}, -- missing verified worldmap
---       {decorID=2334, source={type="vendor", itemID=246491, costs={{currency="1425000", currencytype="money"},{currency="1500000", currencytype="money"}}}, colors={"Dark Gray"}, budgetCost=1, size="Large"}, -- missing verified worldmap
---       {decorID=8982, source={type="vendor", itemID=252010, costs={{currency="4275000", currencytype="money"},{currency="4500000", currencytype="money"}}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
---       {decorID=11133, source={type="vendor", itemID=256333, costs={{currency="9500000", currencytype="money"},{currency="10000000", currencytype="money"}}}, colors={"Dark Brown","Dark Purple","Gray"}, budgetCost=5, size="Large"}, -- missing verified worldmap
+      {decorID=2243, source={type="vendor", itemID=246426, costs={{currency="5700000", currencytype="money"},{currency="6000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Royal Blue"}, budgetCost=3, size="Large"},
+      {decorID=2333, source={type="vendor", itemID=246490, costs={{currency="2375000", currencytype="money"},{currency="2500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray"}, budgetCost=1, size="Medium"},
+      {decorID=2334, source={type="vendor", itemID=246491, costs={{currency="1425000", currencytype="money"},{currency="1500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
+      {decorID=8982, source={type="vendor", itemID=252010, costs={{currency="4275000", currencytype="money"},{currency="4500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=11133, source={type="vendor", itemID=256333, costs={{currency="9500000", currencytype="money"},{currency="10000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Purple","Gray"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -419,44 +405,6 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
     },
     items={
       {decorID=14467, source={type="vendor", itemID=260785, costs={{currency="15000000", currencytype="money"},{currency="13500000", currencytype="money"}}}, requirements={achievement={id=62387}}, colors={"Dark Gray","Forest Green","Tan"}, budgetCost=5, size="Huge"},
-    }
-  },
-
-  {
-    source={
-      id=262726,
-      type="vendor",
-      faction="Neutral",
-      zone="Unknown",
-      worldmap="21:8214:5952"
-    },
-    items={
-      {decorID=26492, source={type="vendor", itemID=278696}, budgetCost=1, size="Small"},
-      {decorID=26494, source={type="vendor", itemID=278701}, budgetCost=1, size="Small"},
-    }
-  },
-
-  {
-    source={
-      id=271165,
-      type="vendor",
-      faction="Neutral",
-      zone="Unknown",
-      worldmap="21:8214:5952"
-    },
-    items={
-      {decorID=23553, source={type="vendor", itemID=280142}, budgetCost=1, size="Small"},
-      {decorID=23554, source={type="vendor", itemID=280144}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23555, source={type="vendor", itemID=280146}, budgetCost=1, size="Small"},
-      {decorID=23556, source={type="vendor", itemID=280148}, budgetCost=3, size="Medium"},
-      {decorID=23557, source={type="vendor", itemID=280150}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23558, source={type="vendor", itemID=280152}, dyeable=true, budgetCost=1, size="Small"},
-      {decorID=23559, source={type="vendor", itemID=280154}, dyeable=true, budgetCost=1, size="Small"},
-      {decorID=23560, source={type="vendor", itemID=280156}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23707, source={type="vendor", itemID=280158}, dyeable=true, budgetCost=1, size="Small"},
-      {decorID=23708, source={type="vendor", itemID=280160}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23709, source={type="vendor", itemID=280162}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23710, source={type="vendor", itemID=280164}, dyeable=true, budgetCost=3, size="Medium"},
     }
   },
 

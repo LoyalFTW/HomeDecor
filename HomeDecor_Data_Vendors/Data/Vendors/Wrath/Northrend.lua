@@ -24,7 +24,7 @@ NS.Data.Vendors["Wrath"]["Northrend"] = {
     source={
       id=27391,
       type="vendor",
-      faction="Neutral",
+      faction="Alliance",
       zone="Grizzly Hills",
       worldmap="116:3240:5980"
     },
@@ -38,7 +38,7 @@ NS.Data.Vendors["Wrath"]["Northrend"] = {
       id=28038,
       type="vendor",
       faction="Neutral",
-      zone="Sholazar Basin",
+      zone="Nesingwary Base Camp",
       worldmap="119:2680:5920"
     },
     items={

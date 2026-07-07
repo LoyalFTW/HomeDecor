@@ -19,7 +19,7 @@ NS.Data.Vendors["Midnight"]["Harandar"] = {
       {decorID=2219, source={type="vendor", itemID=246402, currency="150", currencytype=3316}, colors={"Dark Brown","Dark Gray","Light Brown"}, budgetCost=1, size="Small"},
       {decorID=2225, source={type="vendor", itemID=246408, currency="150", currencytype=3316}, colors={"Dark Brown","Deep Red","Tan"}, budgetCost=1, size="Small"},
       {decorID=2588, source={type="vendor", itemID=246959, currency="150", currencytype=3316}, colors={"Bronze","Dark Brown","Deep Red"}, budgetCost=1, size="Small"},
-      {decorID=2589, source={type="vendor", itemID=246960}, colors={"Brown","Dark Brown"}, budgetCost=1, size="Small"},
+--       {decorID=2589, source={type="vendor", itemID=246960}, colors={"Brown","Dark Brown"}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
       {decorID=5651, source={type="vendor", itemID=249768, currency="250", currencytype=3316}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=3, size="Medium"},
       {decorID=8916, source={type="vendor", itemID=251980, currency="150", currencytype=3316}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
       {decorID=14808, source={type="vendor", itemID=263019}, colors={"Dark Brown","Deep Red","Tan"}, budgetCost=5, size="Huge"},

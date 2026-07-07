@@ -6,6 +6,18 @@ NS.Data.Vendors = NS.Data.Vendors or {}
 NS.Data.Vendors["Pandaria"] = NS.Data.Vendors["Pandaria"] or {}
 
 NS.Data.Vendors["Pandaria"]["Pandaria"] = {
+  {
+    source={
+      id=64001,
+      type="vendor",
+      faction="Neutral",
+      zone="Vale of Eternal Blossoms",
+      worldmap="390:6280:2320"
+    },
+    items={
+      {decorID=15605, source={type="vendor", itemID=264362, currency="5000000", currencytype="money"}, requirements={quest={id=30000}}, colors={"Dark Brown","Gold","Royal Blue"}, budgetCost=3, size="Large"},
+    }
+  },
 
   {
     source={
@@ -16,8 +28,8 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="371:5670:4440"
     },
     items={
-      {decorID=3870, source={type="vendor", itemID=247730, currency="8000000", currencytype="money"}, colors={"Dark Brown","Deep Red","Navy Blue"}, requirements={rep="true"}, budgetCost=5, size="Huge"},
-      {decorID=3872, source={type="vendor", itemID=247732, currency="4000000", currencytype="money"}, colors={"Dark Brown","Deep Red","Red"}, requirements={rep="true"}, budgetCost=5, size="Large"},
+      {decorID=3870, source={type="vendor", itemID=247730, currency="8000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Deep Red","Navy Blue"}, budgetCost=5, size="Huge"},
+      {decorID=3872, source={type="vendor", itemID=247732, currency="4000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Deep Red","Red"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -43,10 +55,10 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="376:5320:5160"
     },
     items={
-      {decorID=1201, source={type="vendor", itemID=245508, currency="8000000", currencytype="money"}, colors={"Dark Brown","Dark Purple","Light Brown"}, requirements={rep="true"}, budgetCost=5, size="Large"},
-      {decorID=3840, source={type="vendor", itemID=247670, currency="8000000", currencytype="money"}, colors={"Dark Brown","Dark Gray","Deep Red"}, requirements={rep="true"}, budgetCost=5, size="Large"},
-      {decorID=3874, source={type="vendor", itemID=247734, currency="6400000", currencytype="money"}, colors={"Copper","Dark Brown","Dark Gray"}, requirements={rep="true"}, budgetCost=5, size="Large"},
-      {decorID=3877, source={type="vendor", itemID=247737, currency="2400000", currencytype="money"}, colors={"Dark Gray","Tan"}, requirements={rep="true"}, budgetCost=1, size="Medium"},
+      {decorID=1201, source={type="vendor", itemID=245508, currency="8000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Purple","Light Brown"}, budgetCost=5, size="Large"},
+      {decorID=3840, source={type="vendor", itemID=247670, currency="8000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Deep Red"}, budgetCost=5, size="Large"},
+      {decorID=3874, source={type="vendor", itemID=247734, currency="6400000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
+      {decorID=3877, source={type="vendor", itemID=247737, currency="2400000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Gray","Tan"}, budgetCost=1, size="Medium"},
     }
   },
 
@@ -59,7 +71,7 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="379:5724:6096"
     },
     items={
-      {decorID=15595, source={type="vendor", itemID=264349, currency="10000000", currencytype="money"}, requirements={quest={id=30612}}, colors={"Copper","Dark Gray","Light Brown"}, budgetCost=5, size="Large"},
+      {decorID=15595, source={type="vendor", itemID=264349}, requirements={quest={id=30612}}, colors={"Copper","Dark Gray","Light Brown"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -99,23 +111,10 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       type="vendor",
       faction="Neutral",
       zone="Shrine of Two Moons, Vale of Eternal Blossoms",
-      worldmap="390:6280:2320"
+      worldmap=""
     },
     items={
       {decorID=3869, source={type="vendor", itemID=247729, currency="2400000", currencytype="money"}, requirements={quest={id=31230}}, colors={"Amber","Copper","Dark Brown"}, budgetCost=3, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=64001,
-      type="vendor",
-      faction="Neutral",
-      zone="Vale of Eternal Blossoms",
-      worldmap="390:6280:2320"
-    },
-    items={
-      {decorID=15605, source={type="vendor", itemID=264362, currency="5000000", currencytype="money"}, requirements={quest={id=30000}}, colors={"Dark Brown","Gold","Royal Blue"}, budgetCost=3, size="Large"},
     }
   },
 
@@ -141,11 +140,11 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="390:8220:2940"
     },
     items={
-      {decorID=1172, source={type="vendor", itemID=245512, currency="2400000", currencytype="money"}, colors={"Dark Brown","Light Brown"}, requirements={rep="true"}, budgetCost=1, size="Small"},
-      {decorID=3832, source={type="vendor", itemID=247662, currency="4000000", currencytype="money"}, colors={"Dark Brown","Dark Gray","Silver"}, requirements={rep="true"}, budgetCost=3, size="Medium"},
-      {decorID=3833, source={type="vendor", itemID=247663, currency="16000000", currencytype="money"}, colors={"Dark Brown","Red","Silver"}, requirements={rep="true"}, budgetCost=5, size="Huge"},
-      {decorID=3993, source={type="vendor", itemID=247855, currency="2400000", currencytype="money"}, colors={"Amber","Dark Brown","Red"}, requirements={rep="true"}, budgetCost=1, size="Small"},
-      {decorID=11873, source={type="vendor", itemID=258147, currency="8000000", currencytype="money"}, colors={"Dark Brown","Deep Red"}, requirements={rep="true"}, budgetCost=5, size="Large"},
+      {decorID=1172, source={type="vendor", itemID=245512, currency="2400000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=3832, source={type="vendor", itemID=247662, currency="4000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Silver"}, budgetCost=3, size="Medium"},
+      {decorID=3833, source={type="vendor", itemID=247663, currency="16000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Red","Silver"}, budgetCost=5, size="Huge"},
+      {decorID=3993, source={type="vendor", itemID=247855, currency="2400000", currencytype="money"}, requirements={rep="true"}, colors={"Amber","Dark Brown","Red"}, budgetCost=1, size="Small"},
+      {decorID=11873, source={type="vendor", itemID=258147, currency="8000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
     }
   },
 

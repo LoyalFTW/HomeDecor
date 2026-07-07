@@ -99,38 +99,6 @@ function MapPins:UpdateWaypointMonitor()
   end)
 end
 
-function MapPins:ScheduleEventRefresh(delay)
-  if self.eventTimer and self.eventTimer.Cancel then
-    self.eventTimer:Cancel()
-  end
-  self.eventTimer = nil
-
-  if not self.enabled or not C_Timer or not C_Timer.NewTimer then return end
-
-  local timerDelay = tonumber(delay) or 60
-  if timerDelay < 1 then timerDelay = 1 end
-
-  self.eventTimer = C_Timer.NewTimer(timerDelay, function()
-    if not MapPins.enabled then return end
-
-    local Ev = NS.Systems and NS.Systems.Events
-    if not Ev or not Ev.RecalcStatus then return end
-
-    local now = time and time() or 0
-    local _, newSig = Ev:RecalcStatus(now)
-    if newSig ~= MapPins.lastEventSig then
-      MapPins.lastEventSig = newSig
-      MapPins:RefreshCurrentZone()
-      MapPins:RefreshWorldMap()
-    end
-
-    local cache = Ev.cache and Ev.cache.status
-    local nextCheck = cache and cache.nextCheck
-    local nextDelay = (type(nextCheck) == "number" and nextCheck > now) and (nextCheck - now + 1) or 60
-    MapPins:ScheduleEventRefresh(nextDelay)
-  end)
-end
-
 local modifierFrame = CreateFrame("Frame")
 modifierFrame:RegisterEvent("MODIFIER_STATE_CHANGED")
 modifierFrame:SetScript("OnEvent", function()
@@ -255,21 +223,6 @@ function MapPins:Enable()
     self.merchantFrame = merchantFrame
   end
 
-  do
-    local Events = NS.Systems and NS.Systems.Events
-    local now = time and time() or 0
-    local nextDelay = 60
-    if Events and Events.RecalcStatus then
-      local _, sig = Events:RecalcStatus(now)
-      self.lastEventSig = sig
-      local cache = Events.cache and Events.cache.status
-      if cache and type(cache.nextCheck) == "number" and cache.nextCheck > now then
-        nextDelay = cache.nextCheck - now + 1
-      end
-    end
-    self:ScheduleEventRefresh(nextDelay)
-  end
-
   self:RefreshCurrentZone()
 end
 
@@ -289,11 +242,6 @@ function MapPins:Disable()
     self.merchantFrame:UnregisterAllEvents()
     self.merchantFrame = nil
   end
-  if self.eventTimer then
-    self.eventTimer:Cancel()
-    self.eventTimer = nil
-  end
-  self.lastEventSig = nil
 end
 
 return MapPins
