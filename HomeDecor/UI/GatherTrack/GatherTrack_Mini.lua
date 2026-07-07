@@ -130,6 +130,20 @@ end
 
 function Gather:ToggleAll()
   self:Ensure()
+  if GTUtil.ShouldHideInInstance() then
+    local db = GTUtil.GetDB()
+    local mini = db and db.gatherMini and db.gatherMini.main
+    if mini and mini.open then
+      mini.open = false
+    else
+      SetKindEnabled("lumber", true, true)
+      SetKindEnabled("ore", true, true)
+      SetKindEnabled("herb", true, true)
+      if mini then mini.open = true end
+    end
+    return
+  end
+
   if Panels and Panels.frame and Panels.frame:IsShown() then
     Panels:Hide()
     return

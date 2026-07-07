@@ -37,6 +37,7 @@ local function ensureProfile()
   if prof.vendor.showOwnedCount == nil then prof.vendor.showOwnedCount = false end
   if prof.vendor.showVendorNPCTooltip == nil then prof.vendor.showVendorNPCTooltip = false end
   prof.lumberTrack = prof.lumberTrack or {}
+  prof.gatherTrack = prof.gatherTrack or {}
   prof.quickBar = prof.quickBar or {}
   if prof.quickBar.enabled == nil then prof.quickBar.enabled = true end
   prof.quickBar.keybinds = prof.quickBar.keybinds or {}
@@ -66,10 +67,58 @@ local function ensureProfile()
   if prof.lumberTrack.accountWide == nil then prof.lumberTrack.accountWide = false end
   if prof.lumberTrack.autoStartFarming == nil then prof.lumberTrack.autoStartFarming = false end
   if prof.lumberTrack.hideInInstance == nil then prof.lumberTrack.hideInInstance = false end
+  local gt = prof.gatherTrack
+  local lt = prof.lumberTrack
+  if gt.hideZero == nil then gt.hideZero = lt.hideZero end
+  if gt.showIcons == nil then gt.showIcons = lt.showIcons end
+  if gt.compactMode == nil then gt.compactMode = lt.compactMode end
+  if gt.trackLumber == nil then gt.trackLumber = lt.trackLumber end
+  if gt.trackOre == nil then gt.trackOre = lt.trackOre end
+  if gt.trackHerbs == nil then gt.trackHerbs = lt.trackHerbs end
+  if gt.alpha == nil then gt.alpha = lt.alpha end
+  if gt.goal == nil then gt.goal = lt.goal end
+  if gt.search == nil then gt.search = lt.search end
+  if gt.autoGoal == nil then gt.autoGoal = lt.autoGoal end
+  if gt.accountWide == nil then gt.accountWide = lt.accountWide end
+  if gt.autoStartFarming == nil then gt.autoStartFarming = lt.autoStartFarming end
+  if gt.hideInInstance == nil then gt.hideInInstance = lt.hideInInstance end
   prof.lumberTrack.gatherMini = prof.lumberTrack.gatherMini or {}
+  prof.gatherTrack.gatherMini = prof.gatherTrack.gatherMini or {}
   prof.ui = prof.ui or {}
   if prof.ui.compactMode == nil then prof.ui.compactMode = false end
   return prof
+end
+
+local function getGatherTrackDB()
+  local prof = ensureProfile()
+  return prof and prof.gatherTrack
+end
+
+local function setGatherTrackOption(key, value)
+  local prof = ensureProfile()
+  if not prof then return end
+  prof.gatherTrack[key] = value
+  prof.lumberTrack[key] = value
+end
+
+local function refreshGatherTrack()
+  local GTUtil = NS.UI and NS.UI.GatherTrackMiniUtil
+  local hiddenInInstance = GTUtil and GTUtil.ShouldHideInInstance and GTUtil.ShouldHideInInstance()
+  local GatherTrack = NS.UI and NS.UI.GatherTrack
+  if GatherTrack and GatherTrack.GetSharedCtx then
+    local ctx = GatherTrack:GetSharedCtx()
+    local Render = NS.UI and NS.UI.GatherTrackRender
+    if ctx and Render and Render.Refresh then
+      Render:Refresh(ctx)
+    end
+  end
+  local Mini = NS.UI and NS.UI.GatherTrackMini
+  if Mini and Mini.RefreshAll then
+    Mini:RefreshAll()
+  end
+  if Mini and Mini.RestoreOpenPanels and not hiddenInInstance then
+    Mini:RestoreOpenPanels()
+  end
 end
 
 local function refreshPins()
@@ -692,14 +741,14 @@ function Options:Ensure()
     local prof = ensureProfile()
     if not prof then return end
     value = math.floor(value * 20 + 0.5) / 20
-    prof.lumberTrack.alpha = value
+    setGatherTrackOption("alpha", value)
     self.valueText:SetText(string.format("%.0f%%", value * 100))
-    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    local LumberList = NS.UI and NS.UI.GatherTrackList
     if LumberList and LumberList.sharedCtx then
       local sharedCtx = LumberList.sharedCtx
       if sharedCtx.frame then sharedCtx.frame._bgAlpha = value end
       sharedCtx.showRowBackgrounds = value >= 0.3
-      local Rows = NS.UI.LumberTrackRows
+      local Rows = NS.UI.GatherTrackRows
       if Rows and Rows.UpdateRowTransparency then
         Rows:UpdateRowTransparency(sharedCtx)
       end
@@ -729,11 +778,11 @@ function Options:Ensure()
     if not prof then self:ClearFocus() return end
     local val = math.max(1, math.min(tonumber(self:GetText()) or 1000, 999999))
     self:SetText(tostring(val))
-    prof.lumberTrack.goal = val
-    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    setGatherTrackOption("goal", val)
+    local LumberList = NS.UI and NS.UI.GatherTrackList
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.goal = val
-      local Render = NS.UI.LumberTrackRender
+      local Render = NS.UI.GatherTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
     self:ClearFocus()
@@ -770,22 +819,23 @@ function Options:Ensure()
   local function syncLumberFromDB()
     local prof = ensureProfile()
     if not prof then return end
-    local lt = prof.lumberTrack
+    local lt = getGatherTrackDB() or prof.lumberTrack
 
-    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    local LumberList = NS.UI and NS.UI.GatherTrackList
     local sharedCtx  = LumberList and LumberList.sharedCtx
     if sharedCtx then
-      lt.showIcons        = sharedCtx.showIcons ~= false
-      lt.hideZero         = sharedCtx.hideZero and true or false
-      lt.compactMode      = sharedCtx.compactMode and true or false
-      lt.autoStartFarming = sharedCtx.autoStartFarming and true or false
-      lt.autoGoal         = sharedCtx.autoGoal and true or false
-      if tonumber(sharedCtx.goal) then lt.goal = sharedCtx.goal end
+      setGatherTrackOption("showIcons", sharedCtx.showIcons ~= false)
+      setGatherTrackOption("hideZero", sharedCtx.hideZero and true or false)
+      setGatherTrackOption("compactMode", sharedCtx.compactMode and true or false)
+      setGatherTrackOption("autoStartFarming", sharedCtx.autoStartFarming and true or false)
+      setGatherTrackOption("autoGoal", sharedCtx.autoGoal and true or false)
+      if tonumber(sharedCtx.goal) then setGatherTrackOption("goal", sharedCtx.goal) end
       if sharedCtx.frame and tonumber(sharedCtx.frame._bgAlpha) then
-        lt.alpha = sharedCtx.frame._bgAlpha
+        setGatherTrackOption("alpha", sharedCtx.frame._bgAlpha)
       end
-      local AccountWide = NS.UI and NS.UI.LumberTrackAccountWide
-      if AccountWide then lt.accountWide = AccountWide:IsEnabled() end
+      local AccountWide = NS.UI and NS.UI.GatherTrackAccountWide
+      if AccountWide then setGatherTrackOption("accountWide", AccountWide:IsEnabled()) end
+      lt = getGatherTrackDB() or prof.lumberTrack
     end
 
     local showIcons = bool(lt.showIcons ~= false)
@@ -804,7 +854,7 @@ function Options:Ensure()
     cbLumberAutoFarm:SetChecked(bool(lt.autoStartFarming))
     cbLumberAutoFarm.value = bool(lt.autoStartFarming)
 
-    local AccountWide = NS.UI and NS.UI.LumberTrackAccountWide
+    local AccountWide = NS.UI and NS.UI.GatherTrackAccountWide
     local awEnabled = AccountWide and AccountWide:IsEnabled() or bool(lt.accountWide)
     cbLumberAccountWide:SetChecked(awEnabled)
     cbLumberAccountWide.value = awEnabled
@@ -845,12 +895,12 @@ function Options:Ensure()
     local prof = ensureProfile()
     if not prof then return end
     local val = self:GetChecked() and true or false
-    prof.lumberTrack.showIcons = val
+    setGatherTrackOption("showIcons", val)
     self.value = val
-    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    local LumberList = NS.UI and NS.UI.GatherTrackList
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.showIcons = val
-      local Render = NS.UI.LumberTrackRender
+      local Render = NS.UI.GatherTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
   end)
@@ -859,12 +909,12 @@ function Options:Ensure()
     local prof = ensureProfile()
     if not prof then return end
     local val = self:GetChecked() and true or false
-    prof.lumberTrack.hideZero = val
+    setGatherTrackOption("hideZero", val)
     self.value = val
-    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    local LumberList = NS.UI and NS.UI.GatherTrackList
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.hideZero = val
-      local Render = NS.UI.LumberTrackRender
+      local Render = NS.UI.GatherTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
   end)
@@ -873,9 +923,9 @@ function Options:Ensure()
     local prof = ensureProfile()
     if not prof then return end
     local val = self:GetChecked() and true or false
-    prof.lumberTrack.compactMode = val
+    setGatherTrackOption("compactMode", val)
     self.value = val
-    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    local LumberList = NS.UI and NS.UI.GatherTrackList
     if LumberList and LumberList.sharedCtx then
       local sharedCtx = LumberList.sharedCtx
       sharedCtx.compactMode = val
@@ -886,7 +936,7 @@ function Options:Ensure()
         end
       end
       if LumberList.compactBtn then
-        local Tx = NS.LT and NS.LT.Utils and NS.LT.Utils.GetTheme and NS.LT.Utils.GetTheme() or {}
+        local Tx = NS.GT and NS.GT.Utils and NS.GT.Utils.GetTheme and NS.GT.Utils.GetTheme() or {}
         if val then
           LumberList.compactBtn:SetBackdropBorderColor(unpack(Tx.accentBright or Tx.accent or {1,0.82,0.2,1}))
           LumberList.compactBtn.icon:SetVertexColor(unpack(Tx.accent or {1,0.82,0.2,1}))
@@ -895,7 +945,7 @@ function Options:Ensure()
           LumberList.compactBtn.icon:SetVertexColor(0.6, 0.6, 0.6, 1)
         end
       end
-      local Render = NS.UI.LumberTrackRender
+      local Render = NS.UI.GatherTrackRender
       if Render and Render.Refresh then Render:Refresh(sharedCtx) end
     end
   end)
@@ -904,7 +954,7 @@ function Options:Ensure()
     local prof = ensureProfile()
     if not prof then return end
     local val = self:GetChecked() and true or false
-    prof.lumberTrack.autoGoal = val
+    setGatherTrackOption("autoGoal", val)
     self.value = val
     if val then
       lumberGoalInput:Disable()
@@ -913,10 +963,10 @@ function Options:Ensure()
       lumberGoalInput:Enable()
       lumberGoalLabel:SetTextColor(1, 1, 1, 1)
     end
-    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    local LumberList = NS.UI and NS.UI.GatherTrackList
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.autoGoal = val
-      local Render = NS.UI.LumberTrackRender
+      local Render = NS.UI.GatherTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
   end)
@@ -925,9 +975,9 @@ function Options:Ensure()
     local prof = ensureProfile()
     if not prof then return end
     local val = self:GetChecked() and true or false
-    prof.lumberTrack.autoStartFarming = val
+    setGatherTrackOption("autoStartFarming", val)
     self.value = val
-    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    local LumberList = NS.UI and NS.UI.GatherTrackList
     if LumberList and LumberList.sharedCtx then
       LumberList.sharedCtx.autoStartFarming = val
     end
@@ -937,73 +987,74 @@ function Options:Ensure()
     local prof = ensureProfile()
     if not prof then return end
     local val = self:GetChecked() and true or false
-    prof.lumberTrack.hideInInstance = val
+    setGatherTrackOption("hideInInstance", val)
     self.value = val
-    local db = NS.LT and NS.LT.Utils and NS.LT.Utils.GetDB and NS.LT.Utils.GetDB()
+    local db = getGatherTrackDB()
     if db then db.hideInInstance = val end
+    refreshGatherTrack()
   end)
 
   cbLumberAccountWide:SetScript("OnClick", function(self)
     local prof = ensureProfile()
     if not prof then return end
     local val = self:GetChecked() and true or false
-    prof.lumberTrack.accountWide = val
+    setGatherTrackOption("accountWide", val)
     self.value = val
-    local AccountWide = NS.UI and NS.UI.LumberTrackAccountWide
+    local AccountWide = NS.UI and NS.UI.GatherTrackAccountWide
     if AccountWide then AccountWide:SetEnabled(val) end
-    local LumberList = NS.UI and NS.UI.LumberTrackLumberList
+    local LumberList = NS.UI and NS.UI.GatherTrackList
     if LumberList and LumberList.sharedCtx then
-      local Render = NS.UI.LumberTrackRender
+      local Render = NS.UI.GatherTrackRender
       if Render and Render.Refresh then Render:Refresh(LumberList.sharedCtx) end
     end
   end)
 
   btnOpenLumberMini:SetScript("OnClick", function()
-    local GT = NS.UI and NS.UI.GatherTrack
-    if GT and GT.Toggle then GT:Toggle("lumber") end
+    local Mini = NS.UI and NS.UI.GatherTrackMini
+    if Mini and Mini.Show then Mini:Show("lumber") end
   end)
 
   btnOpenOreMini:SetScript("OnClick", function()
     local prof = ensureProfile()
-    if prof then prof.lumberTrack.trackOre = true end
-    local GT = NS.UI and NS.UI.GatherTrack
-    if GT and GT.Toggle then GT:Toggle("ore") end
+    if prof then setGatherTrackOption("trackOre", true) end
+    local Mini = NS.UI and NS.UI.GatherTrackMini
+    if Mini and Mini.Show then Mini:Show("ore") end
   end)
 
   btnOpenHerbMini:SetScript("OnClick", function()
     local prof = ensureProfile()
-    if prof then prof.lumberTrack.trackHerbs = true end
-    local GT = NS.UI and NS.UI.GatherTrack
-    if GT and GT.Toggle then GT:Toggle("herb") end
+    if prof then setGatherTrackOption("trackHerbs", true) end
+    local Mini = NS.UI and NS.UI.GatherTrackMini
+    if Mini and Mini.Show then Mini:Show("herb") end
   end)
 
   btnOpenAllMini:SetScript("OnClick", function()
     local prof = ensureProfile()
     if prof then
-      prof.lumberTrack.trackLumber = true
-      prof.lumberTrack.trackOre = true
-      prof.lumberTrack.trackHerbs = true
+      setGatherTrackOption("trackLumber", true)
+      setGatherTrackOption("trackOre", true)
+      setGatherTrackOption("trackHerbs", true)
     end
     local GT = NS.UI and NS.UI.GatherTrack
     if GT and GT.ToggleAll then GT:ToggleAll() end
   end)
 
   btnFarmLumberMini:SetScript("OnClick", function()
-    local FP = NS.UI and NS.UI.GatherTrackFarmingPanels
+    local FP = NS.UI and NS.UI.GatherTrackMiniFarmingPanels
     if FP and FP.Toggle then FP:Toggle("lumber") end
   end)
 
   btnFarmOreMini:SetScript("OnClick", function()
     local prof = ensureProfile()
-    if prof then prof.lumberTrack.trackOre = true end
-    local FP = NS.UI and NS.UI.GatherTrackFarmingPanels
+    if prof then setGatherTrackOption("trackOre", true) end
+    local FP = NS.UI and NS.UI.GatherTrackMiniFarmingPanels
     if FP and FP.Toggle then FP:Toggle("ore") end
   end)
 
   btnFarmHerbMini:SetScript("OnClick", function()
     local prof = ensureProfile()
-    if prof then prof.lumberTrack.trackHerbs = true end
-    local FP = NS.UI and NS.UI.GatherTrackFarmingPanels
+    if prof then setGatherTrackOption("trackHerbs", true) end
+    local FP = NS.UI and NS.UI.GatherTrackMiniFarmingPanels
     if FP and FP.Toggle then FP:Toggle("herb") end
   end)
 

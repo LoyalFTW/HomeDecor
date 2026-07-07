@@ -303,10 +303,10 @@ function Theme:ApplyProfile()
 
   for key, base in pairs(defaults) do
     self.colors[key] = self.colors[key] or {}
-    copyInto(self.colors[key], (presetColors and presetColors[key]) or saved[key] or base)
+    copyInto(self.colors[key], saved[key] or (presetColors and presetColors[key]) or base)
   end
 
-  local accent = (presetColors and presetColors.accent) or saved.accent
+  local accent = saved.accent or (presetColors and presetColors.accent)
   if accent then
     copyInto(self.colors.accentSoft, { accent[1], accent[2], accent[3], 0.28 })
     copyInto(self.colors.accentBright, {

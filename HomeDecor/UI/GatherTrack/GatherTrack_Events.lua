@@ -126,9 +126,10 @@ function Events:Attach(GatherTrack, ctx)
       ResetFarmingSession(ctx)
       ctx._gatherTrackLoginBaselinePending = true
       SetSuppressed(8)
+      local GTUtil = NS.UI and NS.UI.GatherTrackMiniUtil
       local db = Utils.GetDB()
       if db and db.hideInInstance then
-        local inInstance = IsInInstance and IsInInstance()
+        local inInstance = GTUtil and GTUtil.ShouldHideInInstance and GTUtil.ShouldHideInInstance()
         local LumberList = NS.UI.GatherTrackList
         if inInstance then
           if LumberList and LumberList.frame then LumberList.frame:Hide() end

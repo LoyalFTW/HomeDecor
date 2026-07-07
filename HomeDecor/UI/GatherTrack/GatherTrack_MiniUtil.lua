@@ -20,6 +20,22 @@ function Util.GetDB()
   local prof = addon and addon.db and addon.db.profile
   prof = prof or {}
   prof.gatherTrack = prof.gatherTrack or {}
+  local db = prof.gatherTrack
+  local old = prof.lumberTrack
+  if old then
+    if db.hideInInstance == nil then db.hideInInstance = old.hideInInstance end
+    if db.trackLumber == nil then db.trackLumber = old.trackLumber end
+    if db.trackOre == nil then db.trackOre = old.trackOre end
+    if db.trackHerbs == nil then db.trackHerbs = old.trackHerbs end
+    if db.showIcons == nil then db.showIcons = old.showIcons end
+    if db.hideZero == nil then db.hideZero = old.hideZero end
+    if db.compactMode == nil then db.compactMode = old.compactMode end
+    if db.alpha == nil then db.alpha = old.alpha end
+    if db.goal == nil then db.goal = old.goal end
+    if db.autoGoal == nil then db.autoGoal = old.autoGoal end
+    if db.accountWide == nil then db.accountWide = old.accountWide end
+    if db.autoStartFarming == nil then db.autoStartFarming = old.autoStartFarming end
+  end
   prof.gatherTrack.gatherMini = prof.gatherTrack.gatherMini or {}
   return prof.gatherTrack
 end
@@ -53,8 +69,13 @@ function Util.ShouldHideInInstance()
   end
 
   if type(IsInInstance) == "function" then
-    local inInstance = IsInInstance()
-    return inInstance and true or false
+    local inInstance, instanceType = IsInInstance()
+    if not inInstance then return false end
+    return instanceType == "party"
+        or instanceType == "raid"
+        or instanceType == "scenario"
+        or instanceType == "pvp"
+        or instanceType == "arena"
   end
 
   return false

@@ -138,6 +138,27 @@ local defaults = {
       autoStartFarming = false,
     },
 
+    gatherTrack = {
+      hideZero = false,
+      showIcons = true,
+      compactMode = false,
+      hideInInstance = false,
+      alpha = 0.7,
+      goal = 1000,
+      search = "",
+      autoGoal = false,
+      accountWide = false,
+      autoStartFarming = false,
+      trackLumber = true,
+      trackOre = false,
+      trackHerbs = false,
+      gatherMini = {
+        main = {
+          open = false,
+        },
+      },
+    },
+
     minimapVendor = {
       pos = {},
       width = 280,
