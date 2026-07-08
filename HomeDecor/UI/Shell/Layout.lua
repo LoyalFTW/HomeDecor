@@ -40,7 +40,6 @@ local function getDB()
   if not ui.catalogMode then ui.catalogMode = "All Items" end
   if ui.detailsPanelOpen == nil then ui.detailsPanelOpen = true end
   if not ui.activeCategory then ui.activeCategory = "All" end
-  if ui.activeCategory == "Events" then ui.activeCategory = "All" end
   if not ui.expanded then ui.expanded = {} end
   if ui.search == nil then ui.search = "" end
   if not ui.sortMode then ui.sortMode = "expAsc" end
@@ -59,9 +58,6 @@ local function getDB()
   profile.filters = profile.filters or {}
   if FiltersSys and FiltersSys.EnsureDefaults then
     FiltersSys:EnsureDefaults(profile)
-  end
-  if profile.filters and profile.filters.sourceType == "event" then
-    profile.filters.sourceType = "ALL"
   end
 
   profile.favorites = profile.favorites or {}
@@ -266,8 +262,13 @@ local function dockScale(frame, header)
   end
 
   group:ClearAllPoints()
-  group:SetPoint("TOPLEFT", host, "TOPLEFT", 12, -12)
-  group:SetSize(218, 17)
+  group:SetSize(230, 17)
+  local eventCard = header.eventCard
+  if eventCard and eventCard:IsShown() then
+    group:SetPoint("TOPLEFT", eventCard, "BOTTOMLEFT", 0, -6)
+  else
+    group:SetPoint("TOPLEFT", host, "TOPLEFT", 12, -50)
+  end
   group:Show()
 end
 
@@ -387,6 +388,7 @@ function L:CreateShell()
   local Filters = db.filters
 
   local f = CreateFrame("Frame", "HomeDecorFrame", UIParent, "BackdropTemplate")
+  f:Hide()
   Backdrop(f, T.bg, T.border)
 
   if C.ApplyBackground and Textures and Textures.MainBackground then
@@ -411,7 +413,7 @@ function L:CreateShell()
   header:SetBackdropBorderColor(unpack(BORDER))
   header:SetPoint("TOPLEFT", 8, -8)
   header:SetPoint("TOPRIGHT", -8, -8)
-  header:SetHeight(62)
+  header:SetHeight(76)
   header:EnableMouse(false)
   header.__hdPreserveBackdrop = true
   f.Header = header
@@ -450,29 +452,29 @@ function L:CreateShell()
     logo:SetColorTexture(1, 0.82, 0.2, 1)
   end
 
-  logo:SetSize(430, 44)
+  logo:SetSize(390, 40)
   logo:SetPoint("TOP", header, "TOP", 0, -8)
   logo:SetTexCoord(0, 1, 0, 1)
   logo:SetAlpha(1)
 
   local logoUnder = header:CreateTexture(nil, "ARTWORK")
-  logoUnder:SetPoint("TOP", logo, "BOTTOM", 0, 1)
-  logoUnder:SetSize(360, 2)
+  logoUnder:SetPoint("TOP", logo, "BOTTOM", 0, -1)
+  logoUnder:SetSize(340, 2)
   logoUnder:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.34)
 
   local logoUnderSoft = header:CreateTexture(nil, "ARTWORK")
   logoUnderSoft:SetPoint("TOP", logoUnder, "BOTTOM", 0, -2)
-  logoUnderSoft:SetSize(260, 1)
+  logoUnderSoft:SetSize(240, 1)
   logoUnderSoft:SetColorTexture(1, 1, 1, 0.08)
 
   local leftOrnament = header:CreateTexture(nil, "ARTWORK")
   leftOrnament:SetPoint("RIGHT", logo, "LEFT", -20, -2)
-  leftOrnament:SetSize(190, 1)
+  leftOrnament:SetSize(150, 1)
   leftOrnament:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.20)
 
   local rightOrnament = header:CreateTexture(nil, "ARTWORK")
   rightOrnament:SetPoint("LEFT", logo, "RIGHT", 20, -2)
-  rightOrnament:SetSize(190, 1)
+  rightOrnament:SetSize(150, 1)
   rightOrnament:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.20)
 
   local leftCap = header:CreateTexture(nil, "ARTWORK")
@@ -947,7 +949,10 @@ function L:CreateShell()
     end
     local displayName = (cname == "Drops") and "Drops/Encounters" or cname
     local collected, total = 0, 0
-    if GlobalIndex and GlobalIndex.GetCounts then
+    if GlobalIndex and GlobalIndex.GetCountsIfBuilt then
+      local c, t = GlobalIndex:GetCountsIfBuilt(cname)
+      collected, total = c or 0, t or 0
+    elseif GlobalIndex and GlobalIndex._built and GlobalIndex.GetCounts then
       collected, total = GlobalIndex:GetCounts(cname)
     end
     if total > 0 then
@@ -970,8 +975,103 @@ function L:CreateShell()
     end
   end
 
+  local function ScheduleCategoryCountWarmup()
+    local GI = NS.Systems and NS.Systems.GlobalIndex
+    if not (GI and GI.BuildAsync) then return end
+    GI:BuildAsync(function()
+      if not f or not left or not left.buttons then return end
+      RefreshCategoryTexts()
+    end)
+  end
+
   local y = -12
   y = PlaceSideSection(left.sections.quick, y)
+
+  local eventCard = CreateFrame("Button", nil, header, "BackdropTemplate")
+  left.eventCard = eventCard
+  header.eventCard = eventCard
+  Backdrop(eventCard, {0.010, 0.010, 0.010, 0.94}, {0.48, 0.38, 0.16, 0.90})
+  if eventCard.SetBackdropBorderColor then eventCard:SetBackdropBorderColor(0.48, 0.38, 0.16, 0.90) end
+  Hover(eventCard, {0.026, 0.024, 0.020, 0.98}, {0.78, 0.62, 0.24, 1})
+  eventCard:HookScript("OnEnter", function(self)
+    if self.SetBackdropColor then self:SetBackdropColor(0.026, 0.024, 0.020, 0.98) end
+    if self.SetBackdropBorderColor then self:SetBackdropBorderColor(0.78, 0.62, 0.24, 1) end
+  end)
+  eventCard:HookScript("OnLeave", function(self)
+    if self.SetBackdropColor then self:SetBackdropColor(0.010, 0.010, 0.010, 0.94) end
+    if self.SetBackdropBorderColor then self:SetBackdropBorderColor(0.48, 0.38, 0.16, 0.90) end
+  end)
+  eventCard:SetHeight(34)
+  eventCard:Hide()
+
+  eventCard.banner = eventCard:CreateTexture(nil, "BACKGROUND", nil, 0)
+  eventCard.banner:SetTexture("Interface\\AddOns\\HomeDecor\\Media\\UI\\event_badge_small.tga")
+  eventCard.banner:SetPoint("TOPLEFT", eventCard, "TOPLEFT", -2, 2)
+  eventCard.banner:SetPoint("BOTTOMRIGHT", eventCard, "BOTTOMRIGHT", 2, -2)
+  eventCard.banner:SetBlendMode("ADD")
+  eventCard.banner:SetAlpha(0)
+
+  eventCard.iconBG = CreateFrame("Frame", nil, eventCard, "BackdropTemplate")
+  Backdrop(eventCard.iconBG, {0.006, 0.006, 0.006, 1}, {0.62, 0.52, 0.25, 1})
+  if eventCard.iconBG.SetBackdropBorderColor then eventCard.iconBG:SetBackdropBorderColor(0.62, 0.52, 0.25, 1) end
+  eventCard.iconBG:SetSize(30, 30)
+  eventCard.iconBG:SetPoint("LEFT", eventCard, "LEFT", 3, 0)
+
+  eventCard.icon = eventCard.iconBG:CreateTexture(nil, "ARTWORK")
+  eventCard.icon:SetPoint("TOPLEFT", 2, -2)
+  eventCard.icon:SetPoint("BOTTOMRIGHT", -2, 2)
+  eventCard.icon:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
+  eventCard.icon:SetTexCoord(0.10, 0.90, 0.10, 0.90)
+
+  eventCard.kicker = NewFS(eventCard, "GameFontNormalSmall")
+  eventCard.kicker:SetPoint("TOPLEFT", eventCard, "TOPLEFT", 10, -9)
+  eventCard.kicker:SetPoint("RIGHT", eventCard, "RIGHT", -92, 0)
+  eventCard.kicker:SetJustifyH("LEFT")
+  eventCard.kicker:SetWordWrap(false)
+  eventCard.kicker:SetText(Loc["EVENTS"] or "Events")
+  TextColor(eventCard.kicker, "accent", 0.95)
+  eventCard.kicker:Hide()
+
+  eventCard.timerBadge = CreateFrame("Frame", nil, eventCard, "BackdropTemplate")
+  Backdrop(eventCard.timerBadge, T.row, T.border)
+  eventCard.timerBadge:SetPoint("LEFT", eventCard.iconBG, "RIGHT", 7, 0)
+  eventCard.timerBadge:SetPoint("RIGHT", eventCard, "RIGHT", -6, 0)
+  eventCard.timerBadge:SetHeight(26)
+  eventCard.timerBadge:Hide()
+
+  eventCard.title = NewFS(eventCard, "GameFontNormal")
+  eventCard.title:SetPoint("TOPLEFT", eventCard.iconBG, "TOPRIGHT", 7, -2)
+  eventCard.title:SetPoint("RIGHT", eventCard, "RIGHT", -7, 0)
+  eventCard.title:SetJustifyH("LEFT")
+  eventCard.title:SetWordWrap(false)
+  if eventCard.title.SetMaxLines then eventCard.title:SetMaxLines(1) end
+  eventCard.title:SetText("")
+  if eventCard.title.SetTextColor then eventCard.title:SetTextColor(1, 0.84, 0.05, 1) end
+
+  eventCard.timer = NewFS(eventCard, "GameFontNormalSmall")
+  eventCard.timer:SetPoint("TOPLEFT", eventCard.title, "BOTTOMLEFT", 0, 0)
+  eventCard.timer:SetPoint("RIGHT", eventCard, "RIGHT", -7, 0)
+  eventCard.timer:SetJustifyH("LEFT")
+  eventCard.timer:SetWordWrap(false)
+  if eventCard.timer.SetMaxLines then eventCard.timer:SetMaxLines(1) end
+  eventCard.timer:SetText("")
+  if eventCard.timer.SetTextColor then eventCard.timer:SetTextColor(0.94, 0.94, 0.92, 1) end
+
+  eventCard.controls = NewFS(eventCard, "GameFontNormalSmall")
+  eventCard.controls:SetPoint("TOPLEFT", eventCard.title, "BOTTOMLEFT", 0, -7)
+  eventCard.controls:SetPoint("RIGHT", eventCard, "RIGHT", -8, 0)
+  eventCard.controls:SetJustifyH("LEFT")
+  eventCard.controls:SetText("Left open  Right inspect  Alt links")
+  TextColor(eventCard.controls, "textMuted", 0.9)
+  eventCard.controls:Hide()
+
+  local eventPulse = eventCard:CreateTexture(nil, "BACKGROUND")
+  eventCard.pulse = eventPulse
+  eventPulse:SetTexture("Interface\\AddOns\\HomeDecor\\Media\\UI\\event_badge_small.tga")
+  eventPulse:SetPoint("CENTER", eventCard, "CENTER", 0, 0)
+  eventPulse:SetSize(172, 52)
+  eventPulse:SetBlendMode("ADD")
+  eventPulse:SetAlpha(0)
 
   local savedItemsBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
   Backdrop(savedItemsBtn, T.panel, T.border)
@@ -1264,6 +1364,17 @@ function L:CreateShell()
     whatsNewBtn:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  10, b3Off)
     whatsNewBtn:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -10, b3Off)
     whatsNewBtn:SetHeight(bottomBtnH)
+
+    if eventCard then
+      eventCard:ClearAllPoints()
+      if eventCard:GetParent() ~= header then eventCard:SetParent(header) end
+      eventCard:SetPoint("TOPLEFT", header, "TOPLEFT", 12, -10)
+      eventCard:SetSize(184, 34)
+      eventCard:SetFrameLevel(header:GetFrameLevel() + 7)
+      if eventCard.iconBG then eventCard.iconBG:SetSize(30, 30) end
+    end
+
+    dockScale(f, header)
   end
 
   local right = CreateFrame("Frame", nil, f, "BackdropTemplate")
@@ -1388,11 +1499,124 @@ function L:CreateShell()
     decorTrackerBtn:SetPoint("RIGHT", gatherTrackerBtn, "LEFT", -6, 0)
   end
 
+  local EventsSys = NS.Systems and NS.Systems.Events or nil
+  local function getEventState()
+    local Ev = EventsSys or (NS.Systems and NS.Systems.Events)
+    EventsSys = Ev
+    if not Ev then return false, "" end
+
+    if Ev.GetFeaturedEvent then
+      local ev, item, timerText, sig = Ev:GetFeaturedEvent()
+      return ev ~= nil, sig or "", ev, item, timerText
+    elseif Ev.GetStatus then
+      return Ev:GetStatus()
+    elseif Ev.GetActive then
+      local list = Ev:GetActive()
+      local hasActive = (type(list) == "table" and #list > 0)
+      return hasActive, (hasActive and "active" or "")
+    elseif Ev.HasActive then
+      local hasActive = Ev:HasActive() and true or false
+      return hasActive, (hasActive and "active" or "")
+    end
+
+    return false, ""
+  end
+
+  local function GetEventButtonIcon(item)
+    if type(item) ~= "table" then return "Interface\\Icons\\INV_Misc_PocketWatch_01" end
+    local source = item.source
+    if source and source.icon then return source.icon end
+    if item.icon then return item.icon end
+    local itemID = item.itemID or item.vendorItemID or (source and source.itemID)
+    if itemID then
+      if C_Item and C_Item.GetItemIconByID then
+        local icon = C_Item.GetItemIconByID(itemID)
+        if icon then return icon end
+      end
+      if GetItemIcon then
+        local icon = GetItemIcon(itemID)
+        if icon then return icon end
+      end
+      if GetItemInfoInstant then
+        local _, _, _, _, icon = GetItemInfoInstant(itemID)
+        if icon then return icon end
+      end
+    end
+    local D = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
+    if D and D.GetDecorIcon and item.decorID then
+      local icon = D.GetDecorIcon(item.decorID)
+      if icon then return icon end
+    end
+    return "Interface\\Icons\\INV_Misc_PocketWatch_01"
+  end
+
+  local function GetEventButtonTitle(ev, item)
+    if type(item) == "table" then
+      local D = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
+      local title = item.title or (item.decorID and D and D.GetDecorName and D.GetDecorName(item.decorID))
+      if title and title ~= "" then return title end
+      local itemID = item.itemID or item.vendorItemID or (item.source and item.source.itemID)
+      if itemID and GetItemInfo then
+        local name = GetItemInfo(itemID)
+        if name and name ~= "" then return name end
+      end
+      if item.decorID then return "Decor #" .. tostring(item.decorID) end
+    end
+    if type(ev) == "table" then
+      local source = ev.source
+      return ev.title or ev.name or (source and (source.name or source.zone)) or Loc["EVENTS"] or "Events"
+    end
+    return Loc["EVENTS"] or "Events"
+  end
+
+  local function TrimText(value)
+    value = tostring(value or "")
+    value = value:gsub("^%s+", ""):gsub("%s+$", "")
+    return value
+  end
+
+  local function GetEventBadgeTitle(ev)
+    local source = ev and ev.source
+    local title = ev and (ev.title or ev.name or (source and (source.name or source.zone))) or ""
+    title = tostring(title or ""):gsub("%s*%b()%s*", " ")
+    title = TrimText(title)
+    if title:lower() == "twitch drop" then
+      return "Twitch Drop"
+    end
+    return title ~= "" and title or (Loc["EVENTS"] or "Event")
+  end
+
+  local function GetEventBadgeTime(ev, timerText)
+    local now = time and time() or 0
+    local endsAt = ev and (tonumber(ev._endsEpoch) or tonumber(ev.endsAt) or tonumber(ev.endAt))
+    if endsAt and endsAt > 0 then
+      local secondsLeft = endsAt - now
+      if secondsLeft <= 0 then
+        return "Ends Today"
+      end
+      local daysLeft = math.ceil(secondsLeft / 86400)
+      if daysLeft <= 1 then
+        return "1 Day Left"
+      end
+      return tostring(daysLeft) .. " Days Left"
+    end
+
+    timerText = TrimText(timerText):gsub("^Ends in%s+", "")
+    local days = timerText:match("^(%d+)%s*d")
+    if days then
+      local n = tonumber(days) or 0
+      if n <= 1 then return "1 Day Left" end
+      return tostring(n) .. " Days Left"
+    end
+    return timerText ~= "" and timerText or "Active"
+  end
+
   local UpdateTopTabs
   local SelectCategory
   local setSearchUI
   local UpdateSortVisibility
   local UpdateRightToolbarVisibility
+  local ScheduleEventStateRefresh
   local RefreshQuickFilters
   local modeBtn
   local detailsBtn
@@ -1503,10 +1727,76 @@ function L:CreateShell()
       f.view:SetShown(not isEndeavorsSelected and not isArchitectSelected)
     end
 
+    local hasActive, sig, activeEvent, activeItem, timerText = getEventState()
+    if UI.activeCategory == "Events" and sig ~= "" then
+      db.ui.eventsSeenSig = sig
+    end
+
+    local cardWasShown = eventCard and eventCard:IsShown()
+
+    if hasActive then
+      local source = activeEvent and activeEvent.source
+      local eventTitle = activeEvent and (activeEvent.title or activeEvent.name or (source and (source.name or source.zone)))
+      local itemID = activeItem and (activeItem.itemID or activeItem.vendorItemID or (activeItem.source and activeItem.source.itemID))
+      if itemID and C_Item and C_Item.RequestLoadItemDataByID then
+        pcall(C_Item.RequestLoadItemDataByID, itemID)
+      end
+
+      if eventCard then
+        eventCard:Show()
+        eventCard.icon:SetTexture(GetEventButtonIcon(activeItem))
+        eventCard.kicker:SetText(eventTitle or Loc["EVENTS"] or "Events")
+        eventCard.title:SetText(GetEventBadgeTitle(activeEvent))
+        eventCard.timer:SetText(GetEventBadgeTime(activeEvent, timerText))
+        eventCard._activeEvent = activeEvent
+        eventCard._activeItem = activeItem
+        eventCard._timerText = timerText
+      end
+
+    else
+      if eventCard then
+        eventCard:Hide()
+        eventCard._activeEvent = nil
+        eventCard._activeItem = nil
+        eventCard._timerText = nil
+      end
+      db.ui.eventsSeenSig = ""
+    end
+    if eventCard and cardWasShown ~= eventCard:IsShown() and RefreshLeftLayout then
+      RefreshLeftLayout()
+    end
+  end
+
+  ScheduleEventStateRefresh = function()
+    if f.eventTimer and f.eventTimer.Cancel then
+      f.eventTimer:Cancel()
+    end
+    f.eventTimer = nil
+
+    if not f:IsShown() or not C_Timer or not C_Timer.NewTimer then return end
+
+    local EventsSysLocal = EventsSys or (NS.Systems and NS.Systems.Events)
+    local now = time and time() or 0
+    local delay = 60
+
+    if EventsSysLocal and EventsSysLocal.RecalcStatus then
+      EventsSysLocal:RecalcStatus(now)
+      local cache = EventsSysLocal.cache and EventsSysLocal.cache.status
+      if cache and type(cache.nextCheck) == "number" and cache.nextCheck > now then
+        delay = cache.nextCheck - now + 1
+      end
+    end
+
+    if delay < 1 then delay = 1 end
+
+    f.eventTimer = C_Timer.NewTimer(delay, function()
+      if not f or not f:IsShown() then return end
+      if UpdateTopTabs then UpdateTopTabs() end
+      ScheduleEventStateRefresh()
+    end)
   end
 
   SelectCategory = function(categoryName)
-    if categoryName == "Events" then categoryName = "All" end
 
     UI.activeCategory = categoryName
     db.ui.activeCategory = categoryName
@@ -1607,6 +1897,76 @@ function L:CreateShell()
       SelectCategory(b._category)
     end)
   end
+
+  local function GetEventCardItemID(item)
+    if type(item) ~= "table" then return nil end
+    local source = item.source
+    return item.itemID or item.vendorItemID or (source and source.itemID) or item.id
+  end
+
+  local function OpenEventCategory()
+    SelectCategory("Events")
+    local _, sig = getEventState()
+    db.ui.eventsSeenSig = sig or ""
+    if UpdateTopTabs then UpdateTopTabs() end
+  end
+
+  local function InspectEventItem(item)
+    OpenEventCategory()
+    UI.detailsPanelOpen = true
+    if db and db.ui then db.ui.detailsPanelOpen = true end
+    ApplyDetailsPanelForCategory("Events")
+    if f.view and f.view.SetSelectedItem and item then
+      f.view:SetSelectedItem(item, nil)
+      return true
+    end
+    local itemID = GetEventCardItemID(item)
+    if itemID and DressUpItemLink then
+      DressUpItemLink("item:" .. tostring(itemID))
+      return true
+    end
+    return false
+  end
+
+  eventCard:RegisterForClicks("AnyUp")
+  eventCard:SetScript("OnMouseUp", function(self, btn)
+    local item = self._activeItem
+    if IsAltKeyDown and IsAltKeyDown() then
+      local IA = NS.UI and NS.UI.ItemInteractions
+      if IA and IA.ShowWowheadPopup and IA:ShowWowheadPopup(item) then return end
+    end
+    if btn == "RightButton" then
+      InspectEventItem(item)
+      return
+    end
+    OpenEventCategory()
+  end)
+  eventCard:SetScript("OnEnter", function(self)
+    if self.SetBackdropColor then self:SetBackdropColor(0.035, 0.032, 0.026, 0.98) end
+    if self.SetBackdropBorderColor then self:SetBackdropBorderColor(0.82, 0.68, 0.28, 1) end
+    local ev = self._activeEvent
+    local item = self._activeItem
+    local timerText = self._timerText
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetText(GetEventButtonTitle(ev, item), 1, 1, 1)
+    local source = ev and ev.source
+    local eventName = ev and (ev.title or ev.name or (source and (source.name or source.zone)))
+    if eventName and eventName ~= GetEventButtonTitle(ev, item) then
+      GameTooltip:AddLine(eventName, 0.72, 0.72, 0.72, true)
+    end
+    if timerText and timerText ~= "" then
+      GameTooltip:AddLine(timerText, 1, 0.82, 0.2, true)
+    end
+    GameTooltip:AddLine("Left-click: open event items", 0.58, 0.58, 0.58, true)
+    GameTooltip:AddLine("Right-click: inspect item", 0.58, 0.58, 0.58, true)
+    GameTooltip:AddLine("Alt-click: item links", 0.58, 0.58, 0.58, true)
+    GameTooltip:Show()
+  end)
+  eventCard:SetScript("OnLeave", function(self)
+    if self.SetBackdropColor then self:SetBackdropColor(0.018, 0.017, 0.015, 0.98) end
+    if self.SetBackdropBorderColor then self:SetBackdropBorderColor(0.52, 0.43, 0.20, 0.95) end
+    GameTooltip:Hide()
+  end)
 
   for i = 1, #left.buttons do
     local b = left.buttons[i]
@@ -1734,6 +2094,7 @@ function L:CreateShell()
   end)
 
   local SORT_CAT_EXCLUDED = {
+    ["Events"] = true,
     ["Architect"] = true,
     ["Decor Pricing"] = true,
     ["Alts Professions"] = true,
@@ -1915,6 +2276,7 @@ function L:CreateShell()
         { value = "achievement", text = "Achievements" },
         { value = "drop", text = "Drops" },
         { value = "profession", text = "Professions" },
+        { value = "event", text = "Events" },
         { value = "pvp", text = "PvP" },
       }
     end,
@@ -2179,6 +2541,7 @@ function L:CreateShell()
     if q == "profession" or q == "professions" then return "Professions" end
     if q == "pvp" then return "PvP" end
     if q == "all" or q == "everything" or q == "all sources" then return "All" end
+    if q == "event" or q == "events" then return "Events" end
     if q == "pricing" or q == "decor pricing" or q == "price" then return "Decor Pricing" end
     if q == "architect" or q == "planner" or q == "blueprint" or q == "layouts" then return "Architect" end
     if q == "alts" or q == "alts professions" or q == "professions alts" then return "Alts Professions" end
@@ -2400,10 +2763,27 @@ function L:CreateShell()
     NS.UI.HeaderController:Reset()
   end
 
+  local function CancelTicker()
+    if f.eventTimer and f.eventTimer.Cancel then
+      f.eventTimer:Cancel()
+    end
+    f.eventTimer = nil
+  end
+
   f:HookScript("OnShow", function()
     if UpdateTopTabs then UpdateTopTabs() end
     if UpdateSortVisibility then UpdateSortVisibility() end
     if UpdateRightToolbarVisibility then UpdateRightToolbarVisibility() end
+    if ScheduleEventStateRefresh then ScheduleEventStateRefresh() end
+    if ScheduleCategoryCountWarmup and C_Timer and C_Timer.After then
+      C_Timer.After(1.5, function()
+        if f and f:IsShown() then ScheduleCategoryCountWarmup() end
+      end)
+    end
+  end)
+
+  f:HookScript("OnHide", function()
+    CancelTicker()
   end)
 
   if UpdateTopTabs then UpdateTopTabs() end

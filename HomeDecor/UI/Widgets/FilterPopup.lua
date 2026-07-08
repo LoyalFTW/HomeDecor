@@ -863,6 +863,7 @@ function M:Build(popup, env)
                         { value = "achievement", text = "Achievements" },
                         { value = "drop", text = "Drops" },
                         { value = "profession", text = "Professions" },
+                        { value = "event", text = "Events" },
                         { value = "pvp", text = "PvP" },
                     }
                 end,

@@ -1701,9 +1701,19 @@ function CM:_Build()
             SortList(rawList, vendorGrouped)
 
             local GI = NS.Systems and NS.Systems.GlobalIndex
-            if GI and GI.GetCounts then
+            local hasGlobalCounts = false
+            if GI and GI.GetCountsIfBuilt then
+                local c, t = GI:GetCountsIfBuilt(activeCategory)
+                if t then
+                    progCollected, progTotal = c or 0, t or 0
+                    hasGlobalCounts = true
+                end
+            elseif GI and GI._built and GI.GetCounts then
                 progCollected, progTotal = GI:GetCounts(activeCategory)
-            else
+                hasGlobalCounts = true
+            end
+
+            if not hasGlobalCounts then
                 progTotal   = 0
                 progCollected = 0
                 for _, it in ipairs(rawList) do

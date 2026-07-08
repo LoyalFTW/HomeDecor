@@ -32,7 +32,6 @@ local function TryWarmCatalog()
     return
   end
   searcher = s
-  HB.searcher = searcher
 
   if searcher.SetOwnedOnly     then searcher:SetOwnedOnly(false) end
   if searcher.SetCollected     then searcher:SetCollected(true) end
@@ -42,11 +41,6 @@ local function TryWarmCatalog()
   if searcher.SetResultsUpdatedCallback then
     searcher:SetResultsUpdatedCallback(function()
       HB.ready = true
-      HB.searcher = searcher
-      local Availability = NS.Systems and NS.Systems.CatalogAvailability
-      if Availability and Availability.OnCatalogSearchReady then
-        pcall(Availability.OnCatalogSearchReady, Availability, searcher)
-      end
       CancelTimers()
     end)
   end

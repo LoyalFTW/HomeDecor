@@ -78,6 +78,9 @@ local function BuildVendorItemsCache()
   if DataLoader and DataLoader.EnsureVendors then
     DataLoader:EnsureVendors()
   end
+  if DataLoader and DataLoader.EnsureEvents then
+    DataLoader:EnsureEvents()
+  end
 
   local function extractFromList(vendorList)
     if type(vendorList) ~= "table" then return end
@@ -129,6 +132,19 @@ local function BuildVendorItemsCache()
       if type(regions) == "table" then
         for _, vendorList in pairs(regions) do
           extractFromList(vendorList)
+        end
+      end
+    end
+  end
+
+  local Events = NS.Data and NS.Data.Events
+  if type(Events) == "table" then
+    for _, eventGroup in pairs(Events) do
+      if type(eventGroup) == "table" then
+        for _, ev in pairs(eventGroup) do
+          if type(ev) == "table" then
+            extractFromList({ ev })
+          end
         end
       end
     end

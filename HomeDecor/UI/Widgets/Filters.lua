@@ -7,7 +7,6 @@ local L = NS.L
 
 local Collection = NS.Systems and NS.Systems.Collection
 local DataLoader = NS.Systems and NS.Systems.DataLoader
-local Availability = NS.Systems and NS.Systems.CatalogAvailability
 
 local tinsert, tconcat, sort = table.insert, table.concat, table.sort
 local type, tostring, tonumber = type, tostring, tonumber
@@ -1066,12 +1065,13 @@ function Filters:Passes(it, ui, db)
   if not it or not db then return false end
   Ensure(db)
 
-  ui = ui or {}
-  local f = db.filters or {}
-
+  local Availability = NS.Systems and NS.Systems.CatalogAvailability
   if Availability and Availability.ShouldShowItem and not Availability:ShouldShowItem(it) then
     return false
   end
+
+  ui = ui or {}
+  local f = db.filters or {}
 
   local st = it.source and it.source.type
   local isExternalish = (st == "external" or st == "event" or it._isEventTimed or it._isEventHeader)

@@ -13,6 +13,7 @@ local rawget = rawget
 local rawset = rawset
 local setmetatable = setmetatable
 local type = type
+local tinsert = table.insert
 
 local bundles = {
   Vendors = {
@@ -47,6 +48,10 @@ local bundles = {
     addon = "HomeDecor_Data_Professions",
     mergeKeys = { "Professions", "Prof_Reagents" },
   },
+  Events = {
+    addon = "HomeDecor_Data_Events",
+    mergeKeys = { "Events" },
+  },
   Trainers = {
     addon = "HomeDecor_Data_Trainers",
     mergeKeys = { "Trainers" },
@@ -54,6 +59,9 @@ local bundles = {
 }
 
 local state = {}
+local warmupRunning = false
+local warmupDone = false
+local warmupCallbacks = {}
 
 local function IsLoaded(addonName)
   if C_AddOns and C_AddOns.IsAddOnLoaded then
@@ -86,6 +94,16 @@ local function MergeBundle(def)
     local value = payload[key]
     if value ~= nil then
       rawset(NS.Data, key, value)
+    end
+  end
+
+  for i = 1, #def.mergeKeys do
+    if def.mergeKeys[i] == "Events" then
+      local Events = NS.Systems and NS.Systems.Events
+      if Events and Events.Invalidate then
+        Events:Invalidate()
+      end
+      break
     end
   end
 
@@ -165,6 +183,10 @@ function Loader:EnsureProfessions()
   return self:EnsureBundle("Professions")
 end
 
+function Loader:EnsureEvents()
+  return self:EnsureBundle("Events")
+end
+
 function Loader:EnsureTrainers()
   return self:EnsureBundle("Trainers")
 end
@@ -176,7 +198,76 @@ function Loader:EnsureAllCatalogData()
   self:EnsureShops()
   self:EnsureTreasures()
   self:EnsureProfessions()
+  self:EnsureEvents()
   self:EnsureTrainers()
+  warmupDone = true
+end
+
+function Loader:IsCatalogWarm()
+  if warmupDone then return true end
+  local function done(addonName)
+    local st = state[addonName]
+    return st and (st.loaded or st.failed)
+  end
+  if not done("HomeDecor_Data_Vendors") then return false end
+  if not rawget(NS.Data, "_derivedRequirementsBuilt") then return false end
+  if not done("HomeDecor_Data_Drops") then return false end
+  if not done("HomeDecor_Data_Professions") then return false end
+  if not done("HomeDecor_Data_Events") then return false end
+  if not done("HomeDecor_Data_Trainers") then return false end
+  warmupDone = true
+  return true
+end
+
+function Loader:WarmCatalogData(callback)
+  if type(callback) == "function" then
+    tinsert(warmupCallbacks, callback)
+  end
+  if self:IsCatalogWarm() then
+    local callbacks = warmupCallbacks
+    warmupCallbacks = {}
+    for i = 1, #callbacks do pcall(callbacks[i]) end
+    return true
+  end
+  if warmupRunning then return false end
+  warmupRunning = true
+
+  local steps = {
+    function() Loader:EnsureVendors() end,
+    function() Loader:EnsureDerivedRequirements() end,
+    function() Loader:EnsureDrops() end,
+    function() Loader:EnsureProfessions() end,
+    function() Loader:EnsureEvents() end,
+    function() Loader:EnsureTrainers() end,
+  }
+
+  local index = 0
+  local function runNext()
+    index = index + 1
+    local step = steps[index]
+    if step then
+      pcall(step)
+      if _G.C_Timer and _G.C_Timer.After then
+        _G.C_Timer.After(0.08, runNext)
+      else
+        runNext()
+      end
+      return
+    end
+
+    warmupRunning = false
+    warmupDone = true
+    local callbacks = warmupCallbacks
+    warmupCallbacks = {}
+    for i = 1, #callbacks do pcall(callbacks[i]) end
+  end
+
+  if _G.C_Timer and _G.C_Timer.After then
+    _G.C_Timer.After(0.01, runNext)
+  else
+    runNext()
+  end
+  return false
 end
 
 function Loader:EnsureForCategory(category)
@@ -198,6 +289,9 @@ function Loader:EnsureForCategory(category)
   if category == "Professions" then
     return self:EnsureProfessions()
   end
+  if category == "Events" then
+    return self:EnsureEvents()
+  end
   if category == "Search" or category == "Saved Items" then
     return self:EnsureAllCatalogData()
   end
@@ -218,5 +312,17 @@ setmetatable(NS.Data, {
     return nil
   end,
 })
+
+if NS.RegisterEvent then
+  NS.RegisterEvent(Loader, "PLAYER_ENTERING_WORLD", function()
+    if _G.C_Timer and _G.C_Timer.After then
+      _G.C_Timer.After(2.0, function()
+        if Loader and Loader.WarmCatalogData then
+          Loader:WarmCatalogData()
+        end
+      end)
+    end
+  end)
+end
 
 return Loader
