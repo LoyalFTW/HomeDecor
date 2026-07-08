@@ -2756,9 +2756,6 @@ function L:CreateShell()
   if f.view and f.view.SetInspectorOpen then
     ApplyDetailsPanelForCategory(UI.activeCategory or "All", true)
   end
-  if f.view and f.view.OnShow then f.view:OnShow() end
-  rerender()
-
   if NS.UI and NS.UI.HeaderController and NS.UI.HeaderController.Reset then
     NS.UI.HeaderController:Reset()
   end

@@ -497,7 +497,12 @@ function Addon:OnEnable()
   end
   
   local prof = self.db and self.db.profile
-  
+  if prof and prof.ui and prof.ui.compactMode ~= true and C_Timer and C_Timer.After then
+    C_Timer.After(1.0, function()
+      if NS.UI and NS.UI.CreateMainFrame and not NS.UI.MainFrame then
+        pcall(function() NS.UI:CreateMainFrame() end)
+      end
+    end)
   end
  
   if prof and prof.tracker and prof.tracker.open and NS.UI and NS.UI.Tracker and NS.UI.Tracker.Create then
@@ -514,3 +519,4 @@ function Addon:OnEnable()
       NS.UI.MinimapVendor:Create()
     end)
   end
+end
