@@ -5,49 +5,40 @@ HomeDecor_ChangelogMeta = {
 HomeDecor_Changelog = [[
 #HomeDecor
 
-June 11, 2026
-* Made the Home Decor logo/header area feel less empty, with better placement for Classic/Compact/settings/close controls.
-* Moved and adjusted scale controls so the top area feels cleaner.
-* Added separate `Grid`, `List`, and `Text List` view buttons with clearer sizing and layout.
-* Changed the top filter bar layout multiple times to reduce clutter and keep the important controls easier to reach.
-* Kept `All / Missing / Owned` visible outside the advanced filters, since those are quick-view filters.
-* Moved more detailed filters into the filter panel instead of crowding the top bar.
-* Improved the filter panel organization with clearer separation and labels.
-* Fixed filter dropdown issues where some top dropdowns were not applying correctly.
-* Fixed a filter crash caused by scanning a string as a table in `Filters.lua`.
-* Fixed missing localization issue for `ToDebugString`.
-* Improved button hover behavior so buttons no longer turn into empty boxes.
-* Improved button active/highlight behavior so clicks feel more responsive.
-* Restored missing header buttons like `Compact` and gallery/design controls.
-* Restored tracker access and moved tracker-related buttons into the left side navigation.
-* Made the right details panel open by default.
-* Made the details panel close when opening other windows like Events, Decor Pricing, Alts, and Endeavors.
-* Improved the right details panel layout with better item preview, status buttons, source info, requirements, price, ownership, and dyeability.
-* Linked details panel pricing into the existing pricing system.
-* Added owned/not owned status display in the details panel.
-* Added dyeable/not dyeable status display in the details panel.
-* Fixed pricing/status button layout so long price text fits better.
-* Improved material/resource pricing display in the details panel.
-* Added quantity-aware Decor AH details so cost, sell, profit, and material quantities update when queue quantity changes.
-* Changed queue money formatting to compact values like `47.6k g` instead of huge full coin strings.
-* Improved Decor AH pricing screen spacing so the table uses more available width.
-* Changed the Decor AH `Margin` column label to `%`.
-* Adjusted Decor AH column widths for better readability.
-* Reduced wasted space between the pricing table and selected item panel.
-* Improved selected item panel sizing on the pricing screen.
-* Fixed inconsistent counts between filters/side panels/compact mode in several places.
-* Fixed saved/favorites views so sorting and filters are preserved better.
-* Fixed `All / Groups` style filtering not working correctly in some category views.
-* Fixed PvP compact mode showing a count but no visible item text.
-* Added/updated faction emblem handling for Alliance and Horde items.
-* Added city-based fallback so Orgrimmar items can show Horde and Stormwind items can show Alliance.
-* Fixed Horde emblem missing on some Horde-only filtered items.
-* Improved faction/source display for items that can come from both faction cities.
-* Added better compact PvP list behavior.
-* Worked on addon open/close performance to reduce freezing when toggling quickly.
-* Improved resizing behavior so the UI keeps its layout more consistently while resizing.
-* Added/moved resize grip placement so it is easier to use without blocking important content.
-* Improved separators around the top navigation/events area.
-* Improved left sidebar layout with better grouping for saved items, categories, trackers, pricing, and other tools.
-  
+July 11, 2026
+
+Fixed Twitch/event drop tiles clipping long reward names and timer text.
+Increased timed event reward card height so names like “Cuddly Cotton Candy Grrgle” display cleanly.
+Updated event grid spacing so taller Twitch/event cards do not overlap the next row.
+Hid the Twitch/event drop button when there is no active reward item to show.
+Kept the button visible only when an active event/Twitch drop has a real displayable item.
+
+July 7, 2026
+
+Updated Events Data
+Improved background Lag (Shouldn't have lag any more when opening)
+Improved first-open performance for the main HomeDecor window.
+Added background catalog warmup after login to reduce opening lag.
+Fixed normal mode doing extra hidden rendering before the window was shown.
+Fixed startup flow for tracker and minimap vendor setup.
+
+Added a cleaner Events header badge with active event countdowns
+Improved Twitch Drop display and click handling
+Moved the window Scale control under the event badge
+Improved catalog availability filtering across lists, shop, vendors, map pins, minimap, and trackers
+Hid unavailable/not-yet-in-game decor from All Sources and source views
+Fixed expired event items showing past their end dates
+Improved normal mode startup performance after reload
+Reduced first-open lag by warming catalog data in the background
+Fixed header layout issues and invalid anchor errors
+Database / Event Button
+Updated the Database
+Added better Check Availability for the catalog
+New Event Button will be added for now all old event button infomation has been removed
+Removed the Events top button and its glow/timer logic from UI\Shell\Layout.lua.
+Removed Systems\Events.lua and its HomeDecor.toc entry.
+Stopped loading/scanning Events data through Core\DataLoader.lua, search, map pins, and map popup vendor caches.
+Removed the Events source option from the filter dropdown.
+Added fallbacks so old saved Events category/source-filter settings go back to normal catalog views.
+
 ]]
