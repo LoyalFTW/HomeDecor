@@ -258,6 +258,9 @@ local function GetCurrencyInfo(it)
 end
 
 local function CalculateTileHeight(it, baseHeight)
+    if it and it._isEventTimed then
+        return LAYOUT.TILE.FIXED_HEIGHT + 28
+    end
     return LAYOUT.TILE.FIXED_HEIGHT
 end
 
@@ -1416,16 +1419,19 @@ local function RebuildEntries(f, content)
                 if viewMode == "Icon" then
                     local cols, startX, tileW, tileH = ComputeGrid(12, contentW)
                     local col = 0
+                    local rowH = 0
                     for _, it in ipairs(group) do
                         local h = CalculateTileHeight(it, tileH)
+                        rowH = math.max(rowH, h)
                         addTile(12, it, ev, col, startX, tileW, tileH)
                         col = col + 1
                         if col >= cols then
                             col = 0
-                            y = y + h + LAYOUT.TILE.GAP
+                            y = y + rowH + LAYOUT.TILE.GAP
+                            rowH = 0
                         end
                     end
-                    if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+                    if col > 0 then y = y + rowH + LAYOUT.TILE.GAP end
                 else
                     for _, it in ipairs(group) do
                         addListItem(12, it, ev)
@@ -2366,6 +2372,10 @@ function Render:Create(parent)
                     end
 
                     local textArea = fr.textArea or fr
+                    local isEventTimed = it and it._isEventTimed
+                    if fr.textArea then
+                        fr.textArea:SetHeight(isEventTimed and 82 or 50)
+                    end
                     if fr.label then
                         fr.label:ClearAllPoints()
                         fr.label:SetPoint("TOPLEFT", textArea, "TOPLEFT", 0, -2)
@@ -2377,7 +2387,7 @@ function Render:Create(parent)
                         fr.label:SetText(name)
                         if fr.label.SetWidth then fr.label:SetWidth(math.max(0, w - 20)) end
 						if fr.label.SetMaxLines then fr.label:SetMaxLines(2) end
-                        if fr.label.SetHeight then fr.label:SetHeight(20) end
+                        if fr.label.SetHeight then fr.label:SetHeight(isEventTimed and 32 or 20) end
                     end
 
                     if fr.note then
@@ -2386,6 +2396,8 @@ function Render:Create(parent)
                             fr.note:ClearAllPoints()
                             fr.note:SetPoint("TOPLEFT", fr.label, "BOTTOMLEFT", 0, -2)
                             fr.note:SetPoint("TOPRIGHT", fr.label, "BOTTOMRIGHT", 0, -2)
+                            if fr.note.SetMaxLines then fr.note:SetMaxLines(isEventTimed and 1 or 2) end
+                            if fr.note.SetHeight then fr.note:SetHeight(isEventTimed and 14 or 28) end
                             fr.note:SetText("|cff9fb0c5" .. noteText .. "|r")
                             fr.note:Show()
                         else

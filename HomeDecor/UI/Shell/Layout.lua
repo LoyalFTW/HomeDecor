@@ -1507,7 +1507,7 @@ function L:CreateShell()
 
     if Ev.GetFeaturedEvent then
       local ev, item, timerText, sig = Ev:GetFeaturedEvent()
-      return ev ~= nil, sig or "", ev, item, timerText
+      return ev ~= nil and item ~= nil, sig or "", ev, item, timerText
     elseif Ev.GetStatus then
       return Ev:GetStatus()
     elseif Ev.GetActive then
@@ -1734,7 +1734,7 @@ function L:CreateShell()
 
     local cardWasShown = eventCard and eventCard:IsShown()
 
-    if hasActive then
+    if hasActive and activeItem then
       local source = activeEvent and activeEvent.source
       local eventTitle = activeEvent and (activeEvent.title or activeEvent.name or (source and (source.name or source.zone)))
       local itemID = activeItem and (activeItem.itemID or activeItem.vendorItemID or (activeItem.source and activeItem.source.itemID))
