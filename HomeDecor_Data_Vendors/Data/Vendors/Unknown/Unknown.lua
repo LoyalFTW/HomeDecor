@@ -95,9 +95,12 @@ NS.Data.Vendors["Unknown"]["Unknown"] = {
       worldmap=""
     },
     items={
+--       {decorID=21615, source={type="vendor", itemID=271175}, budgetCost=1, size="Small"}, -- missing verified worldmap
 --       {decorID=21616, source={type="vendor", itemID=271176}, budgetCost=1, size="Small"}, -- missing verified worldmap
 --       {decorID=21725, source={type="vendor", itemID=271609}, budgetCost=3, size="Medium"}, -- missing verified worldmap
 --       {decorID=21833, source={type="vendor", itemID=271851}, budgetCost=5, size="Large"}, -- missing verified worldmap
+--       {decorID=26375, source={type="vendor", itemID=281580}, budgetCost=3, size="Large"}, -- missing verified worldmap
+--       {decorID=26376, source={type="vendor", itemID=281582}, budgetCost=1, size="Medium"}, -- missing verified worldmap
 --       {decorID=26377, source={type="vendor", itemID=279292}, budgetCost=5, size="Huge"}, -- missing verified worldmap
 --       {decorID=26481, source={type="vendor", itemID=280218}, budgetCost=1, size="Small"}, -- missing verified worldmap
 --       {decorID=26484, source={type="vendor", itemID=279285}, budgetCost=1, size="Tiny"}, -- missing verified worldmap
@@ -127,6 +130,22 @@ NS.Data.Vendors["Unknown"]["Unknown"] = {
       {decorID=23708, source={type="vendor", itemID=280160, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
       {decorID=23709, source={type="vendor", itemID=280162, currency="750000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
       {decorID=23710, source={type="vendor", itemID=280164, currency="750000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
+    }
+  },
+
+  {
+    source={
+      id=272751,
+      type="vendor",
+      faction="Neutral",
+      zone="Vaults of Atal'Utek",
+      worldmap=""
+    },
+    items={
+--       {decorID=25137, source={type="vendor", itemID=281573}, budgetCost=1, size="Large"}, -- missing verified worldmap
+--       {decorID=25138, source={type="vendor", itemID=281577}, budgetCost=1, size="Small"}, -- missing verified worldmap
+--       {decorID=25139, source={type="vendor", itemID=280764}, budgetCost=3, size="Medium"}, -- missing verified worldmap
+--       {decorID=26204, source={type="vendor", itemID=281620}, budgetCost=3, size="Medium"}, -- missing verified worldmap
     }
   },
 
