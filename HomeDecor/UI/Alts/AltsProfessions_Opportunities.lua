@@ -590,7 +590,7 @@ function SmartProfs:BuildOppsFrame()
     fbar:SetWidth(3)
     fbar:SetPoint("TOPLEFT",    btn, "TOPLEFT",    0, -1)
     fbar:SetPoint("BOTTOMLEFT", btn, "BOTTOMLEFT", 0,  1)
-    fbar:SetColorTexture(0.90, 0.72, 0.18, 1)
+    fbar:SetColorTexture(unpack(T.accent or {0.90, 0.72, 0.18, 1}))
 
     local badge = CreateFrame("Frame", nil, btn, BackdropTemplateMixin and "BackdropTemplate")
     ApplyBackdrop(badge, {0.50, 0.38, 0.06, 0.90}, nil)

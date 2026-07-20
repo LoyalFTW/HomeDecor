@@ -25,14 +25,8 @@ local function score(it)
     return s
 end
 
-local function isCatalogAvailable(it)
-    local Availability = NS.Systems and NS.Systems.CatalogAvailability
-    return not Availability or not Availability.ShouldShowItem or Availability:ShouldShowItem(it)
-end
-
 local function upsert(self, it, expName, zoneName, vendor)
     if type(it) ~= "table" or not it.decorID then return end
-    if not isCatalogAvailable(it) then return end
 
     local did = it.decorID
     local e = self[did]
@@ -110,7 +104,7 @@ function DecorIndex:Build()
                                 end
 
                                 for _, it in ipairs(items) do
-                                    if type(it) == "table" and it.decorID and isCatalogAvailable(it) then
+                                    if type(it) == "table" and it.decorID then
                                         if npcList and not npcSeen[it.decorID] then
                                             npcSeen[it.decorID] = true
                                             npcList[#npcList+1] = it.decorID

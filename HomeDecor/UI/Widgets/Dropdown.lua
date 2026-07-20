@@ -256,9 +256,6 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
     dd.list:SetClampedToScreen(true)
     dd.list:Hide()
     backdrop(dd.list, C, T)
-    if C and C.ApplyBackground and NS.UI and NS.UI.Theme and NS.UI.Theme.textures and NS.UI.Theme.textures.GalleryPanel then
-        C:ApplyBackground(dd.list, NS.UI.Theme.textures.GalleryPanel, 0, 1)
-    end
 
     dd.scroll = CreateFrame("ScrollFrame", nil, dd.list, "ScrollFrameTemplate")
     if C and C.SkinScrollFrame then C:SkinScrollFrame(dd.scroll) end

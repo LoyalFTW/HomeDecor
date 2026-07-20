@@ -8,7 +8,6 @@ GI.byItemID   = {}
 GI.counts     = {}
 GI.collected  = {}
 GI._built     = false
-GI._building  = false
 
 local Collection = NS.Systems and NS.Systems.Collection
 local PVP_VENDOR_IDS = {
@@ -49,9 +48,6 @@ end
 
 local function AddToCategory(cat, it)
     if type(it) ~= "table" then return end
-    local Availability = NS.Systems and NS.Systems.CatalogAvailability
-    if Availability and Availability.ShouldShowItem and not Availability:ShouldShowItem(it) then return end
-
     local decorID = it.decorID
     local key = GetVariantKey(it)
     if not key then return end
@@ -154,41 +150,10 @@ function GI:Build()
 
     self._categoryScratch = nil
     self._built = true
-    self._building = false
-end
-
-function GI:BuildAsync(callback)
-    if self._built then
-        if type(callback) == "function" then callback() end
-        return true
-    end
-    if self._building then return false end
-    self._building = true
-
-    local DataLoader = NS.Systems and NS.Systems.DataLoader
-    if DataLoader and DataLoader.WarmCatalogData then
-        DataLoader:WarmCatalogData(function()
-            GI:Build()
-            if type(callback) == "function" then callback() end
-        end)
-    else
-        local C_Timer = _G.C_Timer
-        if C_Timer and C_Timer.After then
-            C_Timer.After(0.01, function()
-                GI:Build()
-                if type(callback) == "function" then callback() end
-            end)
-        else
-            self:Build()
-            if type(callback) == "function" then callback() end
-        end
-    end
-    return false
 end
 
 function GI:Invalidate(rebuildNow)
     self._built = false
-    self._building = false
     if rebuildNow then
         self:Build()
     end
@@ -200,12 +165,6 @@ end
 
 function GI:GetCounts(cat)
     self:Ensure()
-    cat = NormalizeCategory(cat)
-    return (self.collected[cat] or 0), (self.counts[cat] or 0)
-end
-
-function GI:GetCountsIfBuilt(cat)
-    if not self._built then return nil end
     cat = NormalizeCategory(cat)
     return (self.collected[cat] or 0), (self.counts[cat] or 0)
 end

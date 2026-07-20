@@ -258,20 +258,11 @@ local function GetCurrencyInfo(it)
 end
 
 local function CalculateTileHeight(it, baseHeight)
-    if it and it._isEventTimed then
-        return LAYOUT.TILE.FIXED_HEIGHT + 28
-    end
     return LAYOUT.TILE.FIXED_HEIGHT
-end
-
-local function IsCatalogVisible(it)
-    local Availability = NS.Systems and NS.Systems.CatalogAvailability
-    return not Availability or not Availability.ShouldShowItem or Availability:ShouldShowItem(it)
 end
 
 local function AddToFlat(out, seen, it)
     if type(it) ~= "table" then return end
-    if not IsCatalogVisible(it) then return end
 
     local id = it.decorID or (it.source and (it.source.id or it.source.itemID or it.source.itemId)) or it.itemID
     if not id then return end
@@ -564,16 +555,6 @@ local function BuildFlatResults(f, ui, db, scopeKey)
     local out, seen = {}, {}
     if DataLoader then
         if scopeKey == "GLOBAL" and DataLoader.EnsureAllCatalogData then
-            if DataLoader.IsCatalogWarm and not DataLoader:IsCatalogWarm() then
-                if DataLoader.WarmCatalogData then
-                    DataLoader:WarmCatalogData(function()
-                        if f and f:IsShown() and f.RequestRender then
-                            f:RequestRender(true)
-                        end
-                    end)
-                end
-                return out
-            end
             DataLoader:EnsureAllCatalogData()
         elseif DataLoader.EnsureForCategory then
             DataLoader:EnsureForCategory(scopeKey)
@@ -1376,7 +1357,8 @@ local function RebuildEntries(f, content)
 
     if cat == "Events" then
         local Ev = Systems.Events
-        local list = (Ev and Ev.GetActive and Ev:GetActive()) or {}
+        local list = (Ev and Ev.GetActive and Ev:GetActive()) or
+                     (NS.Data and type(NS.Data.Events) == "table" and NS.Data.Events) or {}
 
         if #list == 0 then
             addListItem(0, {
@@ -1391,50 +1373,69 @@ local function RebuildEntries(f, content)
 
         for _, ev in ipairs(list) do
             local eTitle = ev.title or ev.name or "Event"
-            local timerText = Ev and Ev.GetEventTimeText and Ev:GetEventTimeText(ev, _G.time and _G.time() or 0)
+            local evKey = "event:" .. tostring(ev.id or ev.key or eTitle)
+
+            if not db.eventHeaderStates then db.eventHeaderStates = {} end
+            local savedOpen = db.eventHeaderStates[evKey]
+
+            local open
+            if savedOpen ~= nil then
+                open = savedOpen
+            elseif ev._uiOpen ~= nil then
+                open = ev._uiOpen
+            else
+                open = false
+            end
+
+            ev._uiOpen = open
 
             local group = {}
+            local cEv, tEv = 0, 0
 
             if type(ev.items) == "table" then
                 for _, it0 in ipairs(ev.items) do
                     if type(it0) == "table" then
-                        local it = U and U.CopyShallow and U.CopyShallow(it0) or it0
-                        if it0.source and type(it0.source) == "table" then
-                            it.source = {}
-                            for k, v in pairs(it0.source) do it.source[k] = v end
-                        end
-                        it.source = it.source or {}
+                        local it = U and U.copyShallow and U.copyShallow(it0) or it0
                         it._isEventTimed = true
                         it._eventTitle = eTitle
-                        it.source.note = timerText or eTitle
 
                         if not FiltersSys or not FiltersSys.Passes or FiltersSys:Passes(it, ui, db) then
+                            if U and U.Passes and U.Passes(it) then
+                                tEv = tEv + 1
+                                if U.IsCollectedSafe and U.IsCollectedSafe(it) then
+                                    cEv = cEv + 1
+                                end
+                            end
                             group[#group + 1] = it
                         end
                     end
                 end
             end
 
-            if #group > 0 then
+            local timerText = nil
+            if Ev and Ev.GetEventTimeText then
+                timerText = Ev:GetEventTimeText(ev, _G.time and _G.time() or 0)
+            end
+
+            addHeader(12, 44, eTitle, cEv, tEv, open, "event", { key = evKey, event = ev, timerText = timerText })
+
+            if open and #group > 0 then
                 if viewMode == "Icon" then
-                    local cols, startX, tileW, tileH = ComputeGrid(12, contentW)
+                    local cols, startX, tileW, tileH = ComputeGrid(28, contentW)
                     local col = 0
-                    local rowH = 0
                     for _, it in ipairs(group) do
                         local h = CalculateTileHeight(it, tileH)
-                        rowH = math.max(rowH, h)
-                        addTile(12, it, ev, col, startX, tileW, tileH)
+                        addTile(28, it, ev, col, startX, tileW, tileH)
                         col = col + 1
                         if col >= cols then
                             col = 0
-                            y = y + rowH + LAYOUT.TILE.GAP
-                            rowH = 0
+                            y = y + h + LAYOUT.TILE.GAP
                         end
                     end
-                    if col > 0 then y = y + rowH + LAYOUT.TILE.GAP end
+                    if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
                 else
                     for _, it in ipairs(group) do
-                        addListItem(12, it, ev)
+                        addListItem(28, it, ev)
                     end
                 end
             end
@@ -1620,9 +1621,6 @@ function Render:Create(parent)
     if Controls and Controls.Backdrop then
         Controls:Backdrop(inspector, GetThemeColor("panel", { 0.07, 0.08, 0.10, 0.96 }), GetThemeColor("border", { 0.25, 0.22, 0.16, 1 }))
     end
-    if Controls and Controls.ApplyBackground and Theme and Theme.textures and Theme.textures.GalleryPanel then
-        Controls:ApplyBackground(inspector, Theme.textures.GalleryPanel, 0, 1)
-    end
     inspector:SetPoint("TOPRIGHT", -8, -8)
     inspector:SetPoint("BOTTOMRIGHT", -8, 8)
     inspector:SetWidth(300)
@@ -1632,9 +1630,6 @@ function Render:Create(parent)
     inspector.media = CreateFrame("Frame", nil, inspector, "BackdropTemplate")
     if Controls and Controls.Backdrop then
         Controls:Backdrop(inspector.media, GetThemeColor("row", { 0.09, 0.10, 0.12, 1 }), GetThemeColor("border", { 0.25, 0.22, 0.16, 1 }))
-    end
-    if Controls and Controls.ApplyBackground and Theme and Theme.textures and Theme.textures.GalleryPreview then
-        Controls:ApplyBackground(inspector.media, Theme.textures.GalleryPreview, 0, 1)
     end
     inspector.media:SetPoint("TOPLEFT", 12, -12)
     inspector.media:SetPoint("TOPRIGHT", -12, -12)
@@ -1904,13 +1899,13 @@ function Render:Create(parent)
         sf:SetPoint("TOPLEFT", 8, -8)
         if self._inspectorOpen then
             inspector:Show()
-            sf:SetPoint("BOTTOMRIGHT", inspector, "BOTTOMLEFT", -8, 8)
+            sf:SetPoint("BOTTOMRIGHT", inspector, "BOTTOMLEFT", -18, 8)
         else
             inspector:Hide()
             sf:SetPoint("BOTTOMRIGHT", -28, 8)
         end
         GridCache = {}
-        content:SetWidth((sf:GetWidth() or 0) - 18)
+        content:SetWidth(sf:GetWidth() or 0)
     end
 
     function f:SetInspectorOpen(open, skipRender)
@@ -2103,7 +2098,7 @@ function Render:Create(parent)
     f:UpdateLayoutForInspector()
 
     sf:SetScript("OnSizeChanged", function(_, w)
-        content:SetWidth((w or 0) - 18)
+        content:SetWidth(w or 0)
         GridCache = {}
         if f.Render then f:RequestRender(true) end
     end)
@@ -2372,10 +2367,6 @@ function Render:Create(parent)
                     end
 
                     local textArea = fr.textArea or fr
-                    local isEventTimed = it and it._isEventTimed
-                    if fr.textArea then
-                        fr.textArea:SetHeight(isEventTimed and 82 or 50)
-                    end
                     if fr.label then
                         fr.label:ClearAllPoints()
                         fr.label:SetPoint("TOPLEFT", textArea, "TOPLEFT", 0, -2)
@@ -2387,7 +2378,7 @@ function Render:Create(parent)
                         fr.label:SetText(name)
                         if fr.label.SetWidth then fr.label:SetWidth(math.max(0, w - 20)) end
 						if fr.label.SetMaxLines then fr.label:SetMaxLines(2) end
-                        if fr.label.SetHeight then fr.label:SetHeight(isEventTimed and 32 or 20) end
+                        if fr.label.SetHeight then fr.label:SetHeight(20) end
                     end
 
                     if fr.note then
@@ -2396,8 +2387,6 @@ function Render:Create(parent)
                             fr.note:ClearAllPoints()
                             fr.note:SetPoint("TOPLEFT", fr.label, "BOTTOMLEFT", 0, -2)
                             fr.note:SetPoint("TOPRIGHT", fr.label, "BOTTOMRIGHT", 0, -2)
-                            if fr.note.SetMaxLines then fr.note:SetMaxLines(isEventTimed and 1 or 2) end
-                            if fr.note.SetHeight then fr.note:SetHeight(isEventTimed and 14 or 28) end
                             fr.note:SetText("|cff9fb0c5" .. noteText .. "|r")
                             fr.note:Show()
                         else

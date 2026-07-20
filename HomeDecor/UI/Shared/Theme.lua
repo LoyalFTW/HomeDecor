@@ -111,39 +111,6 @@ local Theme = {
 
   textures = {
     Logo = "Interface\\AddOns\\HomeDecor\\Media\\UI\\logo.tga",
-
-    ButtonNormal   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_button_normal.png",
-    ButtonHover    = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_button_hover.png",
-    ButtonPushed   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_button_pushed.png",
-    ButtonDisabled = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_button_disabled.png",
-
-    TabNormal   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_tab_normal.png",
-    TabHover    = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_tab_hover.png",
-    TabPushed   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_tab_pushed.png",
-    TabDisabled = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_tab_disabled.png",
-
-    HeaderBar = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_toolbar.png",
-    BigHeaderBar = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_toolbar.png",
-    MainBackground = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_main_bg.png",
-    LeftPanelBG = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_panel.png",
-    ModelBG = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_panel.png",
-    GalleryPanel = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_panel.png",
-    GalleryToolbar = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_toolbar.png",
-    GalleryPreview = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_preview_bg.png",
-    GalleryCard = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_card_normal.png",
-    GalleryCardHover = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_card_hover.png",
-    GalleryCardSelected = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_card_selected.png",
-    GalleryNav = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_nav_normal.png",
-    GalleryNavHover = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_nav_hover.png",
-    GalleryNavSelected = "Interface\\AddOns\\HomeDecor\\Media\\UI\\Gallery\\gallery_nav_selected.png",
-
-    ScrollTrack = "Interface\\AddOns\\HomeDecor\\Media\\UI\\scroll_track.tga",
-    ScrollThumb = "Interface\\AddOns\\HomeDecor\\Media\\UI\\scroll_thumb.tga",
-
-    ScrollArrowUp   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\scroll_arrow_up.tga",
-    ScrollArrowDown = "Interface\\AddOns\\HomeDecor\\Media\\UI\\scroll_arrow_down.tga",
-    DropdownBox     = "Interface\\AddOns\\HomeDecor\\Media\\UI\\dropdown_box.tga",
-    DropdownArrow   = "Interface\\AddOns\\HomeDecor\\Media\\UI\\dropdown_arrow.tga",
   },
 }
 

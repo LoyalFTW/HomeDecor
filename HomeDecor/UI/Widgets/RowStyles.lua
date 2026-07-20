@@ -12,24 +12,6 @@ local function ThemeColors()
   return (NS.UI and NS.UI.Theme and NS.UI.Theme.colors) or {}
 end
 
-local function ThemeTextures()
-  return (NS.UI and NS.UI.Theme and NS.UI.Theme.textures) or {}
-end
-
-local function SetFrameTexture(frame, key, path, layer, subLevel, alpha)
-  if not (frame and frame.CreateTexture and path) then return nil end
-  local tex = frame[key]
-  if not tex then
-    tex = frame:CreateTexture(nil, layer or "BACKGROUND", nil, subLevel or -5)
-    frame[key] = tex
-  end
-  tex:SetAllPoints(frame)
-  tex:SetTexture(path)
-  tex:SetAlpha(alpha or 1)
-  tex:Show()
-  return tex
-end
-
 local function ClampAlpha(x)
   x = tonumber(x) or 0
   if x < 0 then return 0 end
@@ -186,18 +168,12 @@ function RS:ApplyHover(frame, baseAlpha)
 
   frame:HookScript("OnEnter", function(self)
     if self._rsSelected then return end
-    local X = ThemeTextures()
-    if self.__galleryCardTex and X.GalleryCardHover then self.__galleryCardTex:SetTexture(X.GalleryCardHover) end
-    if self.__galleryNavTex and X.GalleryNavHover then self.__galleryNavTex:SetTexture(X.GalleryNavHover) end
     local a = GetInheritedAlpha(self) * (tonumber(self._rsHoverBase) or 0.14)
     SetHighlight(self, a, true)
   end)
 
   frame:HookScript("OnLeave", function(self)
     if self._rsSelected then return end
-    local X = ThemeTextures()
-    if self.__galleryCardTex and X.GalleryCard then self.__galleryCardTex:SetTexture(X.GalleryCard) end
-    if self.__galleryNavTex and X.GalleryNav then self.__galleryNavTex:SetTexture(X.GalleryNav) end
     if self._rsHL then self._rsHL:Hide() end
   end)
 end
@@ -207,14 +183,6 @@ function RS:SetSelected(frame, selected, alpha)
   EnsureHighlight(frame)
 
   frame._rsSelected = selected and true or false
-  if frame.__galleryCardTex then
-    local X = ThemeTextures()
-    frame.__galleryCardTex:SetTexture(frame._rsSelected and (X.GalleryCardSelected or X.GalleryCard) or (X.GalleryCard or ""))
-  end
-  if frame.__galleryNavTex then
-    local X = ThemeTextures()
-    frame.__galleryNavTex:SetTexture(frame._rsSelected and (X.GalleryNavSelected or X.GalleryNav) or (X.GalleryNav or ""))
-  end
   if frame._rsSelected then
     local a = GetInheritedAlpha(frame) * (tonumber(alpha) or 0.22)
     SetHighlight(frame, a, true)
@@ -290,9 +258,15 @@ function RS:ApplyDivider(tex, alpha)
 end
 
 function RS:ApplyAccent(tex, alpha)
-  if not tex or not tex.SetColorTexture then return end
+  if not tex then return end
   alpha = tonumber(alpha) or 0.055
-  tex:SetColorTexture(1, 1, 1, alpha)
+  if C and C.SolidColor then
+    C:SolidColor(tex, "accent", alpha)
+    return
+  end
+  if not tex.SetColorTexture then return end
+  local a = ThemeColors().accent or { 1, 0.82, 0.2, 1 }
+  tex:SetColorTexture(a[1], a[2], a[3], alpha)
 end
 
 function RS:ApplySoftBg(tex, alpha)
@@ -342,32 +316,6 @@ function RS:ApplyBackdrop(frame, kind)
   end
 end
 
-local function ApplyHeaderTint(frame)
-  if not frame then return end
-  local T = ThemeColors()
-
-  local base = T.headerTint or HeaderBorderColor()
-  local text = (T.textMuted or T.placeholder or { 0.65, 0.65, 0.68, 1 })
-
-  local c = Mix(base, text, 0.58)
-  c[4] = (type(base) == "table" and base[4]) or 1
-
-  if frame.__hdHeaderTex and frame.__hdHeaderTex.SetVertexColor then
-    frame.__hdHeaderTex:SetVertexColor(c[1] or 1, c[2] or 1, c[3] or 1, c[4] or 1)
-  end
-  if frame.__hdHeaderTex and frame.__hdHeaderTex.SetAlpha then
-    frame.__hdHeaderTex:SetAlpha(c[4] or 1)
-  end
-end
-
-function RS:ApplyHeaderTexture(frame, isWidget)
-  if not frame then return end
-  if C and C.ApplyHeaderTexture then
-    C:ApplyHeaderTexture(frame, isWidget and true or false)
-  end
-  ApplyHeaderTint(frame)
-end
-
 function RS:SkinHeader(row, hoverAlpha)
   if not row then return end
   self:Reset(row)
@@ -376,10 +324,8 @@ function RS:SkinHeader(row, hoverAlpha)
   local headerA = tonumber(T.headerBorderAlpha) or 0.72
 
   self:ApplyBackdrop(row, "header")
-  self:ApplyHeaderTexture(row, false)
   self:ForceBorderAlpha(row, headerA)
 
-  ApplyHeaderTint(row)
   self:ApplyHover(row, hoverAlpha or 0.18)
   self:ApplyFonts(row)
 
@@ -390,9 +336,7 @@ function RS:SkinHeader(row, hoverAlpha)
         local TT = ThemeColors()
         local a = tonumber(TT.headerBorderAlpha) or 0.72
         RS:ApplyBackdrop(selfRow, "header")
-        RS:ApplyHeaderTexture(selfRow, false)
         RS:ForceBorderAlpha(selfRow, a)
-        ApplyHeaderTint(selfRow)
         RS:ApplyFonts(selfRow)
       end
     end)
@@ -421,10 +365,6 @@ function RS:SkinTile(row, hoverAlpha)
   self:Reset(row)
 
   self:ApplyBackdrop(row, "item")
-  do
-    local X = ThemeTextures()
-    row.__galleryCardTex = SetFrameTexture(row, "__galleryCardTex", X.GalleryCard, "BACKGROUND", -6, 1)
-  end
   self:ApplyHover(row, hoverAlpha or 0.14)
   self:ApplyFonts(row)
 

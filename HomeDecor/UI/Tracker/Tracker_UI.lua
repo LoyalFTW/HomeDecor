@@ -135,9 +135,6 @@ function UI:CreateFrame()
 
   if Controls and Controls.Backdrop then
     Controls:Backdrop(frame, T.panel, T.border)
-    if Controls.ApplyBackground and NS.UI and NS.UI.Theme and NS.UI.Theme.textures then
-      Controls:ApplyBackground(frame, NS.UI.Theme.textures.PanelBG or NS.UI.Theme.textures.MainBackground, 6, 1)
-    end
   end
 
   local function SaveFramePosition()
@@ -166,9 +163,6 @@ function UI:CreateFrame()
 
   if Controls and Controls.Backdrop then
     Controls:Backdrop(header, T.header, T.border)
-    if Controls.ApplyHeaderTexture then
-      Controls:ApplyHeaderTexture(header, false)
-    end
   end
 
   frame:SetMovable(true)

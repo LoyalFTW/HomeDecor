@@ -98,9 +98,6 @@ function UI:CreateFrame()
 
   if Controls and Controls.Backdrop then
     Controls:Backdrop(frame, theme.panel, theme.border)
-    if Controls.ApplyBackground and NS.UI and NS.UI.Theme and NS.UI.Theme.textures then
-      Controls:ApplyBackground(frame, NS.UI.Theme.textures.PanelBG or NS.UI.Theme.textures.MainBackground, 6, 1)
-    end
   end
 
   self:CreateHeader(frame)
@@ -126,9 +123,6 @@ function UI:CreateHeader(frame)
 
   if Controls and Controls.Backdrop then
     Controls:Backdrop(header, theme.header, theme.border)
-    if Controls.ApplyHeaderTexture then
-      Controls:ApplyHeaderTexture(header, false)
-    end
   end
 
   header:SetScript("OnDragStart", function() frame:StartMoving() end)

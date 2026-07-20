@@ -317,21 +317,6 @@ function C:Segmented(parent, labels, getValue, setValue)
   return f
 end
 
-local function HideRegions(frame)
-  if not frame or not frame.GetRegions then return end
-  for i = 1, 40 do
-    local r = select(i, frame:GetRegions())
-    if not r then break end
-    if r.GetObjectType and r:GetObjectType() == "Texture" then
-      local tx = r.GetTexture and r:GetTexture()
-      local at = r.GetAtlas and r:GetAtlas()
-      if tx or at then
-        r:SetAlpha(0)
-      end
-    end
-  end
-end
-
 function C:ApplyBackdropHover(frame, normal, hover)
   if not frame or frame.__hdHover then return end
   if not frame.SetBackdropColor then return end
@@ -370,92 +355,10 @@ function C:SetSelected(frame, selected, normal, selectedBG)
   end
 end
 
-function C:ApplyHeaderTexture(frame, big)
-  if not frame or frame.__hdHeaderSkinned then return end
-  local _, _, X = GetTheme()
-  if not X then return end
-  local path = big and (X.BigHeaderBar or X.HeaderBar) or X.HeaderBar
-  if not path then return end
-
-  frame.__hdHeaderSkinned = true
-
-  local tex = frame:CreateTexture(nil, "BACKGROUND", nil, 0)
-  frame.__hdHeaderTex = tex
-  tex:SetAllPoints(frame)
-  tex:SetTexture(path)
-  tex:SetAlpha(1)
-
-  local hover = frame:CreateTexture(nil, "ARTWORK", nil, 1)
-  frame.__hdHeaderHover = hover
-  hover:SetAllPoints(frame)
-  hover:SetTexture(path)
-  hover:SetAlpha(0)
-
-  if frame.EnableMouse then
-    frame:EnableMouse(true)
-  end
-
-  frame:HookScript("OnEnter", function()
-    local h = frame.__hdHeaderHover
-    if h then h:SetAlpha(0.35) end
-  end)
-
-  frame:HookScript("OnLeave", function()
-    local h = frame.__hdHeaderHover
-    if h then h:SetAlpha(0) end
-  end)
-end
-
 function C:SkinButton(btn, isTab)
   if not btn or btn.__hdBtnSkinned then return end
-  local _, _, X = GetTheme()
-  if not X then return end
 
   btn.__hdBtnSkinned = true
-
-  if btn.SetNormalTexture then
-    btn:SetNormalTexture(isTab and X.TabNormal or X.ButtonNormal)
-  end
-  if btn.SetPushedTexture then
-    btn:SetPushedTexture(isTab and X.TabPushed or X.ButtonPushed)
-  end
-  if btn.SetDisabledTexture and (isTab and X.TabDisabled or X.ButtonDisabled) then
-    btn:SetDisabledTexture(isTab and X.TabDisabled or X.ButtonDisabled)
-  end
-  if btn.SetHighlightTexture then
-    btn:SetHighlightTexture(isTab and X.TabHover or X.ButtonHover, "BLEND")
-  end
-
-  local nt = btn.GetNormalTexture and btn:GetNormalTexture()
-  if nt then
-    nt:SetAllPoints(btn)
-    nt:SetDrawLayer("ARTWORK", 0)
-    nt:SetAlpha(1)
-  end
-
-  local pt = btn.GetPushedTexture and btn:GetPushedTexture()
-  if pt then
-    pt:SetAllPoints(btn)
-    pt:SetDrawLayer("ARTWORK", 1)
-    pt:SetAlpha(1)
-  end
-
-  local dt = btn.GetDisabledTexture and btn:GetDisabledTexture()
-  if dt then
-    dt:SetAllPoints(btn)
-    dt:SetDrawLayer("ARTWORK", 0)
-    dt:SetAlpha(1)
-  end
-
-  local ht = btn.GetHighlightTexture and btn:GetHighlightTexture()
-  if ht then
-    ht:SetAllPoints(btn)
-    ht:SetDrawLayer("ARTWORK", 0)
-    ht:SetAlpha(0.28)
-    if ht.SetBlendMode then
-      ht:SetBlendMode("ADD")
-    end
-  end
 
   if btn.GetNumRegions and btn.GetRegions then
     for i = 1, btn:GetNumRegions() do
@@ -473,81 +376,81 @@ end
 
 function C:SkinScrollFrame(sf)
   if not sf then return end
-  local _, _, X = GetTheme()
-  if not X then return end
 
-  local sb = sf.ScrollBar or sf.scrollBar or (sf.GetScrollBar and sf:GetScrollBar())
-  if not sb then return end
-
-  local function overlay(owner, key, texture, layer, sub)
-    if not (owner and owner.CreateTexture) then return end
-    local t = owner[key]
-    if not t then
-      t = owner:CreateTexture(nil, layer or "ARTWORK", nil, sub or 2)
-      owner[key] = t
-    end
-    t:SetTexture(texture)
-    t:SetAllPoints(owner)
-    t:Show()
-    return t
+  local function looksLikeScrollBar(child)
+    return child and (
+      child.Thumb or child.ThumbTexture or child.Track or
+      (child.GetThumb and child:GetThumb()) or
+      (child.GetThumbTexture and child:GetThumbTexture())
+    )
   end
 
-  local trackOwner = sb.Track or sb
-  HideRegions(trackOwner)
-  overlay(trackOwner, "__hdTrackOverlay", X.ScrollTrack, "BACKGROUND", 0)
+  local sb = sf.ScrollBar or sf.scrollBar or (sf.GetScrollBar and sf:GetScrollBar())
+  if not sb and sf.GetName then
+    local name = sf:GetName()
+    if name then
+      sb = _G[name .. "ScrollBar"] or _G[name .. "ScrollBarScrollBar"]
+    end
+  end
+  if not sb and sf.GetChildren then
+    for i = 1, sf:GetNumChildren() do
+      local child = select(i, sf:GetChildren())
+      if looksLikeScrollBar(child) then
+        sb = child
+        break
+      end
+    end
+  end
+  if not sb then
+    if not sf.__hdSkinRetry and C_Timer and C_Timer.After then
+      sf.__hdSkinRetry = true
+      C_Timer.After(0, function()
+        if sf and sf.GetObjectType then C:SkinScrollFrame(sf) end
+      end)
+    end
+    return
+  end
+  sf.__hdSkinRetry = nil
+
+  local hasModernThumb = sb.Thumb or (sb.Track and sb.Track.Thumb) or (sb.GetThumb and sb:GetThumb())
+  if hasModernThumb and sb.SetPoint and sb ~= sf then
+    sb:ClearAllPoints()
+    sb:SetPoint("TOPLEFT", sf, "TOPRIGHT", 2, -2)
+    sb:SetPoint("BOTTOMLEFT", sf, "BOTTOMRIGHT", 2, 2)
+  end
+
+  local function tint(owner, alpha)
+    if not owner then return end
+    if owner.GetObjectType and owner:GetObjectType() == "Texture" then
+      self:TextureColor(owner, "accent", alpha)
+      return
+    end
+    if owner.GetNumRegions then
+      for i = 1, owner:GetNumRegions() do
+        local r = select(i, owner:GetRegions())
+        if r and r.GetObjectType and r:GetObjectType() == "Texture" then
+          self:TextureColor(r, "accent", alpha)
+        end
+      end
+    end
+    if owner.GetNumChildren then
+      for i = 1, owner:GetNumChildren() do
+        tint(select(i, owner:GetChildren()), alpha)
+      end
+    end
+  end
 
   local thumbBtn = sb.Thumb or (sb.Track and sb.Track.Thumb) or (sb.GetThumb and sb:GetThumb())
   local classicThumb = (sb.GetThumbTexture and sb:GetThumbTexture()) or sb.ThumbTexture
 
-  if thumbBtn and thumbBtn.CreateTexture then
-    if thumbBtn.Begin then thumbBtn.Begin:SetAlpha(0) end
-    if thumbBtn.Middle then thumbBtn.Middle:SetAlpha(0) end
-    if thumbBtn.End then thumbBtn.End:SetAlpha(0) end
-    HideRegions(thumbBtn)
-    overlay(thumbBtn, "__hdThumbOverlay", X.ScrollThumb, "ARTWORK", 5)
-
-    if not thumbBtn.__hdThumbHooks then
-      thumbBtn.__hdThumbHooks = true
-      local function reshow(b) local o = b.__hdThumbOverlay; if o then o:Show() end end
-      thumbBtn:HookScript("OnShow", reshow)
-      thumbBtn:HookScript("OnMouseDown", reshow)
-      thumbBtn:HookScript("OnMouseUp", reshow)
-      thumbBtn:HookScript("OnEnter", reshow)
-      thumbBtn:HookScript("OnLeave", reshow)
-    end
-  elseif classicThumb and classicThumb.SetTexture then
-    classicThumb:SetTexture(X.ScrollThumb)
-    classicThumb:SetAlpha(1)
-    classicThumb:Show()
+  if thumbBtn then
+    tint(thumbBtn, 0.9)
+  elseif classicThumb then
+    self:TextureColor(classicThumb, "accent", 0.9)
   end
 
-  local upBtn = sb.Back or sb.UpButton
-  local dnBtn = sb.Forward or sb.DownButton
-
-  local function skinArrow(btn, tex)
-    if not btn then return end
-    HideRegions(btn)
-    local o = overlay(btn, "__hdArrowOverlay", tex, "ARTWORK", 6)
-    if o then
-      o:ClearAllPoints()
-      o:SetPoint("CENTER", btn, "CENTER", 0, 0)
-      local w, h = btn:GetSize()
-      local s = 16
-      if w and h and w > 0 and h > 0 then
-        s = min(16, w, h)
-      end
-      o:SetSize(s, s)
-    end
-    if btn.__hdArrowHooks then return end
-    btn.__hdArrowHooks = true
-    local function reshow(b) local o2 = b.__hdArrowOverlay; if o2 then o2:Show() end end
-    btn:HookScript("OnShow", reshow)
-    btn:HookScript("OnMouseDown", reshow)
-    btn:HookScript("OnMouseUp", reshow)
-  end
-
-  skinArrow(upBtn, X.ScrollArrowUp or X.DropdownArrow)
-  skinArrow(dnBtn, X.ScrollArrowDown or X.DropdownArrow)
+  tint(sb.Back or sb.UpButton or sb.ScrollUpButton, 0.9)
+  tint(sb.Forward or sb.DownButton or sb.ScrollDownButton, 0.9)
 end
 
 function C:ClearHoverHighlights(root)

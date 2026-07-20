@@ -395,6 +395,9 @@ function Panels:Create()
   local scroll = CreateFrame("ScrollFrame", nil, frame, "ScrollFrameTemplate")
   scroll:SetPoint("TOPLEFT", summary, "BOTTOMLEFT", 0, -10)
   scroll:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -28, 40)
+  if Controls and Controls.SkinScrollFrame then
+    Controls:SkinScrollFrame(scroll)
+  end
   local content = CreateFrame("Frame", nil, scroll)
   content:SetSize(1, 1)
   scroll:SetScrollChild(content)

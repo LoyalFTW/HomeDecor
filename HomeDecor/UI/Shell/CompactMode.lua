@@ -787,10 +787,6 @@ function CM:_Build()
 
     local hdr = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     Bd(hdr, header, border)
-    do
-        local C = Controls()
-        if C and C.ApplyHeaderTexture then C:ApplyHeaderTexture(hdr, false) end
-    end
     hdr:SetPoint("TOPLEFT",  frame, "TOPLEFT",  6, -6)
     hdr:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -6, -6)
     hdr:SetHeight(30)
@@ -1701,19 +1697,9 @@ function CM:_Build()
             SortList(rawList, vendorGrouped)
 
             local GI = NS.Systems and NS.Systems.GlobalIndex
-            local hasGlobalCounts = false
-            if GI and GI.GetCountsIfBuilt then
-                local c, t = GI:GetCountsIfBuilt(activeCategory)
-                if t then
-                    progCollected, progTotal = c or 0, t or 0
-                    hasGlobalCounts = true
-                end
-            elseif GI and GI._built and GI.GetCounts then
+            if GI and GI.GetCounts then
                 progCollected, progTotal = GI:GetCounts(activeCategory)
-                hasGlobalCounts = true
-            end
-
-            if not hasGlobalCounts then
+            else
                 progTotal   = 0
                 progCollected = 0
                 for _, it in ipairs(rawList) do

@@ -573,18 +573,18 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       worldmap="2352:5200:3840"
     },
     items={
-      {decorID=23553, source={type="vendor", itemID=280142, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"},
-      {decorID=23554, source={type="vendor", itemID=280144, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23555, source={type="vendor", itemID=280146, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"},
-      {decorID=23556, source={type="vendor", itemID=280148, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23557, source={type="vendor", itemID=280150, currency="500000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23558, source={type="vendor", itemID=280152, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"},
-      {decorID=23559, source={type="vendor", itemID=280154, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"},
-      {decorID=23560, source={type="vendor", itemID=280156, currency="500000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23707, source={type="vendor", itemID=280158, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"},
-      {decorID=23708, source={type="vendor", itemID=280160, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23709, source={type="vendor", itemID=280162, currency="750000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
-      {decorID=23710, source={type="vendor", itemID=280164, currency="750000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
+--       {decorID=23553, source={type="vendor", itemID=280142, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"}, -- HIDDENCATALOG
+--       {decorID=23554, source={type="vendor", itemID=280144, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=23555, source={type="vendor", itemID=280146, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"}, -- HIDDENCATALOG
+--       {decorID=23556, source={type="vendor", itemID=280148, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=23557, source={type="vendor", itemID=280150, currency="500000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=23558, source={type="vendor", itemID=280152, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"}, -- HIDDENCATALOG
+--       {decorID=23559, source={type="vendor", itemID=280154, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"}, -- HIDDENCATALOG
+--       {decorID=23560, source={type="vendor", itemID=280156, currency="500000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=23707, source={type="vendor", itemID=280158, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"}, -- HIDDENCATALOG
+--       {decorID=23708, source={type="vendor", itemID=280160, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=23709, source={type="vendor", itemID=280162, currency="750000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=23710, source={type="vendor", itemID=280164, currency="750000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
     }
   },
 
@@ -622,11 +622,11 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       worldmap="2351:5427:5605"
     },
     items={
-      {decorID=22916, source={type="vendor", itemID=274518, currency="20", currencytype=3363}, budgetCost=3, size="Large"},
-      {decorID=22918, source={type="vendor", itemID=274523, currency="15", currencytype=3363}, budgetCost=3, size="Medium"},
-      {decorID=22924, source={type="vendor", itemID=274533, currency="15", currencytype=3363}, budgetCost=3, size="Medium"},
-      {decorID=22925, source={type="vendor", itemID=274535, currency="30", currencytype=3363}, budgetCost=5, size="Huge"},
-      {decorID=22926, source={type="vendor", itemID=274537, currency="30", currencytype=3363}, budgetCost=5, size="Huge"},
+--       {decorID=22916, source={type="vendor", itemID=274518, currency="20", currencytype=3363}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
+--       {decorID=22918, source={type="vendor", itemID=274523, currency="15", currencytype=3363}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=22924, source={type="vendor", itemID=274533, currency="15", currencytype=3363}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=22925, source={type="vendor", itemID=274535, currency="30", currencytype=3363}, budgetCost=5, size="Huge"}, -- HIDDENCATALOG
+--       {decorID=22926, source={type="vendor", itemID=274537, currency="30", currencytype=3363}, budgetCost=5, size="Huge"}, -- HIDDENCATALOG
     }
   },
 
@@ -654,14 +654,14 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       worldmap="2351:5420:5597"
     },
     items={
-      {decorID=23176, source={type="vendor", itemID=276650}, budgetCost=5, size="Huge"},
-      {decorID=23177, source={type="vendor", itemID=276626}, budgetCost=5, size="Huge"},
-      {decorID=23178, source={type="vendor", itemID=276669}, budgetCost=1, size="Medium"},
-      {decorID=23181, source={type="vendor", itemID=276658}, budgetCost=5, size="Large"},
-      {decorID=23182, source={type="vendor", itemID=276663}, budgetCost=3, size="Large"},
-      {decorID=23184, source={type="vendor", itemID=276667}, budgetCost=5, size="Large"},
-      {decorID=23185, source={type="vendor", itemID=276661}, budgetCost=3, size="Large"},
-      {decorID=23186, source={type="vendor", itemID=276652}, budgetCost=5, size="Huge"},
+--       {decorID=23176, source={type="vendor", itemID=276650}, budgetCost=5, size="Huge"}, -- HIDDENCATALOG
+--       {decorID=23177, source={type="vendor", itemID=276626}, budgetCost=5, size="Huge"}, -- HIDDENCATALOG
+--       {decorID=23178, source={type="vendor", itemID=276669}, budgetCost=1, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=23181, source={type="vendor", itemID=276658}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
+--       {decorID=23182, source={type="vendor", itemID=276663}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
+--       {decorID=23184, source={type="vendor", itemID=276667}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
+--       {decorID=23185, source={type="vendor", itemID=276661}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
+--       {decorID=23186, source={type="vendor", itemID=276652}, budgetCost=5, size="Huge"}, -- HIDDENCATALOG
     }
   },
 
@@ -674,13 +674,13 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       worldmap="2352:5316:4004"
     },
     items={
-      {decorID=25101, source={type="vendor", itemID=277142, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
-      {decorID=25102, source={type="vendor", itemID=277144, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
-      {decorID=25103, source={type="vendor", itemID=277149, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
-      {decorID=25105, source={type="vendor", itemID=277138, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"},
-      {decorID=25106, source={type="vendor", itemID=277160, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"},
-      {decorID=25121, source={type="vendor", itemID=277121, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
-      {decorID=25122, source={type="vendor", itemID=277163, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
+--       {decorID=25101, source={type="vendor", itemID=277142, currency="500000", currencytype="money"}, budgetCost=5, size="Small"}, -- HIDDENCATALOG
+--       {decorID=25102, source={type="vendor", itemID=277144, currency="500000", currencytype="money"}, budgetCost=5, size="Small"}, -- HIDDENCATALOG
+--       {decorID=25103, source={type="vendor", itemID=277149, currency="500000", currencytype="money"}, budgetCost=5, size="Small"}, -- HIDDENCATALOG
+--       {decorID=25105, source={type="vendor", itemID=277138, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=25106, source={type="vendor", itemID=277160, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=25121, source={type="vendor", itemID=277121, currency="500000", currencytype="money"}, budgetCost=5, size="Small"}, -- HIDDENCATALOG
+--       {decorID=25122, source={type="vendor", itemID=277163, currency="500000", currencytype="money"}, budgetCost=5, size="Small"}, -- HIDDENCATALOG
     }
   },
 
@@ -693,7 +693,7 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       worldmap="2352:5382:4165"
     },
     items={
-      {decorID=25546, source={type="vendor", itemID=276230}, budgetCost=1, size="Small"},
+--       {decorID=25546, source={type="vendor", itemID=276230}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
     }
   },
 
@@ -706,12 +706,12 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       worldmap="2351:5487:5730"
     },
     items={
-      {decorID=26365, source={type="vendor", itemID=280240}, budgetCost=3, size="Medium"},
-      {decorID=26371, source={type="vendor", itemID=280234}, budgetCost=3, size="Medium"},
-      {decorID=26386, source={type="vendor", itemID=280238}, budgetCost=3, size="Medium"},
-      {decorID=26387, source={type="vendor", itemID=280232}, budgetCost=3, size="Large"},
-      {decorID=26483, source={type="vendor", itemID=280223}, budgetCost=5, size="Large"},
-      {decorID=26564, source={type="vendor", itemID=280225}, budgetCost=5, size="Large"},
+--       {decorID=26365, source={type="vendor", itemID=280240}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=26371, source={type="vendor", itemID=280234}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=26386, source={type="vendor", itemID=280238}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=26387, source={type="vendor", itemID=280232}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
+--       {decorID=26483, source={type="vendor", itemID=280223}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
+--       {decorID=26564, source={type="vendor", itemID=280225}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
     }
   },
 
@@ -724,12 +724,12 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       worldmap="2351:5489:5728"
     },
     items={
-      {decorID=26613, source={type="vendor", itemID=280246}, budgetCost=5, size="Large"},
-      {decorID=26614, source={type="vendor", itemID=280249}, budgetCost=1, size="Small"},
-      {decorID=26621, source={type="vendor", itemID=280257}, budgetCost=1, size="Medium"},
-      {decorID=26789, source={type="vendor", itemID=280265}, budgetCost=3, size="Medium"},
-      {decorID=26936, source={type="vendor", itemID=280273}, budgetCost=3, size="Large"},
-      {decorID=26937, source={type="vendor", itemID=280271}, budgetCost=3, size="Large"},
+--       {decorID=26613, source={type="vendor", itemID=280246}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
+--       {decorID=26614, source={type="vendor", itemID=280249}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
+--       {decorID=26621, source={type="vendor", itemID=280257}, budgetCost=1, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=26789, source={type="vendor", itemID=280265}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=26936, source={type="vendor", itemID=280273}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
+--       {decorID=26937, source={type="vendor", itemID=280271}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
     }
   },
 

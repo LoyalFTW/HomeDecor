@@ -278,11 +278,11 @@ local function NewCompactRow(parent)
   r.sep:SetPoint("BOTTOMLEFT", 4, 0)
   r.sep:SetPoint("BOTTOMRIGHT", -4, 0)
   r.sep:SetTexture("Interface/Buttons/WHITE8x8")
-  r.sep:SetVertexColor(0.90, 0.72, 0.18, 0.08)
+  r.sep:SetVertexColor(T.accent[1], T.accent[2], T.accent[3], 0.08)
 
   r:SetScript("OnEnter", function(self)
     local T2 = Utils.GetTheme()
-    if self.sep then self.sep:SetVertexColor(0.90, 0.72, 0.18, 0.35) end
+    if self.sep then self.sep:SetVertexColor(T2.accent[1], T2.accent[2], T2.accent[3], 0.35) end
     if self.name then self.name:SetTextColor(unpack(T2.accent)) end
     if self.itemID and GameTooltip then
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -309,7 +309,7 @@ local function NewCompactRow(parent)
 
   r:SetScript("OnLeave", function(self)
     local T2 = Utils.GetTheme()
-    if self.sep then self.sep:SetVertexColor(0.90, 0.72, 0.18, 0.08) end
+    if self.sep then self.sep:SetVertexColor(T2.accent[1], T2.accent[2], T2.accent[3], 0.08) end
     if self.name then self.name:SetTextColor(unpack(T2.text)) end
     if GameTooltip then GameTooltip:Hide() end
   end)

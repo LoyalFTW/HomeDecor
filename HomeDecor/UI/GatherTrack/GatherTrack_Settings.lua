@@ -94,7 +94,8 @@ local function CreateSectionLabel(parent, x, y, text, accent)
   line:SetPoint("LEFT", label, "RIGHT", 8, 0)
   line:SetPoint("RIGHT", parent, "RIGHT", -16, 0)
   line:SetHeight(1)
-  line:SetColorTexture(1, 1, 1, 0.12)
+  local a = accent or { 1, 0.82, 0.2, 1 }
+  line:SetColorTexture(a[1], a[2], a[3], 0.20)
 
   return label, line
 end
@@ -114,7 +115,8 @@ local function CreateCard(parent, x, y, width, height, title, theme)
   card.line:SetPoint("TOPLEFT", card, "TOPLEFT", 10, -24)
   card.line:SetPoint("TOPRIGHT", card, "TOPRIGHT", -10, -24)
   card.line:SetHeight(1)
-  card.line:SetColorTexture(1, 1, 1, 0.10)
+  local ca = theme.accent or { 1, 0.82, 0.2, 1 }
+  card.line:SetColorTexture(ca[1], ca[2], ca[3], 0.18)
 
   return card
 end

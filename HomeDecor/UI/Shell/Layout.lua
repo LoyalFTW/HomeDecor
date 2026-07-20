@@ -262,13 +262,8 @@ local function dockScale(frame, header)
   end
 
   group:ClearAllPoints()
-  group:SetSize(230, 17)
-  local eventCard = header.eventCard
-  if eventCard and eventCard:IsShown() then
-    group:SetPoint("TOPLEFT", eventCard, "BOTTOMLEFT", 0, -6)
-  else
-    group:SetPoint("TOPLEFT", host, "TOPLEFT", 12, -50)
-  end
+  group:SetPoint("TOPLEFT", host, "TOPLEFT", 12, -12)
+  group:SetSize(218, 17)
   group:Show()
 end
 
@@ -285,7 +280,7 @@ local function CreateCategoryIndicators(btn)
 
   local function edge()
     local t = btn:CreateTexture(nil, "BORDER")
-    t:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.30)
+    C:SolidColor(t, "accent", 0.30)
     t:Hide()
     return t
   end
@@ -313,10 +308,6 @@ local function SetCategorySelected(btn, selected)
   if not btn then return end
   local show = selected and true or false
   btn._hdNavSelected = show
-  if btn.navBG and Textures then
-    btn.navBG:SetTexture(show and (Textures.GalleryNavSelected or Textures.GalleryNav) or (Textures.GalleryNav or ""))
-    btn.navBG:SetAlpha(show and 1 or 0.86)
-  end
   if btn.selBG then btn.selBG:SetShown(show) end
   if btn.selTop then btn.selTop:SetShown(show) end
   if btn.selBottom then btn.selBottom:SetShown(show) end
@@ -333,12 +324,7 @@ local function SetCategorySelected(btn, selected)
 end
 
 local function ApplyNavArt(btn)
-  if not (btn and btn.CreateTexture and Textures and Textures.GalleryNav) then return end
-  if not btn.navBG then
-    btn.navBG = btn:CreateTexture(nil, "BACKGROUND", nil, -3)
-    btn.navBG:SetAllPoints(btn)
-  end
-  btn.navBG:SetTexture(Textures.GalleryNav)
+  if not btn then return end
 
   if btn.GetHighlightTexture then
     local ht = btn:GetHighlightTexture()
@@ -348,18 +334,10 @@ local function ApplyNavArt(btn)
   if not btn._hdNavArtHooked then
     btn._hdNavArtHooked = true
     btn:HookScript("OnEnter", function(self)
-      if self.navBG and Textures then
-        self.navBG:SetTexture(self._hdNavSelected and (Textures.GalleryNavSelected or Textures.GalleryNav) or (Textures.GalleryNavHover or Textures.GalleryNav))
-        self.navBG:SetAlpha(1)
-      end
       if self.icon and self.icon.SetDrawLayer then self.icon:SetDrawLayer("OVERLAY", 7) end
       if self.text and self.text.SetDrawLayer then self.text:SetDrawLayer("OVERLAY", 7) end
     end)
     btn:HookScript("OnLeave", function(self)
-      if self.navBG and Textures then
-        self.navBG:SetTexture(self._hdNavSelected and (Textures.GalleryNavSelected or Textures.GalleryNav) or (Textures.GalleryNav or ""))
-        self.navBG:SetAlpha(self._hdNavSelected and 1 or 0.86)
-      end
       if self.icon and self.icon.SetDrawLayer then self.icon:SetDrawLayer("OVERLAY", 7) end
       if self.text and self.text.SetDrawLayer then self.text:SetDrawLayer("OVERLAY", 7) end
     end)
@@ -388,12 +366,7 @@ function L:CreateShell()
   local Filters = db.filters
 
   local f = CreateFrame("Frame", "HomeDecorFrame", UIParent, "BackdropTemplate")
-  f:Hide()
   Backdrop(f, T.bg, T.border)
-
-  if C.ApplyBackground and Textures and Textures.MainBackground then
-    C:ApplyBackground(f, Textures.MainBackground, 8, 1)
-  end
 
   f:SetSize(1320, 760)
   f:SetPoint("CENTER")
@@ -413,7 +386,7 @@ function L:CreateShell()
   header:SetBackdropBorderColor(unpack(BORDER))
   header:SetPoint("TOPLEFT", 8, -8)
   header:SetPoint("TOPRIGHT", -8, -8)
-  header:SetHeight(76)
+  header:SetHeight(62)
   header:EnableMouse(false)
   header.__hdPreserveBackdrop = true
   f.Header = header
@@ -427,13 +400,13 @@ function L:CreateShell()
   headerTopLine:SetPoint("TOPLEFT", header, "TOPLEFT", 8, -5)
   headerTopLine:SetPoint("TOPRIGHT", header, "TOPRIGHT", -8, -5)
   headerTopLine:SetHeight(1)
-  headerTopLine:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.18)
+  C:SolidColor(headerTopLine, "accent", 0.18)
 
   local headerBottomLine = header:CreateTexture(nil, "ARTWORK")
   headerBottomLine:SetPoint("BOTTOMLEFT", header, "BOTTOMLEFT", 8, 4)
   headerBottomLine:SetPoint("BOTTOMRIGHT", header, "BOTTOMRIGHT", -8, 4)
   headerBottomLine:SetHeight(1)
-  headerBottomLine:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.28)
+  C:SolidColor(headerBottomLine, "accent", 0.28)
 
   header.controls = CreateFrame("Frame", nil, header)
   header.controls:SetPoint("BOTTOMLEFT", header, "BOTTOMLEFT", 8, 4)
@@ -441,7 +414,6 @@ function L:CreateShell()
   header.controls:SetHeight(24)
   header.controls:EnableMouse(false)
   Backdrop(header.controls, T.panel, T.border)
-  if C.ApplyHeaderTexture then C:ApplyHeaderTexture(header.controls, false) end
 
   local logo = header:CreateTexture(nil, "ARTWORK")
   header.logo = logo
@@ -452,40 +424,40 @@ function L:CreateShell()
     logo:SetColorTexture(1, 0.82, 0.2, 1)
   end
 
-  logo:SetSize(390, 40)
+  logo:SetSize(430, 44)
   logo:SetPoint("TOP", header, "TOP", 0, -8)
   logo:SetTexCoord(0, 1, 0, 1)
   logo:SetAlpha(1)
 
   local logoUnder = header:CreateTexture(nil, "ARTWORK")
-  logoUnder:SetPoint("TOP", logo, "BOTTOM", 0, -1)
-  logoUnder:SetSize(340, 2)
-  logoUnder:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.34)
+  logoUnder:SetPoint("TOP", logo, "BOTTOM", 0, 1)
+  logoUnder:SetSize(360, 2)
+  C:SolidColor(logoUnder, "accent", 0.34)
 
   local logoUnderSoft = header:CreateTexture(nil, "ARTWORK")
   logoUnderSoft:SetPoint("TOP", logoUnder, "BOTTOM", 0, -2)
-  logoUnderSoft:SetSize(240, 1)
+  logoUnderSoft:SetSize(260, 1)
   logoUnderSoft:SetColorTexture(1, 1, 1, 0.08)
 
   local leftOrnament = header:CreateTexture(nil, "ARTWORK")
   leftOrnament:SetPoint("RIGHT", logo, "LEFT", -20, -2)
-  leftOrnament:SetSize(150, 1)
-  leftOrnament:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.20)
+  leftOrnament:SetSize(190, 1)
+  C:SolidColor(leftOrnament, "accent", 0.20)
 
   local rightOrnament = header:CreateTexture(nil, "ARTWORK")
   rightOrnament:SetPoint("LEFT", logo, "RIGHT", 20, -2)
-  rightOrnament:SetSize(150, 1)
-  rightOrnament:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.20)
+  rightOrnament:SetSize(190, 1)
+  C:SolidColor(rightOrnament, "accent", 0.20)
 
   local leftCap = header:CreateTexture(nil, "ARTWORK")
   leftCap:SetPoint("RIGHT", leftOrnament, "LEFT", -8, 0)
   leftCap:SetSize(28, 3)
-  leftCap:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.32)
+  C:SolidColor(leftCap, "accent", 0.32)
 
   local rightCap = header:CreateTexture(nil, "ARTWORK")
   rightCap:SetPoint("LEFT", rightOrnament, "RIGHT", 8, 0)
   rightCap:SetSize(28, 3)
-  rightCap:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.32)
+  C:SolidColor(rightCap, "accent", 0.32)
 
   local closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
   header.closeBtn = closeBtn
@@ -533,118 +505,11 @@ function L:CreateShell()
   end)
   settingsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-  local trackersBtn = CreateFrame("Button", nil, header.controls, "BackdropTemplate")
-  header.trackersBtn = trackersBtn
-  Backdrop(trackersBtn, T.panel, T.border)
-  trackersBtn:SetSize(88, 20)
-  trackersBtn:SetPoint("RIGHT", header.controls, "RIGHT", -8, 0)
-  Hover(trackersBtn, T.panel, T.hover)
-
-  local trackersText = NewFS(trackersBtn, "GameFontNormal")
-  trackersBtn.text = trackersText
-  trackersText:SetPoint("CENTER", -6, 0)
-  trackersText:SetText(Loc["TRACKERS"])
-  TextColor(trackersText, "text")
-  trackersBtn:SetFrameLevel(header:GetFrameLevel() + 6)
-  trackersText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
-  trackersText:SetShadowColor(0, 0, 0, 0)
-  trackersText:SetShadowOffset(0, 0)
-  trackersText:SetDrawLayer("OVERLAY", 7)
-
-  local arrow = trackersBtn:CreateTexture(nil, "OVERLAY")
-  arrow:SetSize(8, 8)
-  arrow:SetPoint("RIGHT", trackersBtn, "RIGHT", -6, 0)
-  arrow:SetTexture("Interface\\ChatFrame\\ChatFrameExpandArrow")
-  C:TextureColor(arrow, "accent")
-
-  local trackersMenu = CreateFrame("Frame", nil, trackersBtn, "BackdropTemplate")
-  trackersMenu:SetFrameStrata("FULLSCREEN_DIALOG")
-  trackersMenu:SetFrameLevel(trackersBtn:GetFrameLevel() + 10)
-  trackersMenu:Hide()
-  Backdrop(trackersMenu, T.panel, T.border)
-  trackersMenu:SetSize(140, 60)
-  trackersMenu:SetPoint("TOP", trackersBtn, "BOTTOM", 0, -2)
-
-  local decorOption = CreateFrame("Button", nil, trackersMenu, "BackdropTemplate")
-  Backdrop(decorOption, T.panel, T.border)
-  decorOption:SetPoint("TOPLEFT", 4, -4)
-  decorOption:SetPoint("TOPRIGHT", -4, -4)
-  decorOption:SetHeight(24)
-  Hover(decorOption, T.panel, T.hover)
-
-  local decorText = NewFS(decorOption, "GameFontNormal")
-  decorText:SetPoint("CENTER", 0, 0)
-  decorText:SetText(Loc["DECOR_TRACKER"])
-  TextColor(decorText, "text")
-
-  decorOption:SetScript("OnClick", function()
-    local Tr = (NS.UI and NS.UI.Tracker) or (NS.UI and NS.UI.DecorTracker) or NS.Tracker
-    if Tr and Tr.Toggle then Tr:Toggle() end
-    trackersMenu:Hide()
-  end)
-
-  local lumberOption = CreateFrame("Button", nil, trackersMenu, "BackdropTemplate")
-  Backdrop(lumberOption, T.panel, T.border)
-  lumberOption:SetPoint("TOPLEFT", decorOption, "BOTTOMLEFT", 0, -4)
-  lumberOption:SetPoint("TOPRIGHT", decorOption, "BOTTOMRIGHT", 0, -4)
-  lumberOption:SetHeight(24)
-  Hover(lumberOption, T.panel, T.hover)
-
-  local lumberText = NewFS(lumberOption, "GameFontNormal")
-  lumberText:SetPoint("CENTER", 0, 0)
-  lumberText:SetText(Loc["LUMBER_TRACKER"] or "Gather Tracker")
-  TextColor(lumberText, "text")
-
-  lumberOption:SetScript("OnClick", function()
-    local GT = (NS.UI and NS.UI.GatherTrack)
-    if GT and GT.ToggleAll then
-      GT:ToggleAll()
-    else
-      local LT = (NS.UI and NS.UI.LumberTrack) or NS.LumberTrack
-      if LT and LT.Toggle then LT:Toggle() end
-    end
-    trackersMenu:Hide()
-  end)
-
-  trackersBtn:SetScript("OnClick", function()
-    if trackersMenu:IsShown() then
-      trackersMenu:Hide()
-    else
-      trackersMenu:Show()
-    end
-  end)
-
-  trackersMenu:SetScript("OnShow", function(self)
-    self._hideTimer = nil
-    self:SetScript("OnUpdate", function(self, elapsed)
-      local mouseOver = MouseIsOver(self) or MouseIsOver(trackersBtn) or
-                        MouseIsOver(decorOption) or MouseIsOver(lumberOption)
-
-      if not mouseOver then
-        if not self._hideTimer then
-          self._hideTimer = 0
-        end
-        self._hideTimer = self._hideTimer + elapsed
-
-        if self._hideTimer >= 0.3 then
-          self:Hide()
-        end
-      else
-        self._hideTimer = nil
-      end
-    end)
-  end)
-
-  trackersMenu:SetScript("OnHide", function(self)
-    self:SetScript("OnUpdate", nil)
-    self._hideTimer = nil
-  end)
-
   local compactBtn = CreateFrame("Button", nil, header.controls, "BackdropTemplate")
   header.compactBtn = compactBtn
   Backdrop(compactBtn, T.panel, T.border)
   compactBtn:SetSize(72, 20)
-  compactBtn:SetPoint("RIGHT", trackersBtn, "LEFT", -6, 0)
+  compactBtn:SetPoint("RIGHT", header.controls, "RIGHT", -8, 0)
   Hover(compactBtn, T.panel, T.hover)
 
   local compactText = NewFS(compactBtn, "GameFontNormal")
@@ -738,7 +603,7 @@ function L:CreateShell()
       local tex = btn:CreateTexture(nil, "OVERLAY")
       tex:SetPoint("LEFT", btn, "LEFT", x, y)
       tex:SetSize(w, h)
-      tex:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.95)
+      C:SolidColor(tex, "accent", 0.95)
       pieces[#pieces + 1] = tex
       return tex
     end
@@ -765,7 +630,7 @@ function L:CreateShell()
     for i = 1, #btn.iconPieces do
       local tex = btn.iconPieces[i]
       if tex and tex.SetColorTexture then
-        tex:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], a)
+        C:SolidColor(tex, "accent", a)
       end
     end
   end
@@ -817,9 +682,6 @@ function L:CreateShell()
 
   local left = CreateFrame("Frame", nil, f, "BackdropTemplate")
   Backdrop(left, T.panel, T.border)
-  if C.ApplyBackground and Textures and Textures.LeftPanelBG then
-    C:ApplyBackground(left, Textures.LeftPanelBG, 6, 1)
-  end
   left:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -1)
   left:SetPoint("BOTTOMLEFT", 8, 46)
   left:SetWidth(204)
@@ -836,6 +698,7 @@ function L:CreateShell()
     "PvP",
     "Architect",
     "Decor Pricing",
+    "Events",
     "Decor Tracker",
     "Gather Tracker",
     "Alts Professions",
@@ -852,6 +715,7 @@ function L:CreateShell()
     Professions = "Interface\\Icons\\Trade_BlackSmithing",
     ["PvP"] = "Interface\\Icons\\INV_BannerPVP_02",
     Architect = "Interface\\Icons\\INV_Inscription_Tradeskill01",
+    Events = "Interface\\Icons\\INV_Misc_PocketWatch_01",
     ["Decor Tracker"] = "Interface\\Icons\\Ability_Hunter_BeastCall",
     ["Gather Tracker"] = "Interface\\Icons\\INV_Misc_Map_01",
     ["Decor Pricing"] = "Interface\\Icons\\INV_Misc_Coin_01",
@@ -876,7 +740,7 @@ function L:CreateShell()
     section.line:SetPoint("LEFT", section.text, "RIGHT", 8, 0)
     section.line:SetPoint("RIGHT", section, "RIGHT", 0, 0)
     section.line:SetHeight(1)
-    section.line:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.28)
+    C:SolidColor(section.line, "accent", 0.28)
 
     return section
   end
@@ -912,6 +776,7 @@ function L:CreateShell()
     Professions = "Decor crafted or gathered through professions.",
     ["PvP"] = "Decor tied to PvP sources.",
     Architect = "Plan rooms, decor budgets, and reusable furnishing ideas.",
+    Events = "Open active and seasonal event decor.",
     ["Decor Tracker"] = "Open your decor tracker.",
     ["Gather Tracker"] = "Open your gather tracker.",
     ["Decor Pricing"] = "Open the pricing window.",
@@ -949,10 +814,7 @@ function L:CreateShell()
     end
     local displayName = (cname == "Drops") and "Drops/Encounters" or cname
     local collected, total = 0, 0
-    if GlobalIndex and GlobalIndex.GetCountsIfBuilt then
-      local c, t = GlobalIndex:GetCountsIfBuilt(cname)
-      collected, total = c or 0, t or 0
-    elseif GlobalIndex and GlobalIndex._built and GlobalIndex.GetCounts then
+    if GlobalIndex and GlobalIndex.GetCounts then
       collected, total = GlobalIndex:GetCounts(cname)
     end
     if total > 0 then
@@ -975,103 +837,8 @@ function L:CreateShell()
     end
   end
 
-  local function ScheduleCategoryCountWarmup()
-    local GI = NS.Systems and NS.Systems.GlobalIndex
-    if not (GI and GI.BuildAsync) then return end
-    GI:BuildAsync(function()
-      if not f or not left or not left.buttons then return end
-      RefreshCategoryTexts()
-    end)
-  end
-
   local y = -12
   y = PlaceSideSection(left.sections.quick, y)
-
-  local eventCard = CreateFrame("Button", nil, header, "BackdropTemplate")
-  left.eventCard = eventCard
-  header.eventCard = eventCard
-  Backdrop(eventCard, {0.010, 0.010, 0.010, 0.94}, {0.48, 0.38, 0.16, 0.90})
-  if eventCard.SetBackdropBorderColor then eventCard:SetBackdropBorderColor(0.48, 0.38, 0.16, 0.90) end
-  Hover(eventCard, {0.026, 0.024, 0.020, 0.98}, {0.78, 0.62, 0.24, 1})
-  eventCard:HookScript("OnEnter", function(self)
-    if self.SetBackdropColor then self:SetBackdropColor(0.026, 0.024, 0.020, 0.98) end
-    if self.SetBackdropBorderColor then self:SetBackdropBorderColor(0.78, 0.62, 0.24, 1) end
-  end)
-  eventCard:HookScript("OnLeave", function(self)
-    if self.SetBackdropColor then self:SetBackdropColor(0.010, 0.010, 0.010, 0.94) end
-    if self.SetBackdropBorderColor then self:SetBackdropBorderColor(0.48, 0.38, 0.16, 0.90) end
-  end)
-  eventCard:SetHeight(34)
-  eventCard:Hide()
-
-  eventCard.banner = eventCard:CreateTexture(nil, "BACKGROUND", nil, 0)
-  eventCard.banner:SetTexture("Interface\\AddOns\\HomeDecor\\Media\\UI\\event_badge_small.tga")
-  eventCard.banner:SetPoint("TOPLEFT", eventCard, "TOPLEFT", -2, 2)
-  eventCard.banner:SetPoint("BOTTOMRIGHT", eventCard, "BOTTOMRIGHT", 2, -2)
-  eventCard.banner:SetBlendMode("ADD")
-  eventCard.banner:SetAlpha(0)
-
-  eventCard.iconBG = CreateFrame("Frame", nil, eventCard, "BackdropTemplate")
-  Backdrop(eventCard.iconBG, {0.006, 0.006, 0.006, 1}, {0.62, 0.52, 0.25, 1})
-  if eventCard.iconBG.SetBackdropBorderColor then eventCard.iconBG:SetBackdropBorderColor(0.62, 0.52, 0.25, 1) end
-  eventCard.iconBG:SetSize(30, 30)
-  eventCard.iconBG:SetPoint("LEFT", eventCard, "LEFT", 3, 0)
-
-  eventCard.icon = eventCard.iconBG:CreateTexture(nil, "ARTWORK")
-  eventCard.icon:SetPoint("TOPLEFT", 2, -2)
-  eventCard.icon:SetPoint("BOTTOMRIGHT", -2, 2)
-  eventCard.icon:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
-  eventCard.icon:SetTexCoord(0.10, 0.90, 0.10, 0.90)
-
-  eventCard.kicker = NewFS(eventCard, "GameFontNormalSmall")
-  eventCard.kicker:SetPoint("TOPLEFT", eventCard, "TOPLEFT", 10, -9)
-  eventCard.kicker:SetPoint("RIGHT", eventCard, "RIGHT", -92, 0)
-  eventCard.kicker:SetJustifyH("LEFT")
-  eventCard.kicker:SetWordWrap(false)
-  eventCard.kicker:SetText(Loc["EVENTS"] or "Events")
-  TextColor(eventCard.kicker, "accent", 0.95)
-  eventCard.kicker:Hide()
-
-  eventCard.timerBadge = CreateFrame("Frame", nil, eventCard, "BackdropTemplate")
-  Backdrop(eventCard.timerBadge, T.row, T.border)
-  eventCard.timerBadge:SetPoint("LEFT", eventCard.iconBG, "RIGHT", 7, 0)
-  eventCard.timerBadge:SetPoint("RIGHT", eventCard, "RIGHT", -6, 0)
-  eventCard.timerBadge:SetHeight(26)
-  eventCard.timerBadge:Hide()
-
-  eventCard.title = NewFS(eventCard, "GameFontNormal")
-  eventCard.title:SetPoint("TOPLEFT", eventCard.iconBG, "TOPRIGHT", 7, -2)
-  eventCard.title:SetPoint("RIGHT", eventCard, "RIGHT", -7, 0)
-  eventCard.title:SetJustifyH("LEFT")
-  eventCard.title:SetWordWrap(false)
-  if eventCard.title.SetMaxLines then eventCard.title:SetMaxLines(1) end
-  eventCard.title:SetText("")
-  if eventCard.title.SetTextColor then eventCard.title:SetTextColor(1, 0.84, 0.05, 1) end
-
-  eventCard.timer = NewFS(eventCard, "GameFontNormalSmall")
-  eventCard.timer:SetPoint("TOPLEFT", eventCard.title, "BOTTOMLEFT", 0, 0)
-  eventCard.timer:SetPoint("RIGHT", eventCard, "RIGHT", -7, 0)
-  eventCard.timer:SetJustifyH("LEFT")
-  eventCard.timer:SetWordWrap(false)
-  if eventCard.timer.SetMaxLines then eventCard.timer:SetMaxLines(1) end
-  eventCard.timer:SetText("")
-  if eventCard.timer.SetTextColor then eventCard.timer:SetTextColor(0.94, 0.94, 0.92, 1) end
-
-  eventCard.controls = NewFS(eventCard, "GameFontNormalSmall")
-  eventCard.controls:SetPoint("TOPLEFT", eventCard.title, "BOTTOMLEFT", 0, -7)
-  eventCard.controls:SetPoint("RIGHT", eventCard, "RIGHT", -8, 0)
-  eventCard.controls:SetJustifyH("LEFT")
-  eventCard.controls:SetText("Left open  Right inspect  Alt links")
-  TextColor(eventCard.controls, "textMuted", 0.9)
-  eventCard.controls:Hide()
-
-  local eventPulse = eventCard:CreateTexture(nil, "BACKGROUND")
-  eventCard.pulse = eventPulse
-  eventPulse:SetTexture("Interface\\AddOns\\HomeDecor\\Media\\UI\\event_badge_small.tga")
-  eventPulse:SetPoint("CENTER", eventCard, "CENTER", 0, 0)
-  eventPulse:SetSize(172, 52)
-  eventPulse:SetBlendMode("ADD")
-  eventPulse:SetAlpha(0)
 
   local savedItemsBtn = CreateFrame("Button", nil, left, "BackdropTemplate")
   Backdrop(savedItemsBtn, T.panel, T.border)
@@ -1109,7 +876,7 @@ function L:CreateShell()
   y = y - 36
 
   local utilityDivider = left:CreateTexture(nil, "ARTWORK")
-  utilityDivider:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 0.28)
+  C:SolidColor(utilityDivider, "accent", 0.28)
   utilityDivider:SetHeight(1)
   utilityDivider:Hide()
 
@@ -1364,32 +1131,16 @@ function L:CreateShell()
     whatsNewBtn:SetPoint("BOTTOMLEFT",  left, "BOTTOMLEFT",  10, b3Off)
     whatsNewBtn:SetPoint("BOTTOMRIGHT", left, "BOTTOMRIGHT", -10, b3Off)
     whatsNewBtn:SetHeight(bottomBtnH)
-
-    if eventCard then
-      eventCard:ClearAllPoints()
-      if eventCard:GetParent() ~= header then eventCard:SetParent(header) end
-      eventCard:SetPoint("TOPLEFT", header, "TOPLEFT", 12, -10)
-      eventCard:SetSize(184, 34)
-      eventCard:SetFrameLevel(header:GetFrameLevel() + 7)
-      if eventCard.iconBG then eventCard.iconBG:SetSize(30, 30) end
-    end
-
-    dockScale(f, header)
   end
 
   local right = CreateFrame("Frame", nil, f, "BackdropTemplate")
   Backdrop(right, T.panel, T.border)
-  if C.ApplyBackground and Textures then
-    local bg = Textures.ModelBG or Textures.ModalBG or Textures.MainBackground
-    if bg then C:ApplyBackground(right, bg, 8, 1) end
-  end
   right:SetPoint("TOPLEFT", left, "TOPRIGHT", 8, 0)
   right:SetPoint("BOTTOMRIGHT", -8, 46)
   f.Right = right
 
   local rightToolbar = CreateFrame("Frame", nil, right, "BackdropTemplate")
   Backdrop(rightToolbar, T.panel, T.border)
-  if C.ApplyHeaderTexture then C:ApplyHeaderTexture(rightToolbar, false) end
   rightToolbar:SetPoint("TOPLEFT", right, "TOPLEFT", 8, -4)
   rightToolbar:SetPoint("TOPRIGHT", right, "TOPRIGHT", -8, -4)
   rightToolbar:SetHeight(58)
@@ -1397,7 +1148,6 @@ function L:CreateShell()
 
   local bar = CreateFrame("Frame", nil, header, "BackdropTemplate")
   Backdrop(bar, T.panel, T.border)
-  if C.ApplyHeaderTexture then C:ApplyHeaderTexture(bar, false) end
   bar:SetPoint("BOTTOMLEFT",  header, "BOTTOMLEFT",   8,  4)
   bar:SetPoint("BOTTOMRIGHT", header, "BOTTOMRIGHT", -8,  4)
   bar:SetHeight(36)
@@ -1425,6 +1175,41 @@ function L:CreateShell()
     b.text:SetPoint("LEFT", b.icon, "RIGHT", 6, 0)
     return b
   end
+
+  local eventsBtn = MakeTopButton(bar, 96, 24)
+  eventsBtn.icon:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
+  eventsBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+  eventsBtn.icon:SetDesaturated(true)
+  eventsBtn.icon:SetVertexColor(1, 1, 1, 0.9)
+  eventsBtn.text:SetText(Loc["EVENTS"])
+  TextColor(eventsBtn.text, "textMuted")
+
+  local glow = eventsBtn:CreateTexture(nil, "ARTWORK")
+  eventsBtn.glow = glow
+  glow:SetTexture("Interface\\AddOns\\HomeDecor\\Media\\UI\\event_badge_small.tga")
+  glow:SetPoint("CENTER", eventsBtn, "CENTER", 0, 0)
+  glow:SetSize(110, 34)
+  glow:SetBlendMode("ADD")
+  glow:SetAlpha(0)
+
+  local glowAnim = eventsBtn:CreateAnimationGroup()
+  eventsBtn.glowAnim = glowAnim
+  do
+    local a1 = glowAnim:CreateAnimation("Alpha")
+    a1:SetFromAlpha(0.10)
+    a1:SetToAlpha(0.70)
+    a1:SetDuration(0.55)
+    a1:SetSmoothing("IN_OUT")
+    a1:SetOrder(1)
+
+    local a2 = glowAnim:CreateAnimation("Alpha")
+    a2:SetFromAlpha(0.70)
+    a2:SetToAlpha(0.10)
+    a2:SetDuration(0.65)
+    a2:SetSmoothing("IN_OUT")
+    a2:SetOrder(2)
+  end
+  glowAnim:SetLooping("REPEAT")
 
   compactBtn:SetParent(header)
   compactBtn:SetSize(72, 20)
@@ -1464,9 +1249,8 @@ function L:CreateShell()
     end
   end)
 
-  trackersBtn:Hide()
-  trackersMenu:Hide()
   header.controls:Hide()
+  eventsBtn:Hide()
   decorTrackerBtn:Hide()
   gatherTrackerBtn:Hide()
 
@@ -1475,11 +1259,14 @@ function L:CreateShell()
   local endeavorsTopBtn
 
   local function LayoutModeBar()
-    local centerClusterWidth = 120 + 6 + 130 + 6 + 110
+    local centerClusterWidth = 96 + 6 + 120 + 6 + 130 + 6 + 110
+
+    eventsBtn:ClearAllPoints()
+    eventsBtn:SetPoint("LEFT", bar, "CENTER", -math.floor(centerClusterWidth / 2), 0)
 
     if decorPricingBtn then
       decorPricingBtn:ClearAllPoints()
-      decorPricingBtn:SetPoint("LEFT", bar, "CENTER", -math.floor(centerClusterWidth / 2), 0)
+      decorPricingBtn:SetPoint("LEFT", eventsBtn, "RIGHT", 6, 0)
     end
 
     if altProfsTopBtn and decorPricingBtn then
@@ -1505,10 +1292,7 @@ function L:CreateShell()
     EventsSys = Ev
     if not Ev then return false, "" end
 
-    if Ev.GetFeaturedEvent then
-      local ev, item, timerText, sig = Ev:GetFeaturedEvent()
-      return ev ~= nil and item ~= nil, sig or "", ev, item, timerText
-    elseif Ev.GetStatus then
+    if Ev.GetStatus then
       return Ev:GetStatus()
     elseif Ev.GetActive then
       local list = Ev:GetActive()
@@ -1520,95 +1304,6 @@ function L:CreateShell()
     end
 
     return false, ""
-  end
-
-  local function GetEventButtonIcon(item)
-    if type(item) ~= "table" then return "Interface\\Icons\\INV_Misc_PocketWatch_01" end
-    local source = item.source
-    if source and source.icon then return source.icon end
-    if item.icon then return item.icon end
-    local itemID = item.itemID or item.vendorItemID or (source and source.itemID)
-    if itemID then
-      if C_Item and C_Item.GetItemIconByID then
-        local icon = C_Item.GetItemIconByID(itemID)
-        if icon then return icon end
-      end
-      if GetItemIcon then
-        local icon = GetItemIcon(itemID)
-        if icon then return icon end
-      end
-      if GetItemInfoInstant then
-        local _, _, _, _, icon = GetItemInfoInstant(itemID)
-        if icon then return icon end
-      end
-    end
-    local D = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
-    if D and D.GetDecorIcon and item.decorID then
-      local icon = D.GetDecorIcon(item.decorID)
-      if icon then return icon end
-    end
-    return "Interface\\Icons\\INV_Misc_PocketWatch_01"
-  end
-
-  local function GetEventButtonTitle(ev, item)
-    if type(item) == "table" then
-      local D = NS.UI and NS.UI.Viewer and NS.UI.Viewer.Data
-      local title = item.title or (item.decorID and D and D.GetDecorName and D.GetDecorName(item.decorID))
-      if title and title ~= "" then return title end
-      local itemID = item.itemID or item.vendorItemID or (item.source and item.source.itemID)
-      if itemID and GetItemInfo then
-        local name = GetItemInfo(itemID)
-        if name and name ~= "" then return name end
-      end
-      if item.decorID then return "Decor #" .. tostring(item.decorID) end
-    end
-    if type(ev) == "table" then
-      local source = ev.source
-      return ev.title or ev.name or (source and (source.name or source.zone)) or Loc["EVENTS"] or "Events"
-    end
-    return Loc["EVENTS"] or "Events"
-  end
-
-  local function TrimText(value)
-    value = tostring(value or "")
-    value = value:gsub("^%s+", ""):gsub("%s+$", "")
-    return value
-  end
-
-  local function GetEventBadgeTitle(ev)
-    local source = ev and ev.source
-    local title = ev and (ev.title or ev.name or (source and (source.name or source.zone))) or ""
-    title = tostring(title or ""):gsub("%s*%b()%s*", " ")
-    title = TrimText(title)
-    if title:lower() == "twitch drop" then
-      return "Twitch Drop"
-    end
-    return title ~= "" and title or (Loc["EVENTS"] or "Event")
-  end
-
-  local function GetEventBadgeTime(ev, timerText)
-    local now = time and time() or 0
-    local endsAt = ev and (tonumber(ev._endsEpoch) or tonumber(ev.endsAt) or tonumber(ev.endAt))
-    if endsAt and endsAt > 0 then
-      local secondsLeft = endsAt - now
-      if secondsLeft <= 0 then
-        return "Ends Today"
-      end
-      local daysLeft = math.ceil(secondsLeft / 86400)
-      if daysLeft <= 1 then
-        return "1 Day Left"
-      end
-      return tostring(daysLeft) .. " Days Left"
-    end
-
-    timerText = TrimText(timerText):gsub("^Ends in%s+", "")
-    local days = timerText:match("^(%d+)%s*d")
-    if days then
-      local n = tonumber(days) or 0
-      if n <= 1 then return "1 Day Left" end
-      return tostring(n) .. " Days Left"
-    end
-    return timerText ~= "" and timerText or "Active"
   end
 
   local UpdateTopTabs
@@ -1624,16 +1319,6 @@ function L:CreateShell()
   local function SetToggleButtonState(btn, active)
     if not btn then return end
     C:SetSelected(btn, active, T.panel, T.row)
-    if btn.__hdBtnSkinned and Textures then
-      if btn.SetNormalTexture then
-        btn:SetNormalTexture(active and (Textures.ButtonPushed or Textures.ButtonNormal) or Textures.ButtonNormal)
-      end
-      local nt = btn.GetNormalTexture and btn:GetNormalTexture()
-      if nt then
-        nt:SetAllPoints(btn)
-        nt:SetAlpha(1)
-      end
-    end
     if btn.text then
       if active then
         TextColor(btn.text, "highlight", 0.95)
@@ -1667,7 +1352,8 @@ function L:CreateShell()
   end
 
   local function IsWindowCategory(categoryName)
-    return categoryName == "Architect"
+    return categoryName == "Events"
+      or categoryName == "Architect"
       or categoryName == "Decor Pricing"
       or categoryName == "Alts Professions"
       or categoryName == "Endeavors"
@@ -1727,43 +1413,35 @@ function L:CreateShell()
       f.view:SetShown(not isEndeavorsSelected and not isArchitectSelected)
     end
 
-    local hasActive, sig, activeEvent, activeItem, timerText = getEventState()
+    C:SetSelected(eventsBtn, UI.activeCategory == "Events", T.panel, T.row)
+
+    local hasActive, sig = getEventState()
     if UI.activeCategory == "Events" and sig ~= "" then
       db.ui.eventsSeenSig = sig
     end
 
-    local cardWasShown = eventCard and eventCard:IsShown()
+    local seenSig = db.ui.eventsSeenSig or ""
+    local isNew = (sig ~= "" and sig ~= seenSig)
 
-    if hasActive and activeItem then
-      local source = activeEvent and activeEvent.source
-      local eventTitle = activeEvent and (activeEvent.title or activeEvent.name or (source and (source.name or source.zone)))
-      local itemID = activeItem and (activeItem.itemID or activeItem.vendorItemID or (activeItem.source and activeItem.source.itemID))
-      if itemID and C_Item and C_Item.RequestLoadItemDataByID then
-        pcall(C_Item.RequestLoadItemDataByID, itemID)
+    if hasActive then
+      eventsBtn.icon:SetDesaturated(false)
+      TextColor(eventsBtn.text, "highlight", 0.95)
+      eventsBtn:SetAlpha(1.0)
+
+      if isNew then
+        glow:SetAlpha(0.10)
+        if not glowAnim:IsPlaying() then glowAnim:Play() end
+      else
+        if glowAnim:IsPlaying() then glowAnim:Stop() end
+        glow:SetAlpha(0.25)
       end
-
-      if eventCard then
-        eventCard:Show()
-        eventCard.icon:SetTexture(GetEventButtonIcon(activeItem))
-        eventCard.kicker:SetText(eventTitle or Loc["EVENTS"] or "Events")
-        eventCard.title:SetText(GetEventBadgeTitle(activeEvent))
-        eventCard.timer:SetText(GetEventBadgeTime(activeEvent, timerText))
-        eventCard._activeEvent = activeEvent
-        eventCard._activeItem = activeItem
-        eventCard._timerText = timerText
-      end
-
     else
-      if eventCard then
-        eventCard:Hide()
-        eventCard._activeEvent = nil
-        eventCard._activeItem = nil
-        eventCard._timerText = nil
-      end
+      eventsBtn.icon:SetDesaturated(true)
+      TextColor(eventsBtn.text, "textMuted")
+      eventsBtn:SetAlpha(0.85)
+      if glowAnim:IsPlaying() then glowAnim:Stop() end
+      glow:SetAlpha(0)
       db.ui.eventsSeenSig = ""
-    end
-    if eventCard and cardWasShown ~= eventCard:IsShown() and RefreshLeftLayout then
-      RefreshLeftLayout()
     end
   end
 
@@ -1898,74 +1576,11 @@ function L:CreateShell()
     end)
   end
 
-  local function GetEventCardItemID(item)
-    if type(item) ~= "table" then return nil end
-    local source = item.source
-    return item.itemID or item.vendorItemID or (source and source.itemID) or item.id
-  end
-
-  local function OpenEventCategory()
+  eventsBtn:SetScript("OnClick", function()
     SelectCategory("Events")
     local _, sig = getEventState()
     db.ui.eventsSeenSig = sig or ""
     if UpdateTopTabs then UpdateTopTabs() end
-  end
-
-  local function InspectEventItem(item)
-    OpenEventCategory()
-    UI.detailsPanelOpen = true
-    if db and db.ui then db.ui.detailsPanelOpen = true end
-    ApplyDetailsPanelForCategory("Events")
-    if f.view and f.view.SetSelectedItem and item then
-      f.view:SetSelectedItem(item, nil)
-      return true
-    end
-    local itemID = GetEventCardItemID(item)
-    if itemID and DressUpItemLink then
-      DressUpItemLink("item:" .. tostring(itemID))
-      return true
-    end
-    return false
-  end
-
-  eventCard:RegisterForClicks("AnyUp")
-  eventCard:SetScript("OnMouseUp", function(self, btn)
-    local item = self._activeItem
-    if IsAltKeyDown and IsAltKeyDown() then
-      local IA = NS.UI and NS.UI.ItemInteractions
-      if IA and IA.ShowWowheadPopup and IA:ShowWowheadPopup(item) then return end
-    end
-    if btn == "RightButton" then
-      InspectEventItem(item)
-      return
-    end
-    OpenEventCategory()
-  end)
-  eventCard:SetScript("OnEnter", function(self)
-    if self.SetBackdropColor then self:SetBackdropColor(0.035, 0.032, 0.026, 0.98) end
-    if self.SetBackdropBorderColor then self:SetBackdropBorderColor(0.82, 0.68, 0.28, 1) end
-    local ev = self._activeEvent
-    local item = self._activeItem
-    local timerText = self._timerText
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetText(GetEventButtonTitle(ev, item), 1, 1, 1)
-    local source = ev and ev.source
-    local eventName = ev and (ev.title or ev.name or (source and (source.name or source.zone)))
-    if eventName and eventName ~= GetEventButtonTitle(ev, item) then
-      GameTooltip:AddLine(eventName, 0.72, 0.72, 0.72, true)
-    end
-    if timerText and timerText ~= "" then
-      GameTooltip:AddLine(timerText, 1, 0.82, 0.2, true)
-    end
-    GameTooltip:AddLine("Left-click: open event items", 0.58, 0.58, 0.58, true)
-    GameTooltip:AddLine("Right-click: inspect item", 0.58, 0.58, 0.58, true)
-    GameTooltip:AddLine("Alt-click: item links", 0.58, 0.58, 0.58, true)
-    GameTooltip:Show()
-  end)
-  eventCard:SetScript("OnLeave", function(self)
-    if self.SetBackdropColor then self:SetBackdropColor(0.018, 0.017, 0.015, 0.98) end
-    if self.SetBackdropBorderColor then self:SetBackdropBorderColor(0.52, 0.43, 0.20, 0.95) end
-    GameTooltip:Hide()
   end)
 
   for i = 1, #left.buttons do
@@ -2047,7 +1662,7 @@ function L:CreateShell()
   RefreshDetailsButton()
 
   decorPricingBtn = MakeTopButton(bar, 120, 24)
-  decorPricingBtn:SetPoint("LEFT", bar, "CENTER", -183, 0)
+  decorPricingBtn:SetPoint("LEFT", eventsBtn, "RIGHT", 6, 0)
   decorPricingBtn.icon:SetTexture("Interface\\Icons\\INV_Misc_Coin_01")
   decorPricingBtn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   decorPricingBtn.icon:SetVertexColor(1, 1, 1, 0.9)
@@ -2637,9 +2252,6 @@ function L:CreateShell()
   local filterDrawer = CreateFrame("Frame", nil, f, "BackdropTemplate")
   f.FilterDrawer = filterDrawer
   Backdrop(filterDrawer, T.panel, T.border)
-  if C.ApplyBackground and Textures and Textures.GalleryPanel then
-    C:ApplyBackground(filterDrawer, Textures.GalleryPanel, 0, 1)
-  end
   filterDrawer:SetFrameStrata("FULLSCREEN_DIALOG")
   filterDrawer:SetFrameLevel((f:GetFrameLevel() or 100) + 40)
   filterDrawer:SetSize(360, 560)
@@ -2756,6 +2368,9 @@ function L:CreateShell()
   if f.view and f.view.SetInspectorOpen then
     ApplyDetailsPanelForCategory(UI.activeCategory or "All", true)
   end
+  if f.view and f.view.OnShow then f.view:OnShow() end
+  rerender()
+
   if NS.UI and NS.UI.HeaderController and NS.UI.HeaderController.Reset then
     NS.UI.HeaderController:Reset()
   end
@@ -2772,11 +2387,6 @@ function L:CreateShell()
     if UpdateSortVisibility then UpdateSortVisibility() end
     if UpdateRightToolbarVisibility then UpdateRightToolbarVisibility() end
     if ScheduleEventStateRefresh then ScheduleEventStateRefresh() end
-    if ScheduleCategoryCountWarmup and C_Timer and C_Timer.After then
-      C_Timer.After(1.5, function()
-        if f and f:IsShown() then ScheduleCategoryCountWarmup() end
-      end)
-    end
   end)
 
   f:HookScript("OnHide", function()

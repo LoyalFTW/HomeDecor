@@ -391,8 +391,14 @@ end
 function Endeavors:ValidateAPI()
     if not C_NeighborhoodInitiative then return "api_unavailable" end
     if not C_NeighborhoodInitiative.IsInitiativeEnabled() then return "disabled" end
-    if not C_NeighborhoodInitiative.PlayerMeetsRequiredLevel() then return "low_level" end
-    if not C_NeighborhoodInitiative.PlayerHasInitiativeAccess() then return "no_access" end
+    if C_NeighborhoodInitiative.PlayerMeetsRequiredLevel and
+       not C_NeighborhoodInitiative.PlayerMeetsRequiredLevel() then
+        return "limited_low_level"
+    end
+    if C_NeighborhoodInitiative.PlayerHasInitiativeAccess and
+       not C_NeighborhoodInitiative.PlayerHasInitiativeAccess() then
+        return "limited_no_access"
+    end
     return "ok"
 end
 function Endeavors:FetchData(attempt)
@@ -404,7 +410,7 @@ function Endeavors:FetchData(attempt)
     state.fetchStatus.state   = attempt > 0 and "retrying" or "fetching"
     state.fetchStatus.attempt = attempt
     local apiStatus = self:ValidateAPI()
-    if apiStatus ~= "ok" then return end
+    if apiStatus == "api_unavailable" or apiStatus == "disabled" then return end
     local skipRequest = (now - state.lastRequestTime) < 2
     if not skipRequest then
         state.lastRequestTime = now
@@ -576,13 +582,21 @@ function Endeavors:SetAsActiveEndeavor()
 end
 function Endeavors:TrackTask(taskID)
     if C_NeighborhoodInitiative and C_NeighborhoodInitiative.AddTrackedInitiativeTask then
-        C_NeighborhoodInitiative.AddTrackedInitiativeTask(taskID)
+        pcall(C_NeighborhoodInitiative.AddTrackedInitiativeTask, taskID)
     end
+    for _, task in ipairs(state.tasks) do
+        if task.id == taskID then task.tracked = true end
+    end
+    if Endeavors.OnDataReady then Endeavors.OnDataReady() end
 end
 function Endeavors:UntrackTask(taskID)
     if C_NeighborhoodInitiative and C_NeighborhoodInitiative.RemoveTrackedInitiativeTask then
-        C_NeighborhoodInitiative.RemoveTrackedInitiativeTask(taskID)
+        pcall(C_NeighborhoodInitiative.RemoveTrackedInitiativeTask, taskID)
     end
+    for _, task in ipairs(state.tasks) do
+        if task.id == taskID then task.tracked = false end
+    end
+    if Endeavors.OnDataReady then Endeavors.OnDataReady() end
 end
 function Endeavors:IsTaskTracked(taskID)
     if not taskID or not C_NeighborhoodInitiative then return false end
@@ -634,6 +648,16 @@ function Endeavors:GetTasks(sortBy, sortDesc)
         if sortDesc ~= false then return valA > valB else return valA < valB end
     end)
     return sorted
+end
+function Endeavors:GetTrackedTasks(sortBy)
+    local tasks = self:GetTasks(sortBy or "default") or {}
+    local tracked = {}
+    for _, task in ipairs(tasks) do
+        if task.tracked or self:IsTaskTracked(task.id) then
+            table.insert(tracked, task)
+        end
+    end
+    return tracked
 end
 function Endeavors:GetTaskRankings()
     return GetTaskRankings(state.tasks, state.currentHouseGUID)

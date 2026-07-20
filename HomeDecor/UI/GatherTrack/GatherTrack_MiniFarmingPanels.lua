@@ -233,7 +233,7 @@ local function createCard(parent, kind)
   card.rate = makeStat(card, "H")
 
   card.materialsLine = card:CreateTexture(nil, "ARTWORK")
-  card.materialsLine:SetColorTexture(1, 1, 1, 0.10)
+  card.materialsLine:SetColorTexture(info.accent[1], info.accent[2], info.accent[3], 0.25)
 
   card.rows = {}
   for i = 1, 1 do

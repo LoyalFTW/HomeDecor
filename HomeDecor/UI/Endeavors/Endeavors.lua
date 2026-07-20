@@ -21,6 +21,11 @@ local function TC(name, ...)
     if not c then return ... end
     return c[1], c[2], c[3], c[4] or 1
 end
+local function AccentRGB()
+    local c = Theme().accent
+    if c then return c[1], c[2], c[3] end
+    return 0.90, 0.72, 0.18
+end
 local C_ACCENT      = { 0.90, 0.72, 0.18, 1 }
 local C_ACCENT_DARK = { 0.28, 0.24, 0.10, 1 }
 local C_BORDER      = { 0.24, 0.24, 0.28, 1 }
@@ -57,6 +62,13 @@ local function VLine(parent, r, g, b, a)
     t:SetColorTexture(r, g, b, a or 1)
     return t
 end
+local function HLineAccent(parent, alpha, anchor, offY)
+    local r, g, b = AccentRGB()
+    local t = HLine(parent, r, g, b, alpha, anchor, offY)
+    local C = NS.UI.Controls
+    if C and C.SolidColor then C:SolidColor(t, "accent", alpha) end
+    return t
+end
 local function ApplyFont(fs, size, flags)
     fs:SetFont(STANDARD_TEXT_FONT, size or 11, flags or "")
 end
@@ -88,6 +100,8 @@ end
 local function PillBtn(parent, label, w, h)
     local btn = CreateFrame("Button", nil, parent, "BackdropTemplate")
     btn:SetSize(w or 70, h or 20)
+    btn:EnableMouse(true)
+    btn:RegisterForClicks("LeftButtonUp")
     btn:SetBackdrop({
         bgFile   = "Interface\\Buttons\\WHITE8x8",
         edgeFile = "Interface\\Buttons\\WHITE8x8",
@@ -118,7 +132,11 @@ local function TabBtn(parent, label)
     local uline = Tex(btn, "OVERLAY")
     uline:SetHeight(2)
     uline:SetPoint("BOTTOMLEFT",1,1); uline:SetPoint("BOTTOMRIGHT",-1,1)
-    uline:SetColorTexture(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 1)
+    uline:SetColorTexture(AccentRGB())
+    do
+        local C = NS.UI.Controls
+        if C and C.SolidColor then C:SolidColor(uline, "accent", 1) end
+    end
     uline:Hide()
     btn.uline = uline
     btn:SetWidth((fs:GetStringWidth() or 50) + 20)
@@ -139,63 +157,15 @@ local function TabBtn(parent, label)
     return btn
 end
 local function MakeScroll(parent)
-    local SBAW = 6
-    local wrap = CreateFrame("Frame", nil, parent)
-    wrap:SetPoint("TOPLEFT"); wrap:SetPoint("BOTTOMRIGHT")
-    local sf = CreateFrame("ScrollFrame", nil, wrap)
-    sf:SetPoint("TOPLEFT"); sf:SetPoint("BOTTOMRIGHT", -(SBAW+3), 0)
+    local sf = CreateFrame("ScrollFrame", nil, parent, "ScrollFrameTemplate")
+    sf:SetPoint("TOPLEFT")
+    sf:SetPoint("BOTTOMRIGHT", -26, 0)
+    local C = NS.UI.Controls
+    if C and C.SkinScrollFrame then C:SkinScrollFrame(sf) end
     local ct = CreateFrame("Frame", nil, sf)
-    ct:SetWidth(sf:GetWidth() or 300); ct:SetHeight(1)
+    ct:SetSize(1, 1)
     sf:SetScrollChild(ct)
-    local track = Tex(wrap, "BACKGROUND")
-    track:SetPoint("TOPRIGHT"); track:SetPoint("BOTTOMRIGHT")
-    track:SetWidth(SBAW+2)
-    track:SetColorTexture(0, 0, 0, 0.3)
-    local thumb = CreateFrame("Frame", nil, wrap)
-    thumb:SetWidth(SBAW)
-    local thumbTex = Tex(thumb)
-    thumbTex:SetAllPoints()
-    thumbTex:SetColorTexture(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.4)
-    local function UpdateThumb()
-        local vh = sf:GetHeight(); local th = ct:GetHeight()
-        local trh = wrap:GetHeight()
-        if th <= vh or trh < 10 then thumb:Hide(); return end
-        thumb:Show()
-        local ratio = vh / th
-        local tmbH  = max(18, floor(trh * ratio))
-        local pct   = sf:GetVerticalScroll() / (th - vh)
-        local ty    = -floor((trh - tmbH) * pct)
-        thumb:SetSize(SBAW, tmbH)
-        thumb:ClearAllPoints()
-        thumb:SetPoint("TOPRIGHT", wrap, "TOPRIGHT", -1, ty)
-    end
-    sf:SetScript("OnVerticalScroll", function(s, d) s:SetVerticalScroll(d); UpdateThumb() end)
-    sf:SetScript("OnMouseWheel", function(s, d)
-        local cur = s:GetVerticalScroll()
-        local mx  = max(0, ct:GetHeight() - s:GetHeight())
-        s:SetVerticalScroll(max(0, min(mx, cur - d*28)))
-        UpdateThumb()
-    end)
-    local ds, dss
-    thumb:EnableMouse(true)
-    thumb:SetScript("OnMouseDown", function(self, btn)
-        if btn ~= "LeftButton" then return end
-        ds = select(2, GetCursorPosition()) / UIParent:GetEffectiveScale()
-        dss = sf:GetVerticalScroll()
-        self:SetScript("OnUpdate", function()
-            local cy = select(2, GetCursorPosition()) / UIParent:GetEffectiveScale()
-            local d2 = ds - cy
-            local trh = wrap:GetHeight(); local th = ct:GetHeight(); local vh = sf:GetHeight()
-            local sr = th - vh
-            if sr > 0 and trh > 0 then
-                sf:SetVerticalScroll(max(0, min(sr, dss + d2 * sr / trh)))
-                UpdateThumb()
-            end
-        end)
-    end)
-    thumb:SetScript("OnMouseUp", function(self) self:SetScript("OnUpdate", nil) end)
-    sf:SetScript("OnSizeChanged", function(s, w) ct:SetWidth(w - 2); UpdateThumb() end)
-    ct:SetScript("OnSizeChanged", UpdateThumb)
+    sf:SetScript("OnSizeChanged", function(s, w) ct:SetWidth(max(1, w)) end)
     return sf, ct
 end
 local function CreateMilestoneMarker(bar, i, isFinal, couponIconID)
@@ -339,7 +309,7 @@ local function UpdateMilestoneMarkers(bar, milestones, cur, maxP, couponIconID)
     for i = n+1, #bar.markers do bar.markers[i]:Hide() end
     PositionMarkers(bar)
 end
-local ROW_H = 30
+local ROW_H = 34
 local function MakeTaskRow(parent, idx)
     local row = CreateFrame("Frame", nil, parent)
     row:SetHeight(ROW_H)
@@ -356,9 +326,22 @@ local function MakeTaskRow(parent, idx)
     local dot = StatusDot(row, 10)
     dot:SetPoint("LEFT", 10, 0)
     row.dot = dot
+    local trackBtn = CreateFrame("Button", nil, row, "BackdropTemplate")
+    trackBtn:SetSize(18, 18)
+    trackBtn:SetPoint("RIGHT", row, "RIGHT", -14, 0)
+    trackBtn:EnableMouse(true)
+    trackBtn:RegisterForClicks("LeftButtonUp")
+    trackBtn:SetFrameLevel(row:GetFrameLevel() + 20)
+    trackBtn:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1 })
+    local trackFS = FS(trackBtn, "GameFontHighlightSmall")
+    trackFS:SetPoint("CENTER", 0, 0)
+    trackFS:SetText("T")
+    ApplyFont(trackFS, 9, "OUTLINE")
+    trackBtn.label = trackFS
+    row.trackBtn = trackBtn
     local cpnIcon = Tex(row, "OVERLAY")
     cpnIcon:SetSize(13, 13)
-    cpnIcon:SetPoint("RIGHT", row, "RIGHT", -6, 1)
+    cpnIcon:SetPoint("RIGHT", trackBtn, "LEFT", -6, 1)
     row.cpnIcon = cpnIcon
     local cpnFS = FS(row, "GameFontHighlightSmall")
     cpnFS:SetPoint("RIGHT", cpnIcon, "LEFT", -3, 0)
@@ -400,6 +383,16 @@ local function UpdateTaskRow(row, task, rankByID, couponIconID, idx)
     row.bgTex:SetColorTexture(c[1], c[2], c[3], c[4])
     row.nameFS:SetText(task.name or "?")
     local hasProgress = (task.current or 0) > 0 and not task.completed
+    local isTracked = task.tracked or (Sys and Sys:IsTaskTracked(task.id))
+    if isTracked then
+        row.trackBtn:SetBackdropColor(C_ACCENT[1]*0.25, C_ACCENT[2]*0.22, 0, 0.95)
+        row.trackBtn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.9)
+        row.trackBtn.label:SetTextColor(1, 0.9, 0.35)
+    else
+        row.trackBtn:SetBackdropColor(0.06, 0.06, 0.07, 0.65)
+        row.trackBtn:SetBackdropBorderColor(C_BORDER[1], C_BORDER[2], C_BORDER[3], 0.45)
+        row.trackBtn.label:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+    end
     if task.completed then
         row.dot:SetState("done")
         row.nameFS:SetTextColor(C_MUTED[1]*1.2, C_MUTED[2]*1.1, C_MUTED[3], 0.75)
@@ -425,8 +418,15 @@ local function UpdateTaskRow(row, task, rankByID, couponIconID, idx)
             row.stripe:SetColorTexture(C_MUTED[1], C_MUTED[2], C_MUTED[3], 0.2)
         end
     end
-    if (task.points or 0) > 0 then
+    local showNextXP = row._panel and row._panel._showNextXP
+    local nextXP = showNextXP and Sys and Sys:GetNextXP(task.name, task.id) or 0
+    if showNextXP and nextXP and nextXP > 0 then
+        row.xpFS:SetText("~" .. nextXP .. " XP")
+        row.xpFS:SetTextColor(0.45, 0.72, 1.0)
+        row.xpFS:Show()
+    elseif (task.points or 0) > 0 then
         row.xpFS:SetText(task.points .. " XP")
+        row.xpFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
         row.xpFS:Show()
     else
         row.xpFS:Hide()
@@ -483,6 +483,22 @@ local function UpdateTaskRow(row, task, rankByID, couponIconID, idx)
         GameTooltip:Show()
     end)
     row:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    row.trackBtn:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(isTracked and "Untrack Endeavor" or "Track Endeavor", 1, 1, 1)
+        GameTooltip:AddLine(task.name or "", C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+        GameTooltip:Show()
+    end)
+    row.trackBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    row.trackBtn:SetScript("OnClick", function()
+        if not Sys or not task.id then return end
+        if isTracked then Sys:UntrackTask(task.id) else Sys:TrackTask(task.id) end
+        if row._panel then
+            row._panel:RenderTasks()
+            row._panel:RenderRight()
+            if row._panel.RenderTracker then row._panel:RenderTracker() end
+        end
+    end)
     row:SetScript("OnMouseDown", function(self, btn)
         if btn == "RightButton" and self.task and self.task.id and Sys then
             if not self.ctxPopup then
@@ -519,7 +535,11 @@ local function UpdateTaskRow(row, task, rankByID, couponIconID, idx)
                 self.ctxPopup:Hide(); self.ctxPopup.catcher:Hide()
                 if tracked then Sys:UntrackTask(self.task.id)
                 else Sys:TrackTask(self.task.id) end
-                if self._panel and self._panel.RenderTasks then self._panel:RenderTasks() end
+                if self._panel and self._panel.RenderTasks then
+                    self._panel:RenderTasks()
+                    self._panel:RenderRight()
+                    if self._panel.RenderTracker then self._panel:RenderTracker() end
+                end
             end)
             self.ctxPopup:ClearAllPoints()
             self.ctxPopup:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -2)
@@ -563,7 +583,7 @@ function EndeavorsUI:Create(parent)
     hdr:SetPoint("TOPLEFT"); hdr:SetPoint("TOPRIGHT")
     hdr:SetHeight(86)
     SolidBG(hdr, C_HEADER_BG[1], C_HEADER_BG[2], C_HEADER_BG[3], C_HEADER_BG[4])
-    HLine(hdr, C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.4)
+    HLineAccent(hdr, 0.4)
     local seasonFS = FS(hdr, "GameFontNormal", "OVERLAY")
     seasonFS:SetPoint("TOPLEFT", 10, -8)
     seasonFS:SetTextColor(1, 1, 1)
@@ -626,7 +646,10 @@ function EndeavorsUI:Create(parent)
         d:SetHeight(1)
         d:SetPoint("TOPLEFT",  filterPopup, "TOPLEFT",   6, -yOff)
         d:SetPoint("TOPRIGHT", filterPopup, "TOPRIGHT", -6, -yOff)
-        d:SetColorTexture(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.25)
+        local ar, ag, ab = AccentRGB()
+        d:SetColorTexture(ar, ag, ab, 0.25)
+        local C = NS.UI.Controls
+        if C and C.SolidColor then C:SolidColor(d, "accent", 0.25) end
         table.insert(popupRows, d)
         return yOff + 5
     end
@@ -789,7 +812,7 @@ function EndeavorsUI:Create(parent)
     taskHdr:SetHeight(24)
     taskHdr:SetPoint("TOPLEFT"); taskHdr:SetPoint("TOPRIGHT")
     SolidBG(taskHdr, C_HEADER_BG[1], C_HEADER_BG[2], C_HEADER_BG[3], 0.98)
-    HLine(taskHdr, C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.3)
+    HLineAccent(taskHdr, 0.3)
     local taskHdrLbl = FS(taskHdr, "GameFontNormal")
     taskHdrLbl:SetPoint("LEFT", 8, 0)
     taskHdrLbl:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
@@ -802,9 +825,8 @@ function EndeavorsUI:Create(parent)
         else
             btn:SetPoint("RIGHT", taskHdr, "RIGHT", -4, 0)
         end
-        btn.active = false
-        function btn:Toggle()
-            btn.active = not btn.active
+        function btn:SetToggleState(v)
+            btn.active = v and true or false
             if btn.active then
                 btn:SetBackdropColor(C_ACCENT[1]*0.4, C_ACCENT[2]*0.3, 0, 1)
                 btn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 1)
@@ -815,6 +837,9 @@ function EndeavorsUI:Create(parent)
                 btn.label:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
             end
         end
+        function btn:Toggle()
+            btn:SetToggleState(not btn.active)
+        end
         btn:SetScript("OnEnter", function()
             GameTooltip:SetOwner(btn, "ANCHOR_TOP")
             GameTooltip:SetText(tip, 1, 1, 1)
@@ -824,17 +849,14 @@ function EndeavorsUI:Create(parent)
         return btn
     end
     local highlightBtn = MkHdrToggle("HL", "Gold/Silver/Bronze rank highlighting")
-    highlightBtn.active = true; highlightBtn:Toggle(); highlightBtn:Toggle()
-    highlightBtn.active = true
-    highlightBtn:SetBackdropColor(C_ACCENT[1]*0.4, C_ACCENT[2]*0.3, 0, 1)
-    highlightBtn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 1)
-    highlightBtn.label:SetTextColor(1, 1, 0.5)
     local nextXPBtn = MkHdrToggle("~XP", "Show predicted next XP", highlightBtn)
+    highlightBtn:SetToggleState(true)
+    nextXPBtn:SetToggleState(false)
     highlightBtn:SetScript("OnClick", function(self)
-        self:Toggle(); panel._highlight = self.active; panel:RenderTasks()
+        self:Toggle(); panel._highlight = self.active; panel:RenderTasks(); panel:RenderTracker()
     end)
     nextXPBtn:SetScript("OnClick", function(self)
-        self:Toggle(); panel._showNextXP = self.active; panel:RenderTasks()
+        self:Toggle(); panel._showNextXP = self.active; panel:RenderTasks(); panel:RenderTracker()
     end)
     panel._highlight  = true
     panel._showNextXP = false
@@ -842,7 +864,6 @@ function EndeavorsUI:Create(parent)
     taskScrollWrap:SetPoint("TOPLEFT",  taskHdr, "BOTTOMLEFT",  0, -2)
     taskScrollWrap:SetPoint("BOTTOMRIGHT", leftPanel, "BOTTOMRIGHT", 0, 0)
     local taskSF, taskContent = MakeScroll(taskScrollWrap)
-    taskSF:SetAllPoints()
     local emptyFS = FS(taskContent, "GameFontNormalLarge")
     emptyFS:SetPoint("CENTER", taskContent, "CENTER", 0, 20)
     emptyFS:SetTextColor(0.4, 0.4, 0.4); emptyFS:Hide()
@@ -859,7 +880,7 @@ function EndeavorsUI:Create(parent)
     statsHdr:SetHeight(24)
     statsHdr:SetPoint("TOPLEFT"); statsHdr:SetPoint("TOPRIGHT")
     SolidBG(statsHdr, C_HEADER_BG[1], C_HEADER_BG[2], C_HEADER_BG[3], 0.98)
-    HLine(statsHdr, C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.3)
+    HLineAccent(statsHdr, 0.3)
     local statsHdrLbl = FS(statsHdr, "GameFontNormal")
     statsHdrLbl:SetPoint("LEFT", 8, 0)
     statsHdrLbl:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
@@ -904,7 +925,7 @@ function EndeavorsUI:Create(parent)
     tabBar:SetPoint("TOPLEFT",  statsBody, "BOTTOMLEFT",  0, -8)
     tabBar:SetPoint("TOPRIGHT", rightPanel, "TOPRIGHT",   0, 0)
     SolidBG(tabBar, C_HEADER_BG[1], C_HEADER_BG[2], C_HEADER_BG[3], 0.8)
-    HLine(tabBar, C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.2)
+    HLineAccent(tabBar, 0.2)
     local actTab  = TabBtn(tabBar, "Activity")
     local lbTab   = TabBtn(tabBar, "Leaderboard")
     local cpnTab2 = TabBtn(tabBar, "Coupons")
@@ -956,14 +977,40 @@ function EndeavorsUI:Create(parent)
     end)
     panel.filterMeBtn  = filterMeBtn
     panel.filterAltBtn = filterAltBtn
+    local trackerWrap = CreateFrame("Frame", nil, rightPanel, "BackdropTemplate")
+    trackerWrap:SetPoint("BOTTOMLEFT", rightPanel, "BOTTOMLEFT", 0, 0)
+    trackerWrap:SetPoint("BOTTOMRIGHT", rightPanel, "BOTTOMRIGHT", 0, 0)
+    trackerWrap:SetHeight(116)
+    Backdrop(trackerWrap, {0.035, 0.038, 0.045, 0.94}, {C_BORDER[1], C_BORDER[2], C_BORDER[3], 0.45})
+    local trackerHdr = CreateFrame("Frame", nil, trackerWrap)
+    trackerHdr:SetHeight(22)
+    trackerHdr:SetPoint("TOPLEFT", 1, -1)
+    trackerHdr:SetPoint("TOPRIGHT", -1, -1)
+    SolidBG(trackerHdr, C_HEADER_BG[1], C_HEADER_BG[2], C_HEADER_BG[3], 0.9)
+    HLineAccent(trackerHdr, 0.22)
+    local trackerHdrFS = FS(trackerHdr, "GameFontNormal")
+    trackerHdrFS:SetPoint("LEFT", 8, 0)
+    trackerHdrFS:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+    trackerHdrFS:SetText("TASK TRACKER")
+    ApplyFont(trackerHdrFS, 10, "OUTLINE")
+    local trackerCountFS = FS(trackerHdr, "GameFontHighlightSmall")
+    trackerCountFS:SetPoint("RIGHT", -8, 0)
+    trackerCountFS:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+    ApplyFont(trackerCountFS, 9)
+    panel.trackerCountFS = trackerCountFS
+    local trackerScrollWrap = CreateFrame("Frame", nil, trackerWrap)
+    trackerScrollWrap:SetPoint("TOPLEFT", trackerHdr, "BOTTOMLEFT", 4, -3)
+    trackerScrollWrap:SetPoint("BOTTOMRIGHT", trackerWrap, "BOTTOMRIGHT", -2, 3)
+    local trackerSF, trackerContent = MakeScroll(trackerScrollWrap)
+    panel.trackerContent = trackerContent
+    panel.trackerRows = {}
     local rightScrollWrap = CreateFrame("Frame", nil, rightPanel)
-    rightScrollWrap:SetPoint("TOPLEFT",    tabBar, "BOTTOMLEFT",  0, -2)
-    rightScrollWrap:SetPoint("BOTTOMRIGHT", rightPanel, "BOTTOMRIGHT", 0, 0)
+    rightScrollWrap:SetPoint("TOPLEFT",     tabBar, "BOTTOMLEFT",  0, -2)
+    rightScrollWrap:SetPoint("BOTTOMRIGHT", trackerWrap, "TOPRIGHT", 0, 4)
     local rightSF, rightContent = MakeScroll(rightScrollWrap)
-    rightSF:SetAllPoints()
     panel.rightContent = rightContent
     panel.rightRows    = {}
-    local RIGHT_PANEL_W = 340
+    local RIGHT_PANEL_W = 390
     rightPanel:ClearAllPoints()
     rightPanel:SetPoint("TOPRIGHT",    body, "TOPRIGHT",    0, 0)
     rightPanel:SetPoint("BOTTOMRIGHT", body, "BOTTOMRIGHT", 0, 0)
@@ -1154,6 +1201,119 @@ function EndeavorsUI:Create(parent)
         local twrapH = taskScrollWrap:GetHeight() or 0
         taskContent:SetHeight(max(yOff + 4, twrapH > 0 and twrapH or (yOff + 4)))
     end
+    function panel:RenderTracker()
+        if not Sys then return end
+        local tracked = Sys.GetTrackedTasks and Sys:GetTrackedTasks(self._sortBy or "default") or {}
+        for _, row in ipairs(self.trackerRows) do row:Hide() end
+        self.trackerCountFS:SetText(#tracked == 1 and "1 tracked" or (#tracked .. " tracked"))
+        local yOff = 0
+        local ct = trackerContent
+        local function EnsureTrackerRow(i, h)
+            local row = self.trackerRows[i]
+            if not row then
+                row = CreateFrame("Frame", nil, ct, "BackdropTemplate")
+                row:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8x8" })
+                self.trackerRows[i] = row
+            end
+            local c = i % 2 == 0 and C_ROW_EVEN or C_ROW_ODD
+            row:SetBackdropColor(c[1], c[2], c[3], c[4])
+            row:SetHeight(h or 24)
+            row:ClearAllPoints()
+            row:SetPoint("TOPLEFT", ct, "TOPLEFT", 0, -yOff)
+            row:SetPoint("TOPRIGHT", ct, "TOPRIGHT", 0, -yOff)
+            for _, k in ipairs({"emptyFS", "nameFS", "progFS", "xpFS", "trackBtn"}) do
+                if row[k] then row[k]:Hide() end
+            end
+            row:Show()
+            return row
+        end
+        if #tracked == 0 then
+            local row = EnsureTrackerRow(1, 40)
+            if not row.emptyFS then
+                row.emptyFS = FS(row, "GameFontHighlightSmall")
+                row.emptyFS:SetPoint("CENTER")
+                row.emptyFS:SetTextColor(0.4, 0.4, 0.4)
+                ApplyFont(row.emptyFS, 10)
+            end
+            row.emptyFS:SetText("Track tasks with the T button.")
+            row.emptyFS:Show()
+            yOff = yOff + 40
+        else
+            for i, task in ipairs(tracked) do
+                local row = EnsureTrackerRow(i, 32)
+                if not row.nameFS then
+                    row.nameFS = FS(row, "GameFontHighlightSmall")
+                    row.nameFS:SetPoint("TOPLEFT", 8, -4)
+                    row.nameFS:SetPoint("RIGHT", row, "RIGHT", -92, 0)
+                    row.nameFS:SetJustifyH("LEFT")
+                    row.nameFS:SetWordWrap(false)
+                    ApplyFont(row.nameFS, 10)
+
+                    row.progFS = FS(row, "GameFontHighlightSmall")
+                    row.progFS:SetPoint("BOTTOMLEFT", 8, 3)
+                    row.progFS:SetPoint("RIGHT", row, "RIGHT", -92, 0)
+                    row.progFS:SetJustifyH("LEFT")
+                    row.progFS:SetWordWrap(false)
+                    ApplyFont(row.progFS, 9)
+
+                    row.xpFS = FS(row, "GameFontHighlightSmall")
+                    row.xpFS:SetPoint("RIGHT", row, "RIGHT", -34, 0)
+                    row.xpFS:SetWidth(54)
+                    row.xpFS:SetJustifyH("RIGHT")
+                    row.xpFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
+                    ApplyFont(row.xpFS, 9)
+
+                    row.trackBtn = CreateFrame("Button", nil, row, "BackdropTemplate")
+                    row.trackBtn:SetSize(22, 20)
+                    row.trackBtn:SetPoint("RIGHT", row, "RIGHT", -6, 0)
+                    row.trackBtn:EnableMouse(true)
+                    row.trackBtn:RegisterForClicks("LeftButtonUp")
+                    row.trackBtn:SetFrameLevel(row:GetFrameLevel() + 20)
+                    row.trackBtn:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1 })
+                    row.trackBtn:SetBackdropColor(C_ACCENT[1]*0.24, C_ACCENT[2]*0.20, 0, 0.95)
+                    row.trackBtn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.75)
+                    local tfs = FS(row.trackBtn, "GameFontHighlightSmall")
+                    tfs:SetPoint("CENTER")
+                    tfs:SetText("T")
+                    tfs:SetTextColor(1, 0.9, 0.35)
+                    ApplyFont(tfs, 10, "OUTLINE")
+                    row.trackBtn.label = tfs
+                end
+                row.nameFS:SetText(task.name or "?")
+                row.nameFS:SetTextColor(task.completed and C_MUTED[1] or 1, task.completed and C_MUTED[2] or 1, task.completed and C_MUTED[3] or 1)
+                row.nameFS:Show()
+                if task.completed then
+                    row.progFS:SetText("Complete")
+                    row.progFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
+                elseif (task.max or 1) > 1 then
+                    row.progFS:SetText(format("%d / %d", task.current or 0, task.max or 1))
+                    row.progFS:SetTextColor(C_GOLD[1], C_GOLD[2], C_GOLD[3])
+                else
+                    row.progFS:SetText("Not complete")
+                    row.progFS:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+                end
+                row.progFS:Show()
+                row.xpFS:SetText((task.points or 0) > 0 and ((task.points or 0) .. " XP") or "")
+                row.xpFS:Show()
+                row.trackBtn:SetScript("OnEnter", function(self)
+                    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                    GameTooltip:SetText("Untrack Endeavor", 1, 1, 1)
+                    GameTooltip:AddLine(task.name or "", C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+                    GameTooltip:Show()
+                end)
+                row.trackBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+                row.trackBtn:SetScript("OnClick", function()
+                    if Sys and task.id then Sys:UntrackTask(task.id) end
+                    panel:RenderTasks()
+                    panel:RenderTracker()
+                end)
+                row.trackBtn:Show()
+                yOff = yOff + 33
+            end
+        end
+        local wrapH = trackerScrollWrap:GetHeight() or 0
+        trackerContent:SetHeight(max(yOff + 4, wrapH > 0 and wrapH or (yOff + 4)))
+    end
     function panel:RenderRight()
         if not Sys then return end
         for _, row in ipairs(self.rightRows) do row:Hide() end
@@ -1168,7 +1328,7 @@ function EndeavorsUI:Create(parent)
                 self.rightRows[rIdx] = row
             end
             if row._tabType and row._tabType ~= self._rightTab then
-                local fields = {"timeFS","rankFS","nameFS","taskFS","amtFS","emptyFS"}
+                local fields = {"timeFS","rankFS","nameFS","taskFS","amtFS","emptyFS","progFS","xpFS","trackBtn","bar","barFill"}
                 for _, k in ipairs(fields) do
                     if row[k] then row[k]:Hide(); row[k] = nil end
                 end
@@ -1179,7 +1339,7 @@ function EndeavorsUI:Create(parent)
             row:SetHeight(h or 20)
             row:SetPoint("TOPLEFT",  ct, "TOPLEFT",  0, -yOff)
             row:SetPoint("TOPRIGHT", ct, "TOPRIGHT", 0, -yOff)
-            local fields = {"timeFS","rankFS","nameFS","taskFS","amtFS","emptyFS"}
+            local fields = {"timeFS","rankFS","nameFS","taskFS","amtFS","emptyFS","progFS","xpFS","trackBtn","bar","barFill"}
             for _, k in ipairs(fields) do
                 if row[k] then row[k]:Hide() end
             end
@@ -1370,17 +1530,19 @@ function EndeavorsUI:Create(parent)
         self:RenderTopBar()
         self:RenderStats()
         self:RenderTasks()
+        self:RenderTracker()
         self:RenderRight()
     end
     if Sys then
         Sys.OnDataReady = function()
             if panel:IsShown() then
-                panel:RenderTopBar(); panel:RenderStats(); panel:RenderTasks()
+                panel:RenderTopBar(); panel:RenderStats(); panel:RenderTasks(); panel:RenderTracker(); panel:RenderRight()
             end
         end
         Sys.OnActivityLogReady = function()
             if panel:IsShown() then
                 panel:RenderStats()
+                panel:RenderTracker()
                 panel:RenderRight()
             end
         end
@@ -1400,7 +1562,7 @@ function EndeavorsUI:Create(parent)
         self:FullRefresh()
         C_Timer.After(1.5, function()
             if Sys and panel:IsShown() then
-                Sys:RefreshActivityLog(); panel:RenderRight()
+                Sys:RefreshActivityLog(); panel:RenderTracker(); panel:RenderRight()
             end
         end)
     end)

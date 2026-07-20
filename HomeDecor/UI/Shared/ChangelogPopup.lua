@@ -76,6 +76,9 @@ local function CreatePopup()
   local sf = CreateFrame("ScrollFrame", nil, p, "ScrollFrameTemplate")
   sf:SetPoint("TOPLEFT", 12, -68)
   sf:SetPoint("BOTTOMRIGHT", -28, 56)
+  if NS.UI.Controls and NS.UI.Controls.SkinScrollFrame then
+    NS.UI.Controls:SkinScrollFrame(sf)
+  end
 
   local content = CreateFrame("Frame", nil, sf)
   content:SetPoint("TOPLEFT", 0, 0)

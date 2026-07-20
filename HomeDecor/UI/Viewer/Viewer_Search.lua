@@ -214,10 +214,7 @@ local function BuildGlobalSearchResults(ui, db)
   Scan(data.Drops, "drop")
   Scan(data.Shops, "shop")
   Scan(data.Treasures, "treasure")
-  local Events = NS.Systems and NS.Systems.Events
-  if Events and Events.GetActive then
-    Scan(Events:GetActive(), "event")
-  end
+  Scan(data.Events, "event")
   Scan(data.Professions, "profession")
   Scan(data.SavedItems or data["Saved Items"], "saved")
 

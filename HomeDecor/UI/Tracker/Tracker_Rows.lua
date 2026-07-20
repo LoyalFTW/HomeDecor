@@ -88,9 +88,6 @@ function Rows:MakeSmallIconButton(parent, sizeOrTex)
   if RS and RS.ApplyBackdrop then
     RS:ApplyBackdrop(b, "button")
   end
-  if RS and RS.ApplyHeaderTexture then
-    RS:ApplyHeaderTexture(b, true)
-  end
 
   local ic = b:CreateTexture(nil, "ARTWORK")
   ic:SetAllPoints()

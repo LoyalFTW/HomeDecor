@@ -1090,6 +1090,9 @@ function Options:Ensure()
   local scrollFrame = CreateFrame("ScrollFrame", nil, editorPanel, "UIPanelScrollFrameTemplate")
   scrollFrame:SetPoint("TOPLEFT",     editorPanel, "TOPLEFT",      0,  -55)
   scrollFrame:SetPoint("BOTTOMRIGHT", editorPanel, "BOTTOMRIGHT", -28,   4)
+  if NS.UI and NS.UI.Controls and NS.UI.Controls.SkinScrollFrame then
+    NS.UI.Controls:SkinScrollFrame(scrollFrame)
+  end
 
   local scrollChild = CreateFrame("Frame", nil, scrollFrame)
   scrollChild:SetWidth(scrollFrame:GetWidth() or 580)
