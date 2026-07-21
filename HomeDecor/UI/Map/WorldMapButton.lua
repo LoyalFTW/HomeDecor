@@ -2,6 +2,8 @@ local ADDON, NS = ...
 local L = NS.L
 NS.UI = NS.UI or {}
 
+local Controls = NS.UI.Controls
+
 local function GetColors()
     local theme = NS.UI and NS.UI.Theme
     return theme and theme.colors, theme and theme.textures
@@ -238,7 +240,7 @@ local function buildDropPanel()
         if C then C:Backdrop(bar, colors and colors.header, colors and colors.border) end
         local lbl = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         lbl:SetPoint("LEFT", bar, "LEFT", 8, 0)
-        lbl:SetTextColor(unpack(colors and colors.accent or {0.9, 0.72, 0.18}))
+        Controls:TextColor(lbl, "accent")
         lbl:SetText(label:upper())
         y = y + SEC_H + GAP
     end
@@ -259,7 +261,7 @@ local function buildDropPanel()
         local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         lbl:SetPoint("LEFT", cb, "RIGHT", 3, 0)
         lbl:SetPoint("RIGHT", row, "RIGHT", -4, 0)
-        lbl:SetTextColor(unpack(colors and colors.text or {0.92, 0.92, 0.92}))
+        Controls:TextColor(lbl, "text")
         lbl:SetText(label)
 
         cb.Sync = function() cb:SetChecked(getter()) end
@@ -276,7 +278,7 @@ local function buildDropPanel()
 
         local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         lbl:SetPoint("LEFT", row, "LEFT", 10, 0)
-        lbl:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
+        Controls:TextColor(lbl, "textMuted")
         lbl:SetText(label)
 
         buildFn(row, lbl)
@@ -406,7 +408,7 @@ local function buildDropPanel()
         end
         local rTxt = resetBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         rTxt:SetAllPoints(); rTxt:SetJustifyH("CENTER")
-        rTxt:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
+        Controls:TextColor(rTxt, "textMuted")
         rTxt:SetText(L["RESET"])
 
         resetBtn:SetScript("OnClick", function()
@@ -445,12 +447,12 @@ local function buildDropPanel()
 
         local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         lbl:SetPoint("TOPLEFT", row, "TOPLEFT", 10, -6)
-        lbl:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
+        Controls:TextColor(lbl, "textMuted")
         lbl:SetText(L["SIZE"])
 
         sizeVal = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         sizeVal:SetPoint("LEFT", lbl, "RIGHT", 6, 0)
-        sizeVal:SetTextColor(unpack(colors and colors.accent or {0.9, 0.72, 0.18}))
+        Controls:TextColor(sizeVal, "accent")
 
         slider = CreateFrame("Slider", nil, row, "OptionsSliderTemplate")
         slider:SetSize(PANEL_W - 24, 14)
@@ -461,8 +463,8 @@ local function buildDropPanel()
         slider:SetObeyStepOnDrag(true)
         slider.Low:SetText("")
         slider.High:SetText("")
-        slider.Low:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
-        slider.High:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
+        Controls:TextColor(slider.Low, "textMuted")
+        Controls:TextColor(slider.High, "textMuted")
 
         slider:SetScript("OnValueChanged", function(self, val)
             val = math.floor(val * 10 + 0.5) / 10
@@ -620,7 +622,7 @@ local function buildZonePanel()
     title:SetPoint("TOPRIGHT", -30, -8)
     title:SetJustifyH("LEFT")
     title:SetWordWrap(false)
-    title:SetTextColor(unpack(colors and colors.accent or {0.9, 0.72, 0.18}))
+    Controls:TextColor(title, "accent")
 
     local toggleBtn = CreateFrame("Button", nil, f)
     toggleBtn:SetSize(18, 18)
@@ -641,7 +643,7 @@ local function buildZonePanel()
     meta:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -7)
     meta:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -32)
     meta:SetJustifyH("LEFT")
-    meta:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
+    Controls:TextColor(meta, "textMuted")
 
     local divider = f:CreateTexture(nil, "ARTWORK")
     divider:SetPoint("TOPLEFT", meta, "BOTTOMLEFT", 0, -7)
@@ -668,7 +670,7 @@ local function buildZonePanel()
 
     local empty = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     empty:SetPoint("CENTER", scroll, "CENTER", 0, 0)
-    empty:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
+    Controls:TextColor(empty, "textMuted")
     empty:SetText("No HomeDecor decor on this map.")
     empty:Hide()
 
@@ -742,7 +744,7 @@ local function buildZonePanel()
         row.arrow:SetPoint("LEFT", 3, 0)
         row.arrow:SetSize(10, 14)
         row.arrow:SetJustifyH("CENTER")
-        row.arrow:SetTextColor(unpack(colors and colors.accent or {0.9, 0.72, 0.18}))
+        Controls:TextColor(row.arrow, "accent")
         row.arrow:Hide()
 
         row.icon = row:CreateTexture(nil, "ARTWORK")
@@ -772,12 +774,12 @@ local function buildZonePanel()
         row.vendorText:SetPoint("RIGHT", -4, 0)
         row.vendorText:SetJustifyH("LEFT")
         row.vendorText:SetWordWrap(false)
-        row.vendorText:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
+        Controls:TextColor(row.vendorText, "textMuted")
 
         row.owned = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.owned:SetPoint("TOPRIGHT", row, "TOPRIGHT", -4, -2)
         row.owned:SetJustifyH("RIGHT")
-        row.owned:SetTextColor(unpack(colors and colors.accent or {0.9, 0.72, 0.18}))
+        Controls:TextColor(row.owned, "accent")
 
         row._kind = kind
         pool[i] = row
@@ -898,7 +900,7 @@ local function buildZonePanel()
                 row.name:SetPoint("TOPLEFT", row, "TOPLEFT", 18, -4)
                 row.name:SetPoint("RIGHT", -58, 0)
                 row.name:SetText(vendor and (vendor.name or ("Vendor #" .. tostring(vendor.id))) or "Vendor")
-                row.name:SetTextColor(unpack(colors and colors.accentBright or colors.accent or {0.9, 0.72, 0.18}))
+                Controls:TextColor(row.name, "accentBright")
                 row.vendorText:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -2)
                 row.vendorText:SetText(vendor and vendor.zone or "")
                 row.owned:SetText(tostring(group.collected) .. " / " .. tostring(group.total))
@@ -959,14 +961,14 @@ local function buildZonePanel()
             end
 
             if entry.collected then
-                row.name:SetTextColor(unpack(colors and colors.textMuted or {0.65, 0.65, 0.68}))
+                Controls:TextColor(row.name, "textMuted")
                 row:SetAlpha(0.62)
             else
                 local qc = entry.quality and _G.ITEM_QUALITY_COLORS and _G.ITEM_QUALITY_COLORS[entry.quality]
                 if qc then
                     row.name:SetTextColor(qc.r, qc.g, qc.b)
                 else
-                    row.name:SetTextColor(unpack(colors and colors.text or {0.92, 0.92, 0.92}))
+                    Controls:TextColor(row.name, "text")
                 end
                 row:SetAlpha(1)
             end

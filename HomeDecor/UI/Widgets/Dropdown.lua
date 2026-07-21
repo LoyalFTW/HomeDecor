@@ -23,15 +23,11 @@ local function children(opt)
 end
 
 local function backdrop(f, C, T)
-    if Util and Util.Backdrop then return Util.Backdrop(f, C, T.panel, T.border) end
-    f:SetBackdrop({ bgFile="Interface/Buttons/WHITE8x8", edgeFile="Interface/Buttons/WHITE8x8", edgeSize=1 })
-    f:SetBackdropColor(T.panel[1],T.panel[2],T.panel[3],T.panel[4] or 1)
-    f:SetBackdropBorderColor(T.border[1],T.border[2],T.border[3],T.border[4] or 1)
+    if Util and Util.Backdrop then Util.Backdrop(f, C, T.panel, T.border) end
 end
 
 local function setFont(fs, size)
-    if Util and Util.SetFont then return Util.SetFont(fs, size) end
-    if fs then fs:SetFont(STANDARD_TEXT_FONT, size, "") end
+    if Util and Util.SetFont then Util.SetFont(fs, size) end
 end
 
 local function textColor(fs, role, alpha)
@@ -40,8 +36,7 @@ local function textColor(fs, role, alpha)
 end
 
 local function setBorder(f, col)
-    if Util and Util.SafeBorder then return Util.SafeBorder(f, col) end
-    if f and f.SetBackdropBorderColor then f:SetBackdropBorderColor(col[1], col[2], col[3], col[4] or 1) end
+    if Util and Util.SafeBorder then Util.SafeBorder(f, col) end
 end
 
 local function wantsBox(opt) return opt and not opt.separator and (opt.checkable or opt.children) end
@@ -158,16 +153,9 @@ local function ensureBtn(dd, pool, i, parentFrame, isSub, T)
         b.delete.text:SetText("X")
         b.delete.text:SetTextColor(1.0, 0.30, 0.22, 0.95)
         b.delete:Hide()
-        b.delete:SetScript("OnEnter", function(self)
-            if GameTooltip then
-                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                GameTooltip:SetText(self.tooltipText or "Delete", 1, 1, 1)
-                GameTooltip:Show()
-            end
-        end)
-        b.delete:SetScript("OnLeave", function()
-            if GameTooltip then GameTooltip:Hide() end
-        end)
+        if NS.UI.Tooltips then
+            NS.UI.Tooltips:SimpleTooltip(b.delete, function() return b.delete.tooltipText or "Delete" end, nil, "ANCHOR_RIGHT")
+        end
         b.delete:SetScript("OnClick", function()
             local opt = b.opt
             if opt and opt.onDelete then

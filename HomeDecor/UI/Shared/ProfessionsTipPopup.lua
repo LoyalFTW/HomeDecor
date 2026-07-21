@@ -37,7 +37,7 @@ local function CreatePopup()
   header.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   header.title:SetPoint("CENTER")
   header.title:SetText(L["PROF_TIP_TITLE"])
-  header.title:SetTextColor(unpack(T.accent))
+  C:TextColor(header.title, "accent")
 
   local body = p:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   body:SetPoint("TOPLEFT", 20, -58)

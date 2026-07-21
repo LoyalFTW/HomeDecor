@@ -20,8 +20,6 @@ local ICON_SZ = 34
 local CHECK_ATLAS = "common-icon-checkmark"
 local CHECK_FALLBACK = "Interface\\RaidFrame\\ReadyCheck-Ready"
 
-local wipe = wipe or function(t) for k in pairs(t) do t[k] = nil end end
-
 local function MakeArrow(parent)
   local t = parent:CreateTexture(nil, "OVERLAY")
   t:SetSize(12, 12)
@@ -301,64 +299,28 @@ local function NewItemRow(parent)
 end
 
 function Rows:InitPools(frame, content)
-  frame._pool = frame._pool or { overall = {}, vendor = {}, item = {} }
-  frame._active = frame._active or {}
-  frame._content = content
-  frame._rowFactories = frame._rowFactories or {
+  if not RS then return end
+  RS:InitRowPools(frame, content, {
     overall = function() return NewOverallRow(content) end,
     vendor = function() return NewVendorRow(content) end,
     item = function() return NewItemRow(content) end,
-  }
+  })
 end
 
 function Rows:Acquire(frame, kind)
-  local pool = frame._pool and frame._pool[kind]
-  if not pool then return end
-
-  local row = table.remove(pool)
-  if not row then
-    local f = frame._rowFactories and frame._rowFactories[kind]
-    row = f and f() or nil
-  end
-  if not row then return end
-
-  if RS then
-    if kind == "overall" or kind == "vendor" then
-      if RS.SkinTrackerHeader then
-        RS:SkinTrackerHeader(row, 0.16)
-      end
+  if not RS then return end
+  return RS:AcquireRow(frame, kind, "item", function(row, k)
+    if k == "overall" or k == "vendor" then
+      if RS.SkinTrackerHeader then RS:SkinTrackerHeader(row, 0.16) end
     else
-      if RS.SkinTrackerItem then
-        RS:SkinTrackerItem(row, 0.16)
-      end
+      if RS.SkinTrackerItem then RS:SkinTrackerItem(row, 0.16) end
     end
-  end
-
-  row:Show()
-  local active = frame._active
-  active[#active + 1] = row
-  return row
+  end)
 end
 
 function Rows:ReleaseAll(frame)
-  local active = frame and frame._active
-  local pool = frame and frame._pool
-  if not active or not pool then return end
-
-  for i = 1, #active do
-    local r = active[i]
-    if r then
-      r:Hide()
-      r:ClearAllPoints()
-      local k = r._kind or "item"
-      local p = pool[k]
-      if p then
-        p[#p + 1] = r
-      end
-    end
-  end
-
-  wipe(active)
+  if not RS then return end
+  RS:ReleaseAllRows(frame, "item")
 end
 
 return Rows

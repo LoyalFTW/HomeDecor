@@ -141,12 +141,7 @@ end
 local function ApplyBackdrop(f, bg, border)
   if C and C.Backdrop then
     C:Backdrop(f, bg, border)
-    return
   end
-  if not f or not f.SetBackdrop then return end
-  f:SetBackdrop({ bgFile="Interface/Buttons/WHITE8X8", edgeFile="Interface/Buttons/WHITE8X8", edgeSize=1 })
-  f:SetBackdropColor(bg[1], bg[2], bg[3], bg[4] or 1)
-  if border then f:SetBackdropBorderColor(border[1], border[2], border[3], border[4] or 1) end
 end
 
 local function GetProfessionItems(profName, expansion)
@@ -337,12 +332,12 @@ local function MakeDropdown(parent, options, default, width, onChange)
   valueTxt:SetPoint("LEFT", 6, 0)
   valueTxt:SetPoint("RIGHT", -16, 0)
   valueTxt:SetJustifyH("LEFT")
-  valueTxt:SetTextColor(unpack(T.text or {0.92,0.92,0.92,1}))
+  C:TextColor(valueTxt, "text")
 
   local arrowTxt = Label(dd, "GameFontNormalSmall")
   arrowTxt:SetPoint("RIGHT", -4, 0)
   arrowTxt:SetText("v")
-  arrowTxt:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
+  C:TextColor(arrowTxt, "textMuted")
 
   dd.value = default or options[1]
   valueTxt:SetText(dd.value)
@@ -354,12 +349,7 @@ local function MakeDropdown(parent, options, default, width, onChange)
     if onChange then onChange(v) end
   end
 
-  dd:SetScript("OnEnter", function()
-    if dd.SetBackdropColor then dd:SetBackdropColor(unpack(T.hover or {0.17,0.17,0.20,1})) end
-  end)
-  dd:SetScript("OnLeave", function()
-    if dd.SetBackdropColor then dd:SetBackdropColor(unpack(T.row or {0.13,0.13,0.15,1})) end
-  end)
+  NS.UI.Util.BindBackgroundHover(dd, T.hover or {0.17,0.17,0.20,1}, T.row or {0.13,0.13,0.15,1})
   dd:SetScript("OnClick", function(self)
     if self.menu and self.menu:IsShown() then self.menu:Hide(); return end
 
@@ -378,13 +368,8 @@ local function MakeDropdown(parent, options, default, width, onChange)
       local rowTxt = Label(row, "GameFontNormalSmall")
       rowTxt:SetPoint("LEFT", 6, 0)
       rowTxt:SetText(opt)
-      rowTxt:SetTextColor(unpack(T.text or {0.92,0.92,0.92,1}))
-      row:SetScript("OnEnter", function()
-        if row.SetBackdropColor then row:SetBackdropColor(unpack(T.hover or {0.17,0.17,0.20,1})) end
-      end)
-      row:SetScript("OnLeave", function()
-        if row.SetBackdropColor then row:SetBackdropColor(unpack(T.panel or {0.095,0.095,0.11,1})) end
-      end)
+      C:TextColor(rowTxt, "text")
+      NS.UI.Util.BindBackgroundHover(row, T.hover or {0.17,0.17,0.20,1}, T.panel or {0.095,0.095,0.11,1})
       row:SetScript("OnClick", function() dd:SetValue(opt); menu:Hide() end)
     end
 
@@ -418,7 +403,7 @@ function SmartProfs:Create(parent)
   local filterLbl = Label(controls, "GameFontNormalSmall")
   filterLbl:SetPoint("LEFT", 8, 0)
   filterLbl:SetText(L["ALTS_SHOW"])
-  filterLbl:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
+  C:TextColor(filterLbl, "textMuted")
 
   local filterOptions = {"All Items","With Price Data","Profitable Only","High (>100g)","Mega (>300g)","Can Craft"}
   local filterValues  = {"all","withdata","profitable","high","mega","cancraft"}
@@ -433,7 +418,7 @@ function SmartProfs:Create(parent)
   local sortLbl = Label(controls, "GameFontNormalSmall")
   sortLbl:SetPoint("LEFT", filterDD, "RIGHT", 14, 0)
   sortLbl:SetText(L["ALTS_SORT"])
-  sortLbl:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
+  C:TextColor(sortLbl, "textMuted")
 
   local sortOptions = {"Profit High-Low","Profit Low-High","Margin High-Low","Name A-Z"}
   local sortValues  = {"profit-desc","profit-asc","margin-desc","name"}
@@ -558,17 +543,12 @@ function SmartProfs:RefreshProfessionList()
     if selected then
       ApplyBackdrop(btn, T.accentSoft or {0.90,0.72,0.18,0.28}, T.accent or {0.90,0.72,0.18,1})
       btn.accentBar:Show()
-      btn.nameTxt:SetTextColor(unpack(T.accentBright or {1,0.95,0.6,1}))
+      C:TextColor(btn.nameTxt, "accentBright")
     else
       ApplyBackdrop(btn, T.row or {0.13,0.13,0.15,1}, T.border or {0.24,0.24,0.28,1})
       btn.accentBar:Hide()
-      btn.nameTxt:SetTextColor(unpack(has and (T.text or {0.92,0.92,0.92,1}) or (T.textMuted or {0.65,0.65,0.68,1})))
-      btn:SetScript("OnEnter", function()
-        if btn.SetBackdropColor then btn:SetBackdropColor(unpack(T.hover or {0.17,0.17,0.20,1})) end
-      end)
-      btn:SetScript("OnLeave", function()
-        if btn.SetBackdropColor then btn:SetBackdropColor(unpack(T.row or {0.13,0.13,0.15,1})) end
-      end)
+      C:TextColor(btn.nameTxt, has and "text" or "textMuted")
+      NS.UI.Util.BindBackgroundHover(btn, T.hover or {0.17,0.17,0.20,1}, T.row or {0.13,0.13,0.15,1})
     end
 
     if profit then
@@ -577,7 +557,7 @@ function SmartProfs:RefreshProfessionList()
       btn.profitTxt:SetTextColor(c[1], c[2], c[3], 1)
     else
       btn.profitTxt:SetText("--")
-      btn.profitTxt:SetTextColor(unpack(T.placeholder or {0.52,0.52,0.55,1}))
+      C:TextColor(btn.profitTxt, "placeholder")
     end
   end
 end
@@ -588,13 +568,13 @@ function SmartProfs:BuildDetailPanel()
 
   local header = Label(dc, "GameFontNormalSmall")
   header:SetPoint("TOPLEFT", 4, -4)
-  header:SetTextColor(unpack(T.accent or {0.90,0.72,0.18,1}))
+  C:TextColor(header, "accent")
   self.detailHeader = header
 
   local noLearnedMsg = Label(dc, "GameFontNormalSmall")
   noLearnedMsg:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -1)
   noLearnedMsg:SetText(L["ALTS_NOT_LEARNED"])
-  noLearnedMsg:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
+  C:TextColor(noLearnedMsg, "textMuted")
   noLearnedMsg:Hide()
   self.noLearnedMsg = noLearnedMsg
 
@@ -617,14 +597,14 @@ function SmartProfs:BuildDetailPanel()
   local emptyMsg = Label(self.detailScroll, "GameFontNormal")
   emptyMsg:SetPoint("CENTER", self.detailScroll, "CENTER", 0, -20)
   emptyMsg:SetText(L["ALTS_NO_ITEMS_MATCH"])
-  emptyMsg:SetTextColor(unpack(T.placeholder or {0.52,0.52,0.55,1}))
+  C:TextColor(emptyMsg, "placeholder")
   emptyMsg:Hide()
   self.emptyMsg = emptyMsg
 
   local noDataMsg = Label(self.detailScroll, "GameFontNormalLarge")
   noDataMsg:SetPoint("CENTER", self.detailScroll, "CENTER", 0, -20)
   noDataMsg:SetText(L["ALTS_NO_RECIPES_YET"])
-  noDataMsg:SetTextColor(unpack(T.accent or {0.90,0.72,0.18,1}))
+  C:TextColor(noDataMsg, "accent")
   noDataMsg:SetJustifyH("CENTER")
   noDataMsg:Hide()
   self.noDataMsg = noDataMsg
@@ -660,7 +640,7 @@ function SmartProfs:BuildDetailPanel()
     local mktLbl = Label(card, "GameFontNormalSmall")
     mktLbl:SetPoint("BOTTOMLEFT", iconBtn, "BOTTOMRIGHT", 7, 30)
     mktLbl:SetText(L["ALTS_MKT"])
-    mktLbl:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
+    C:TextColor(mktLbl, "textMuted")
 
     local mktTxt = Label(card, "GameFontNormal")
     mktTxt:SetPoint("BOTTOMLEFT", mktLbl, "BOTTOMRIGHT", 3, 0)
@@ -669,7 +649,7 @@ function SmartProfs:BuildDetailPanel()
     local costLbl = Label(card, "GameFontNormalSmall")
     costLbl:SetPoint("BOTTOMLEFT", mktTxt, "BOTTOMRIGHT", 12, 0)
     costLbl:SetText(L["ALTS_COST"])
-    costLbl:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
+    C:TextColor(costLbl, "textMuted")
 
     local costTxt = Label(card, "GameFontNormal")
     costTxt:SetPoint("BOTTOMLEFT", costLbl, "BOTTOMRIGHT", 3, 0)
@@ -682,7 +662,7 @@ function SmartProfs:BuildDetailPanel()
     local pplTxt = Label(card, "GameFontNormalSmall")
     pplTxt:SetPoint("BOTTOMRIGHT", profitTxt, "TOPRIGHT", 0, 2)
     pplTxt:SetJustifyH("RIGHT")
-    pplTxt:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
+    C:TextColor(pplTxt, "textMuted")
 
     local crafterTxt = Label(card, "GameFontNormalSmall")
     crafterTxt:SetPoint("TOPRIGHT", card, "TOPRIGHT", -6, -4)
@@ -731,12 +711,12 @@ function SmartProfs:BuildDetailPanel()
     local findTxt = Label(trainerBtn, "GameFontNormalSmall")
     findTxt:SetPoint("LEFT", trainerBtn, "LEFT", 26, 0)
     findTxt:SetText(L["ALTS_FIND_TRAINER"])
-    findTxt:SetTextColor(unpack(T.accent or {0.90, 0.72, 0.18, 1}))
+    C:TextColor(findTxt, "accent")
 
     local arrowTxt = Label(trainerBtn, "GameFontNormalSmall")
     arrowTxt:SetPoint("RIGHT", trainerBtn, "RIGHT", -8, 0)
     arrowTxt:SetJustifyH("RIGHT")
-    arrowTxt:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+    C:TextColor(arrowTxt, "textMuted")
     trainerBtn.arrowTxt = arrowTxt
 
     local dropdown = CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate")
@@ -782,7 +762,7 @@ function SmartProfs:BuildDetailPanel()
         npcNameTxt:SetPoint("RIGHT", row, "RIGHT", -6,  4)
         npcNameTxt:SetJustifyH("LEFT")
         npcNameTxt:SetWordWrap(false)
-        npcNameTxt:SetTextColor(unpack(T.text or {0.92, 0.92, 0.92, 1}))
+        C:TextColor(npcNameTxt, "text")
 
         local fallback = td.name or ("NPC #"..tostring(td.id))
         local function SetName(n) if npcNameTxt then npcNameTxt:SetText(n or fallback) end end
@@ -793,15 +773,10 @@ function SmartProfs:BuildDetailPanel()
         zoneTxt:SetPoint("RIGHT", row, "RIGHT", -6, -9)
         zoneTxt:SetJustifyH("LEFT")
         zoneTxt:SetWordWrap(false)
-        zoneTxt:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+        C:TextColor(zoneTxt, "textMuted")
         zoneTxt:SetText(td.zone .. (td.note and ("  ("..td.note..")") or ""))
 
-        row:SetScript("OnEnter", function()
-          if row.SetBackdropColor then row:SetBackdropColor(unpack(T.hover or {0.17,0.17,0.20,1})) end
-        end)
-        row:SetScript("OnLeave", function()
-          if row.SetBackdropColor then row:SetBackdropColor(unpack(T.panel or {0.09,0.09,0.11,0.92})) end
-        end)
+        NS.UI.Util.BindBackgroundHover(row, T.hover or {0.17,0.17,0.20,1}, T.panel or {0.09,0.09,0.11,0.92})
         row:SetScript("OnClick", function() dropdown:Hide(); OpenTrainerMap(td.worldmap) end)
 
         dropdown.rows[#dropdown.rows+1] = row
@@ -902,16 +877,11 @@ function SmartProfs:RefreshDetailPanel()
       local active = tab.expansion == selectedExpansion
       if active then
         ApplyBackdrop(tab, T.accentDark or {0.28,0.24,0.10,0.95}, T.accent or {0.90,0.72,0.18,1})
-        tab.labelTxt:SetTextColor(unpack(T.accentBright or {1,0.95,0.6,1}))
+        C:TextColor(tab.labelTxt, "accentBright")
       else
         ApplyBackdrop(tab, T.row or {0.13,0.13,0.15,1}, T.border or {0.24,0.24,0.28,1})
-        tab.labelTxt:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
-        tab:SetScript("OnEnter", function()
-          if tab.SetBackdropColor then tab:SetBackdropColor(unpack(T.hover or {0.17,0.17,0.20,1})) end
-        end)
-        tab:SetScript("OnLeave", function()
-          if tab.SetBackdropColor then tab:SetBackdropColor(unpack(T.row or {0.13,0.13,0.15,1})) end
-        end)
+        C:TextColor(tab.labelTxt, "textMuted")
+        NS.UI.Util.BindBackgroundHover(tab, T.hover or {0.17,0.17,0.20,1}, T.row or {0.13,0.13,0.15,1})
       end
     end
   end
@@ -988,11 +958,11 @@ function SmartProfs:RefreshDetailPanel()
       card.nameTxt:SetTextColor(qc[1]*alpha, qc[2]*alpha, qc[3]*alpha, 1)
 
       card.mktTxt:SetText(item.marketPrice and FormatGold(item.marketPrice) or "--")
-      card.mktTxt:SetTextColor(unpack(T.text or {0.92,0.92,0.92,1}))
+      C:TextColor(card.mktTxt, "text")
       card.mktTxt:SetAlpha(alpha)
 
       card.costTxt:SetText(FormatGold(item.craftCost))
-      card.costTxt:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
+      C:TextColor(card.costTxt, "textMuted")
       card.costTxt:SetAlpha(alpha)
 
       if item.profit then
@@ -1002,7 +972,7 @@ function SmartProfs:RefreshDetailPanel()
         card.profitTxt:SetTextColor(pc[1]*alpha, pc[2]*alpha, pc[3]*alpha, 1)
       else
         card.profitTxt:SetText("--")
-        card.profitTxt:SetTextColor(unpack(T.placeholder or {0.52,0.52,0.55,1}))
+        C:TextColor(card.profitTxt, "placeholder")
       end
 
       if item.ppl then

@@ -49,6 +49,23 @@ local function hide()
   GameTooltip:Hide()
 end
 
+function TT:SimpleTooltip(widget, titleOrFn, body, anchor)
+  if not widget then return end
+
+  widget:HookScript("OnEnter", function(self)
+    local title = type(titleOrFn) == "function" and titleOrFn() or titleOrFn
+    if not title or title == "" then return end
+    applyOwner(self, anchor or GetTooltipAnchor())
+    GameTooltip:SetText(title, 1, 1, 1)
+    local bodyText = type(body) == "function" and body() or body
+    if bodyText and bodyText ~= "" then
+      GameTooltip:AddLine(bodyText, 0.7, 0.7, 0.7, true)
+    end
+    GameTooltip:Show()
+  end)
+  widget:HookScript("OnLeave", hide)
+end
+
 local function label(text)
   if text then GameTooltip:AddLine(text, 0.6, 0.8, 1) end
 end

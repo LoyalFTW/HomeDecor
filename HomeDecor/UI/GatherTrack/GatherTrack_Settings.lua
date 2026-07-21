@@ -5,6 +5,7 @@ NS.UI = NS.UI or {}
 local Settings = {}
 NS.UI.GatherTrackSettings = Settings
 local Utils = NS.GT.Utils
+local Controls = NS.UI.Controls
 
 local CreateFrame = CreateFrame
 local unpack = _G.unpack or table.unpack
@@ -84,22 +85,6 @@ local function CreateCheckbox(parent, x, y, label, tooltipText)
   return cb
 end
 
-local function CreateSectionLabel(parent, x, y, text, accent)
-  local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  label:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
-  label:SetText(text)
-  label:SetTextColor(unpack(accent or { 1, 0.82, 0.2, 1 }))
-
-  local line = parent:CreateTexture(nil, "ARTWORK")
-  line:SetPoint("LEFT", label, "RIGHT", 8, 0)
-  line:SetPoint("RIGHT", parent, "RIGHT", -16, 0)
-  line:SetHeight(1)
-  local a = accent or { 1, 0.82, 0.2, 1 }
-  line:SetColorTexture(a[1], a[2], a[3], 0.20)
-
-  return label, line
-end
-
 local function CreateCard(parent, x, y, width, height, title, theme)
   local card = CreateFrame("Frame", nil, parent, "BackdropTemplate")
   card:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
@@ -109,7 +94,7 @@ local function CreateCard(parent, x, y, width, height, title, theme)
   card.title = card:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   card.title:SetPoint("TOPLEFT", 10, -8)
   card.title:SetText(title)
-  card.title:SetTextColor(unpack(theme.accent or { 1, 0.82, 0.2, 1 }))
+  Controls:TextColor(card.title, "accent")
 
   card.line = card:CreateTexture(nil, "ARTWORK")
   card.line:SetPoint("TOPLEFT", card, "TOPLEFT", 10, -24)
@@ -156,7 +141,7 @@ function Settings:CreatePanel(parent, sharedCtx, onAlphaChange, options)
   local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   title:SetPoint("LEFT", 10, 0)
   title:SetText("Gather Options")
-  title:SetTextColor(unpack(T.accent or {1, 0.82, 0.2, 1}))
+  Controls:TextColor(title, "accent")
 
   local closeBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
   closeBtn:SetSize(18, 18)

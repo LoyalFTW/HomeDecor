@@ -9,15 +9,8 @@ local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
 
 if not U.Backdrop then
     function U.Backdrop(frame, controls, bg, border)
-        if not frame then return end
-        if controls and controls.Backdrop then return controls:Backdrop(frame, bg, border) end
-        frame:SetBackdrop({
-            bgFile = "Interface/Buttons/WHITE8x8",
-            edgeFile = "Interface/Buttons/WHITE8x8",
-            edgeSize = 1,
-        })
-        frame:SetBackdropColor(unpack(bg))
-        frame:SetBackdropBorderColor(unpack(border))
+        if not frame or not controls or not controls.Backdrop then return end
+        return controls:Backdrop(frame, bg, border)
     end
 end
 
@@ -40,6 +33,14 @@ if not U.BindBorderHover then
         if not (frame and frame.SetScript and frame.SetBackdropBorderColor) then return end
         frame:SetScript("OnEnter", function() frame:SetBackdropBorderColor(unpack(accent)) end)
         frame:SetScript("OnLeave", function() frame:SetBackdropBorderColor(unpack(border)) end)
+    end
+end
+
+if not U.BindBackgroundHover then
+    function U.BindBackgroundHover(frame, hoverBg, normalBg)
+        if not (frame and frame.SetScript and frame.SetBackdropColor) then return end
+        frame:SetScript("OnEnter", function() frame:SetBackdropColor(unpack(hoverBg)) end)
+        frame:SetScript("OnLeave", function() frame:SetBackdropColor(unpack(normalBg)) end)
     end
 end
 
@@ -137,26 +138,6 @@ function M:Build(popup, env)
         end
     end
 
-    local function button(text, onClick)
-        local b = CreateFrame("Button", nil, popup, "BackdropTemplate")
-        b:SetHeight(24)
-        U.Backdrop(b, C, T.panel, T.border)
-        U.BindBorderHover(b, T.accent, T.border)
-
-        b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        b.text:SetPoint("CENTER")
-        b.text:SetText(text)
-        TextColor(b.text, "text")
-
-        b:SetScript("OnClick", function() if onClick then onClick() end end)
-        popup._rows[#popup._rows + 1] = { isButton = true, dd = b }
-
-        popup._allElements[#popup._allElements + 1] = b
-        popup._allElements[#popup._allElements + 1] = b.text
-
-        return b
-    end
-
     local function headerRow(titleText)
         local r = {}
         r.title = popup:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -211,17 +192,8 @@ function M:Build(popup, env)
             rebuild()
         end)
 
-        if tooltip then
-            b:SetScript("OnEnter", function(self)
-                self:SetBackdropBorderColor(unpack(T.accent))
-                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                GameTooltip:SetText(tooltip, nil, nil, nil, nil, true)
-                GameTooltip:Show()
-            end)
-            b:SetScript("OnLeave", function(self)
-                self:SetBackdropBorderColor(unpack(T.border))
-                GameTooltip:Hide()
-            end)
+        if tooltip and NS.UI.Tooltips then
+            NS.UI.Tooltips:SimpleTooltip(b, tooltip, nil, "ANCHOR_RIGHT")
         end
 
         r.dd = b
@@ -232,52 +204,6 @@ function M:Build(popup, env)
         popup._allElements[#popup._allElements + 1] = b
         popup._allElements[#popup._allElements + 1] = b.text
         popup._allElements[#popup._allElements + 1] = b.indicator
-    end
-
-    local function quickGroup(defs)
-        local r = { isQuickGroup = true, buttons = {} }
-
-        for i = 1, #defs do
-            local def = defs[i]
-            local b = CreateFrame("Button", nil, popup, "BackdropTemplate")
-            b:SetHeight(26)
-            U.Backdrop(b, C, T.panel, T.border)
-            U.BindBorderHover(b, T.accent, T.border)
-
-            b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-            b.text:SetPoint("CENTER")
-            b.text:SetText(def.text)
-            TextColor(b.text, "text")
-
-            b:SetScript("OnClick", function()
-                if def.onClick then def.onClick() end
-                syncAll()
-                rebuild()
-            end)
-
-            r.buttons[#r.buttons + 1] = { button = b, active = def.active }
-            popup._allElements[#popup._allElements + 1] = b
-            popup._allElements[#popup._allElements + 1] = b.text
-        end
-
-        r.refresh = function()
-            for i = 1, #r.buttons do
-                local item = r.buttons[i]
-                local b = item.button
-                local selected = item.active and item.active()
-                if selected then
-                    U.Backdrop(b, C, T.row, T.accent)
-                    TextColor(b.text, "highlight")
-                else
-                    U.Backdrop(b, C, T.panel, T.border)
-                    TextColor(b.text, "text", 0.9)
-                end
-            end
-        end
-
-        popup._rows[#popup._rows + 1] = r
-        r.refresh()
-        return r
     end
 
     local function ddRow(titleText, get, set, valuesFn, resetsCategory)
@@ -1155,25 +1081,6 @@ function M:Build(popup, env)
                 r.dd:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
                 r.dd:SetHeight(r.isCheck and 26 or 24)
                 y = y - (r.isCheck and 32 or 30)
-            elseif r.isQuickGroup then
-                local count = #r.buttons
-                local gap = 4
-                local totalGap = gap * (count - 1)
-                local width = ((self:GetWidth() or 200) - left - right - totalGap) / count
-                for j = 1, count do
-                    local btn = r.buttons[j].button
-                    btn:Show()
-                    btn:ClearAllPoints()
-                    btn:SetWidth(width)
-                    btn:SetHeight(26)
-                    if j == 1 then
-                        btn:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
-                    else
-                        btn:SetPoint("LEFT", r.buttons[j - 1].button, "RIGHT", gap, 0)
-                    end
-                end
-                if r.refresh then r.refresh() end
-                y = y - 32
             elseif r.isColorGrid then
                 if r.refresh then r.refresh() end
 

@@ -242,8 +242,8 @@ local function FormatMoney(value)
 end
 
 local function ProfitColor(value)
-  if value == nil then return T.textMuted or { 0.65, 0.65, 0.68, 1 } end
-  return value >= 0 and (T.success or { 0.30, 0.80, 0.40, 1 }) or (T.danger or { 0.80, 0.28, 0.28, 1 })
+  if value == nil then return "textMuted" end
+  return value >= 0 and "success" or "danger"
 end
 
 local itemLoadFrame = CreateFrame("Frame")
@@ -693,10 +693,6 @@ InvalidateFilteredCache = function()
   cachedFilteredDirty = true
 end
 
-local function SetTextColor(fs, color)
-  if fs and fs.SetTextColor then fs:SetTextColor(unpack(color or T.text or { 0.92, 0.92, 0.92, 1 })) end
-end
-
 UpdateDetailPanel = function(data)
   selectedItemData = data or selectedItemData
   if not detailPanel or not detailWidgets then return end
@@ -735,7 +731,7 @@ UpdateDetailPanel = function(data)
   if w.icon then w.icon:SetTexture(ItemIcon(data.itemID)) end
   if w.name then
     w.name:SetText(data.name or ("Item " .. tostring(data.itemID or "?")))
-    SetTextColor(w.name, T.accent or { 0.9, 0.72, 0.18, 1 })
+    C:TextColor(w.name, "accent")
   end
   if w.meta then
     local parts = {}
@@ -756,7 +752,7 @@ UpdateDetailPanel = function(data)
     local profitText = FormatMoney(totalProfit)
     if data.margin ~= nil then profitText = profitText .. " (" .. format("%.0f%%", data.margin) .. ")" end
     w.profit:SetText(profitText)
-    SetTextColor(w.profit, ProfitColor(totalProfit))
+    C:TextColor(w.profit, ProfitColor(totalProfit))
   end
 
   if w.materials then
@@ -782,13 +778,13 @@ UpdateDetailPanel = function(data)
       row.name:SetPoint("LEFT", row.icon, "RIGHT", 8, 0)
       row.name:SetPoint("RIGHT", -78, 0)
       row.name:SetJustifyH("LEFT")
-      row.name:SetTextColor(unpack(T.text or { 0.92, 0.92, 0.92, 1 }))
+      C:TextColor(row.name, "text")
 
       row.cost = NewFS(row, "GameFontNormalSmall")
       row.cost:SetPoint("RIGHT", 0, 0)
       row.cost:SetWidth(74)
       row.cost:SetJustifyH("RIGHT")
-      row.cost:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+      C:TextColor(row.cost, "textMuted")
 
       w.materials[i] = row
       return row
@@ -835,7 +831,6 @@ RenderVisibleRows = function()
   local lastIdx  = math.min(#filtered, math.ceil ((scrollOffset + viewH + OVERSCAN) / ROW_H))
 
   ReleaseAllRows()
-  local accent, success, danger, muted = T.accent, T.success, T.danger, T.textMuted
 
   for i = firstIdx, lastIdx do
     local rowData = filtered[i]
@@ -892,12 +887,12 @@ RenderVisibleRows = function()
         c.star:SetAlpha(isFav and 1 or 0.5)
       else
         c.star:SetText(isFav and "+" or "-")
-        c.star:SetTextColor(unpack(isFav and (accent or {0.9,0.72,0.18,1}) or (muted or {0.65,0.65,0.68,1})))
+        C:TextColor(c.star, isFav and "accent" or "textMuted")
       end
     end
     if c.name and c.name:IsShown() then
       c.name:SetText(rowData.name or "?")
-      c.name:SetTextColor(unpack(accent or {0.9,0.72,0.18,1}))
+      C:TextColor(c.name, "accent")
       c.name:ClearAllPoints()
       c.name:SetPoint("LEFT", GetColX(COLS_BY_KEY.name) + 2, 0)
       c.name:SetWidth(math.max(80, (COLS_BY_KEY.name.w or 180) - 4))
@@ -907,61 +902,61 @@ RenderVisibleRows = function()
     end
     if c.profession and c.profession:IsShown() then
       c.profession:SetText(rowData.profession or "")
-      c.profession:SetTextColor(unpack(muted or {0.65,0.65,0.68,1}))
+      C:TextColor(c.profession, "textMuted")
     end
     if c.expansion and c.expansion:IsShown() then
       c.expansion:SetText(rowData.expansion or "")
-      c.expansion:SetTextColor(unpack(muted or {0.65,0.65,0.68,1}))
+      C:TextColor(c.expansion, "textMuted")
     end
     if c.lumberType and c.lumberType:IsShown() then
       c.lumberType:SetText(rowData.lumberTypeName or "-")
-      c.lumberType:SetTextColor(unpack(muted or {0.65,0.65,0.68,1}))
+      C:TextColor(c.lumberType, "textMuted")
     end
     if c.cost and c.cost:IsShown() then
       c.cost:SetText(PriceSource and PriceSource.FormatGold(rowData.cost) or "?")
-      c.cost:SetTextColor(unpack(muted or {0.65,0.65,0.68,1}))
+      C:TextColor(c.cost, "textMuted")
     end
     if c.sell and c.sell:IsShown() then
       c.sell:SetText(PriceSource and PriceSource.FormatGold(rowData.sell) or "?")
-      c.sell:SetTextColor(unpack(accent or {0.9,0.72,0.18,1}))
+      C:TextColor(c.sell, "accent")
     end
     if c.profit and c.profit:IsShown() then
       if rowData.profit ~= nil then
-        local color = (rowData.profit >= 0) and (success or {0.3,0.8,0.4,1}) or (danger or {0.8,0.28,0.28,1})
-        c.profit:SetTextColor(unpack(color))
+        local role = (rowData.profit >= 0) and "success" or "danger"
+        C:TextColor(c.profit, role)
         c.profit:SetText(PriceSource and PriceSource.FormatGold(rowData.profit) or "?")
       else
-        c.profit:SetTextColor(unpack(muted or {0.65,0.65,0.68,1}))
+        C:TextColor(c.profit, "textMuted")
         c.profit:SetText("?")
       end
     end
     if c.ppl and c.ppl:IsShown() then
       if rowData.ppl ~= nil then
-        local color = (rowData.ppl >= 0) and (success or {0.3,0.8,0.4,1}) or (danger or {0.8,0.28,0.28,1})
-        c.ppl:SetTextColor(unpack(color))
+        local role = (rowData.ppl >= 0) and "success" or "danger"
+        C:TextColor(c.ppl, role)
         c.ppl:SetText(PriceSource and PriceSource.FormatGold(rowData.ppl) or "?")
       else
-        c.ppl:SetTextColor(unpack(muted or {0.65,0.65,0.68,1}))
+        C:TextColor(c.ppl, "textMuted")
         c.ppl:SetText("-")
       end
     end
     if c.crafter and c.crafter:IsShown() then
       if rowData.crafter then
-        local color = rowData.known and (T.text or {0.92,0.92,0.92,1}) or (muted or {0.65,0.65,0.68,1})
-        c.crafter:SetTextColor(unpack(color))
+        local role = rowData.known and "text" or "textMuted"
+        C:TextColor(c.crafter, role)
         c.crafter:SetText(rowData.crafter)
       else
-        c.crafter:SetTextColor(unpack(muted or {0.65,0.65,0.68,1}))
+        C:TextColor(c.crafter, "textMuted")
         c.crafter:SetText("-")
       end
     end
     if c.margin and c.margin:IsShown() then
       if rowData.margin ~= nil then
-        local color = (rowData.margin >= 0) and (success or {0.3,0.8,0.4,1}) or (danger or {0.8,0.28,0.28,1})
-        c.margin:SetTextColor(unpack(color))
+        local role = (rowData.margin >= 0) and "success" or "danger"
+        C:TextColor(c.margin, role)
         c.margin:SetText(format("%.0f%%", rowData.margin))
       else
-        c.margin:SetTextColor(unpack(muted or {0.65,0.65,0.68,1}))
+        C:TextColor(c.margin, "textMuted")
         c.margin:SetText("-")
       end
     end
@@ -1041,10 +1036,10 @@ local function RefreshTable()
   if recipeCountLabel then
     if knownOnly or altProfsOnly then
       recipeCountLabel:SetText(format("%d / %d recipes", #filtered, #dataRows))
-      recipeCountLabel:SetTextColor(unpack(T.accent or {0.9,0.72,0.18,1}))
+      C:TextColor(recipeCountLabel, "accent")
     else
       recipeCountLabel:SetText(format("%d recipes", #dataRows))
-      recipeCountLabel:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
+      C:TextColor(recipeCountLabel, "textMuted")
     end
   end
 
@@ -1055,7 +1050,7 @@ local function RefreshTable()
     if not DecorAH._emptyLabel then
       DecorAH._emptyLabel = NewFS(scrollChild, "GameFontNormalLarge")
       DecorAH._emptyLabel:SetPoint("CENTER", scrollChild, "TOP", 0, -100)
-      DecorAH._emptyLabel:SetTextColor(unpack(T.textMuted or {0.65,0.65,0.68,1}))
+      C:TextColor(DecorAH._emptyLabel, "textMuted")
     end
     local msg = "No items found"
     if knownOnly then
@@ -1149,15 +1144,15 @@ local function CreateHeaderRow(parent, y)
       if not fs then return end
       if sortCol ~= self.colKey then
         fs:SetText("")
-        fs:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+        C:TextColor(fs, "textMuted")
         return
       end
       fs:SetText(sortRev and " ^" or " v")
-      fs:SetTextColor(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+      C:TextColor(fs, "accent")
     end
     local label = NewFS(btn, "GameFontNormal")
     label:SetJustifyH(col.align or "LEFT")
-    label:SetTextColor(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+    C:TextColor(label, "accent")
     btn._label = label
 
     local sortText = NewFS(btn, "GameFontNormalSmall")
@@ -1311,7 +1306,7 @@ function DH:Create(parentFrame, embedded)
     local title = NewFS(canvas, "GameFontNormalLarge")
     title:SetPoint("TOP", 0, -14)
     title:SetText(L["DECOR_PRICING"])
-    title:SetTextColor(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+    C:TextColor(title, "accent")
 
     local closeBtn = CreateFrame("Button", nil, canvas, "BackdropTemplate")
     closeBtn:SetSize(26, 26)
@@ -1341,7 +1336,7 @@ function DH:Create(parentFrame, embedded)
   local sourceLabel = NewFS(topBar, "GameFontNormal")
   sourceLabel:SetPoint("LEFT", 14, 0)
   sourceLabel:SetText("Prices:")
-  sourceLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(sourceLabel, "textMuted")
 
   local sources = PriceSource and PriceSource.GetAvailableSources and PriceSource.GetAvailableSources() or { "Scan" }
   preferredSource = PriceSource and PriceSource.GetPreferredSource()
@@ -1362,7 +1357,7 @@ function DH:Create(parentFrame, embedded)
     local fs = NewFS(btn, "GameFontNormal")
     fs:SetPoint("CENTER")
     fs:SetText(label)
-    fs:SetTextColor(unpack(T.text or { 0.92, 0.92, 0.92, 1 }))
+    C:TextColor(fs, "text")
     btn:SetScript("OnClick", function()
       preferredSource = srcKey
       if PriceSource then
@@ -1376,7 +1371,7 @@ function DH:Create(parentFrame, embedded)
     btn.UpdateHighlight = function(self)
       local active = (PriceSource and PriceSource.GetPreferredSource()) == self._srcKey
       self:SetBackdropColor(unpack(active and (T.accentDark or T.panel) or T.panel))
-      fs:SetTextColor(unpack(active and (T.accent or { 0.9, 0.72, 0.18, 1 }) or T.text))
+      C:TextColor(fs, active and "accent" or "text")
     end
     btn:SetScript("OnEnter", function(self)
       if self._tooltip and GameTooltip then
@@ -1410,7 +1405,7 @@ function DH:Create(parentFrame, embedded)
 
   local scanTimeText = NewFS(topBar, "GameFontNormal")
   scanTimeText:SetPoint("LEFT", srcX + 12, 0)
-  scanTimeText:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(scanTimeText, "textMuted")
 
   local scanTimeButton = CreateFrame("Button", nil, topBar)
   scanTimeButton:SetAllPoints(scanTimeText)
@@ -1426,15 +1421,15 @@ function DH:Create(parentFrame, embedded)
       end
       GameTooltip:Show()
     end
-    scanTimeText:SetTextColor(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+    C:TextColor(scanTimeText, "accent")
   end)
   scanTimeButton:SetScript("OnLeave", function()
     if GameTooltip then GameTooltip:Hide() end
     local lastScan = PriceSource and PriceSource.GetLastAuctionatorScanTime and PriceSource.GetLastAuctionatorScanTime()
     if lastScan and (time() - lastScan) < 60 then
-      scanTimeText:SetTextColor(unpack(T.success or { 0.3, 0.8, 0.4, 1 }))
+      C:TextColor(scanTimeText, "success")
     else
-      scanTimeText:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+      C:TextColor(scanTimeText, "textMuted")
     end
   end)
 
@@ -1447,7 +1442,7 @@ function DH:Create(parentFrame, embedded)
 
     if not AuctionScan or not AuctionScan.IsAuctionatorAvailable or not AuctionScan.IsAuctionatorAvailable() then
       scanTimeText:SetText(L["DECOR_AH_INSTALL_AUCTIONATOR"])
-      scanTimeText:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+      C:TextColor(scanTimeText, "textMuted")
       return
     end
 
@@ -1457,18 +1452,18 @@ function DH:Create(parentFrame, embedded)
       local timeStr
       if ago < 60 then
         timeStr = L["DECOR_AH_JUST_SCANNED"]
-        scanTimeText:SetTextColor(unpack(T.success or { 0.3, 0.8, 0.4, 1 }))
+        C:TextColor(scanTimeText, "success")
       elseif ago < 3600 then
         timeStr = format(L["DECOR_AH_SCANNED_MIN_AGO"], floor(ago / 60))
-        scanTimeText:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+        C:TextColor(scanTimeText, "textMuted")
       else
         timeStr = format(L["DECOR_AH_SCANNED_HOURS_AGO"], floor(ago / 3600))
-        scanTimeText:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+        C:TextColor(scanTimeText, "textMuted")
       end
       scanTimeText:SetText(timeStr)
     else
       scanTimeText:SetText(L["DECOR_AH_RUN_FULL_SCAN"])
-      scanTimeText:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+      C:TextColor(scanTimeText, "textMuted")
     end
   end
 
@@ -1494,7 +1489,7 @@ function DH:Create(parentFrame, embedded)
   local queueBtnText = NewFS(queueBtn, "GameFontNormal")
   queueBtnText:SetPoint("CENTER")
   queueBtnText:SetText(L["DECOR_AH_QUEUE_ZERO"])
-  queueBtnText:SetTextColor(unpack(T.text or { 0.92, 0.92, 0.92, 1 }))
+  C:TextColor(queueBtnText, "text")
   queueBtn:SetScript("OnClick", function()
     DH:ShowQueueFrame()
   end)
@@ -1520,7 +1515,7 @@ function DH:Create(parentFrame, embedded)
   local salesBtnText = NewFS(salesBtn, "GameFontNormal")
   salesBtnText:SetPoint("CENTER")
   salesBtnText:SetText(L["DECOR_AH_SALES"])
-  salesBtnText:SetTextColor(unpack(T.text or { 0.92, 0.92, 0.92, 1 }))
+  C:TextColor(salesBtnText, "text")
   salesBtn:SetScript("OnClick", function()
     if NS.UI.DecorAH_SalesUI and NS.UI.DecorAH_SalesUI.ToggleSalesPanel then
       NS.UI.DecorAH_SalesUI.ToggleSalesPanel()
@@ -1588,11 +1583,11 @@ function DH:Create(parentFrame, embedded)
     dd.text:SetPoint("RIGHT", -24, 0)
     dd.text:SetJustifyH("LEFT")
     dd.text:SetText(dd._value)
-    dd.text:SetTextColor(unpack(T.text or { 0.92, 0.92, 0.92, 1 }))
+    C:TextColor(dd.text, "text")
     local arrow = dd:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     arrow:SetPoint("RIGHT", -6, 0)
     arrow:SetText("v")
-    arrow:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+    C:TextColor(arrow, "textMuted")
     dd.GetValue = function(self) return self._value end
     dd.SetValue = function(self, v)
       self._value = v
@@ -1612,12 +1607,11 @@ function DH:Create(parentFrame, embedded)
         btn:SetPoint("TOPRIGHT", -3, -3 - (i - 1) * MENU_ITEM_H)
         btn:SetHeight(MENU_ITEM_H)
         Backdrop(btn, T.panel, nil)
-        btn:SetScript("OnEnter", function() btn:SetBackdropColor(unpack(T.hover or { 0.17, 0.17, 0.2, 1 })) end)
-        btn:SetScript("OnLeave", function() btn:SetBackdropColor(0, 0, 0, 0) end)
+        NS.UI.Util.BindBackgroundHover(btn, T.hover or { 0.17, 0.17, 0.2, 1 }, { 0, 0, 0, 0 })
         local fs = NewFS(btn, "GameFontNormal")
         fs:SetPoint("LEFT", 6, 0)
         fs:SetText(opt)
-        fs:SetTextColor(unpack(T.text or { 0.92, 0.92, 0.92, 1 }))
+        C:TextColor(fs, "text")
         btn:SetScript("OnClick", function()
           dd:SetValue(opt)
           InvalidateFilteredCache()
@@ -1635,21 +1629,21 @@ function DH:Create(parentFrame, embedded)
   local profLabel = NewFS(filterRow, "GameFontNormal")
   profLabel:SetPoint("LEFT", 8, 0)
   profLabel:SetText(L["DECOR_AH_PROFESSION_COLON"])
-  profLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(profLabel, "textMuted")
   professionDropdown = MakeDropdown(filterRow, profs, L["FILTER_ALL"], 126, nil)
   professionDropdown:SetPoint("LEFT", profLabel, "RIGHT", 6, 0)
 
   local expLabel = NewFS(filterRow, "GameFontNormal")
   expLabel:SetPoint("LEFT", professionDropdown, "RIGHT", 14, 0)
   expLabel:SetText(L["DECOR_AH_EXPANSION_COLON"])
-  expLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(expLabel, "textMuted")
   expansionDropdown = MakeDropdown(filterRow, expansions, L["FILTER_ALL"], 126, nil)
   expansionDropdown:SetPoint("LEFT", expLabel, "RIGHT", 6, 0)
 
   local lumberLabel = NewFS(filterRow, "GameFontNormal")
   lumberLabel:SetPoint("LEFT", expansionDropdown, "RIGHT", 14, 0)
   lumberLabel:SetText(L["DECOR_AH_LUMBER_COLON"])
-  lumberLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(lumberLabel, "textMuted")
   lumberTypeDropdown = MakeDropdown(filterRow, lumberTypes, L["FILTER_ALL"], 108, nil)
   lumberTypeDropdown:SetPoint("LEFT", lumberLabel, "RIGHT", 6, 0)
 
@@ -1680,7 +1674,7 @@ function DH:Create(parentFrame, embedded)
     local fs = NewFS(chk, "GameFontNormal")
     fs:SetPoint("LEFT", 22, 0)
     fs:SetText(label)
-    fs:SetTextColor(unpack(T.text or { 0.92, 0.92, 0.92, 1 }))
+    C:TextColor(fs, "text")
     chk:SetScript("OnClick", function(self)
       self.checked = not self.checked
       tex:SetTexture(self.checked and "Interface\\Buttons\\UI-CheckBox-Check" or "Interface\\Buttons\\UI-CheckBox-Up")
@@ -1693,7 +1687,7 @@ function DH:Create(parentFrame, embedded)
   local searchLabel = NewFS(filterRow2, "GameFontNormal")
   searchLabel:SetPoint("LEFT", 8, 0)
   searchLabel:SetText(L["DECOR_AH_SEARCH_COLON"])
-  searchLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(searchLabel, "textMuted")
   searchBox = CreateFrame("EditBox", nil, filterRow2, "BackdropTemplate")
   searchBox:SetSize(178, 20)
   searchBox:SetPoint("LEFT", searchLabel, "RIGHT", 6, 0)
@@ -1711,7 +1705,7 @@ function DH:Create(parentFrame, embedded)
   recipeCountLabel:SetPoint("RIGHT", -8, 0)
   recipeCountLabel:SetJustifyH("RIGHT")
   recipeCountLabel:SetText("0 / 0 recipes")
-  recipeCountLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(recipeCountLabel, "textMuted")
 
   local inspectorW = 260
   local headerY = embedded and -116 or -144
@@ -1726,7 +1720,7 @@ function DH:Create(parentFrame, embedded)
   local detailTitle = NewFS(detailPanel, "GameFontNormal")
   detailTitle:SetPoint("TOPLEFT", 12, -10)
   detailTitle:SetText("Selected Item")
-  detailTitle:SetTextColor(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+  C:TextColor(detailTitle, "accent")
 
   local detailStar = CreateFrame("Button", nil, detailPanel)
   detailStar:SetSize(24, 24)
@@ -1780,7 +1774,7 @@ function DH:Create(parentFrame, embedded)
   detailWidgets.meta:SetPoint("TOPLEFT", detailWidgets.name, "BOTTOMLEFT", 0, -6)
   detailWidgets.meta:SetPoint("RIGHT", -12, 0)
   detailWidgets.meta:SetJustifyH("LEFT")
-  detailWidgets.meta:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(detailWidgets.meta, "textMuted")
 
   local div1 = detailPanel:CreateTexture(nil, "ARTWORK")
   div1:SetHeight(1)
@@ -1791,7 +1785,7 @@ function DH:Create(parentFrame, embedded)
   local matsTitle = NewFS(detailPanel, "GameFontNormal")
   matsTitle:SetPoint("TOPLEFT", 12, -112)
   matsTitle:SetText(L["DECOR_AH_MATERIALS_COLON"] or "Materials:")
-  matsTitle:SetTextColor(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+  C:TextColor(matsTitle, "accent")
 
   detailWidgets.materials = {}
   detailWidgets.materialScroll = CreateFrame("ScrollFrame", nil, detailPanel, "ScrollFrameTemplate")
@@ -1821,12 +1815,12 @@ function DH:Create(parentFrame, embedded)
   local estTitle = NewFS(detailPanel, "GameFontNormal")
   estTitle:SetPoint("TOPLEFT", 12, -292)
   estTitle:SetText("Estimated Profit")
-  estTitle:SetTextColor(unpack(T.accent or { 0.9, 0.72, 0.18, 1 }))
+  C:TextColor(estTitle, "accent")
 
   local costLabel = NewFS(detailPanel, "GameFontNormalSmall")
   costLabel:SetPoint("TOPLEFT", 12, -316)
   costLabel:SetText(L["DECOR_AH_COST_COLON"] or "Cost:")
-  costLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(costLabel, "textMuted")
   detailWidgets.cost = NewFS(detailPanel, "GameFontNormalSmall")
   detailWidgets.cost:SetPoint("TOPRIGHT", detailPanel, "TOPRIGHT", -12, -316)
   detailWidgets.cost:SetJustifyH("RIGHT")
@@ -1834,7 +1828,7 @@ function DH:Create(parentFrame, embedded)
   local sellLabel = NewFS(detailPanel, "GameFontNormalSmall")
   sellLabel:SetPoint("TOPLEFT", 12, -336)
   sellLabel:SetText("Sell:")
-  sellLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(sellLabel, "textMuted")
   detailWidgets.sell = NewFS(detailPanel, "GameFontNormalSmall")
   detailWidgets.sell:SetPoint("TOPRIGHT", detailPanel, "TOPRIGHT", -12, -336)
   detailWidgets.sell:SetJustifyH("RIGHT")
@@ -1842,7 +1836,7 @@ function DH:Create(parentFrame, embedded)
   local profitLabel = NewFS(detailPanel, "GameFontNormal")
   profitLabel:SetPoint("TOPLEFT", 12, -362)
   profitLabel:SetText(L["DECOR_AH_PROFIT_COLON"] or "Profit:")
-  profitLabel:SetTextColor(unpack(T.success or { 0.30, 0.80, 0.40, 1 }))
+  C:TextColor(profitLabel, "success")
   detailWidgets.profit = NewFS(detailPanel, "GameFontNormal")
   detailWidgets.profit:SetPoint("TOPRIGHT", detailPanel, "TOPRIGHT", -12, -362)
   detailWidgets.profit:SetJustifyH("RIGHT")
@@ -1857,7 +1851,7 @@ function DH:Create(parentFrame, embedded)
     local fs = NewFS(btn, "GameFontNormal")
     fs:SetPoint("CENTER")
     fs:SetText(label)
-    fs:SetTextColor(unpack(role == "primary" and (T.accentBright or T.accent or { 1, 0.95, 0.6, 1 }) or (T.text or { 0.92, 0.92, 0.92, 1 })))
+    C:TextColor(fs, role == "primary" and "accentBright" or "text")
     btn:SetScript("OnClick", onClick)
     return btn
   end
@@ -1871,7 +1865,7 @@ function DH:Create(parentFrame, embedded)
   local qtyLabel = NewFS(qtyBox, "GameFontNormalSmall")
   qtyLabel:SetPoint("LEFT", 8, 0)
   qtyLabel:SetText("Queue Qty")
-  qtyLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+  C:TextColor(qtyLabel, "textMuted")
 
   local qtyMinus = CreateFrame("Button", nil, qtyBox, "BackdropTemplate")
   qtyMinus:SetSize(22, 18)
@@ -1989,7 +1983,7 @@ function DH:Create(parentFrame, embedded)
     local scaleLabel = NewFS(scaleHolder, "GameFontNormal")
     scaleLabel:SetPoint("LEFT", 0, 0)
     scaleLabel:SetText(L["SCALE"])
-    scaleLabel:SetTextColor(unpack(T.textMuted or { 0.65, 0.65, 0.68, 1 }))
+    C:TextColor(scaleLabel, "textMuted")
   local sliderBG = CreateFrame("Frame", nil, scaleHolder, "BackdropTemplate")
   Backdrop(sliderBG, T.panel, T.border)
   sliderBG:SetPoint("LEFT", scaleLabel, "RIGHT", 6, 0)

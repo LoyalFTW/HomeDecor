@@ -100,16 +100,7 @@ local BORDER = T.border  or {0.2, 0.18, 0.08, 0.8}
 local function ApplyBackdrop(f, bg, border)
   if C and C.Backdrop then
     C:Backdrop(f, bg, border)
-    return
   end
-  if not f or not f.SetBackdrop then return end
-  f:SetBackdrop({
-    bgFile   = "Interface/Buttons/WHITE8X8",
-    edgeFile = border and "Interface/Buttons/WHITE8X8" or nil,
-    edgeSize = border and 1 or 0,
-  })
-  f:SetBackdropColor(bg[1], bg[2], bg[3], bg[4])
-  if border then f:SetBackdropBorderColor(border[1], border[2], border[3], border[4]) end
 end
 
 local function FormatGold(copper)
@@ -289,7 +280,7 @@ function SmartProfs:BuildOppsFrame()
   content:SetSize(1, 1)
   scroll:SetScrollChild(content)
   scroll:SetScript("OnSizeChanged", function(sf, w)
-    content:SetWidth(w)
+    if C and C.SyncScrollChildWidth then C:SyncScrollChildWidth(sf, content) end
     if self.UpdateGridLayout then self:UpdateGridLayout(w) end
   end)
   self.oppsContent = content
@@ -307,7 +298,7 @@ function SmartProfs:BuildOppsFrame()
     local lbl = strip:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     lbl:SetPoint("LEFT", strip, "LEFT", xOff, -7)
     lbl:SetText(labelTxt)
-    lbl:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+    C:TextColor(lbl, "textMuted")
     return val
   end
   self.readyCount = StatPair(14,  "READY NOW",       CELL_TC.ready)
@@ -316,7 +307,7 @@ function SmartProfs:BuildOppsFrame()
   local hint = strip:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   hint:SetPoint("RIGHT", strip, "RIGHT", -10, 0)
   hint:SetText(L["ALTS_CLICK_CELL_HINT"])
-  hint:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+  C:TextColor(hint, "textMuted")
 
   local headerRow = CreateFrame("Frame", nil, content)
   headerRow:SetPoint("TOPLEFT",  strip, "BOTTOMLEFT",  0, -4)
@@ -405,7 +396,7 @@ function SmartProfs:BuildOppsFrame()
     local label = legend:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     label:SetPoint("LEFT", legend, "LEFT", PW + xOff + 11, 0)
     label:SetText(txt)
-    label:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+    C:TextColor(label, "textMuted")
   end
   LegendDot(0, 0.22, 0.74, 0.22, L["ALTS_LEGEND_READY"])
   LegendDot(72, 0.90, 0.60, 0.14, L["ALTS_LEGEND_CLOSE"])
@@ -437,7 +428,7 @@ function SmartProfs:BuildOppsFrame()
 
   local detTitle = detHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   detTitle:SetPoint("LEFT", detHeader, "LEFT", 10, 0)
-  detTitle:SetTextColor(unpack(ACCENT))
+  C:TextColor(detTitle, "accent")
   self.detTitle = detTitle
 
   local closeBtn = CreateFrame("Button", nil, detHeader, BackdropTemplateMixin and "BackdropTemplate")
@@ -447,7 +438,7 @@ function SmartProfs:BuildOppsFrame()
   local closeTxt = closeBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   closeTxt:SetPoint("CENTER")
   closeTxt:SetText("x")
-  closeTxt:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+  C:TextColor(closeTxt, "textMuted")
   closeBtn:SetScript("OnClick", function() self:CloseDetail() end)
 
   local altCol = CreateFrame("Frame", nil, det)
@@ -459,7 +450,7 @@ function SmartProfs:BuildOppsFrame()
   local altColLbl = altCol:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   altColLbl:SetPoint("TOPLEFT", altCol, "TOPLEFT", 6, -5)
   altColLbl:SetText(L["ALTS_YOUR_ALTS"])
-  altColLbl:SetTextColor(unpack(T.accent or {0.90, 0.72, 0.18, 1}))
+  C:TextColor(altColLbl, "accent")
 
   local recipeCol = CreateFrame("Frame", nil, det)
   recipeCol:SetPoint("TOPLEFT",     altCol, "TOPRIGHT",    1, 0)
@@ -469,7 +460,7 @@ function SmartProfs:BuildOppsFrame()
   local recipeColLbl = recipeCol:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   recipeColLbl:SetPoint("TOPLEFT", recipeCol, "TOPLEFT", 6, -5)
   recipeColLbl:SetText(L["ALTS_PROFITABLE_RECIPES"])
-  recipeColLbl:SetTextColor(unpack(T.accent or {0.90, 0.72, 0.18, 1}))
+  C:TextColor(recipeColLbl, "accent")
 
   self.altRows = {}
   for i = 1, 8 do
@@ -547,7 +538,7 @@ function SmartProfs:BuildOppsFrame()
   local trainerLbl = trainerStrip:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   trainerLbl:SetPoint("TOPLEFT", trainerStrip, "TOPLEFT", 10, -5)
   trainerLbl:SetText(L["ALTS_TRAINER_LOCATIONS"])
-  trainerLbl:SetTextColor(unpack(T.accent or {0.90, 0.72, 0.18, 1}))
+  C:TextColor(trainerLbl, "accent")
 
   local TBTN_W = 210
   local FACTION_COLORS = {
@@ -606,14 +597,14 @@ function SmartProfs:BuildOppsFrame()
     nameTxt:SetPoint("RIGHT", btn, "RIGHT", -8,  1)
     nameTxt:SetJustifyH("LEFT")
     nameTxt:SetWordWrap(false)
-    nameTxt:SetTextColor(unpack(T.text or {0.92, 0.92, 0.92, 1}))
+    C:TextColor(nameTxt, "text")
 
     local zoneTxt = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     zoneTxt:SetPoint("LEFT",  btn, "LEFT",  34, -9)
     zoneTxt:SetPoint("RIGHT", btn, "RIGHT", -8, -9)
     zoneTxt:SetJustifyH("LEFT")
     zoneTxt:SetWordWrap(false)
-    zoneTxt:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+    C:TextColor(zoneTxt, "textMuted")
 
     btn:SetScript("OnEnter", function()
       if btn.SetBackdropColor then btn:SetBackdropColor(unpack(T.hover or {0.17, 0.17, 0.20, 1})) end
@@ -774,15 +765,15 @@ function SmartProfs:PopulateDetail(prof, ab, alts)
     if rec then
       row:Show()
       row.bulletTxt:SetText("-")
-      row.bulletTxt:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+      C:TextColor(row.bulletTxt, "textMuted")
       row.nameTxt:SetText(rec.name)
-      row.nameTxt:SetTextColor(unpack(T.text or {0.92, 0.92, 0.92, 1}))
+      C:TextColor(row.nameTxt, "text")
       if rec.profit then
         row.profitTxt:SetText("+"..FormatGold(rec.profit))
-        row.profitTxt:SetTextColor(unpack(T.accent or {0.90, 0.72, 0.18, 1}))
+        C:TextColor(row.profitTxt, "accent")
       else
         row.profitTxt:SetText("--")
-        row.profitTxt:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+        C:TextColor(row.profitTxt, "textMuted")
       end
     else
       row:Hide()
@@ -893,7 +884,7 @@ function SmartProfs:Create(parent)
   local sectionLbl = hdr:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   sectionLbl:SetPoint("LEFT", stripe, "RIGHT", 8, 0)
   sectionLbl:SetText(L["ALTS_SECTION_LABEL"])
-  sectionLbl:SetTextColor(unpack(T.accentBright or {1, 0.95, 0.6, 1}))
+  C:TextColor(sectionLbl, "accentBright")
 
   local TAB_W, TAB_H = 130, 28
 
@@ -919,7 +910,7 @@ function SmartProfs:Create(parent)
     local labelTxt = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     labelTxt:SetPoint("CENTER", btn, "CENTER", 0, 0)
     labelTxt:SetText(label)
-    labelTxt:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+    C:TextColor(labelTxt, "textMuted")
     btn.labelTxt = labelTxt
 
     local underline = btn:CreateTexture(nil, "OVERLAY")
@@ -944,13 +935,13 @@ function SmartProfs:Create(parent)
       ApplyBackdrop(btn,
         T.accentDark and {T.accentDark[1], T.accentDark[2], T.accentDark[3], 0.95} or {0.28, 0.24, 0.10, 0.95},
         T.accent     and {T.accent[1],     T.accent[2],     T.accent[3],     0.85} or {0.90, 0.72, 0.18, 0.85})
-      btn.labelTxt:SetTextColor(unpack(T.accentBright or {1, 0.95, 0.6, 1}))
+      C:TextColor(btn.labelTxt, "accentBright")
       btn.underline:Show()
     else
       ApplyBackdrop(btn,
         T.panel  and {T.panel[1],  T.panel[2],  T.panel[3],  0.92} or {0.095, 0.095, 0.11, 0.92},
         T.border and {T.border[1], T.border[2], T.border[3], 0.70} or {0.24,  0.24,  0.28, 0.70})
-      btn.labelTxt:SetTextColor(unpack(T.textMuted or {0.65, 0.65, 0.68, 1}))
+      C:TextColor(btn.labelTxt, "textMuted")
       btn.underline:Hide()
     end
   end

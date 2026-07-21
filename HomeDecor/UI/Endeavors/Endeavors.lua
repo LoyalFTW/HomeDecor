@@ -16,15 +16,22 @@ local function Backdrop(f, bg, brd)
     if brd then f:SetBackdropBorderColor(brd[1],brd[2],brd[3],brd[4] or 1) end
 end
 local function Theme() return NS.UI.Theme and NS.UI.Theme.colors or {} end
-local function TC(name, ...)
-    local c = Theme()[name]
-    if not c then return ... end
-    return c[1], c[2], c[3], c[4] or 1
-end
 local function AccentRGB()
     local c = Theme().accent
     if c then return c[1], c[2], c[3] end
     return 0.90, 0.72, 0.18
+end
+local function TC2(fs, role, alpha)
+    local C = NS.UI.Controls
+    if C and C.TextColor then C:TextColor(fs, role, alpha) end
+end
+local function TexC(tex, role, alpha)
+    local C = NS.UI.Controls
+    if C and C.TextureColor then C:TextureColor(tex, role, alpha) end
+end
+local function SolC(tex, role, alpha)
+    local C = NS.UI.Controls
+    if C and C.SolidColor then C:SolidColor(tex, role, alpha) end
 end
 local C_ACCENT      = { 0.90, 0.72, 0.18, 1 }
 local C_ACCENT_DARK = { 0.28, 0.24, 0.10, 1 }
@@ -54,14 +61,6 @@ local function HLine(parent, r, g, b, a, anchor, offY)
     t:SetColorTexture(r, g, b, a or 1)
     return t
 end
-local function VLine(parent, r, g, b, a)
-    local t = Tex(parent, "BORDER")
-    t:SetWidth(1)
-    t:SetPoint("TOP",    parent, "TOPRIGHT")
-    t:SetPoint("BOTTOM", parent, "BOTTOMRIGHT")
-    t:SetColorTexture(r, g, b, a or 1)
-    return t
-end
 local function HLineAccent(parent, alpha, anchor, offY)
     local r, g, b = AccentRGB()
     local t = HLine(parent, r, g, b, alpha, anchor, offY)
@@ -76,23 +75,23 @@ local function StatusDot(parent, size)
     size = size or 10
     local f = CreateFrame("Frame", nil, parent, "BackdropTemplate")
     f:SetSize(size, size)
-    f:SetBackdrop({
-        bgFile   = "Interface\\Buttons\\WHITE8x8",
-        edgeFile = "Interface\\Buttons\\WHITE8x8",
-        edgeSize = 1,
-    })
-    f:SetBackdropColor(C_MUTED[1]*0.4, C_MUTED[2]*0.4, C_MUTED[3]*0.4, 1)
-    f:SetBackdropBorderColor(C_MUTED[1], C_MUTED[2], C_MUTED[3], 0.7)
+    do
+        local m = Theme().textMuted or C_MUTED
+        Backdrop(f, { m[1]*0.4, m[2]*0.4, m[3]*0.4, 1 }, { m[1], m[2], m[3], 0.7 })
+    end
     function f:SetState(state)
         if state == "done" then
-            f:SetBackdropColor(C_GREEN[1]*0.5, C_GREEN[2]*0.5, C_GREEN[3]*0.5, 1)
-            f:SetBackdropBorderColor(C_GREEN[1], C_GREEN[2], C_GREEN[3], 1)
+            local g = Theme().success or C_GREEN
+            f:SetBackdropColor(g[1]*0.5, g[2]*0.5, g[3]*0.5, 1)
+            f:SetBackdropBorderColor(g[1], g[2], g[3], 1)
         elseif state == "progress" then
-            f:SetBackdropColor(C_GOLD[1]*0.4, C_GOLD[2]*0.3, 0, 1)
-            f:SetBackdropBorderColor(C_GOLD[1], C_GOLD[2], C_GOLD[3], 1)
+            local gd = Theme().gold or C_GOLD
+            f:SetBackdropColor(gd[1]*0.4, gd[2]*0.3, 0, 1)
+            f:SetBackdropBorderColor(gd[1], gd[2], gd[3], 1)
         else
-            f:SetBackdropColor(C_MUTED[1]*0.2, C_MUTED[2]*0.2, C_MUTED[3]*0.2, 1)
-            f:SetBackdropBorderColor(C_MUTED[1], C_MUTED[2], C_MUTED[3], 0.5)
+            local m = Theme().textMuted or C_MUTED
+            f:SetBackdropColor(m[1]*0.2, m[2]*0.2, m[3]*0.2, 1)
+            f:SetBackdropBorderColor(m[1], m[2], m[3], 0.5)
         end
     end
     return f
@@ -102,22 +101,20 @@ local function PillBtn(parent, label, w, h)
     btn:SetSize(w or 70, h or 20)
     btn:EnableMouse(true)
     btn:RegisterForClicks("LeftButtonUp")
-    btn:SetBackdrop({
-        bgFile   = "Interface\\Buttons\\WHITE8x8",
-        edgeFile = "Interface\\Buttons\\WHITE8x8",
-        edgeSize = 1,
-    })
-    btn:SetBackdropColor(C_ACCENT_DARK[1], C_ACCENT_DARK[2], C_ACCENT_DARK[3], 0.9)
-    btn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.6)
+    do
+        local ad = Theme().accentDark or C_ACCENT_DARK
+        local ac = Theme().accent or C_ACCENT
+        Backdrop(btn, { ad[1], ad[2], ad[3], 0.9 }, { ac[1], ac[2], ac[3], 0.6 })
+    end
     local fs = FS(btn, "GameFontHighlightSmall")
     fs:SetAllPoints()
     fs:SetJustifyH("CENTER")
     fs:SetText(label or "")
-    fs:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+    TC2(fs, "accent")
     ApplyFont(fs, 10)
     btn.label = fs
-    btn:SetScript("OnEnter", function() btn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 1) end)
-    btn:SetScript("OnLeave", function() btn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.6) end)
+    btn:SetScript("OnEnter", function() local ac = Theme().accent or C_ACCENT; btn:SetBackdropBorderColor(ac[1], ac[2], ac[3], 1) end)
+    btn:SetScript("OnLeave", function() local ac = Theme().accent or C_ACCENT; btn:SetBackdropBorderColor(ac[1], ac[2], ac[3], 0.6) end)
     return btn
 end
 local function TabBtn(parent, label)
@@ -142,14 +139,17 @@ local function TabBtn(parent, label)
     btn:SetWidth((fs:GetStringWidth() or 50) + 20)
     function btn:SetActive(v)
         if v then
-            btn:SetBackdropColor(C_ACCENT[1]*0.22, C_ACCENT[2]*0.18, 0, 0.7)
-            btn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.5)
+            local ac = Theme().accent or C_ACCENT
+            btn:SetBackdropColor(ac[1]*0.22, ac[2]*0.18, 0, 0.7)
+            btn:SetBackdropBorderColor(ac[1], ac[2], ac[3], 0.5)
+            fs.__hdTextRole = nil
             fs:SetTextColor(1, 1, 0.8)
             uline:Show()
         else
+            local bd = Theme().border or C_BORDER
             btn:SetBackdropColor(0.10, 0.10, 0.12, 0.5)
-            btn:SetBackdropBorderColor(C_BORDER[1], C_BORDER[2], C_BORDER[3], 0.3)
-            fs:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+            btn:SetBackdropBorderColor(bd[1], bd[2], bd[3], 0.3)
+            TC2(fs, "textMuted")
             uline:Hide()
         end
     end
@@ -315,13 +315,15 @@ local function MakeTaskRow(parent, idx)
     row:SetHeight(ROW_H)
     local bgTex = Tex(row, "BACKGROUND")
     bgTex:SetAllPoints()
-    local c = idx % 2 == 0 and C_ROW_EVEN or C_ROW_ODD
-    bgTex:SetColorTexture(c[1], c[2], c[3], c[4])
+    SolC(bgTex, idx % 2 == 0 and "rowBGAlt" or "rowBG")
     row.bgTex = bgTex
     local stripe = Tex(row, "ARTWORK")
     stripe:SetWidth(3)
     stripe:SetPoint("TOPLEFT"); stripe:SetPoint("BOTTOMLEFT")
-    stripe:SetColorTexture(C_MUTED[1], C_MUTED[2], C_MUTED[3], 0.3)
+    do
+        local m = Theme().textMuted or C_MUTED
+        stripe:SetColorTexture(m[1], m[2], m[3], 0.3)
+    end
     row.stripe = stripe
     local dot = StatusDot(row, 10)
     dot:SetPoint("LEFT", 10, 0)
@@ -354,14 +356,14 @@ local function MakeTaskRow(parent, idx)
     xpFS:SetPoint("RIGHT", cpnFS, "LEFT", -8, 2)
     xpFS:SetWidth(52)
     xpFS:SetJustifyH("RIGHT")
-    xpFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
+    TC2(xpFS, "success")
     ApplyFont(xpFS, 10)
     row.xpFS = xpFS
     local progFS = FS(row, "GameFontHighlightSmall")
     progFS:SetPoint("RIGHT", xpFS, "LEFT", -8, 0)
     progFS:SetWidth(64)
     progFS:SetJustifyH("RIGHT")
-    progFS:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+    TC2(progFS, "textMuted")
     ApplyFont(progFS, 10)
     row.progFS = progFS
     local nameFS = FS(row, "GameFontHighlightSmall")
@@ -379,26 +381,34 @@ end
 local RANK_C = { {0.2, 0.9, 0.85, 1}, {0.55, 0.65, 1.0, 1}, {1.0, 0.72, 0.2, 1} }
 local function UpdateTaskRow(row, task, rankByID, couponIconID, idx)
     row.task = task
-    local c = idx % 2 == 0 and C_ROW_EVEN or C_ROW_ODD
-    row.bgTex:SetColorTexture(c[1], c[2], c[3], c[4])
+    SolC(row.bgTex, idx % 2 == 0 and "rowBGAlt" or "rowBG")
     row.nameFS:SetText(task.name or "?")
     local hasProgress = (task.current or 0) > 0 and not task.completed
     local isTracked = task.tracked or (Sys and Sys:IsTaskTracked(task.id))
     if isTracked then
-        row.trackBtn:SetBackdropColor(C_ACCENT[1]*0.25, C_ACCENT[2]*0.22, 0, 0.95)
-        row.trackBtn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.9)
+        local ac = Theme().accent or C_ACCENT
+        row.trackBtn:SetBackdropColor(ac[1]*0.25, ac[2]*0.22, 0, 0.95)
+        row.trackBtn:SetBackdropBorderColor(ac[1], ac[2], ac[3], 0.9)
+        row.trackBtn.label.__hdTextRole = nil
         row.trackBtn.label:SetTextColor(1, 0.9, 0.35)
     else
+        local bd = Theme().border or C_BORDER
         row.trackBtn:SetBackdropColor(0.06, 0.06, 0.07, 0.65)
-        row.trackBtn:SetBackdropBorderColor(C_BORDER[1], C_BORDER[2], C_BORDER[3], 0.45)
-        row.trackBtn.label:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+        row.trackBtn:SetBackdropBorderColor(bd[1], bd[2], bd[3], 0.45)
+        TC2(row.trackBtn.label, "textMuted")
     end
     if task.completed then
         row.dot:SetState("done")
-        row.nameFS:SetTextColor(C_MUTED[1]*1.2, C_MUTED[2]*1.1, C_MUTED[3], 0.75)
+        do
+            local m = Theme().textMuted or C_MUTED
+            row.nameFS:SetTextColor(m[1]*1.2, m[2]*1.1, m[3], 0.75)
+        end
         row.progFS:SetText("Done")
-        row.progFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
-        row.stripe:SetColorTexture(C_GREEN[1]*0.6, C_GREEN[2]*0.6, C_GREEN[3]*0.6, 0.8)
+        TC2(row.progFS, "success")
+        do
+            local g = Theme().success or C_GREEN
+            row.stripe:SetColorTexture(g[1]*0.6, g[2]*0.6, g[3]*0.6, 0.8)
+        end
     else
         row.dot:SetState(hasProgress and "progress" or "empty")
         row.nameFS:SetTextColor(1, 1, 1)
@@ -407,26 +417,26 @@ local function UpdateTaskRow(row, task, rankByID, couponIconID, idx)
         else
             row.progFS:SetText("")
         end
-        row.progFS:SetTextColor(hasProgress and C_GOLD[1] or C_MUTED[1],
-                                hasProgress and C_GOLD[2] or C_MUTED[2],
-                                hasProgress and C_GOLD[3] or C_MUTED[3])
+        TC2(row.progFS, hasProgress and "gold" or "textMuted")
         local rank = rankByID and rankByID[task.id]
         if rank and RANK_C[rank] then
             local rc = RANK_C[rank]
             row.stripe:SetColorTexture(rc[1], rc[2], rc[3], 0.85)
         else
-            row.stripe:SetColorTexture(C_MUTED[1], C_MUTED[2], C_MUTED[3], 0.2)
+            local m = Theme().textMuted or C_MUTED
+            row.stripe:SetColorTexture(m[1], m[2], m[3], 0.2)
         end
     end
     local showNextXP = row._panel and row._panel._showNextXP
     local nextXP = showNextXP and Sys and Sys:GetNextXP(task.name, task.id) or 0
     if showNextXP and nextXP and nextXP > 0 then
         row.xpFS:SetText("~" .. nextXP .. " XP")
+        row.xpFS.__hdTextRole = nil
         row.xpFS:SetTextColor(0.45, 0.72, 1.0)
         row.xpFS:Show()
     elseif (task.points or 0) > 0 then
         row.xpFS:SetText(task.points .. " XP")
-        row.xpFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
+        TC2(row.xpFS, "success")
         row.xpFS:Show()
     else
         row.xpFS:Hide()
@@ -460,7 +470,8 @@ local function UpdateTaskRow(row, task, rankByID, couponIconID, idx)
             GameTooltip:AddLine(format("Progress: %d / %d", tk.current or 0, tk.max or 1), 1, 0.82, 0)
         end
         if (tk.points or 0) > 0 then
-            GameTooltip:AddLine("XP Reward: " .. tk.points, C_GREEN[1], C_GREEN[2], C_GREEN[3])
+            local g = Theme().success or C_GREEN
+            GameTooltip:AddLine("XP Reward: " .. tk.points, g[1], g[2], g[3])
         end
         if (tk.couponReward or 0) > 0 then
             local s = "Coupons: " .. tk.couponReward
@@ -486,7 +497,8 @@ local function UpdateTaskRow(row, task, rankByID, couponIconID, idx)
     row.trackBtn:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText(isTracked and "Untrack Endeavor" or "Track Endeavor", 1, 1, 1)
-        GameTooltip:AddLine(task.name or "", C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+        local ac = Theme().accent or C_ACCENT
+        GameTooltip:AddLine(task.name or "", ac[1], ac[2], ac[3])
         GameTooltip:Show()
     end)
     row.trackBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -506,19 +518,23 @@ local function UpdateTaskRow(row, task, rankByID, couponIconID, idx)
                 pop:SetFrameStrata("TOOLTIP")
                 pop:SetSize(140, 28)
                 pop:Hide()
-                Backdrop(pop, C_PANEL, C_BORDER)
-                pop:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.6)
+                Backdrop(pop, Theme().panel or C_PANEL, Theme().border or C_BORDER)
+                do
+                    local ac = Theme().accent or C_ACCENT
+                    pop:SetBackdropBorderColor(ac[1], ac[2], ac[3], 0.6)
+                end
                 local popBtn = CreateFrame("Button", nil, pop, "BackdropTemplate")
                 popBtn:SetHeight(20)
                 popBtn:SetPoint("TOPLEFT",  pop, "TOPLEFT",   4, -4)
                 popBtn:SetPoint("TOPRIGHT", pop, "TOPRIGHT", -4, -4)
-                Backdrop(popBtn, C_PANEL, C_BORDER)
+                Backdrop(popBtn, Theme().panel or C_PANEL, Theme().border or C_BORDER)
                 local popLbl = pop:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
                 popLbl:SetPoint("CENTER", popBtn)
-                popLbl:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+                TC2(popLbl, "accent")
                 pop.popBtn = popBtn; pop.popLbl = popLbl
                 popBtn:SetScript("OnEnter", function(btn)
-                    btn:SetBackdropColor(C_ACCENT[1]*0.15, C_ACCENT[2]*0.15, C_ACCENT[3]*0.15, 0.5)
+                    local ac = Theme().accent or C_ACCENT
+                    btn:SetBackdropColor(ac[1]*0.15, ac[2]*0.15, ac[3]*0.15, 0.5)
                 end)
                 popBtn:SetScript("OnLeave", function(btn)
                     btn:SetBackdropColor(0, 0, 0, 0)
@@ -558,7 +574,7 @@ local function StatRow(parent, labelText, anchorTo, offY)
     lbl:SetPoint("RIGHT", f, "CENTER", -4, 0)
     lbl:SetJustifyH("LEFT")
     lbl:SetWordWrap(false)
-    lbl:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+    TC2(lbl, "textMuted")
     lbl:SetText(labelText)
     ApplyFont(lbl, 10)
     f.lbl = lbl
@@ -570,7 +586,11 @@ local function StatRow(parent, labelText, anchorTo, offY)
     val:SetTextColor(1, 1, 1)
     ApplyFont(val, 10)
     f.val = val
-    HLine(f, C_BORDER[1], C_BORDER[2], C_BORDER[3], 0.25)
+    do
+        local bd = Theme().border or C_BORDER
+        local hl = HLine(f, bd[1], bd[2], bd[3], 0.25)
+        SolC(hl, "border", 0.25)
+    end
     return f
 end
 function EndeavorsUI:Create(parent)
@@ -582,7 +602,11 @@ function EndeavorsUI:Create(parent)
     local hdr = CreateFrame("Frame", nil, panel)
     hdr:SetPoint("TOPLEFT"); hdr:SetPoint("TOPRIGHT")
     hdr:SetHeight(86)
-    SolidBG(hdr, C_HEADER_BG[1], C_HEADER_BG[2], C_HEADER_BG[3], C_HEADER_BG[4])
+    do
+        local h = Theme().header or C_HEADER_BG
+        local hdrBG = SolidBG(hdr, h[1], h[2], h[3], h[4])
+        SolC(hdrBG, "header")
+    end
     HLineAccent(hdr, 0.4)
     local seasonFS = FS(hdr, "GameFontNormal", "OVERLAY")
     seasonFS:SetPoint("TOPLEFT", 10, -8)
@@ -591,7 +615,7 @@ function EndeavorsUI:Create(parent)
     panel.seasonFS = seasonFS
     local daysFS = FS(hdr, "GameFontHighlightSmall", "OVERLAY")
     daysFS:SetPoint("TOPRIGHT", -10, -10)
-    daysFS:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+    TC2(daysFS, "textMuted")
     ApplyFont(daysFS, 10)
     panel.daysFS = daysFS
     local msBar = MakeMilestoneBar(hdr, 22)
@@ -605,7 +629,7 @@ function EndeavorsUI:Create(parent)
     local filterBtn = CreateFrame("Button", nil, infoRow, "BackdropTemplate")
     filterBtn:SetSize(114, 18)
     filterBtn:SetPoint("LEFT", 0, 0)
-    Backdrop(filterBtn, C_PANEL, C_BORDER)
+    Backdrop(filterBtn, Theme().panel or C_PANEL, Theme().border or C_BORDER)
     local filterArrow = Tex(filterBtn, "OVERLAY")
     filterArrow:SetSize(10, 10)
     filterArrow:SetPoint("RIGHT", -4, 0)
@@ -615,25 +639,30 @@ function EndeavorsUI:Create(parent)
     filterLabel:SetPoint("RIGHT", filterArrow, "LEFT", -3, 0)
     filterLabel:SetJustifyH("LEFT")
     filterLabel:SetWordWrap(false)
-    filterLabel:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+    TC2(filterLabel, "accent")
     filterLabel:SetText("House / Sort")
     ApplyFont(filterLabel, 10)
     filterBtn:SetScript("OnEnter", function(self)
-        self:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.8)
+        local ac = Theme().accent or C_ACCENT
+        self:SetBackdropBorderColor(ac[1], ac[2], ac[3], 0.8)
     end)
     filterBtn:SetScript("OnLeave", function(self)
-        self:SetBackdropBorderColor(C_BORDER[1], C_BORDER[2], C_BORDER[3], C_BORDER[4])
+        local bd = Theme().border or C_BORDER
+        self:SetBackdropBorderColor(bd[1], bd[2], bd[3], bd[4])
     end)
     panel.filterBtn = filterBtn
     local filterPopup = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     filterPopup:SetFrameStrata("TOOLTIP")
     filterPopup:SetWidth(160)
     filterPopup:Hide()
-    Backdrop(filterPopup, C_PANEL, C_BORDER)
-    filterPopup:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.6)
+    Backdrop(filterPopup, Theme().panel or C_PANEL, Theme().border or C_BORDER)
+    do
+        local ac = Theme().accent or C_ACCENT
+        filterPopup:SetBackdropBorderColor(ac[1], ac[2], ac[3], 0.6)
+    end
     local popupTitle = FS(filterPopup, "GameFontNormalSmall")
     popupTitle:SetPoint("TOPLEFT", 8, -6)
-    popupTitle:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+    TC2(popupTitle, "accent")
     ApplyFont(popupTitle, 10, "OUTLINE")
     popupTitle:SetText("HOUSE / SORT")
     local popupRows = {}
@@ -656,7 +685,7 @@ function EndeavorsUI:Create(parent)
     local function AddPopupSectionTitle(text, yOff)
         local fs = FS(filterPopup, "GameFontHighlightSmall")
         fs:SetPoint("TOPLEFT", filterPopup, "TOPLEFT", 8, -yOff)
-        fs:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+        TC2(fs, "textMuted")
         ApplyFont(fs, 9, "OUTLINE")
         fs:SetText(text)
         table.insert(popupRows, fs)
@@ -667,10 +696,11 @@ function EndeavorsUI:Create(parent)
         btn:SetHeight(18)
         btn:SetPoint("TOPLEFT",  filterPopup, "TOPLEFT",   4, -yOff)
         btn:SetPoint("TOPRIGHT", filterPopup, "TOPRIGHT", -4, -yOff)
-        Backdrop(btn, C_PANEL, C_BORDER)
+        Backdrop(btn, Theme().panel or C_PANEL, Theme().border or C_BORDER)
         if isSelected then
-            btn:SetBackdropColor(C_ACCENT[1]*0.2, C_ACCENT[2]*0.2, C_ACCENT[3]*0.2, 0.6)
-            btn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.5)
+            local ac = Theme().accent or C_ACCENT
+            btn:SetBackdropColor(ac[1]*0.2, ac[2]*0.2, ac[3]*0.2, 0.6)
+            btn:SetBackdropBorderColor(ac[1], ac[2], ac[3], 0.5)
         end
         local dot = FS(btn, "GameFontHighlightSmall")
         dot:SetPoint("LEFT", 4, 0)
@@ -684,20 +714,25 @@ function EndeavorsUI:Create(parent)
         lbl:SetText(text)
         ApplyFont(lbl, 10)
         if isSelected then
-            lbl:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+            TC2(lbl, "accent")
         else
+            lbl.__hdTextRole = nil
             lbl:SetTextColor(0.88, 0.88, 0.88)
         end
         btn:SetScript("OnEnter", function(self)
-            self:SetBackdropColor(C_ACCENT[1]*0.15, C_ACCENT[2]*0.15, C_ACCENT[3]*0.15, 0.5)
+            local ac = Theme().accent or C_ACCENT
+            self:SetBackdropColor(ac[1]*0.15, ac[2]*0.15, ac[3]*0.15, 0.5)
+            lbl.__hdTextRole = nil
             lbl:SetTextColor(1, 1, 1)
         end)
         btn:SetScript("OnLeave", function(self)
             if isSelected then
-                self:SetBackdropColor(C_ACCENT[1]*0.2, C_ACCENT[2]*0.2, C_ACCENT[3]*0.2, 0.6)
-                lbl:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+                local ac = Theme().accent or C_ACCENT
+                self:SetBackdropColor(ac[1]*0.2, ac[2]*0.2, ac[3]*0.2, 0.6)
+                TC2(lbl, "accent")
             else
                 self:SetBackdropColor(0, 0, 0, 0)
+                lbl.__hdTextRole = nil
                 lbl:SetTextColor(0.88, 0.88, 0.88)
             end
         end)
@@ -787,20 +822,20 @@ function EndeavorsUI:Create(parent)
     panel.cpnFS = cpnFS
     local sep1 = FS(infoRow, "GameFontHighlightSmall")
     sep1:SetPoint("LEFT", cpnFS, "RIGHT", 8, 0)
-    sep1:SetText("|"); sep1:SetTextColor(C_BORDER[1], C_BORDER[2], C_BORDER[3])
+    sep1:SetText("|"); TC2(sep1, "border")
     ApplyFont(sep1, 10)
     local xpInfoFS = FS(infoRow, "GameFontHighlightSmall")
     xpInfoFS:SetPoint("LEFT", sep1, "RIGHT", 8, 0)
-    xpInfoFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
+    TC2(xpInfoFS, "success")
     ApplyFont(xpInfoFS, 10)
     panel.xpInfoFS = xpInfoFS
     local sep2 = FS(infoRow, "GameFontHighlightSmall")
     sep2:SetPoint("LEFT", xpInfoFS, "RIGHT", 8, 0)
-    sep2:SetText("|"); sep2:SetTextColor(C_BORDER[1], C_BORDER[2], C_BORDER[3])
+    sep2:SetText("|"); TC2(sep2, "border")
     ApplyFont(sep2, 10)
     local capInfoFS = FS(infoRow, "GameFontHighlightSmall")
     capInfoFS:SetPoint("LEFT", sep2, "RIGHT", 8, 0)
-    capInfoFS:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+    TC2(capInfoFS, "textMuted")
     ApplyFont(capInfoFS, 10)
     panel.capInfoFS = capInfoFS
     local body = CreateFrame("Frame", nil, panel)
@@ -811,11 +846,15 @@ function EndeavorsUI:Create(parent)
     local taskHdr = CreateFrame("Frame", nil, leftPanel)
     taskHdr:SetHeight(24)
     taskHdr:SetPoint("TOPLEFT"); taskHdr:SetPoint("TOPRIGHT")
-    SolidBG(taskHdr, C_HEADER_BG[1], C_HEADER_BG[2], C_HEADER_BG[3], 0.98)
+    do
+        local h = Theme().header or C_HEADER_BG
+        local taskHdrBG = SolidBG(taskHdr, h[1], h[2], h[3], 0.98)
+        SolC(taskHdrBG, "header", 0.98)
+    end
     HLineAccent(taskHdr, 0.3)
     local taskHdrLbl = FS(taskHdr, "GameFontNormal")
     taskHdrLbl:SetPoint("LEFT", 8, 0)
-    taskHdrLbl:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+    TC2(taskHdrLbl, "accent")
     taskHdrLbl:SetText("ENDEAVOR TASKS")
     ApplyFont(taskHdrLbl, 10, "OUTLINE")
     local function MkHdrToggle(label, tip, anchorTo)
@@ -828,24 +867,23 @@ function EndeavorsUI:Create(parent)
         function btn:SetToggleState(v)
             btn.active = v and true or false
             if btn.active then
-                btn:SetBackdropColor(C_ACCENT[1]*0.4, C_ACCENT[2]*0.3, 0, 1)
-                btn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 1)
+                local ac = Theme().accent or C_ACCENT
+                btn:SetBackdropColor(ac[1]*0.4, ac[2]*0.3, 0, 1)
+                btn:SetBackdropBorderColor(ac[1], ac[2], ac[3], 1)
+                btn.label.__hdTextRole = nil
                 btn.label:SetTextColor(1, 1, 0.5)
             else
-                btn:SetBackdropColor(C_ACCENT_DARK[1], C_ACCENT_DARK[2], C_ACCENT_DARK[3], 0.9)
-                btn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.5)
-                btn.label:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+                local ad = Theme().accentDark or C_ACCENT_DARK
+                local ac = Theme().accent or C_ACCENT
+                btn:SetBackdropColor(ad[1], ad[2], ad[3], 0.9)
+                btn:SetBackdropBorderColor(ac[1], ac[2], ac[3], 0.5)
+                TC2(btn.label, "textMuted")
             end
         end
         function btn:Toggle()
             btn:SetToggleState(not btn.active)
         end
-        btn:SetScript("OnEnter", function()
-            GameTooltip:SetOwner(btn, "ANCHOR_TOP")
-            GameTooltip:SetText(tip, 1, 1, 1)
-            GameTooltip:Show()
-        end)
-        btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        if NS.UI.Tooltips then NS.UI.Tooltips:SimpleTooltip(btn, tip, nil, "ANCHOR_TOP") end
         return btn
     end
     local highlightBtn = MkHdrToggle("HL", "Gold/Silver/Bronze rank highlighting")
@@ -879,11 +917,15 @@ function EndeavorsUI:Create(parent)
     local statsHdr = CreateFrame("Frame", nil, rightPanel)
     statsHdr:SetHeight(24)
     statsHdr:SetPoint("TOPLEFT"); statsHdr:SetPoint("TOPRIGHT")
-    SolidBG(statsHdr, C_HEADER_BG[1], C_HEADER_BG[2], C_HEADER_BG[3], 0.98)
+    do
+        local h = Theme().header or C_HEADER_BG
+        local statsHdrBG = SolidBG(statsHdr, h[1], h[2], h[3], 0.98)
+        SolC(statsHdrBG, "header", 0.98)
+    end
     HLineAccent(statsHdr, 0.3)
     local statsHdrLbl = FS(statsHdr, "GameFontNormal")
     statsHdrLbl:SetPoint("LEFT", 8, 0)
-    statsHdrLbl:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+    TC2(statsHdrLbl, "accent")
     statsHdrLbl:SetText("MY STATS")
     ApplyFont(statsHdrLbl, 10, "OUTLINE")
     local statsBody = CreateFrame("Frame", nil, rightPanel)
@@ -892,7 +934,7 @@ function EndeavorsUI:Create(parent)
     statsBody:SetHeight(110)
     local hxpLbl = FS(statsBody, "GameFontHighlightSmall")
     hxpLbl:SetPoint("TOPLEFT"); hxpLbl:SetText("House XP")
-    hxpLbl:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+    TC2(hxpLbl, "textMuted")
     ApplyFont(hxpLbl, 10)
     local xpBarFrame = CreateFrame("Frame", nil, statsBody)
     xpBarFrame:SetHeight(10)
@@ -902,7 +944,10 @@ function EndeavorsUI:Create(parent)
     local xpBar = CreateFrame("StatusBar", nil, xpBarFrame)
     xpBar:SetAllPoints()
     xpBar:SetMinMaxValues(0, 1); xpBar:SetValue(0)
-    xpBar:SetStatusBarColor(C_GREEN[1], C_GREEN[2], C_GREEN[3], 0.85)
+    do
+        local g = Theme().success or C_GREEN
+        xpBar:SetStatusBarColor(g[1], g[2], g[3], 0.85)
+    end
     local xpBarBg = Tex(xpBar, "BACKGROUND"); xpBarBg:SetAllPoints()
     xpBarBg:SetColorTexture(0.06, 0.06, 0.07)
     panel.xpBar = xpBar
@@ -911,7 +956,7 @@ function EndeavorsUI:Create(parent)
     xpValFS:SetPoint("TOPRIGHT", xpBarFrame, "BOTTOMRIGHT", 0, -2)
     xpValFS:SetJustifyH("LEFT")
     xpValFS:SetWordWrap(false)
-    xpValFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
+    TC2(xpValFS, "success")
     ApplyFont(xpValFS, 10)
     panel.xpValFS = xpValFS
     local capRow     = StatRow(statsBody, "XP Cap Status",   xpValFS,  -6)
@@ -924,7 +969,11 @@ function EndeavorsUI:Create(parent)
     tabBar:SetHeight(24)
     tabBar:SetPoint("TOPLEFT",  statsBody, "BOTTOMLEFT",  0, -8)
     tabBar:SetPoint("TOPRIGHT", rightPanel, "TOPRIGHT",   0, 0)
-    SolidBG(tabBar, C_HEADER_BG[1], C_HEADER_BG[2], C_HEADER_BG[3], 0.8)
+    do
+        local h = Theme().header or C_HEADER_BG
+        local tabBarBG = SolidBG(tabBar, h[1], h[2], h[3], 0.8)
+        SolC(tabBarBG, "header", 0.8)
+    end
     HLineAccent(tabBar, 0.2)
     local actTab  = TabBtn(tabBar, "Activity")
     local lbTab   = TabBtn(tabBar, "Leaderboard")
@@ -935,9 +984,7 @@ function EndeavorsUI:Create(parent)
     local function MiniToggle(atlas, tip)
         local btn = CreateFrame("Button", nil, tabBar, "BackdropTemplate")
         btn:SetSize(16, 16)
-        btn:SetBackdrop({ bgFile="Interface\\Buttons\\WHITE8x8", edgeFile="Interface\\Buttons\\WHITE8x8", edgeSize=1 })
-        btn:SetBackdropColor(0.1,0.1,0.12,0.6)
-        btn:SetBackdropBorderColor(C_BORDER[1],C_BORDER[2],C_BORDER[3],0.4)
+        Backdrop(btn, { 0.1, 0.1, 0.12, 0.6 }, Theme().border or C_BORDER)
         local ic = Tex(btn); ic:SetSize(12,12); ic:SetPoint("CENTER")
         ic:SetAtlas(atlas); ic:SetAlpha(0.55)
         btn.ic = ic; btn.active = false
@@ -945,13 +992,13 @@ function EndeavorsUI:Create(parent)
             btn.active = v
             ic:SetAlpha(v and 1 or 0.5)
             ic:SetDesaturated(not v)
-            btn:SetBackdropColor(v and C_ACCENT_DARK[1] or 0.1, v and C_ACCENT_DARK[2] or 0.1, v and C_ACCENT_DARK[3] or 0.12, v and 0.9 or 0.6)
-            btn:SetBackdropBorderColor(v and C_ACCENT[1] or C_BORDER[1], v and C_ACCENT[2] or C_BORDER[2], v and C_ACCENT[3] or C_BORDER[3], v and 0.7 or 0.4)
+            local ad = Theme().accentDark or C_ACCENT_DARK
+            local ac = Theme().accent or C_ACCENT
+            local bd = Theme().border or C_BORDER
+            btn:SetBackdropColor(v and ad[1] or 0.1, v and ad[2] or 0.1, v and ad[3] or 0.12, v and 0.9 or 0.6)
+            btn:SetBackdropBorderColor(v and ac[1] or bd[1], v and ac[2] or bd[2], v and ac[3] or bd[3], v and 0.7 or 0.4)
         end
-        btn:SetScript("OnEnter", function()
-            GameTooltip:SetOwner(btn,"ANCHOR_TOP"); GameTooltip:SetText(tip,1,1,1); GameTooltip:Show()
-        end)
-        btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        if NS.UI.Tooltips then NS.UI.Tooltips:SimpleTooltip(btn, tip, nil, "ANCHOR_TOP") end
         return btn
     end
     local filterMeBtn  = MiniToggle("housefinder_neighborhood-list-friend-icon",  "Filter: Me Only")
@@ -981,21 +1028,25 @@ function EndeavorsUI:Create(parent)
     trackerWrap:SetPoint("BOTTOMLEFT", rightPanel, "BOTTOMLEFT", 0, 0)
     trackerWrap:SetPoint("BOTTOMRIGHT", rightPanel, "BOTTOMRIGHT", 0, 0)
     trackerWrap:SetHeight(116)
-    Backdrop(trackerWrap, {0.035, 0.038, 0.045, 0.94}, {C_BORDER[1], C_BORDER[2], C_BORDER[3], 0.45})
+    Backdrop(trackerWrap, {0.035, 0.038, 0.045, 0.94}, Theme().border or C_BORDER)
     local trackerHdr = CreateFrame("Frame", nil, trackerWrap)
     trackerHdr:SetHeight(22)
     trackerHdr:SetPoint("TOPLEFT", 1, -1)
     trackerHdr:SetPoint("TOPRIGHT", -1, -1)
-    SolidBG(trackerHdr, C_HEADER_BG[1], C_HEADER_BG[2], C_HEADER_BG[3], 0.9)
+    do
+        local h = Theme().header or C_HEADER_BG
+        local trackerHdrBG = SolidBG(trackerHdr, h[1], h[2], h[3], 0.9)
+        SolC(trackerHdrBG, "header", 0.9)
+    end
     HLineAccent(trackerHdr, 0.22)
     local trackerHdrFS = FS(trackerHdr, "GameFontNormal")
     trackerHdrFS:SetPoint("LEFT", 8, 0)
-    trackerHdrFS:SetTextColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+    TC2(trackerHdrFS, "accent")
     trackerHdrFS:SetText("TASK TRACKER")
     ApplyFont(trackerHdrFS, 10, "OUTLINE")
     local trackerCountFS = FS(trackerHdr, "GameFontHighlightSmall")
     trackerCountFS:SetPoint("RIGHT", -8, 0)
-    trackerCountFS:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+    TC2(trackerCountFS, "textMuted")
     ApplyFont(trackerCountFS, 9)
     panel.trackerCountFS = trackerCountFS
     local trackerScrollWrap = CreateFrame("Frame", nil, trackerWrap)
@@ -1051,13 +1102,15 @@ function EndeavorsUI:Create(parent)
             self.xpInfoFS:SetText(format("%.0f XP", cap.currentXP))
             if cap.isPostCapped then
                 self.capInfoFS:SetText("XP Capped!")
+                self.capInfoFS.__hdTextRole = nil
                 self.capInfoFS:SetTextColor(1, 0.3, 0.3)
             elseif cap.isPreCapped then
                 self.capInfoFS:SetText(format("%d / %d XP (pre-cap full)", floor(cap.currentXP), cap.postCap))
+                self.capInfoFS.__hdTextRole = nil
                 self.capInfoFS:SetTextColor(1, 0.7, 0.3)
             else
                 self.capInfoFS:SetText(format("%d XP until cap", cap.preCap - floor(cap.currentXP)))
-                self.capInfoFS:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+                TC2(self.capInfoFS, "textMuted")
             end
         else
             self.xpInfoFS:SetText("0 XP")
@@ -1142,19 +1195,20 @@ function EndeavorsUI:Create(parent)
         local contrib = Sys:GetPlayerContribution()
         if contrib and contrib > 0 then
             self.contribValFS:SetText(format("%.1f PTS", contrib))
-            self.contribValFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
+            TC2(self.contribValFS, "success")
         else
             self.contribValFS:SetText("Waiting...")
-            self.contribValFS:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+            TC2(self.contribValFS, "textMuted")
         end
         local info = Sys:GetEndeavorInfo()
         if info and info.maxProgress and info.maxProgress > 0 then
             local pct = floor(info.currentProgress / info.maxProgress * 100 + 0.5)
             self.progValFS:SetText(format("%d%%", pct))
+            self.progValFS.__hdTextRole = nil
             self.progValFS:SetTextColor(1, 1, 1)
         else
             self.progValFS:SetText("Waiting...")
-            self.progValFS:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+            TC2(self.progValFS, "textMuted")
         end
     end
     function panel:RenderTasks()
@@ -1215,7 +1269,7 @@ function EndeavorsUI:Create(parent)
                 row:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8x8" })
                 self.trackerRows[i] = row
             end
-            local c = i % 2 == 0 and C_ROW_EVEN or C_ROW_ODD
+            local c = Theme()[i % 2 == 0 and "rowBGAlt" or "rowBG"] or (i % 2 == 0 and C_ROW_EVEN or C_ROW_ODD)
             row:SetBackdropColor(c[1], c[2], c[3], c[4])
             row:SetHeight(h or 24)
             row:ClearAllPoints()
@@ -1260,7 +1314,7 @@ function EndeavorsUI:Create(parent)
                     row.xpFS:SetPoint("RIGHT", row, "RIGHT", -34, 0)
                     row.xpFS:SetWidth(54)
                     row.xpFS:SetJustifyH("RIGHT")
-                    row.xpFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
+                    TC2(row.xpFS, "success")
                     ApplyFont(row.xpFS, 9)
 
                     row.trackBtn = CreateFrame("Button", nil, row, "BackdropTemplate")
@@ -1269,9 +1323,10 @@ function EndeavorsUI:Create(parent)
                     row.trackBtn:EnableMouse(true)
                     row.trackBtn:RegisterForClicks("LeftButtonUp")
                     row.trackBtn:SetFrameLevel(row:GetFrameLevel() + 20)
-                    row.trackBtn:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1 })
-                    row.trackBtn:SetBackdropColor(C_ACCENT[1]*0.24, C_ACCENT[2]*0.20, 0, 0.95)
-                    row.trackBtn:SetBackdropBorderColor(C_ACCENT[1], C_ACCENT[2], C_ACCENT[3], 0.75)
+                    do
+                        local ac = Theme().accent or C_ACCENT
+                        Backdrop(row.trackBtn, { ac[1]*0.24, ac[2]*0.20, 0, 0.95 }, { ac[1], ac[2], ac[3], 0.75 })
+                    end
                     local tfs = FS(row.trackBtn, "GameFontHighlightSmall")
                     tfs:SetPoint("CENTER")
                     tfs:SetText("T")
@@ -1280,17 +1335,22 @@ function EndeavorsUI:Create(parent)
                     row.trackBtn.label = tfs
                 end
                 row.nameFS:SetText(task.name or "?")
-                row.nameFS:SetTextColor(task.completed and C_MUTED[1] or 1, task.completed and C_MUTED[2] or 1, task.completed and C_MUTED[3] or 1)
+                if task.completed then
+                    TC2(row.nameFS, "textMuted")
+                else
+                    row.nameFS.__hdTextRole = nil
+                    row.nameFS:SetTextColor(1, 1, 1)
+                end
                 row.nameFS:Show()
                 if task.completed then
                     row.progFS:SetText("Complete")
-                    row.progFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
+                    TC2(row.progFS, "success")
                 elseif (task.max or 1) > 1 then
                     row.progFS:SetText(format("%d / %d", task.current or 0, task.max or 1))
-                    row.progFS:SetTextColor(C_GOLD[1], C_GOLD[2], C_GOLD[3])
+                    TC2(row.progFS, "gold")
                 else
                     row.progFS:SetText("Not complete")
-                    row.progFS:SetTextColor(C_MUTED[1], C_MUTED[2], C_MUTED[3])
+                    TC2(row.progFS, "textMuted")
                 end
                 row.progFS:Show()
                 row.xpFS:SetText((task.points or 0) > 0 and ((task.points or 0) .. " XP") or "")
@@ -1298,7 +1358,8 @@ function EndeavorsUI:Create(parent)
                 row.trackBtn:SetScript("OnEnter", function(self)
                     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
                     GameTooltip:SetText("Untrack Endeavor", 1, 1, 1)
-                    GameTooltip:AddLine(task.name or "", C_ACCENT[1], C_ACCENT[2], C_ACCENT[3])
+                    local ac = Theme().accent or C_ACCENT
+                    GameTooltip:AddLine(task.name or "", ac[1], ac[2], ac[3])
                     GameTooltip:Show()
                 end)
                 row.trackBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1334,7 +1395,7 @@ function EndeavorsUI:Create(parent)
                 end
             end
             row._tabType = self._rightTab
-            local c = rIdx % 2 == 0 and C_ROW_EVEN or C_ROW_ODD
+            local c = Theme()[rIdx % 2 == 0 and "rowBGAlt" or "rowBG"] or (rIdx % 2 == 0 and C_ROW_EVEN or C_ROW_ODD)
             row:SetBackdropColor(c[1], c[2], c[3], c[4])
             row:SetHeight(h or 20)
             row:SetPoint("TOPLEFT",  ct, "TOPLEFT",  0, -yOff)
@@ -1465,7 +1526,7 @@ function EndeavorsUI:Create(parent)
                         ApplyFont(row.rankFS, 10)
                         row.amtFS = FS(row, "GameFontHighlightSmall")
                         row.amtFS:SetPoint("RIGHT", -4, 0); row.amtFS:SetWidth(50); row.amtFS:SetJustifyH("RIGHT")
-                        row.amtFS:SetTextColor(C_GREEN[1], C_GREEN[2], C_GREEN[3])
+                        TC2(row.amtFS, "success")
                         ApplyFont(row.amtFS, 10)
                         row.nameFS = FS(row, "GameFontHighlightSmall")
                         row.nameFS:SetPoint("LEFT", row.rankFS, "RIGHT", 4, 0)

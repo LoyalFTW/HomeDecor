@@ -157,23 +157,6 @@ function C:SolidColor(texture, role, alpha)
   end
 end
 
-function C:ApplyBackground(frame, texturePath, inset, alpha)
-  if not (frame and frame.CreateTexture and texturePath) then return nil end
-  local tex = frame.__hdBgTexture
-  if not tex then
-    tex = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
-    frame.__hdBgTexture = tex
-  end
-  inset = inset or 0
-  tex:ClearAllPoints()
-  tex:SetPoint("TOPLEFT", frame, "TOPLEFT", inset, -inset)
-  tex:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -inset, inset)
-  tex:SetTexture(texturePath)
-  tex:SetAlpha(alpha or 1)
-  tex:Show()
-  return tex
-end
-
 function NS.UI.Util.SetFont(fontString, size, flags)
   if not fontString or not fontString.SetFont then return end
   local appearance = GetAppearance()
@@ -315,27 +298,6 @@ function C:Segmented(parent, labels, getValue, setValue)
   f:SetScript("OnShow", refresh)
   refresh()
   return f
-end
-
-function C:ApplyBackdropHover(frame, normal, hover)
-  if not frame or frame.__hdHover then return end
-  if not frame.SetBackdropColor then return end
-  frame.__hdHover = true
-
-  local n = normal or { frame:GetBackdropColor() }
-  local h = hover or { n[1], n[2], n[3], 0.18 }
-
-  frame:SetScript("OnEnter", function()
-    if not frame._selected then
-      frame:SetBackdropColor(unpack(h))
-    end
-  end)
-
-  frame:SetScript("OnLeave", function()
-    if not frame._selected then
-      frame:SetBackdropColor(unpack(n))
-    end
-  end)
 end
 
 function C:SetSelected(frame, selected, normal, selectedBG)
@@ -487,6 +449,14 @@ function C:ClearHoverHighlights(root)
         end
       end
     end
+  end
+end
+
+function C:SyncScrollChildWidth(scroll, content)
+  if not (scroll and content) then return end
+  local sw = scroll:GetWidth()
+  if sw and sw > 1 then
+    content:SetWidth(sw)
   end
 end
 

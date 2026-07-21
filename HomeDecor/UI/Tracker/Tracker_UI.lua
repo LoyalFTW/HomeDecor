@@ -198,7 +198,7 @@ function UI:CreateFrame()
   header.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   header.title:SetPoint("CENTER", header, "CENTER", 0, 0)
   header.title:SetText(L["TRACKER_TITLE"])
-  header.title:SetTextColor(unpack(T.accent))
+  Controls:TextColor(header.title, "accent")
 
   if RowStyles and RowStyles.StrongText then
     RowStyles:StrongText(header.title)
@@ -243,7 +243,7 @@ function UI:CreateFrame()
   settings.title = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   settings.title:SetPoint("TOP", 0, -12)
   settings.title:SetText(L["SETTINGS"])
-  settings.title:SetTextColor(unpack(T.accent))
+  Controls:TextColor(settings.title, "accent")
   if RowStyles and RowStyles.StrongText then
     RowStyles:StrongText(settings.title)
   end
@@ -372,15 +372,12 @@ function UI:CreateFrame()
     local d = GetTrackerDB()
     if d then d.activeTab = which end
 
-    local TC = GetThemeColors()
-    local accent = TC.accent or { 1, 0.82, 0.2, 1 }
-    local normal = TC.text or { 0.9, 0.9, 0.9, 1 }
     if which == "tracker" then
-      tabTracker.label:SetTextColor(unpack(accent))
-      tabSaved.label:SetTextColor(unpack(normal))
+      Controls:TextColor(tabTracker.label, "accent")
+      Controls:TextColor(tabSaved.label, "text")
     else
-      tabTracker.label:SetTextColor(unpack(normal))
-      tabSaved.label:SetTextColor(unpack(accent))
+      Controls:TextColor(tabTracker.label, "text")
+      Controls:TextColor(tabSaved.label, "accent")
     end
   end
 
@@ -430,14 +427,14 @@ function UI:CreateFrame()
   overallRow.zone:SetPoint("LEFT", 12, 0)
   overallRow.zone:SetPoint("RIGHT", -80, 0)
   overallRow.zone:SetJustifyH("LEFT")
-  overallRow.zone:SetTextColor(unpack(T.accent))
+  Controls:TextColor(overallRow.zone, "accent")
   if RowStyles and RowStyles.StrongText then
     RowStyles:StrongText(overallRow.zone)
   end
 
   overallRow.count = overallRow:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
   overallRow.count:SetPoint("TOPRIGHT", -10, -6)
-  overallRow.count:SetTextColor(unpack(T.text))
+  Controls:TextColor(overallRow.count, "text")
   if RowStyles and RowStyles.StrongText then
     RowStyles:StrongText(overallRow.count)
   end
@@ -474,9 +471,8 @@ function UI:CreateFrame()
   resizeGrip.tex:SetTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
 
   local function SyncContentWidth()
-    local sw = scroll:GetWidth()
-    if sw and sw > 1 then
-      content:SetWidth(sw)
+    if Controls and Controls.SyncScrollChildWidth then
+      Controls:SyncScrollChildWidth(scroll, content)
     end
   end
 

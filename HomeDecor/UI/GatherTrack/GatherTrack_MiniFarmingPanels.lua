@@ -79,11 +79,7 @@ end
 local function CreateBackdrop(frame, bg, border)
   if LTUtils and LTUtils.CreateBackdrop then
     LTUtils.CreateBackdrop(frame, bg, border)
-    return
   end
-  frame:SetBackdrop({ bgFile = "Interface/Buttons/WHITE8x8", edgeFile = "Interface/Buttons/WHITE8x8", edgeSize = 1 })
-  frame:SetBackdropColor(unpack(bg))
-  frame:SetBackdropBorderColor(unpack(border))
 end
 
 local function ApplyBackdropAlpha(frame, bg, border, alpha, showBackgrounds)

@@ -3,16 +3,13 @@ NS.UI = NS.UI or {}
 NS.UI.ProgressBar = {}
 
 function NS.UI.ProgressBar:Create(parent, width)
+    local C = NS.UI.Controls
     local bar = CreateFrame("Frame", nil, parent, "BackdropTemplate")
     bar:SetSize(width or 140, 8)
 
-    bar:SetBackdrop({
-        bgFile   = "Interface/Buttons/WHITE8x8",
-        edgeFile = "Interface/Buttons/WHITE8x8",
-        edgeSize = 1,
-    })
-    bar:SetBackdropColor(0.05, 0.05, 0.06, 0.8)
-    bar:SetBackdropBorderColor(0.15, 0.15, 0.18, 0.9)
+    if C and C.Backdrop then
+        C:Backdrop(bar, { 0.05, 0.05, 0.06, 0.8 }, { 0.15, 0.15, 0.18, 0.9 })
+    end
 
     bar.inner = CreateFrame("Frame", nil, bar)
     bar.inner:SetPoint("TOPLEFT", 1, -1)
@@ -25,7 +22,11 @@ function NS.UI.ProgressBar:Create(parent, width)
     bar.fill = bar.inner:CreateTexture(nil, "ARTWORK")
     bar.fill:SetPoint("LEFT", 0, 0)
     bar.fill:SetHeight(6)
-    bar.fill:SetColorTexture(0.90, 0.72, 0.18, 1)
+    if C and C.SolidColor then
+        C:SolidColor(bar.fill, "accent", 1)
+    else
+        bar.fill:SetColorTexture(0.90, 0.72, 0.18, 1)
+    end
 
     bar.edge = bar.inner:CreateTexture(nil, "OVERLAY")
     bar.edge:SetPoint("TOPLEFT", 0, 0)

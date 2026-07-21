@@ -203,51 +203,6 @@ local function ShowCommunityPopup()
   p:Show()
 end
 
-local function findScaleWidgetsOnce(header)
-  if not header or not header.GetChildren then return nil end
-  if header._hdScale then return header._hdScale[1], header._hdScale[2], header._hdScale[3] end
-
-  local label, slider, value
-
-  local function scan(f, depth)
-    if not f or depth > 7 or label then return end
-
-    if f.GetText then
-      local ok, t = pcall(f.GetText, f)
-      if ok and t == "Scale" then
-        label = f
-        local parent = f.GetParent and f:GetParent() or nil
-        if parent and parent.GetChildren then
-          local kids = { parent:GetChildren() }
-          for i = 1, #kids do
-            local c = kids[i]
-            if c ~= f and c and c.GetObjectType then
-              local ot = c:GetObjectType()
-              if not slider and ot == "Slider" then
-                slider = c
-              elseif not value and (ot == "EditBox" or ot == "FontString" or ot == "Frame") then
-                value = c
-              end
-            end
-          end
-        end
-      end
-    end
-
-    if not label and f.GetChildren then
-      local kids = { f:GetChildren() }
-      for i = 1, #kids do
-        scan(kids[i], depth + 1)
-        if label then break end
-      end
-    end
-  end
-
-  scan(header, 0)
-  header._hdScale = { label, slider, value }
-  return label, slider, value
-end
-
 local function dockScale(frame, header)
   if not frame or not header then return end
   local host = header
@@ -498,12 +453,7 @@ function L:CreateShell()
     local popup = NS.UI and NS.UI.SettingsPopup
     if popup and popup.Toggle then popup:Toggle(f, settingsBtn) end
   end)
-  settingsBtn:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
-    GameTooltip:SetText("HomeDecor Settings", 1, 1, 1)
-    GameTooltip:Show()
-  end)
-  settingsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  if NS.UI.Tooltips then NS.UI.Tooltips:SimpleTooltip(settingsBtn, "HomeDecor Settings", nil, "ANCHOR_BOTTOM") end
 
   local compactBtn = CreateFrame("Button", nil, header.controls, "BackdropTemplate")
   header.compactBtn = compactBtn
@@ -532,13 +482,9 @@ function L:CreateShell()
     local db2 = NS.db and NS.db.profile
     if db2 and db2.ui then db2.ui.compactMode = true end
   end)
-  compactBtn:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
-    GameTooltip:SetText("Compact View", 1, 1, 1)
-    GameTooltip:AddLine("Switch to a small, text-only list view.", 0.7, 0.7, 0.7, true)
-    GameTooltip:Show()
-  end)
-  compactBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  if NS.UI.Tooltips then
+    NS.UI.Tooltips:SimpleTooltip(compactBtn, "Compact View", "Switch to a small, text-only list view.", "ANCHOR_BOTTOM")
+  end
   compactBtn:Hide()
 
   local designBtn = CreateFrame("Button", nil, header, "BackdropTemplate")
@@ -1625,13 +1571,9 @@ function L:CreateShell()
     RefreshDetailsButton()
     rerender()
   end)
-  detailsBtn:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
-    GameTooltip:SetText("Details Panel", 1, 1, 1)
-    GameTooltip:AddLine("Show or hide the item details panel on the right.", 0.7, 0.7, 0.7, true)
-    GameTooltip:Show()
-  end)
-  detailsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  if NS.UI.Tooltips then
+    NS.UI.Tooltips:SimpleTooltip(detailsBtn, "Details Panel", "Show or hide the item details panel on the right.", "ANCHOR_BOTTOM")
+  end
 
   modeBtn = CreateFrame("Button", nil, rightToolbar, "BackdropTemplate")
   Backdrop(modeBtn, T.panel, T.border)
@@ -1651,13 +1593,9 @@ function L:CreateShell()
     RefreshModeButton()
     rerender()
   end)
-  modeBtn:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
-    GameTooltip:SetText("Browse Mode", 1, 1, 1)
-    GameTooltip:AddLine("Sections keeps expansion/category progress groups. All Items turns the current category into one unified browser.", 0.7, 0.7, 0.7, true)
-    GameTooltip:Show()
-  end)
-  modeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  if NS.UI.Tooltips then
+    NS.UI.Tooltips:SimpleTooltip(modeBtn, "Browse Mode", "Sections keeps expansion/category progress groups. All Items turns the current category into one unified browser.", "ANCHOR_BOTTOM")
+  end
   RefreshModeButton()
   RefreshDetailsButton()
 

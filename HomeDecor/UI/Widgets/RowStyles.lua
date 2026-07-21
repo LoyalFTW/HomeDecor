@@ -7,6 +7,7 @@ NS.UI.RowStyles = RS
 local C = NS.UI.Controls
 
 local tonumber, type = tonumber, type
+local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
 
 local function ThemeColors()
   return (NS.UI and NS.UI.Theme and NS.UI.Theme.colors) or {}
@@ -384,6 +385,58 @@ end
 function RS:SkinTrackerItem(row, hoverAlpha)
   self:SkinListRow(row, hoverAlpha or 0.14)
   if row.mediaBg then self:ApplyAccent(row.mediaBg, 0.055) end
+end
+
+function RS:InitRowPools(frame, content, factories)
+  if not frame then return end
+  frame._pool = frame._pool or {}
+  for kind in pairs(factories or {}) do
+    frame._pool[kind] = frame._pool[kind] or {}
+  end
+  frame._active = frame._active or {}
+  frame._content = content
+  frame._rowFactories = frame._rowFactories or factories
+end
+
+function RS:AcquireRow(frame, kind, defaultKind, skinFn)
+  kind = kind or defaultKind
+  local pool = frame and frame._pool and frame._pool[kind]
+  if not pool then return end
+
+  local row = table.remove(pool)
+  if not row then
+    local f = frame._rowFactories and frame._rowFactories[kind]
+    row = f and f() or nil
+  end
+  if not row then return end
+
+  if skinFn then skinFn(row, kind) end
+
+  row:Show()
+  local active = frame._active
+  active[#active + 1] = row
+  return row
+end
+
+function RS:ReleaseAllRows(frame, defaultKind)
+  local active = frame and frame._active
+  local pool = frame and frame._pool
+  if not active or not pool then return end
+
+  for i = 1, #active do
+    local r = active[i]
+    if r then
+      r:Hide()
+      r:ClearAllPoints()
+      local k = r._kind or defaultKind
+      local p = pool[k]
+      if p then
+        p[#p + 1] = r
+      end
+    end
+  end
+
+  wipe(active)
 end
 
 return RS

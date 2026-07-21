@@ -309,12 +309,12 @@ function Assistant:Ensure()
   tab.label:SetPoint("CENTER", -1, 0)
   tab.label:SetJustifyH("CENTER")
   tab.label:SetText("H\nO\nM\nE\nD\nE\nC\nO\nR")
-  tab.label:SetTextColor(accent[1], accent[2], accent[3], 1)
+  Controls:TextColor(tab.label, "accent")
 
   tab.arrow = tab:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   tab.arrow:SetPoint("BOTTOM", 0, 7)
   tab.arrow:SetText("<")
-  tab.arrow:SetTextColor(text[1], text[2], text[3], 0.8)
+  Controls:TextColor(tab.arrow, "text", 0.8)
 
   tab:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -357,12 +357,12 @@ function Assistant:Ensure()
   header.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   header.title:SetPoint("TOPLEFT", 12, -7)
   header.title:SetText("HomeDecor")
-  header.title:SetTextColor(accent[1], accent[2], accent[3], 1)
+  Controls:TextColor(header.title, "accent")
 
   header.sub = header:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   header.sub:SetPoint("TOPLEFT", header.title, "BOTTOMLEFT", 0, -1)
   header.sub:SetText(L["VENDOR_ASSISTANT_SUBTITLE"] or "Decor shopping list")
-  header.sub:SetTextColor(muted[1], muted[2], muted[3], 1)
+  Controls:TextColor(header.sub, "textMuted")
 
   header.close = NewButton(header, ">")
   header.close:SetSize(24, 24)
@@ -397,7 +397,7 @@ function Assistant:Ensure()
   settings.title = settings:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   settings.title:SetPoint("TOPLEFT", 12, -9)
   settings.title:SetText(L["VENDOR_ASSISTANT_OPTIONS"] or "Drawer Options")
-  settings.title:SetTextColor(accent[1], accent[2], accent[3], 1)
+  Controls:TextColor(settings.title, "accent")
   NewOptionCheckbox(settings, L["VENDOR_ASSISTANT_COMPACT_ROWS"] or "Compact item rows", -26,
     function() local state = ProfileState(); return state and state.compactRows end,
     function(value) local state = ProfileState(); if state then state.compactRows = value end end)
@@ -421,10 +421,10 @@ function Assistant:Ensure()
     card.title = card:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     card.title:SetPoint("TOPLEFT", 7, -4)
     card.title:SetText(title)
-    card.title:SetTextColor(muted[1], muted[2], muted[3], 1)
+    Controls:TextColor(card.title, "textMuted")
     card.value = card:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     card.value:SetPoint("BOTTOMLEFT", 7, 3)
-    card.value:SetTextColor(accent[1], accent[2], accent[3], 1)
+    Controls:TextColor(card.value, "accent")
     return card
   end
 
@@ -469,14 +469,14 @@ function Assistant:Ensure()
   empty:SetPoint("CENTER", scroll, "CENTER", 0, 12)
   empty:SetWidth(260)
   empty:SetJustifyH("CENTER")
-  empty:SetTextColor(muted[1], muted[2], muted[3], 1)
+  Controls:TextColor(empty, "textMuted")
   empty:Hide()
 
   local total = inner:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   total:SetPoint("BOTTOMLEFT", inner, "BOTTOMLEFT", 12, 12)
   total:SetPoint("RIGHT", inner, "RIGHT", -12, 0)
   total:SetJustifyH("LEFT")
-  total:SetTextColor(text[1], text[2], text[3], 1)
+  Controls:TextColor(total, "text")
   DecorLine(inner, -378)
 
   frame.header = header
@@ -533,7 +533,7 @@ function Assistant:AcquireRow(index)
   row.cost:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -1)
   row.cost:SetPoint("RIGHT", row, "RIGHT", -34, 0)
   row.cost:SetJustifyH("LEFT")
-  row.cost:SetTextColor(muted[1], muted[2], muted[3], 1)
+  Controls:TextColor(row.cost, "textMuted")
 
   row.star = CreateFrame("Button", nil, row)
   row.star:SetSize(20, 20)
@@ -570,8 +570,9 @@ function Assistant:RefreshRows()
   local mediaSize = compact and 32 or 40
   local iconSize = compact and 27 or 34
   local step = rowHeight + (compact and 4 or 5)
-  local width = frame.scroll and frame.scroll:GetWidth()
-  if width and width > 1 then frame.content:SetWidth(width) end
+  if Controls and Controls.SyncScrollChildWidth then
+    Controls:SyncScrollChildWidth(frame.scroll, frame.content)
+  end
 
   for _, item in ipairs(items) do
     item.collected = IsCollected(item)
@@ -590,9 +591,7 @@ function Assistant:RefreshRows()
   frame.cards.total.value:SetText(tostring(#items))
   for _, button in ipairs(frame.filterButtons) do
     local selected = button.filterKey == state.filter
-    local accent = Theme().accent or { 1, 0.82, 0, 1 }
-    local normal = Theme().textMuted or { 0.65, 0.65, 0.68, 1 }
-    button.text:SetTextColor(unpack(selected and accent or normal))
+    Controls:TextColor(button.text, selected and "accent" or "textMuted")
     if RowStyles and RowStyles.SetSelected then
       RowStyles:SetSelected(button, selected, 0.24)
     end
@@ -624,8 +623,7 @@ function Assistant:RefreshRows()
     end
     row.title:SetPoint("RIGHT", row, "RIGHT", -34, 0)
     row.title:SetText((data and data.name) or item.title or ("Item " .. tostring(item.itemID)))
-    local normal = Theme().text or { 0.92, 0.92, 0.92, 1 }
-    row.title:SetTextColor(unpack(normal))
+    Controls:TextColor(row.title, "text")
     if data and MapUtil and MapUtil.GetQualityColor then
       row.title:SetTextColor(MapUtil.GetQualityColor(data.quality))
     end

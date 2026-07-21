@@ -6,6 +6,8 @@ local Rows = NS.UI.GatherTrackRows or {}
 NS.UI.GatherTrackRows = Rows
 
 local Utils = NS.GT.Utils
+local Controls = NS.UI.Controls
+local RS = NS.UI.RowStyles
 
 local ROW_HEIGHT = 68
 local ROW_HEIGHT_NO_ICON = 50
@@ -46,12 +48,12 @@ local function NewLumberRow(parent)
   r.name:SetWordWrap(false)
   r.name:SetShadowColor(0, 0, 0, 1)
   r.name:SetShadowOffset(1, -1)
-  r.name:SetTextColor(unpack(T.text))
+  Controls:TextColor(r.name, "text")
 
   r.countNumber = r:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   r.countNumber:SetFont("Fonts\\FRIZQT__.TTF", 20, "THICKOUTLINE")
   r.countNumber:SetPoint("TOPRIGHT", r, "TOPRIGHT", -10, -4)
-  r.countNumber:SetTextColor(unpack(T.accent))
+  Controls:TextColor(r.countNumber, "accent")
   r.countNumber:SetJustifyH("RIGHT")
   r.countNumber:SetShadowColor(0, 0, 0, 1)
   r.countNumber:SetShadowOffset(1, -1)
@@ -61,7 +63,7 @@ local function NewLumberRow(parent)
   r.rate = r:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   r.rate:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
   r.rate:SetPoint("TOPLEFT", r.name, "BOTTOMLEFT", 0, -4)
-  r.rate:SetTextColor(unpack(T.accent))
+  Controls:TextColor(r.rate, "accent")
   r.rate:SetShadowColor(0, 0, 0, 0.9)
   r.rate:SetShadowOffset(1, -1)
   r.rate:SetText("")
@@ -247,7 +249,7 @@ local function NewCompactRow(parent)
   r.name:SetWordWrap(false)
   r.name:SetShadowColor(0, 0, 0, 1)
   r.name:SetShadowOffset(1, -1)
-  r.name:SetTextColor(unpack(T.text))
+  Controls:TextColor(r.name, "text")
 
   r.progressBar = r:CreateTexture(nil, "ARTWORK")
   r.progressBar:SetHeight(3)
@@ -268,7 +270,7 @@ local function NewCompactRow(parent)
   r.countNumber = r:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   r.countNumber:SetFont("Fonts\\FRIZQT__.TTF", 11, "THICKOUTLINE")
   r.countNumber:SetPoint("RIGHT", r, "RIGHT", -6, 0)
-  r.countNumber:SetTextColor(unpack(T.accent))
+  Controls:TextColor(r.countNumber, "accent")
   r.countNumber:SetJustifyH("RIGHT")
   r.countNumber:SetShadowColor(0, 0, 0, 1)
   r.countNumber:SetShadowOffset(1, -1)
@@ -283,7 +285,7 @@ local function NewCompactRow(parent)
   r:SetScript("OnEnter", function(self)
     local T2 = Utils.GetTheme()
     if self.sep then self.sep:SetVertexColor(T2.accent[1], T2.accent[2], T2.accent[3], 0.35) end
-    if self.name then self.name:SetTextColor(unpack(T2.accent)) end
+    if self.name then Controls:TextColor(self.name, "accent") end
     if self.itemID and GameTooltip then
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
       GameTooltip:SetItemByID(self.itemID)
@@ -310,7 +312,7 @@ local function NewCompactRow(parent)
   r:SetScript("OnLeave", function(self)
     local T2 = Utils.GetTheme()
     if self.sep then self.sep:SetVertexColor(T2.accent[1], T2.accent[2], T2.accent[3], 0.08) end
-    if self.name then self.name:SetTextColor(unpack(T2.text)) end
+    if self.name then Controls:TextColor(self.name, "text") end
     if GameTooltip then GameTooltip:Hide() end
   end)
 
@@ -349,11 +351,11 @@ function Rows:SetCompactRowData(row, ctx, itemID, currentCount, itemName, iconTe
   if row.countNumber then
     row.countNumber:SetText(tostring(v))
     if v >= goalVal then
-      row.countNumber:SetTextColor(unpack(T.success))
+      Controls:TextColor(row.countNumber, "success")
     elseif v >= goalVal * 0.5 then
-      row.countNumber:SetTextColor(unpack(T.accent))
+      Controls:TextColor(row.countNumber, "accent")
     else
-      row.countNumber:SetTextColor(unpack(T.text))
+      Controls:TextColor(row.countNumber, "text")
     end
   end
 
@@ -414,53 +416,20 @@ function Rows:SetCompactRowData(row, ctx, itemID, currentCount, itemName, iconTe
 end
 
 function Rows:InitPools(frame, content)
-  frame._pool = frame._pool or {lumber = {}}
-  frame._active = frame._active or {}
-  frame._content = content
-  frame._rowFactories = frame._rowFactories or {
+  if not RS then return end
+  RS:InitRowPools(frame, content, {
     lumber = function() return NewLumberRow(content) end,
-  }
+  })
 end
 
 function Rows:Acquire(frame, kind)
-  kind = kind or "lumber"
-  local pool = frame._pool and frame._pool[kind]
-  if not pool then return end
-
-  local row = table.remove(pool)
-  if not row then
-    local f = frame._rowFactories and frame._rowFactories[kind]
-    row = f and f() or nil
-  end
-  if not row then return end
-
-  row:Show()
-  local active = frame._active
-  active[#active + 1] = row
-  return row
+  if not RS then return end
+  return RS:AcquireRow(frame, kind, "lumber")
 end
 
 function Rows:ReleaseAll(frame)
-  local active = frame and frame._active
-  local pool = frame and frame._pool
-  if not active or not pool then return end
-
-  for i = 1, #active do
-    local r = active[i]
-    if r then
-      r:Hide()
-      r:ClearAllPoints()
-      local k = r._kind or "lumber"
-      local p = pool[k]
-      if p then
-        p[#p + 1] = r
-      end
-    end
-  end
-
-  for k in pairs(active) do
-    active[k] = nil
-  end
+  if not RS then return end
+  RS:ReleaseAllRows(frame, "lumber")
 end
 
 function Rows:CreateRow(parent)
@@ -508,7 +477,7 @@ function Rows:SetRowData(row, ctx, itemID, currentCount, itemName, iconTexture)
       local ratePerMin = Rate:GetRate(itemID)
       if ratePerMin > 0 then
         row.rate:SetFormattedText("â†‘ +%d/min", ratePerMin)
-        row.rate:SetTextColor(unpack(T.success))
+        Controls:TextColor(row.rate, "success")
         row.rate:Show()
       else
         row.rate:Hide()
@@ -533,11 +502,11 @@ function Rows:SetRowData(row, ctx, itemID, currentCount, itemName, iconTexture)
   if row.countNumber then
     row.countNumber:SetText(tostring(v))
     if v >= goalVal then
-      row.countNumber:SetTextColor(unpack(T.success))
+      Controls:TextColor(row.countNumber, "success")
     elseif v >= goalVal * 0.5 then
-      row.countNumber:SetTextColor(unpack(T.accent))
+      Controls:TextColor(row.countNumber, "accent")
     else
-      row.countNumber:SetTextColor(unpack(T.text))
+      Controls:TextColor(row.countNumber, "text")
     end
   end
 

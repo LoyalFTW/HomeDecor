@@ -299,9 +299,8 @@ function UI:CreateResizeGrip(frame)
   resizeGrip.tex:SetTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
 
   local function SyncContentWidth()
-    local scrollWidth = frame.scroll:GetWidth()
-    if scrollWidth and scrollWidth > 1 then
-      frame.content:SetWidth(scrollWidth)
+    if Controls and Controls.SyncScrollChildWidth then
+      Controls:SyncScrollChildWidth(frame.scroll, frame.content)
     end
   end
 
@@ -396,11 +395,8 @@ function UI:SetupCollapse(frame)
       frame.header.collapse.icon:SetRotation(-1.5708)
     end
 
-    if frame.content then
-      local scrollWidth = frame.scroll:GetWidth()
-      if scrollWidth and scrollWidth > 1 then
-        frame.content:SetWidth(scrollWidth)
-      end
+    if frame.content and Controls and Controls.SyncScrollChildWidth then
+      Controls:SyncScrollChildWidth(frame.scroll, frame.content)
     end
   end
 

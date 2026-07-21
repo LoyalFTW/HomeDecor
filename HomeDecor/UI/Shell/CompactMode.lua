@@ -858,13 +858,9 @@ function CM:_Build()
         if UI and UI.MainFrame and UI.MainFrame:IsShown() then return end
         if UI and UI.ToggleMainFrame then UI:ToggleMainFrame() end
     end)
-    expandBtn:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
-        GameTooltip:SetText("Full View", 1, 1, 1)
-        GameTooltip:AddLine("Switch back to the full HomeDecor browser.", 0.7, 0.7, 0.7, true)
-        GameTooltip:Show()
-    end)
-    expandBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    if NS.UI.Tooltips then
+        NS.UI.Tooltips:SimpleTooltip(expandBtn, "Full View", "Switch back to the full HomeDecor browser.", "ANCHOR_BOTTOM")
+    end
 
     local tabBar = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     Bd(tabBar, panel, border)

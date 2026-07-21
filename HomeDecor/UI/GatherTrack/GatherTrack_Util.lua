@@ -49,17 +49,8 @@ end
 function Utils.CreateBackdrop(frame, bgColor, borderColor)
   if not frame then return end
   local Controls = NS.UI and NS.UI.Controls
-  if Controls and Controls.Backdrop then
-    Controls:Backdrop(frame, bgColor, (Utils.GetTheme() and Utils.GetTheme().border) or borderColor)
-    return
-  end
-  frame:SetBackdrop({
-    bgFile = "Interface/Buttons/WHITE8x8",
-    edgeFile = "Interface/Buttons/WHITE8x8",
-    edgeSize = 1,
-  })
-  if bgColor then frame:SetBackdropColor(unpack(bgColor)) end
-  if borderColor then frame:SetBackdropBorderColor(unpack(borderColor)) end
+  if not (Controls and Controls.Backdrop) then return end
+  Controls:Backdrop(frame, bgColor, (Utils.GetTheme() and Utils.GetTheme().border) or borderColor)
 end
 
 function Utils.Clamp(value, min, max)
