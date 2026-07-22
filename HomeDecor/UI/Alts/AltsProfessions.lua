@@ -76,7 +76,7 @@ local MAX_CARDS = 40
 
 local selectedProfession  = "Alchemy"
 local selectedExpansion   = "Dragon Isles"
-local profitFilter        = "profitable"
+local profitFilter        = "all"
 local sortOrder           = "profit-desc"
 local openTrainerDropdown = nil
 
@@ -407,7 +407,7 @@ function SmartProfs:Create(parent)
 
   local filterOptions = {"All Items","With Price Data","Profitable Only","High (>100g)","Mega (>300g)","Can Craft"}
   local filterValues  = {"all","withdata","profitable","high","mega","cancraft"}
-  local filterDD = MakeDropdown(controls, filterOptions, "Profitable Only", 140, function(v)
+  local filterDD = MakeDropdown(controls, filterOptions, "All Items", 140, function(v)
     for i, t in ipairs(filterOptions) do
       if t == v then profitFilter = filterValues[i]; self:RefreshDetailPanel(); break end
     end
@@ -505,15 +505,8 @@ function SmartProfs:BuildProfessionList()
       self:RefreshDetailPanel()
     end)
 
-    local accentBar = btn:CreateTexture(nil, "ARTWORK")
-    accentBar:SetWidth(2)
-    accentBar:SetPoint("TOPLEFT",    btn, "TOPLEFT",    0, -2)
-    accentBar:SetPoint("BOTTOMLEFT", btn, "BOTTOMLEFT", 0,  2)
-    accentBar:SetColorTexture(unpack(T.accent or {0.90,0.72,0.18,1}))
-    accentBar:Hide()
-
     local nameTxt = Label(btn, "GameFontNormalSmall")
-    nameTxt:SetPoint("LEFT",  6, 0)
+    nameTxt:SetPoint("LEFT",  8, 0)
     nameTxt:SetPoint("RIGHT", -58, 0)
     nameTxt:SetJustifyH("LEFT")
     nameTxt:SetText(profName)
@@ -522,7 +515,6 @@ function SmartProfs:BuildProfessionList()
     profitTxt:SetPoint("RIGHT", -4, 0)
     profitTxt:SetJustifyH("RIGHT")
 
-    btn.accentBar = accentBar
     btn.nameTxt   = nameTxt
     btn.profitTxt = profitTxt
     btn.profName  = profName
@@ -542,11 +534,9 @@ function SmartProfs:RefreshProfessionList()
 
     if selected then
       ApplyBackdrop(btn, T.accentSoft or {0.90,0.72,0.18,0.28}, T.accent or {0.90,0.72,0.18,1})
-      btn.accentBar:Show()
       C:TextColor(btn.nameTxt, "accentBright")
     else
       ApplyBackdrop(btn, T.row or {0.13,0.13,0.15,1}, T.border or {0.24,0.24,0.28,1})
-      btn.accentBar:Hide()
       C:TextColor(btn.nameTxt, has and "text" or "textMuted")
       NS.UI.Util.BindBackgroundHover(btn, T.hover or {0.17,0.17,0.20,1}, T.row or {0.13,0.13,0.15,1})
     end

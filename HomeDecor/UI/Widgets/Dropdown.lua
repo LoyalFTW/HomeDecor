@@ -253,10 +253,18 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
     dd.search:SetHeight(22)
     dd.search:SetFont(STANDARD_TEXT_FONT, 12, "")
     dd.search:SetTextInsets(8, 8, 4, 4)
-    backdrop(dd.search, nil, T)
+    backdrop(dd.search, C, T)
     dd.search:SetPoint("TOPLEFT", dd.list, "TOPLEFT", 6, -6)
     dd.search:SetPoint("TOPRIGHT", dd.list, "TOPRIGHT", -6, -6)
     dd.search:Hide()
+
+    dd.searchHint = dd.search:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    dd.searchHint:SetPoint("LEFT", dd.search, "LEFT", 8, 0)
+    dd.searchHint:SetText("Search...")
+    dd.search:SetScript("OnEditFocusGained", function(self) dd.searchHint:Hide() end)
+    dd.search:SetScript("OnEditFocusLost", function(self)
+        dd.searchHint:SetShown(self:GetText() == "")
+    end)
 
     dd.sub = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     dd.sub:SetFrameStrata("FULLSCREEN_DIALOG")
@@ -444,7 +452,8 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
         dd:RefreshStates()
     end)
 
-    dd.search:SetScript("OnTextChanged", function()
+    dd.search:SetScript("OnTextChanged", function(self)
+        dd.searchHint:SetShown(self:GetText() == "" and not self:HasFocus())
         if shown(dd.list) then
             dd:UpdateMain()
             dd:RefreshStates()
@@ -456,7 +465,7 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
         if OPEN and OPEN ~= dd then closeOpen() end
         if shown(dd.list) then dd:Close(); return end
 
-        if dd.search then dd.search:SetText("") end
+        if dd.search then dd.search:SetText(""); dd.searchHint:Show() end
 
         dd:PositionMain()
         dd:UpdateMain()

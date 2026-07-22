@@ -48,6 +48,7 @@ local DEFAULTS = {
   category      = "ALL",
   subcategory   = "ALL",
   availableRepOnly = false,
+  requiresReputation = false,
   questsCompleted = false,
   achievementCompleted = false,
   hidePvpItems  = false,
@@ -242,7 +243,7 @@ function Filters:GetCategoryOptions()
   for _, info in ipairs(Tax.catList) do
     local id = info.ID or info.id or info.categoryID or info.categoryId or info.ID
     local name = _safeName(info)
-    if id and name ~= "" then
+    if id and name ~= "" and lower(name) ~= "all" then
       tinsert(out, { value = id, text = name })
     end
   end
@@ -277,7 +278,7 @@ function Filters:GetSubcategoryOptions(catValue)
   for _, sinfo in ipairs(list) do
     local id = sinfo.ID or sinfo.id or sinfo.subcategoryID or sinfo.subcategoryId
     local name = _safeName(sinfo)
-    if id and name ~= "" then
+    if id and name ~= "" and lower(name) ~= "all" then
       tinsert(out, { value = id, text = name })
     end
   end
@@ -1164,6 +1165,21 @@ function Filters:Passes(it, ui, db)
     if not who then
       return false
     end
+  end
+
+  if f.requiresReputation then
+    local req = it.requirements
+    if not req then
+      local DI = NS.Systems and NS.Systems.DecorIndex
+      if DI and it.decorID then
+        local entry = DI[it.decorID]
+        local item = entry and entry.item
+        req = item and item.requirements
+      end
+    end
+
+    local rep = req and (req.rep or req.reputation)
+    if rep == nil then return false end
   end
 
   if f.questsCompleted then

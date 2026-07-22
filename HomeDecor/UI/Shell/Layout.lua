@@ -93,10 +93,6 @@ local function Trim(s)
   return (s:gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
-local function LiveFiltersSys()
-  return (NS.Systems and NS.Systems.Filters) or FiltersSys
-end
-
 local communityPopup
 
 local function ShowCommunityPopup()
@@ -318,7 +314,6 @@ function L:CreateShell()
   if not db or not C then return nil end
 
   local UI = db.ui
-  local Filters = db.filters
 
   local f = CreateFrame("Frame", "HomeDecorFrame", UIParent, "BackdropTemplate")
   Backdrop(f, T.bg, T.border)
@@ -926,21 +921,10 @@ function L:CreateShell()
       flt.sizes = {}
       flt.hideCollected, flt.onlyCollected = false, false
       flt.availableRepOnly = false
+      flt.requiresReputation = false
       flt.questsCompleted = false
       flt.achievementCompleted = false
-      if Filters then
-        Filters.expansion, Filters.zone, Filters.category, Filters.subcategory, Filters.faction =
-          flt.expansion, flt.zone, flt.category, flt.subcategory, flt.faction
-        Filters.color = "ALL"
-        Filters.colors = flt.colors
-        Filters.budgetCosts = flt.budgetCosts
-        Filters.sizes = flt.sizes
-        Filters.hideCollected = false
-        Filters.onlyCollected = false
-        Filters.availableRepOnly = false
-        Filters.questsCompleted = false
-        Filters.achievementCompleted = false
-      end
+      flt.hidePvpItems = false
       local HeaderCtrl = NS.UI and NS.UI.HeaderController
       if HeaderCtrl and HeaderCtrl.Reset then HeaderCtrl:Reset() end
       if rerender then rerender() end
@@ -1450,12 +1434,6 @@ function L:CreateShell()
           filters.questsCompleted = false
           filters.achievementCompleted = false
 
-          if Filters then
-            Filters.availableRepOnly = false
-            Filters.questsCompleted = false
-            Filters.achievementCompleted = false
-          end
-
           local filterContent = left.filterContent
           if filterContent and filterContent.SyncVisuals then
             filterContent:SyncVisuals()
@@ -1742,20 +1720,9 @@ function L:CreateShell()
   resetTopBtn.text:ClearAllPoints()
   resetTopBtn.text:SetPoint("LEFT", resetTopIcon, "RIGHT", 4, 0)
 
-  local topFactionDropdown
-  local topSourceDropdown
-  local topExpansionDropdown
-  local topZoneDropdown
-  local topCategoryDropdown
-
   local function syncFilterSurfaces()
     local filterContent = left and left.filterContent
     if filterContent and filterContent.SyncVisuals then filterContent:SyncVisuals() end
-    if topSourceDropdown and topSourceDropdown.ApplyText then topSourceDropdown:ApplyText() end
-    if topFactionDropdown and topFactionDropdown.ApplyText then topFactionDropdown:ApplyText() end
-    if topExpansionDropdown and topExpansionDropdown.ApplyText then topExpansionDropdown:ApplyText() end
-    if topZoneDropdown and topZoneDropdown.ApplyText then topZoneDropdown:ApplyText() end
-    if topCategoryDropdown and topCategoryDropdown.ApplyText then topCategoryDropdown:ApplyText() end
     if RefreshQuickFilters then RefreshQuickFilters() end
   end
 
@@ -1779,163 +1746,14 @@ function L:CreateShell()
       flt.sizes = {}
       flt.hideCollected, flt.onlyCollected = false, false
       flt.availableRepOnly = false
+      flt.requiresReputation = false
       flt.questsCompleted = false
       flt.achievementCompleted = false
       flt.hidePvpItems = false
-      if Filters then
-        Filters.expansion, Filters.zone, Filters.sourceType, Filters.category, Filters.subcategory, Filters.faction =
-          flt.expansion, flt.zone, flt.sourceType, flt.category, flt.subcategory, flt.faction
-        Filters.color = "ALL"
-        Filters.colors = flt.colors
-        Filters.budgetCosts = flt.budgetCosts
-        Filters.sizes = flt.sizes
-        Filters.hideCollected = false
-        Filters.onlyCollected = false
-        Filters.availableRepOnly = false
-        Filters.questsCompleted = false
-        Filters.achievementCompleted = false
-        Filters.hidePvpItems = false
-      end
       resetHeaderAndRender()
     end
     syncFilterSurfaces()
   end
-
-  topFactionDropdown = Dropdown.Create(
-    rightToolbar,
-    "",
-    nil,
-    118,
-    function() return (db.filters and db.filters.faction) or "ALL" end,
-    function(v)
-      db.filters.faction = v or "ALL"
-      if Filters then Filters.faction = db.filters.faction end
-      local FS = LiveFiltersSys()
-      if FS then FS.faction = db.filters.faction end
-      resetHeaderAndRender()
-    end,
-    function()
-      return {
-        { value = "ALL", text = "Faction: All" },
-        { value = "Alliance", text = "Alliance" },
-        { value = "Horde", text = "Horde" },
-      }
-    end,
-    nil,
-    C, T
-  )
-
-  topSourceDropdown = Dropdown.Create(
-    rightToolbar,
-    "",
-    nil,
-    120,
-    function() return (db.filters and db.filters.sourceType) or "ALL" end,
-    function(v)
-      db.filters.sourceType = v or "ALL"
-      if Filters then Filters.sourceType = db.filters.sourceType end
-      local FS = LiveFiltersSys()
-      if FS then FS.sourceType = db.filters.sourceType end
-      resetHeaderAndRender()
-    end,
-    function()
-      return {
-        { value = "ALL", text = "Source: All" },
-        { value = "vendor", text = "Vendors" },
-        { value = "quest", text = "Quests" },
-        { value = "achievement", text = "Achievements" },
-        { value = "drop", text = "Drops" },
-        { value = "profession", text = "Professions" },
-        { value = "event", text = "Events" },
-        { value = "pvp", text = "PvP" },
-      }
-    end,
-    nil,
-    C, T
-  )
-
-  topExpansionDropdown = Dropdown.Create(
-    rightToolbar,
-    "",
-    nil,
-    146,
-    function() return (db.filters and db.filters.expansion) or "ALL" end,
-    function(v)
-      db.filters.expansion = v or "ALL"
-      db.filters.zone = "ALL"
-      if Filters then
-        Filters.expansion = db.filters.expansion
-        Filters.zone = db.filters.zone
-      end
-      local FS = LiveFiltersSys()
-      if FS then
-        FS.expansion = db.filters.expansion
-        FS.zone = db.filters.zone
-      end
-      resetHeaderAndRender()
-    end,
-    function()
-      local FS = LiveFiltersSys()
-      local opts = FS and FS.GetExpansions and FS:GetExpansions() or { { value = "ALL", text = "All" } }
-      if opts and opts[1] and opts[1].value == "ALL" then opts[1].text = "Expansion: All" end
-      return opts
-    end,
-    nil,
-    C, T
-  )
-
-  topZoneDropdown = Dropdown.Create(
-    rightToolbar,
-    "",
-    nil,
-    126,
-    function() return (db.filters and db.filters.zone) or "ALL" end,
-    function(v)
-      db.filters.zone = v or "ALL"
-      if Filters then Filters.zone = db.filters.zone end
-      local FS = LiveFiltersSys()
-      if FS then FS.zone = db.filters.zone end
-      resetHeaderAndRender()
-    end,
-    function()
-      local FS = LiveFiltersSys()
-      local opts = FS and FS.GetZones and FS:GetZones(UI, db) or { { value = "ALL", text = "All Zones" } }
-      if opts and opts[1] and opts[1].value == "ALL" then opts[1].text = "Zone: All" end
-      return opts
-    end,
-    nil,
-    C, T
-  )
-
-  topCategoryDropdown = Dropdown.Create(
-    rightToolbar,
-    "",
-    nil,
-    136,
-    function() return (db.filters and db.filters.category) or "ALL" end,
-    function(v)
-      local FS = LiveFiltersSys()
-      db.filters.category = (FS and FS.ResolveCategoryID and FS:ResolveCategoryID(v)) or v or "ALL"
-      db.filters.subcategory = "ALL"
-      if Filters then
-        Filters.category = db.filters.category
-        Filters.subcategory = db.filters.subcategory
-      end
-      if FS then
-        FS.category = db.filters.category
-        FS.subcategory = db.filters.subcategory
-      end
-      resetHeaderAndRender()
-    end,
-    function()
-      local FS = LiveFiltersSys()
-      local opts = FS and FS.GetCategoryOptions and FS:GetCategoryOptions() or { { value = "ALL", text = "All Categories" } }
-      if opts and opts[1] and opts[1].value == "ALL" then opts[1].text = "Category: All" end
-      return opts
-    end,
-    nil,
-    C, T
-  )
 
   local function setCompletionFilter(mode)
     local flt = db and db.filters
@@ -1948,10 +1766,6 @@ function L:CreateShell()
     end
     flt.hideCollected = hideCollected
     flt.onlyCollected = onlyCollected
-    if Filters then
-      Filters.hideCollected = flt.hideCollected
-      Filters.onlyCollected = flt.onlyCollected
-    end
     syncFilterSurfaces()
     rerender()
   end
@@ -1983,11 +1797,6 @@ function L:CreateShell()
       if ownedQuickBtn then ownedQuickBtn:Hide() end
       if moreFiltersBtn then moreFiltersBtn:Hide() end
       if resetTopBtn then resetTopBtn:Hide() end
-      if topSourceDropdown then topSourceDropdown:Hide() end
-      if topFactionDropdown then topFactionDropdown:Hide() end
-      if topExpansionDropdown then topExpansionDropdown:Hide() end
-      if topZoneDropdown then topZoneDropdown:Hide() end
-      if topCategoryDropdown then topCategoryDropdown:Hide() end
     else
       sortDropdown:Hide()
       if allQuickBtn then allQuickBtn:Show() end
@@ -1995,11 +1804,6 @@ function L:CreateShell()
       if ownedQuickBtn then ownedQuickBtn:Show() end
       if moreFiltersBtn then moreFiltersBtn:Show() end
       if resetTopBtn then resetTopBtn:Hide() end
-      if topSourceDropdown then topSourceDropdown:Hide() end
-      if topFactionDropdown then topFactionDropdown:Hide() end
-      if topExpansionDropdown then topExpansionDropdown:Hide() end
-      if topZoneDropdown then topZoneDropdown:Hide() end
-      if topCategoryDropdown then topCategoryDropdown:Hide() end
       if sortDropdown.ApplyText then sortDropdown:ApplyText() end
       if RefreshQuickFilters then RefreshQuickFilters() end
     end
@@ -2041,32 +1845,6 @@ function L:CreateShell()
 
   ownedQuickBtn:ClearAllPoints()
   ownedQuickBtn:SetPoint("LEFT", missingQuickBtn, "RIGHT", 4, 0)
-
-  topExpansionDropdown:ClearAllPoints()
-  topExpansionDropdown:SetPoint("LEFT", ownedQuickBtn, "RIGHT", 8, 0)
-  topExpansionDropdown:SetPoint("BOTTOM", rightToolbar, "BOTTOM", 0, 4)
-  topExpansionDropdown:SetWidth(146)
-  topExpansionDropdown:Hide()
-
-  topCategoryDropdown:ClearAllPoints()
-  topCategoryDropdown:SetPoint("RIGHT", header.viewModeGroup or rightToolbar, "LEFT", -8, 0)
-  topCategoryDropdown:SetPoint("BOTTOM", rightToolbar, "BOTTOM", 0, 4)
-  topCategoryDropdown:SetWidth(136)
-
-  topZoneDropdown:ClearAllPoints()
-  topZoneDropdown:SetPoint("RIGHT", topCategoryDropdown, "LEFT", -6, 0)
-  topZoneDropdown:SetPoint("BOTTOM", rightToolbar, "BOTTOM", 0, 4)
-  topZoneDropdown:SetWidth(126)
-
-  topFactionDropdown:ClearAllPoints()
-  topFactionDropdown:SetPoint("RIGHT", topZoneDropdown, "LEFT", -6, 0)
-  topFactionDropdown:SetPoint("BOTTOM", rightToolbar, "BOTTOM", 0, 4)
-  topFactionDropdown:SetWidth(118)
-
-  topSourceDropdown:ClearAllPoints()
-  topSourceDropdown:SetPoint("RIGHT", topFactionDropdown, "LEFT", -6, 0)
-  topSourceDropdown:SetPoint("BOTTOM", rightToolbar, "BOTTOM", 0, 4)
-  topSourceDropdown:SetWidth(120)
 
   resetTopBtn:ClearAllPoints()
   resetTopBtn:SetPoint("TOPRIGHT", sortDropdown, "TOPLEFT", -6, 0)
@@ -2196,7 +1974,6 @@ function L:CreateShell()
       C = C,
       T = T,
       Dropdown = Dropdown,
-      Filters = Filters,
       FiltersSys = FiltersSys,
       UI = UI,
       db = db,

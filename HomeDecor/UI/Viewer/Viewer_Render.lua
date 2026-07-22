@@ -471,6 +471,26 @@ local function AppendSetSignature(tokens, values)
     tokens[#tokens + 1] = table.concat(keys, ",")
 end
 
+local function AppendFilterSignature(tokens, filters)
+    tokens[#tokens + 1] = tostring(filters.hideCollected)
+    tokens[#tokens + 1] = tostring(filters.onlyCollected)
+    tokens[#tokens + 1] = tostring(filters.expansion)
+    tokens[#tokens + 1] = tostring(filters.zone)
+    tokens[#tokens + 1] = tostring(filters.sourceType)
+    tokens[#tokens + 1] = tostring(filters.faction)
+    tokens[#tokens + 1] = tostring(filters.category)
+    tokens[#tokens + 1] = tostring(filters.subcategory)
+    tokens[#tokens + 1] = tostring(filters.availableRepOnly)
+    tokens[#tokens + 1] = tostring(filters.requiresReputation)
+    tokens[#tokens + 1] = tostring(filters.questsCompleted)
+    tokens[#tokens + 1] = tostring(filters.achievementCompleted)
+    tokens[#tokens + 1] = tostring(filters.hidePvpItems)
+    tokens[#tokens + 1] = tostring(filters.color)
+    AppendSetSignature(tokens, filters.colors)
+    AppendSetSignature(tokens, filters.budgetCosts)
+    AppendSetSignature(tokens, filters.sizes)
+end
+
 local function BuildFlatSignature(ui, db, scopeKey)
     local filters = (db and db.filters) or {}
     local tokens = {
@@ -480,23 +500,8 @@ local function BuildFlatSignature(ui, db, scopeKey)
         tostring(ui and ui._searchNorm or ""),
         tostring(ui and ui.sortMode or ""),
         tostring(View and View._renderDataEpoch or 0),
-        tostring(filters.hideCollected),
-        tostring(filters.onlyCollected),
-        tostring(filters.expansion),
-        tostring(filters.zone),
-        tostring(filters.sourceType),
-        tostring(filters.faction),
-        tostring(filters.category),
-        tostring(filters.subcategory),
-        tostring(filters.availableRepOnly),
-        tostring(filters.questsCompleted),
-        tostring(filters.achievementCompleted),
-        tostring(filters.hidePvpItems),
-        tostring(filters.color),
     }
-    AppendSetSignature(tokens, filters.colors)
-    AppendSetSignature(tokens, filters.budgetCosts)
-    AppendSetSignature(tokens, filters.sizes)
+    AppendFilterSignature(tokens, filters)
     return table.concat(tokens, "\031")
 end
 
@@ -704,23 +709,8 @@ local function BuildCountSignature(ui, db)
         tostring(ui and ui.search or ""),
         tostring(ui and ui._searchNorm or ""),
         tostring(View and View._renderDataEpoch or 0),
-        tostring(filters.hideCollected),
-        tostring(filters.onlyCollected),
-        tostring(filters.expansion),
-        tostring(filters.zone),
-        tostring(filters.sourceType),
-        tostring(filters.faction),
-        tostring(filters.category),
-        tostring(filters.subcategory),
-        tostring(filters.availableRepOnly),
-        tostring(filters.questsCompleted),
-        tostring(filters.achievementCompleted),
-        tostring(filters.hidePvpItems),
-        tostring(filters.color),
     }
-    AppendSetSignature(tokens, filters.colors)
-    AppendSetSignature(tokens, filters.budgetCosts)
-    AppendSetSignature(tokens, filters.sizes)
+    AppendFilterSignature(tokens, filters)
     return table.concat(tokens, "\031")
 end
 

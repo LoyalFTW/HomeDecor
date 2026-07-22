@@ -74,24 +74,30 @@ local function ComputeColWidths(contentW)
   return newPW, newCW
 end
 
+local ROW_FALLBACK    = T.row or {0.13, 0.13, 0.15, 1}
+local PANEL_FALLBACK  = T.panel or {0.095, 0.095, 0.11, 1}
+local BORDER_FALLBACK = T.border or {0.24, 0.24, 0.28, 1}
+local MUTED_FALLBACK  = T.textMuted or {0.65, 0.65, 0.68, 1}
+local PLACE_FALLBACK  = T.placeholder or {0.52, 0.52, 0.55, 1}
+
 local CELL_BG = {
   ready = {0.08, 0.32, 0.08, 0.92},
   close = {0.36, 0.18, 0.03, 0.92},
-  far   = {0.06, 0.05, 0.02, 0.82},
-  empty = {0.05, 0.04, 0.02, 0.72},
+  far   = {ROW_FALLBACK[1], ROW_FALLBACK[2], ROW_FALLBACK[3], 0.85},
+  empty = {PANEL_FALLBACK[1], PANEL_FALLBACK[2], PANEL_FALLBACK[3], 0.75},
 }
 local CELL_BD = {
   ready = {0.22, 0.74, 0.22, 0.72},
   close = {0.90, 0.60, 0.14, 0.65},
-  far   = {0.20, 0.16, 0.06, 0.52},
-  empty = {0.12, 0.10, 0.04, 0.45},
+  far   = {BORDER_FALLBACK[1], BORDER_FALLBACK[2], BORDER_FALLBACK[3], 0.60},
+  empty = {BORDER_FALLBACK[1], BORDER_FALLBACK[2], BORDER_FALLBACK[3], 0.40},
   sel   = {1.00, 0.84, 0.20, 1.00},
 }
 local CELL_TC = {
   ready = {0.42, 0.96, 0.42, 1},
   close = {1.00, 0.75, 0.28, 1},
-  far   = {0.72, 0.67, 0.52, 1},
-  empty = {0.45, 0.43, 0.38, 0.90},
+  far   = {MUTED_FALLBACK[1], MUTED_FALLBACK[2], MUTED_FALLBACK[3], 0.95},
+  empty = {PLACE_FALLBACK[1], PLACE_FALLBACK[2], PLACE_FALLBACK[3], 0.90},
 }
 
 local ACCENT = T.accent or {1, 0.82, 0.2, 1}
@@ -876,13 +882,8 @@ function SmartProfs:Create(parent)
     T.header and {T.header[1], T.header[2], T.header[3], 0.97} or {0.075, 0.075, 0.085, 0.97},
     T.accent  and {T.accent[1],  T.accent[2],  T.accent[3],  0.40} or {0.90,  0.72,  0.18,  0.40})
 
-  local stripe = hdr:CreateTexture(nil, "ARTWORK")
-  stripe:SetSize(3, 20)
-  stripe:SetPoint("LEFT", hdr, "LEFT", 10, 0)
-  stripe:SetColorTexture(unpack(T.accent or {0.90, 0.72, 0.18, 1}))
-
   local sectionLbl = hdr:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  sectionLbl:SetPoint("LEFT", stripe, "RIGHT", 8, 0)
+  sectionLbl:SetPoint("LEFT", hdr, "LEFT", 12, 0)
   sectionLbl:SetText(L["ALTS_SECTION_LABEL"])
   C:TextColor(sectionLbl, "accentBright")
 

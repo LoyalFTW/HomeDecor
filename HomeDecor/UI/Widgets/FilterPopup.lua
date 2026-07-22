@@ -58,7 +58,7 @@ local M = {}
 NS.UI.FilterPopup = M
 
 function M:Build(popup, env)
-    local C, T, Dropdown, Filters, FiltersSys, UI = env.C, env.T, env.Dropdown, env.Filters, env.FiltersSys, env.UI
+    local C, T, Dropdown, FiltersSys, UI = env.C, env.T, env.Dropdown, env.FiltersSys, env.UI
     local HeaderCtrl = NS.UI and NS.UI.HeaderController
     local rerender = env.rerender
     local function TextColor(fs, role, alpha)
@@ -109,21 +109,7 @@ function M:Build(popup, env)
     local function syncAll()
         for i = 1, #popup._rows do
             local r = popup._rows[i]
-            if r and r.refresh then
-                r.refresh()
-            elseif r and r._get and r.dd then
-                if r.isCheck then
-                    if r.dd.indicator then
-                        if r._get() == true then
-                            r.dd.indicator:SetColorTexture(unpack(T.accent))
-                        else
-                            r.dd.indicator:SetColorTexture(0.3, 0.3, 0.3, 0.5)
-                        end
-                    end
-                else
-                    setDDText(r.dd, r._get())
-                end
-            end
+            if r and r.refresh then r.refresh() end
         end
     end
 
@@ -132,10 +118,6 @@ function M:Build(popup, env)
         if not f then return end
         f.category = "ALL"
         f.subcategory = "ALL"
-        if Filters then
-            Filters.category = "ALL"
-            Filters.subcategory = "ALL"
-        end
     end
 
     local function headerRow(titleText)
@@ -157,10 +139,6 @@ function M:Build(popup, env)
     local function checkRow(titleText, get, set, resetsCategory, tooltip)
         local r = {}
         r.isCheck, r._get = true, get
-
-        r.line = popup:CreateTexture(nil, "ARTWORK")
-        r.line:SetHeight(1)
-        r.line:SetColorTexture(unpack(T.accent))
 
         local b = CreateFrame("Button", nil, popup, "BackdropTemplate")
         b:SetHeight(26)
@@ -197,10 +175,10 @@ function M:Build(popup, env)
         end
 
         r.dd = b
+        r.refresh = updateIndicator
         popup._rows[#popup._rows + 1] = r
         updateIndicator()
 
-        popup._allElements[#popup._allElements + 1] = r.line
         popup._allElements[#popup._allElements + 1] = b
         popup._allElements[#popup._allElements + 1] = b.text
         popup._allElements[#popup._allElements + 1] = b.indicator
@@ -225,6 +203,7 @@ function M:Build(popup, env)
         )
         dd._valuesFn = valuesFn
         r.dd = dd
+        r.refresh = function() setDDText(dd, get()) end
 
         popup._rows[#popup._rows + 1] = r
         setDDText(dd, get())
@@ -426,10 +405,6 @@ function M:Build(popup, env)
                         end
                         f.color = "ALL"
                         set(colors)
-                        if Filters then
-                            Filters.colors = colors
-                            Filters.color = "ALL"
-                        end
                         if r.refresh then r.refresh() end
                         rebuild()
                     end)
@@ -534,7 +509,6 @@ function M:Build(popup, env)
                         else
                             selected[value] = true
                         end
-                        if Filters then Filters[selectedKey] = selected end
                         if r.refresh then r.refresh() end
                         rebuild()
                     end)
@@ -630,25 +604,10 @@ function M:Build(popup, env)
         f.hideCollected, f.onlyCollected = false, false
 
         f.availableRepOnly = false
+        f.requiresReputation = false
         f.questsCompleted = false
         f.achievementCompleted = false
         f.hidePvpItems = false
-
-        if Filters then
-            Filters.expansion, Filters.zone, Filters.category, Filters.subcategory, Filters.faction =
-                f.expansion, f.zone, f.category, f.subcategory, f.faction
-            Filters.color = "ALL"
-            Filters.colors = f.colors
-            Filters.budgetCosts = f.budgetCosts
-            Filters.sizes = f.sizes
-            Filters.sourceType = "ALL"
-            Filters.hideCollected = false
-            Filters.onlyCollected = false
-            Filters.availableRepOnly = false
-            Filters.questsCompleted = false
-            Filters.achievementCompleted = false
-            Filters.hidePvpItems = false
-        end
 
         syncAll()
         rebuild()
@@ -754,10 +713,21 @@ function M:Build(popup, env)
                     local f = F()
                     if not f then return end
                     f.hidePvpItems = (v == true)
-                    if Filters then Filters.pvpDecorSet = nil end
                 end,
                 true,
                 L["FILTER_HIDE_PVP_HINT"])
+
+            spacer(8)
+
+            checkRow("Requires Reputation",
+                function() local f = F(); return (f and f.requiresReputation) == true end,
+                function(v)
+                    local f = F()
+                    if not f then return end
+                    f.requiresReputation = (v == true)
+                end,
+                true,
+                "Show only items that require a reputation standing to unlock.")
 
             spacer(8)
 
@@ -779,7 +749,6 @@ function M:Build(popup, env)
                     local f = F()
                     if not f then return end
                     f.sourceType = v or "ALL"
-                    if Filters then Filters.sourceType = f.sourceType end
                 end,
                 function()
                     return {
@@ -798,16 +767,13 @@ function M:Build(popup, env)
             ddRow(L["FILTER_EXPANSION_ROW"],
                 function()
                     local f = F()
-                    local v = (f and f.expansion) or "ALL"
-                    if Filters then Filters.expansion = v end
-                    return v
+                    return (f and f.expansion) or "ALL"
                 end,
                 function(v)
                     local f = F()
                     if not f then return end
                     f.expansion = v or "ALL"
                     f.zone = "ALL"
-                    if Filters then Filters.expansion, Filters.zone = f.expansion, f.zone end
                 end,
                 function()
                     local out, seen = { { value = "ALL", text = L["ALL_EXPANSIONS"] } }, {}
@@ -828,15 +794,12 @@ function M:Build(popup, env)
             ddRow(L["FILTER_ZONE_ROW"],
                 function()
                     local f = F()
-                    local v = (f and f.zone) or "ALL"
-                    if Filters then Filters.zone = v end
-                    return v
+                    return (f and f.zone) or "ALL"
                 end,
                 function(v)
                     local f = F()
                     if not f then return end
                     f.zone = v or "ALL"
-                    if Filters then Filters.zone = f.zone end
                 end,
                 function()
                     local out, seen = { { value = "ALL", text = L["ALL_ZONES"] } }, {}
@@ -881,10 +844,6 @@ function M:Build(popup, env)
                 function()
                     local f = F()
                     if f then f.colors = type(f.colors) == "table" and f.colors or {} end
-                    if Filters and f then
-                        Filters.colors = f.colors
-                        Filters.color = (f and f.color) or "ALL"
-                    end
                     return f and f.colors or {}
                 end,
                 function(colors)
@@ -892,10 +851,6 @@ function M:Build(popup, env)
                     if not f then return end
                     f.colors = type(colors) == "table" and colors or {}
                     f.color = "ALL"
-                    if Filters then
-                        Filters.colors = f.colors
-                        Filters.color = f.color
-                    end
                 end,
                 function()
                     local FS = NS and NS.Systems and NS.Systems.Filters
@@ -937,7 +892,6 @@ function M:Build(popup, env)
                         if f and nv ~= v then f.category = nv end
                         v = nv
                     end
-                    if Filters then Filters.category = v end
                     return v
                 end,
                 function(v)
@@ -948,7 +902,6 @@ function M:Build(popup, env)
                     if FS and FS.ResolveCategoryID then nv = FS:ResolveCategoryID(nv) end
                     f.category = nv
                     f.subcategory = "ALL"
-                    if Filters then Filters.category, Filters.subcategory = f.category, f.subcategory end
                 end,
                 function()
                     local FS = NS and NS.Systems and NS.Systems.Filters
@@ -969,7 +922,6 @@ function M:Build(popup, env)
                         if f and nv ~= v then f.subcategory = nv end
                         v = nv
                     end
-                    if Filters then Filters.subcategory = v end
                     return v
                 end,
                 function(v)
@@ -979,7 +931,6 @@ function M:Build(popup, env)
                     local nv = v or "ALL"
                     if FS and FS.ResolveSubcategoryID then nv = FS:ResolveSubcategoryID(nv) end
                     f.subcategory = nv
-                    if Filters then Filters.subcategory = f.subcategory end
                 end,
                 function()
                     local f = F()
@@ -1017,9 +968,6 @@ function M:Build(popup, env)
                     local f = F()
                     if not f then return end
                     f.questsCompleted = (v == true)
-                    if Filters then
-                        Filters.questsCompleted = (v == true)
-                    end
                 end,
                 true,
                 L["FILTER_ALTS_QUEST_HINT"])
@@ -1030,9 +978,6 @@ function M:Build(popup, env)
                     local f = F()
                     if not f then return end
                     f.achievementCompleted = (v == true)
-                    if Filters then
-                        Filters.achievementCompleted = (v == true)
-                    end
                 end,
                 true,
                 L["FILTER_ACH_COMPLETED_HINT"])
@@ -1066,21 +1011,13 @@ function M:Build(popup, env)
                 r.header:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
                 r.header:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
                 y = y - 32
-            elseif r.isButton or r.isCheck then
-                if r.isCheck and r.line then
-                    r.line:Show()
-                    r.line:ClearAllPoints()
-                    r.line:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
-                    r.line:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
-                    y = y - 6
-                end
-
+            elseif r.isCheck then
                 r.dd:Show()
                 r.dd:ClearAllPoints()
                 r.dd:SetPoint("TOPLEFT", self, "TOPLEFT", left, y)
                 r.dd:SetPoint("TOPRIGHT", self, "TOPRIGHT", -right, y)
-                r.dd:SetHeight(r.isCheck and 26 or 24)
-                y = y - (r.isCheck and 32 or 30)
+                r.dd:SetHeight(26)
+                y = y - 32
             elseif r.isColorGrid then
                 if r.refresh then r.refresh() end
 
