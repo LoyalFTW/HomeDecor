@@ -107,12 +107,6 @@ local function ensureBtn(dd, pool, i, parentFrame, isSub, T)
         b.hl:SetAlpha(0.18)
         b.hl:Hide()
 
-        b.sel = b:CreateTexture(nil, "ARTWORK")
-        b.sel:SetPoint("LEFT", 6, 0)
-        b.sel:SetSize(2, dd._rowH - 6)
-        b.sel:SetColorTexture(unpack(T.accent))
-        b.sel:Hide()
-
         b.box = b:CreateTexture(nil, "OVERLAY")
         b.box:SetSize(14, 14)
         b.box:SetPoint("LEFT", 8, 0)
@@ -322,7 +316,7 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
             if opt.separator then
                 b.text:SetText("")
                 b.div:Show()
-                b.box:Hide(); b.check:Hide(); b.sel:Hide(); b.arrow:Hide(); b.delete:Hide()
+                b.box:Hide(); b.check:Hide(); b.arrow:Hide(); b.delete:Hide()
             else
                 b.div:Hide()
                 b.text:SetText(opt.text or "")
@@ -388,7 +382,7 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
             if opt.separator then
                 b.text:SetText("")
                 b.div:Show()
-                b.box:Hide(); b.check:Hide(); b.sel:Hide(); b.arrow:Hide(); b.delete:Hide()
+                b.box:Hide(); b.check:Hide(); b.arrow:Hide(); b.delete:Hide()
             else
                 b.div:Hide()
                 b.text:SetText(opt.text or "")
@@ -420,23 +414,18 @@ function Dropdown.Create(parent, label, y, width, get, set, valuesFn, visibleFn,
     end
 
     function dd:RefreshStates()
-        local v = self._get and self._get()
-
         local function sync(pool, isSub)
             for _, b in ipairs(pool) do
                 if b and b:IsShown() then
                     if b.separator then
-                        b.sel:Hide(); b.box:Hide(); b.check:Hide()
+                        b.box:Hide(); b.check:Hide()
                     elseif b.children and not isSub then
-                        b.sel:Hide()
                         b.box:Show()
                         b.check:SetShown(anyChildOn(self, b.opt))
                     elseif b.checkable then
-                        b.sel:Hide()
                         b.box:Show()
                         b.check:SetShown((self._get and b.value ~= nil and self._get(b.value)) and true or false)
                     else
-                        b.sel:SetShown(b.value == v)
                         b.box:Hide()
                         b.check:Hide()
                     end

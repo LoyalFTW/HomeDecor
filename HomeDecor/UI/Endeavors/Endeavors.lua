@@ -1595,7 +1595,9 @@ function EndeavorsUI:Create(parent)
         self:RenderRight()
     end
     if Sys then
+        local prevDataReady = Sys.OnDataReady
         Sys.OnDataReady = function()
+            if prevDataReady then prevDataReady() end
             if panel:IsShown() then
                 panel:RenderTopBar(); panel:RenderStats(); panel:RenderTasks(); panel:RenderTracker(); panel:RenderRight()
             end
@@ -1607,8 +1609,14 @@ function EndeavorsUI:Create(parent)
                 panel:RenderRight()
             end
         end
-        Sys.OnHouseListUpdated_callback = RefreshHouseSelection
-        Sys.OnActiveNeighborhoodChanged = function()
+        local prevHouseListCb = Sys.OnHouseListUpdated_callback
+        Sys.OnHouseListUpdated_callback = function(...)
+            if prevHouseListCb then prevHouseListCb(...) end
+            RefreshHouseSelection()
+        end
+        local prevActiveChanged = Sys.OnActiveNeighborhoodChanged
+        Sys.OnActiveNeighborhoodChanged = function(...)
+            if prevActiveChanged then prevActiveChanged(...) end
             RefreshHouseSelection()
         end
     end

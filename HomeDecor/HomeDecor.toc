@@ -94,6 +94,7 @@ Systems\Endeavors.lua
 Systems\Architect.lua
 Systems\RoomNameNotices.lua
 UI\Endeavors\Endeavors.lua
+UI\Statistics\Statistics.lua
 UI\Architect\Architect.lua
 UI\Shared\Theme.lua
 UI\Shared\Controls.lua

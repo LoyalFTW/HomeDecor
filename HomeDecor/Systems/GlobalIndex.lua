@@ -55,7 +55,7 @@ local function AddToCategory(cat, it)
     GI._categoryScratch = GI._categoryScratch or {}
     GI._categoryScratch[cat] = GI._categoryScratch[cat] or {}
     GI._categoryScratch[cat][key] = it
-    if decorID then GI.byItemID[decorID] = true end
+    if decorID and not GI.byItemID[decorID] then GI.byItemID[decorID] = it end
 end
 
 local function CountSet(set)
@@ -148,6 +148,9 @@ function GI:Build()
         self.collected[cat] = CountCollected(set)
     end
 
+    self.uniqueTotal = CountSet(self.byItemID)
+    self.uniqueCollected = CountCollected(self.byItemID)
+
     self._categoryScratch = nil
     self._built = true
 end
@@ -167,6 +170,11 @@ function GI:GetCounts(cat)
     self:Ensure()
     cat = NormalizeCategory(cat)
     return (self.collected[cat] or 0), (self.counts[cat] or 0)
+end
+
+function GI:GetTotalUniqueCount()
+    self:Ensure()
+    return (self.uniqueCollected or 0), (self.uniqueTotal or 0)
 end
 
 if Collection and Collection.RegisterListener then

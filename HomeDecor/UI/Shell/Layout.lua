@@ -649,6 +649,7 @@ function L:CreateShell()
     "Gather Tracker",
     "Alts Professions",
     "Endeavors",
+    "Statistics",
   }
   local catIcons = {
     ["All Sources"] = "Interface\\Icons\\INV_Misc_Map_01",
@@ -667,6 +668,7 @@ function L:CreateShell()
     ["Decor Pricing"] = "Interface\\Icons\\INV_Misc_Coin_01",
     ["Alts Professions"] = "Interface\\Icons\\INV_Misc_Book_11",
     Endeavors = "Interface\\Icons\\Achievement_Zone_Cataclysm",
+    Statistics = "Interface\\Icons\\INV_Misc_Spyglass_03",
   }
   left.buttons = {}
 
@@ -728,6 +730,7 @@ function L:CreateShell()
     ["Decor Pricing"] = "Open the pricing window.",
     ["Alts Professions"] = "Open profession coverage for your alts.",
     Endeavors = "Open endeavor progress and rewards.",
+    Statistics = "View your collection, endeavors, and crafting stats at a glance.",
   }
 
   local function SetupNavTooltip(btn)
@@ -1303,6 +1306,7 @@ function L:CreateShell()
       or categoryName == "Decor Pricing"
       or categoryName == "Alts Professions"
       or categoryName == "Endeavors"
+      or categoryName == "Statistics"
   end
 
   local function ApplyDetailsPanelForCategory(categoryName, skipRender)
@@ -1355,8 +1359,13 @@ function L:CreateShell()
     if NS.UI.EndeavorsPanel then
       NS.UI.EndeavorsPanel:SetShown(isEndeavorsSelected)
     end
+
+    local isStatisticsSelected = UI.activeCategory == "Statistics"
+    if NS.UI.StatisticsPanel then
+      NS.UI.StatisticsPanel:SetShown(isStatisticsSelected)
+    end
     if f.view then
-      f.view:SetShown(not isEndeavorsSelected and not isArchitectSelected)
+      f.view:SetShown(not isEndeavorsSelected and not isArchitectSelected and not isStatisticsSelected)
     end
 
     C:SetSelected(eventsBtn, UI.activeCategory == "Events", T.panel, T.row)
@@ -1477,6 +1486,9 @@ function L:CreateShell()
     if categoryName == "Architect" and NS.UI and NS.UI.Architect and not NS.UI.ArchitectPanel then
       NS.UI.ArchitectPanel = NS.UI.Architect:Create(rightContent)
     end
+    if categoryName == "Statistics" and NS.UI and NS.UI.Statistics and not NS.UI.StatisticsPanel then
+      NS.UI.StatisticsPanel = NS.UI.Statistics:Create(rightContent)
+    end
 
     if UpdateTopTabs then UpdateTopTabs() end
     if categoryName == "Architect" and NS.UI.ArchitectPanel then
@@ -1486,6 +1498,10 @@ function L:CreateShell()
     if categoryName == "Endeavors" and NS.UI.EndeavorsPanel then
       if NS.UI.EndeavorsPanel.FullRefresh then NS.UI.EndeavorsPanel:FullRefresh() end
       NS.UI.EndeavorsPanel:Show()
+    end
+    if categoryName == "Statistics" and NS.UI.StatisticsPanel then
+      if NS.UI.StatisticsPanel.FullRefresh then NS.UI.StatisticsPanel:FullRefresh() end
+      NS.UI.StatisticsPanel:Show()
     end
     if f.view and f.view.scrollFrame then
       f.view.scrollFrame:SetVerticalScroll(0)
@@ -1652,6 +1668,7 @@ function L:CreateShell()
     ["Decor Pricing"] = true,
     ["Alts Professions"] = true,
     ["Endeavors"] = true,
+    ["Statistics"] = true,
   }
 
   local SORT_OPTIONS = {
@@ -2302,6 +2319,16 @@ function L:CreateShell()
     NS.UI.ArchitectPanel = NS.UI.Architect:Create(rightContent)
     if NS.UI.ArchitectPanel and NS.UI.ArchitectPanel.Refresh then NS.UI.ArchitectPanel:Refresh() end
     if NS.UI.ArchitectPanel then NS.UI.ArchitectPanel:Show() end
+  end
+  if UI.activeCategory == "Endeavors" and NS.UI and NS.UI.Endeavors and not NS.UI.EndeavorsPanel then
+    NS.UI.EndeavorsPanel = NS.UI.Endeavors:Create(rightContent)
+    if NS.UI.EndeavorsPanel and NS.UI.EndeavorsPanel.FullRefresh then NS.UI.EndeavorsPanel:FullRefresh() end
+    if NS.UI.EndeavorsPanel then NS.UI.EndeavorsPanel:Show() end
+  end
+  if UI.activeCategory == "Statistics" and NS.UI and NS.UI.Statistics and not NS.UI.StatisticsPanel then
+    NS.UI.StatisticsPanel = NS.UI.Statistics:Create(rightContent)
+    if NS.UI.StatisticsPanel and NS.UI.StatisticsPanel.FullRefresh then NS.UI.StatisticsPanel:FullRefresh() end
+    if NS.UI.StatisticsPanel then NS.UI.StatisticsPanel:Show() end
   end
   if f.view and f.view.SetInspectorOpen then
     ApplyDetailsPanelForCategory(UI.activeCategory or "All", true)
