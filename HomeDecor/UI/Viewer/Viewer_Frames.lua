@@ -200,8 +200,8 @@ function Frames.CreateTile(content)
   r.div:SetHeight(1)
 
   r.textArea = CreateFrame("Frame", nil, r)
-  r.textArea:SetPoint("TOPLEFT", r.media, "BOTTOMLEFT", 8, -8)
-  r.textArea:SetPoint("TOPRIGHT", r.media, "BOTTOMRIGHT", -8, -8)
+  r.textArea:SetPoint("TOPLEFT", r.media, "BOTTOMLEFT", 3, -8)
+  r.textArea:SetPoint("TOPRIGHT", r.media, "BOTTOMRIGHT", -3, -8)
   r.textArea:SetHeight(50)
   r.textArea:SetClipsChildren(true)
 
@@ -258,10 +258,6 @@ function Frames.CreateTile(content)
   r.reqRow:SetClipsChildren(true)
   r.reqRow:Hide()
 
-  r.reqRow.bg = r.reqRow:CreateTexture(nil, "BACKGROUND")
-  r.reqRow.bg:SetAllPoints()
-  r.reqRow.bg:SetColorTexture(0.05, 0.06, 0.08, 0.4)
-
   r.req = r.reqRow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   r.req:SetPoint("TOPLEFT", 10, -6)
   r.req:SetPoint("TOPRIGHT", -10, -6)
@@ -292,10 +288,6 @@ function Frames.CreateTile(content)
   r.repRow:SetHeight(32)
   r.repRow:SetClipsChildren(true)
   r.repRow:Hide()
-
-  r.repRow.bg = r.repRow:CreateTexture(nil, "BACKGROUND")
-  r.repRow.bg:SetAllPoints()
-  r.repRow.bg:SetColorTexture(0.05, 0.06, 0.08, 0.4)
 
   r.rep = r.repRow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   r.rep:SetPoint("TOPLEFT", 10, -6)

@@ -22,7 +22,7 @@ local LAYOUT = {
         GAP = 10,
         ASPECT = 1.10,
         ICON_RATIO = 0.50,
-        FIXED_HEIGHT = 252
+        FIXED_HEIGHT = 320
     },
     ICON = {
         MIN = 82,
@@ -257,8 +257,69 @@ local function GetCurrencyInfo(it)
     return goldCost, currencyAmount, currencyName, iconFileID
 end
 
-local function CalculateTileHeight(it, baseHeight)
-    return LAYOUT.TILE.FIXED_HEIGHT
+local function VisibleTextLength(text)
+    if not text or text == "" then return 0 end
+    local s = text
+    s = s:gsub("|c%x%x%x%x%x%x%x%x", "")
+    s = s:gsub("|r", "")
+    s = s:gsub("|T[^|]*|t", "XX")
+    s = s:gsub("|H[^|]*|h", "")
+    s = s:gsub("|h", "")
+    return #s
+end
+
+local FONT_METRICS = {
+    GameFontNormalLarge = { lineHeight = 18, avgCharWidth = 9.2 },
+    GameFontNormal       = { lineHeight = 14, avgCharWidth = 7.4 },
+}
+
+local function MeasureTextHeight(text, width, fontTemplate, maxLines)
+    if not text or text == "" then return 0 end
+    local metrics = FONT_METRICS[fontTemplate] or FONT_METRICS.GameFontNormal
+    local charsPerLine = math.max(1, floor(math.max(1, width) / metrics.avgCharWidth))
+    local lines = math.max(1, math.ceil(VisibleTextLength(text) / charsPerLine))
+    lines = math.min(lines, maxLines or 2)
+    return lines * metrics.lineHeight
+end
+
+local TILE_ICON_AREA = floor(252 * 0.60)
+local TILE_ROW_PAD = 6
+local TILE_ROW_GAP = 5
+
+local function CalculateTileHeight(it, tileW)
+    tileW = tileW or LAYOUT.TILE.MIN_W
+
+    local name = it and (it.title or (it.decorID and D and D.GetDecorName and D.GetDecorName(it.decorID)))
+    if not name or name == "" then
+        name = "Decor #" .. tostring(it and (it.decorID or it.itemID) or "?")
+    end
+
+    local req = R and R.GetRequirementLink and R.GetRequirementLink(it)
+    local rep = R and R.GetRepRequirement and R.GetRepRequirement(it)
+    local reqText = (req and R and R.BuildReqDisplay) and R.BuildReqDisplay(req, false) or nil
+    local repText = (rep and R and R.BuildRepDisplay) and R.BuildRepDisplay(rep, false) or nil
+    if reqText == "" then reqText = nil end
+    if repText == "" then repText = nil end
+
+    local titleH = math.max(18, MeasureTextHeight(name, tileW - 26, "GameFontNormalLarge", 3))
+    local metaH = 16
+    local FIXED_ROW_H = 16
+
+    local total = TILE_ICON_AREA + 8 + titleH + 2 + metaH + 4
+
+    local reqH, repH = 0, 0
+    if reqText then
+        reqH = FIXED_ROW_H
+        total = total + reqH + TILE_ROW_PAD + TILE_ROW_GAP
+    end
+    if repText then
+        repH = FIXED_ROW_H
+        total = total + repH + TILE_ROW_PAD + TILE_ROW_GAP
+    end
+
+    total = total + 10
+
+    return total, reqText, repText, titleH, reqH, repH
 end
 
 local function AddToFlat(out, seen, it)
@@ -1096,8 +1157,8 @@ local function RebuildEntries(f, content)
     end
 
     local function addTile(indent, it, nav, col, startX, tileW, tileH)
-        local h = CalculateTileHeight(it, tileH)
-        entries[#entries + 1] = {
+        local h, reqText, repText, titleH, reqH, repH = CalculateTileHeight(it, tileW)
+        local entry = {
             kind = "tile",
             x = startX + col * (tileW + LAYOUT.TILE.GAP),
             y = y,
@@ -1105,8 +1166,22 @@ local function RebuildEntries(f, content)
             h = h,
             indent = indent,
             it = it,
-            nav = nav
+            nav = nav,
+            reqText = reqText,
+            repText = repText,
+            titleH = titleH,
+            reqH = reqH,
+            repH = repH
         }
+        entries[#entries + 1] = entry
+        return h, entry
+    end
+
+    local function NormalizeRowHeight(rowEntries, rowMaxH)
+        for i = 1, #rowEntries do
+            rowEntries[i].h = rowMaxH
+        end
+        wipeTable(rowEntries)
     end
 
     local q = U and U.trim and U.trim(ui.search) or (ui.search or "")
@@ -1146,18 +1221,24 @@ local function RebuildEntries(f, content)
                         BuildFlatResults(f, ui, db, scope) or {}
 
         if viewMode == "Icon" then
-            local cols, startX, tileW, tileH = ComputeGrid(12, contentW)
-            local col = 0
+            local cols, startX, tileW = ComputeGrid(12, contentW)
+            local col, rowMaxH, rowEntries = 0, 0, {}
             for _, it in ipairs(results) do
-                local h = CalculateTileHeight(it, tileH)
-                addTile(12, it, it and (it.vendor or it.source) or nil, col, startX, tileW, tileH)
+                local h, entry = addTile(12, it, it and (it.vendor or it.source) or nil, col, startX, tileW, tileW)
+                rowEntries[#rowEntries + 1] = entry
+                rowMaxH = math.max(rowMaxH, h)
                 col = col + 1
                 if col >= cols then
+                    NormalizeRowHeight(rowEntries, rowMaxH)
                     col = 0
-                    y = y + h + LAYOUT.TILE.GAP
+                    y = y + rowMaxH + LAYOUT.TILE.GAP
+                    rowMaxH = 0
                 end
             end
-            if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+            if col > 0 then
+                NormalizeRowHeight(rowEntries, rowMaxH)
+                y = y + rowMaxH + LAYOUT.TILE.GAP
+            end
         else
             for _, it in ipairs(results) do
                 addListItem(12, it, it and (it.vendor or it.source) or nil)
@@ -1186,18 +1267,24 @@ local function RebuildEntries(f, content)
 
             if open then
                 if viewMode == "Icon" then
-                    local cols, startX, tileW, tileH = ComputeGrid(28, contentW)
-                    local col = 0
+                    local cols, startX, tileW = ComputeGrid(28, contentW)
+                    local col, rowMaxH, rowEntries = 0, 0, {}
                     for _, it in ipairs(results) do
-                        local h = CalculateTileHeight(it, tileH)
-                        addTile(28, it, it and (it.vendor or it.source) or nil, col, startX, tileW, tileH)
+                        local h, entry = addTile(28, it, it and (it.vendor or it.source) or nil, col, startX, tileW, tileW)
+                        rowEntries[#rowEntries + 1] = entry
+                        rowMaxH = math.max(rowMaxH, h)
                         col = col + 1
                         if col >= cols then
+                            NormalizeRowHeight(rowEntries, rowMaxH)
                             col = 0
-                            y = y + h + LAYOUT.TILE.GAP
+                            y = y + rowMaxH + LAYOUT.TILE.GAP
+                            rowMaxH = 0
                         end
                     end
-                    if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+                    if col > 0 then
+                        NormalizeRowHeight(rowEntries, rowMaxH)
+                        y = y + rowMaxH + LAYOUT.TILE.GAP
+                    end
                 else
                     for _, it in ipairs(results) do
                         addListItem(28, it, it and (it.vendor or it.source) or nil)
@@ -1226,20 +1313,26 @@ local function RebuildEntries(f, content)
         end)
 
         if viewMode == "Icon" then
-            local cols, startX, tileW, tileH = ComputeGrid(12, contentW)
-            local col = 0
+            local cols, startX, tileW = ComputeGrid(12, contentW)
+            local col, rowMaxH, rowEntries = 0, 0, {}
             for _, it in ipairs(favs) do
                 if not FiltersSys or not FiltersSys.Passes or FiltersSys:Passes(it, ui, db) then
-                    local h = CalculateTileHeight(it, tileH)
-                    addTile(12, it, it and (it.vendor or it.source) or nil, col, startX, tileW, tileH)
+                    local h, entry = addTile(12, it, it and (it.vendor or it.source) or nil, col, startX, tileW, tileW)
+                    rowEntries[#rowEntries + 1] = entry
+                    rowMaxH = math.max(rowMaxH, h)
                     col = col + 1
                     if col >= cols then
+                        NormalizeRowHeight(rowEntries, rowMaxH)
                         col = 0
-                        y = y + h + LAYOUT.TILE.GAP
+                        y = y + rowMaxH + LAYOUT.TILE.GAP
+                        rowMaxH = 0
                     end
                 end
             end
-            if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+            if col > 0 then
+                NormalizeRowHeight(rowEntries, rowMaxH)
+                y = y + rowMaxH + LAYOUT.TILE.GAP
+            end
         else
             for _, it in ipairs(favs) do
                 if not FiltersSys or not FiltersSys.Passes or FiltersSys:Passes(it, ui, db) then
@@ -1411,18 +1504,24 @@ local function RebuildEntries(f, content)
 
             if open and #group > 0 then
                 if viewMode == "Icon" then
-                    local cols, startX, tileW, tileH = ComputeGrid(28, contentW)
-                    local col = 0
+                    local cols, startX, tileW = ComputeGrid(28, contentW)
+                    local col, rowMaxH, rowEntries = 0, 0, {}
                     for _, it in ipairs(group) do
-                        local h = CalculateTileHeight(it, tileH)
-                        addTile(28, it, ev, col, startX, tileW, tileH)
+                        local h, entry = addTile(28, it, ev, col, startX, tileW, tileW)
+                        rowEntries[#rowEntries + 1] = entry
+                        rowMaxH = math.max(rowMaxH, h)
                         col = col + 1
                         if col >= cols then
+                            NormalizeRowHeight(rowEntries, rowMaxH)
                             col = 0
-                            y = y + h + LAYOUT.TILE.GAP
+                            y = y + rowMaxH + LAYOUT.TILE.GAP
+                            rowMaxH = 0
                         end
                     end
-                    if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+                    if col > 0 then
+                        NormalizeRowHeight(rowEntries, rowMaxH)
+                        y = y + rowMaxH + LAYOUT.TILE.GAP
+                    end
                 else
                     for _, it in ipairs(group) do
                         addListItem(28, it, ev)
@@ -1487,8 +1586,8 @@ local function RebuildEntries(f, content)
                                 addHeader(44, 30, "[Vendor] " .. vTitle, vC, vT, (it._uiOpen and true or false), "vendor", { key = vKey, vendor = it })
 
                                 if it._uiOpen then
-                                    local vCols, vStartX, vTileW, vTileH = ComputeGrid(60, contentW)
-                                    local vCol = 0
+                                    local vCols, vStartX, vTileW = ComputeGrid(60, contentW)
+                                    local vCol, vRowMaxH, vRowEntries = 0, 0, {}
                                     for _, vit in ipairs(it.items) do
                                         local rit = vit
                                         rit.source = rit.source or {}
@@ -1497,22 +1596,28 @@ local function RebuildEntries(f, content)
                                         if D and D.AttachVendorCtx then D.AttachVendorCtx(rit, it) end
 
                                         if U and U.Passes and U.Passes(rit) then
-                                            local h = CalculateTileHeight(rit, vTileH)
-                                            addTile(60, rit, it, vCol, vStartX, vTileW, vTileH)
+                                            local h, entry = addTile(60, rit, it, vCol, vStartX, vTileW, vTileW)
+                                            vRowEntries[#vRowEntries + 1] = entry
+                                            vRowMaxH = math.max(vRowMaxH, h)
                                             vCol = vCol + 1
                                             if vCol >= vCols then
+                                                NormalizeRowHeight(vRowEntries, vRowMaxH)
                                                 vCol = 0
-                                                y = y + h + LAYOUT.TILE.GAP
+                                                y = y + vRowMaxH + LAYOUT.TILE.GAP
+                                                vRowMaxH = 0
                                             end
                                         end
                                     end
-                                    if vCol > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+                                    if vCol > 0 then
+                                        NormalizeRowHeight(vRowEntries, vRowMaxH)
+                                        y = y + vRowMaxH + LAYOUT.TILE.GAP
+                                    end
                                 end
                             end
                         end
 
-                        local cols, startX, tileW, tileH = ComputeGrid(44, contentW)
-                        local col = 0
+                        local cols, startX, tileW = ComputeGrid(44, contentW)
+                        local col, rowMaxH, rowEntries = 0, 0, {}
                         for _, it in ipairs(items) do
                             if not (it.source and it.source.type == "vendor" and it.items) then
                                 local rit = it
@@ -1521,17 +1626,23 @@ local function RebuildEntries(f, content)
                                 rit._navZoneKey = zone
 
                                 if U and U.Passes and U.Passes(rit) then
-                                    local h = CalculateTileHeight(rit, tileH)
-                                    addTile(44, rit, rit.vendor, col, startX, tileW, tileH)
+                                    local h, entry = addTile(44, rit, rit.vendor, col, startX, tileW, tileW)
+                                    rowEntries[#rowEntries + 1] = entry
+                                    rowMaxH = math.max(rowMaxH, h)
                                     col = col + 1
                                     if col >= cols then
+                                        NormalizeRowHeight(rowEntries, rowMaxH)
                                         col = 0
-                                        y = y + h + LAYOUT.TILE.GAP
+                                        y = y + rowMaxH + LAYOUT.TILE.GAP
+                                        rowMaxH = 0
                                     end
                                 end
                             end
                         end
-                        if col > 0 then y = y + LAYOUT.TILE.FIXED_HEIGHT + LAYOUT.TILE.GAP end
+                        if col > 0 then
+                            NormalizeRowHeight(rowEntries, rowMaxH)
+                            y = y + rowMaxH + LAYOUT.TILE.GAP
+                        end
                     else
 
                         for _, it in ipairs(items) do
@@ -2329,7 +2440,7 @@ function Render:Create(parent)
                     local w, h = e.w or GridCache.tileW, e.h or GridCache.tileH
 
                     if fr.media then
-                        fr.media:SetHeight(floor(h * 0.60))
+                        fr.media:SetHeight(TILE_ICON_AREA)
                         if fr.icon then
                             local iconSize = GridCache.iconSize or LAYOUT.ICON.MIN
                             fr.icon:SetSize(iconSize, iconSize)
@@ -2357,6 +2468,9 @@ function Render:Create(parent)
                     end
 
                     local textArea = fr.textArea or fr
+                    if fr.textArea then
+                        fr.textArea:SetHeight((e.titleH or 32) + 24)
+                    end
                     if fr.label then
                         fr.label:ClearAllPoints()
                         fr.label:SetPoint("TOPLEFT", textArea, "TOPLEFT", 0, -2)
@@ -2366,9 +2480,9 @@ function Render:Create(parent)
                             name = "Decor #" .. tostring(it and (it.decorID or it.itemID) or "?")
                         end
                         fr.label:SetText(name)
-                        if fr.label.SetWidth then fr.label:SetWidth(math.max(0, w - 20)) end
-						if fr.label.SetMaxLines then fr.label:SetMaxLines(2) end
-                        if fr.label.SetHeight then fr.label:SetHeight(20) end
+                        if fr.label.SetWidth then fr.label:SetWidth(math.max(0, w - 26)) end
+						if fr.label.SetMaxLines then fr.label:SetMaxLines(3) end
+                        if fr.label.SetHeight then fr.label:SetHeight(e.titleH or 32) end
                     end
 
                     if fr.note then
@@ -2387,8 +2501,8 @@ function Render:Create(parent)
                     if fr.titleDiv and fr.label then
                         fr.titleDiv:ClearAllPoints()
                         local anchor = (fr.note and fr.note:IsShown()) and fr.note or fr.label
-                        fr.titleDiv:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -4)
-                        fr.titleDiv:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, -4)
+                        fr.titleDiv:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -3)
+                        fr.titleDiv:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, -3)
                         fr.titleDiv:SetHeight(1)
                         fr.titleDiv:Show()
                     end
@@ -2409,8 +2523,8 @@ function Render:Create(parent)
                         fr.meta:ClearAllPoints()
                         if metaText ~= "" then
                             local anchor = (fr.titleDiv and fr.titleDiv:IsShown()) and fr.titleDiv or fr.label
-                            fr.meta:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -6)
-                            local maxWidth = math.max(0, w - 24)
+                            fr.meta:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -4)
+                            local maxWidth = math.max(0, w - 26)
                             if fr.meta.SetWidth then fr.meta:SetWidth(maxWidth) end
                             fr.meta:SetText("|cff9aa0a6" .. metaText .. "|r")
                             fr.meta:Show()
@@ -2424,21 +2538,20 @@ function Render:Create(parent)
                     if fr.secCur then fr.secCur:Hide() end
                     if fr.curRow then fr.curRow:Hide() end
 
-                    local req = R and R.GetRequirementLink and R.GetRequirementLink(it)
-                    local rep = R and R.GetRepRequirement and R.GetRepRequirement(it)
+                    local reqText, repText = e.reqText, e.repText
                     local reqAnchor = (fr.meta and fr.meta:IsShown()) and fr.meta or ((fr.titleDiv and fr.titleDiv:IsShown()) and fr.titleDiv or fr.label)
-                    if req and fr.reqRow and fr.req and R.BuildReqDisplay then
+                    if reqText and fr.reqRow and fr.req then
                         fr.reqRow:ClearAllPoints()
-                        fr.reqRow:SetPoint("TOPLEFT", reqAnchor, "BOTTOMLEFT", 0, -5)
-                        fr.reqRow:SetPoint("TOPRIGHT", reqAnchor, "BOTTOMRIGHT", 0, -5)
-                        fr.reqRow:SetHeight(22)
+                        fr.reqRow:SetPoint("TOPLEFT", reqAnchor, "BOTTOMLEFT", 0, -4)
+                        fr.reqRow:SetPoint("TOPRIGHT", reqAnchor, "BOTTOMRIGHT", 0, -4)
+                        fr.reqRow:SetHeight((e.reqH or 16) + TILE_ROW_PAD)
                         fr.reqRow:Show()
 
                         fr.req:ClearAllPoints()
-                        fr.req:SetPoint("LEFT", fr.reqRow, "LEFT", 8, 0)
-                        fr.req:SetPoint("RIGHT", fr.reqRow, "RIGHT", -8, 0)
+                        fr.req:SetPoint("LEFT", fr.reqRow, "LEFT", 3, 0)
+                        fr.req:SetPoint("RIGHT", fr.reqRow, "RIGHT", -3, 0)
                         if fr.req.SetMaxLines then fr.req:SetMaxLines(1) end
-                        fr.req:SetText(R.BuildReqDisplay(req, false))
+                        fr.req:SetText(reqText)
                         fr.req:Show()
 
                         if fr.reqBtn then
@@ -2454,18 +2567,18 @@ function Render:Create(parent)
                     end
 
                     local repAnchor = (fr.reqRow and fr.reqRow:IsShown()) and fr.reqRow or reqAnchor
-                    if rep and fr.repRow and fr.rep and R.BuildRepDisplay then
+                    if repText and fr.repRow and fr.rep then
                         fr.repRow:ClearAllPoints()
-                        fr.repRow:SetPoint("TOPLEFT", repAnchor, "BOTTOMLEFT", 0, -4)
-                        fr.repRow:SetPoint("TOPRIGHT", repAnchor, "BOTTOMRIGHT", 0, -4)
-                        fr.repRow:SetHeight(22)
+                        fr.repRow:SetPoint("TOPLEFT", repAnchor, "BOTTOMLEFT", 0, -3)
+                        fr.repRow:SetPoint("TOPRIGHT", repAnchor, "BOTTOMRIGHT", 0, -3)
+                        fr.repRow:SetHeight((e.repH or 16) + TILE_ROW_PAD)
                         fr.repRow:Show()
 
                         fr.rep:ClearAllPoints()
-                        fr.rep:SetPoint("LEFT", fr.repRow, "LEFT", 8, 0)
-                        fr.rep:SetPoint("RIGHT", fr.repRow, "RIGHT", -8, 0)
+                        fr.rep:SetPoint("LEFT", fr.repRow, "LEFT", 3, 0)
+                        fr.rep:SetPoint("RIGHT", fr.repRow, "RIGHT", -3, 0)
                         if fr.rep.SetMaxLines then fr.rep:SetMaxLines(1) end
-                        fr.rep:SetText(R.BuildRepDisplay(rep, false))
+                        fr.rep:SetText(repText)
                         fr.rep:Show()
                     else
                         if fr.repRow then fr.repRow:Hide() end
