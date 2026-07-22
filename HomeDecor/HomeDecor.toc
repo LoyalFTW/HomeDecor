@@ -42,7 +42,6 @@ HomeDecor.xml
 
 Changelog.lua
 
-Data\QuestTitles.lua
 Systems\CatalogAvailability.lua
 Systems\NPCNames.lua
 Systems\HousingBootstrap.lua

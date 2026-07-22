@@ -7,6 +7,19 @@ local Q = NS.Systems.Quests
 local tonumber, tostring, type, pcall = tonumber, tostring, type, pcall
 local C_QuestLog = C_QuestLog
 
+NS.Data = NS.Data or {}
+NS.Data.QuestTitles = {
+  [14402] = "Ready to Go",
+  [24675] = "Last Meal",
+  [25720] = "The Downfall of Marl Wormthorn",
+  [26754] = "Mor'bent's Bane",
+  [26868] = "Axis of Awful",
+  [27550] = "Pyrewood's Fall",
+  [28035] = "The Mountain-Lord's Support",
+  [28064] = "Welcome to the Brotherhood",
+  [53566] = "Dark Iron Dwarves",
+}
+
 local function recordQuestAlt(questID, isComplete)
   local QuestsAlts = NS.Systems and NS.Systems.QuestsAlts
   if not QuestsAlts or not QuestsAlts.Record then return end
