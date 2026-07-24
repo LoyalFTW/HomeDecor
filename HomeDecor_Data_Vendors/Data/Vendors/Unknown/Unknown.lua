@@ -129,7 +129,7 @@ NS.Data.Vendors["Unknown"]["Unknown"] = {
 --       {decorID=23707, source={type="vendor", itemID=280158, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"}, -- HIDDENCATALOG
 --       {decorID=23708, source={type="vendor", itemID=280160, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
 --       {decorID=23709, source={type="vendor", itemID=280162, currency="750000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
---       {decorID=23710, source={type="vendor", itemID=280164, currency="750000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=23710, source={type="vendor", itemID=280164, currency="750000", currencytype="money"}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
     }
   },
 

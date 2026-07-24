@@ -5,6 +5,7 @@ NS.Data.Shops = NS.Data.Shops or {}
 
 NS.Data.Shops["Midnight"] = NS.Data.Shops["Midnight"] or {}
 NS.Data.Shops["Midnight"]["QuelThalas"] = {
+    {decorID=25936, source={type="shop", zone="BlizzCon 2026 in-game goodies", itemID=276873, name="BlizzCon 2026 in-game goodies"}, budgetCost=3, size="Medium"},
     {decorID=11287, source={type="shop", zone="Diablo 2 expansion bonus", itemID=256764, name="Diablo 2 expansion bonus"}, budgetCost=1, size="Small"},
     {decorID=12247, source={type="shop", zone="Diablo 4 pre-order", itemID=259055, name="Diablo 4 pre-order"}, colors={"Beige","Copper","Dark Gray"}, budgetCost=3, size="Large"},
     {decorID=12248, source={type="shop", zone="Diablo 4 pre-order", itemID=259056, name="Diablo 4 pre-order"}, colors={"Dark Gray","Red","Tan"}, budgetCost=3, size="Large"},

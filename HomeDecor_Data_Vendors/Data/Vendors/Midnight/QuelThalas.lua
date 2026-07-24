@@ -572,6 +572,7 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       {decorID=15668, source={type="vendor", itemID=264396, currency="5000000", currencytype="money"}, dyeable=true, colors={"Gray","Royal Blue","Silver"}, budgetCost=1, size="Small"},
       {decorID=15669, source={type="vendor", itemID=264397}, dyeable=true, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
       {decorID=16813, source={type="vendor", itemID=265389}, colors={"Royal Blue","Tan","Teal"}, budgetCost=1, size="Tiny"},
+      {decorID=25936, source={type="vendor", itemID=276873}, budgetCost=3, size="Medium"},
     }
   },
 
