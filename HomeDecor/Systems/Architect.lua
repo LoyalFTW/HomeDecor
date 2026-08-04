@@ -50,10 +50,36 @@ Architect.RoomTemplates = {
   { key = "squareMedium",  name = "Square Room (Medium)",   shape = "rect",       cost = 12, connections = C_ALL, w = 6, h = 6, color = 1, art = ART.."squareMedium", icon = "Interface\\Icons\\INV_Misc_Rune_03", atlasShape = "square_m" },
   { key = "octagonLarge",  name = "Octagon Room (Large)",   shape = "octagon",    cost = 16, connections = C_ALL, w = 8, h = 8, color = 5, art = ART.."octagonLarge", icon = "Interface\\Icons\\INV_Misc_Gem_03", atlasShape = "octagon_l" },
   { key = "squareLarge",   name = "Square Room (Large)",    shape = "rect",       cost = 20, connections = C_ALL, w = 8, h = 8, color = 1, art = ART.."squareLarge", icon = "Interface\\Icons\\INV_Misc_Rune_04", atlasShape = "square_l" },
+  { key = "westfallBarnAutumn", name = "Autumnal Westfall Barn", shape = "rect", cost = 18, connections = C_ALL, w = 8, h = 6, color = 6, icon = "Interface\\Icons\\INV_Misc_Herb_Felblossom", atlasShape = "artisanal_westfall_barn_autumn" },
+  { key = "westfallBarnSpring", name = "Springtime Westfall Barn", shape = "rect", cost = 18, connections = C_ALL, w = 8, h = 6, color = 3, icon = "Interface\\Icons\\INV_Misc_Flower_02", atlasShape = "artisanal_westfall_barn_spring" },
+  { key = "riversideBlue", name = "Sky Blue Riverside Room", shape = "rect", cost = 16, connections = C_ALL, w = 7, h = 6, color = 2, icon = "Interface\\Icons\\INV_Misc_Fish_93", atlasShape = "artisanal_riverside_blue" },
+  { key = "riversideVerdant", name = "Verdant Riverside Room", shape = "rect", cost = 16, connections = C_ALL, w = 7, h = 6, color = 3, icon = "Interface\\Icons\\INV_Misc_Herb_TalandrasRose", atlasShape = "artisanal_riverside_verdant" },
+  { key = "belamethBedroom", name = "Bel'ameth Nestled Bedroom", shape = "rect", cost = 12, connections = C_ALL, w = 6, h = 5, color = 3, icon = "Interface\\Icons\\INV_Misc_Bed_01", atlasShape = "artisanal_belameth_bedroom" },
+  { key = "belamethMeeting", name = "Bel'ameth Meeting Room", shape = "rect", cost = 12, connections = C_ALL, w = 6, h = 5, color = 3, icon = "Interface\\Icons\\INV_Misc_GroupLooking", atlasShape = "artisanal_belameth_meeting" },
+  { key = "belamethTemple", name = "Bel'ameth Temple Room", shape = "rect", cost = 16, connections = C_ALL, w = 7, h = 6, color = 5, icon = "Interface\\Icons\\INV_Misc_ElvenCoins", atlasShape = "artisanal_belameth_temple" },
+  { key = "belamethTheater", name = "Bel'ameth Theater", shape = "rect", cost = 16, connections = C_ALL, w = 7, h = 6, color = 5, icon = "Interface\\Icons\\INV_Misc_TheaterMask", atlasShape = "artisanal_belameth_theater" },
+  { key = "orgrimmarCouncil", name = "Orgrimmar Council Room", shape = "rect", cost = 16, connections = C_ALL, w = 7, h = 6, color = 4, icon = "Interface\\Icons\\INV_BannerPVP_01", atlasShape = "artisanal_orgrimmar_council" },
+  { key = "orgrimmarDisplay", name = "Orgrimmar Display Room", shape = "rect", cost = 12, connections = C_ALL, w = 6, h = 5, color = 4, icon = "Interface\\Icons\\INV_Misc_ArmorKit_17", atlasShape = "artisanal_orgrimmar_display" },
+  { key = "orgrimmarStonePit", name = "Orgrimmar Stone Pit Room", shape = "rect", cost = 16, connections = C_ALL, w = 7, h = 6, color = 4, icon = "Interface\\Icons\\INV_Stone_05", atlasShape = "artisanal_orgrimmar_stone_pit" },
+  { key = "orgrimmarTheater", name = "Orgrimmar Theater", shape = "rect", cost = 16, connections = C_ALL, w = 7, h = 6, color = 4, icon = "Interface\\Icons\\INV_Misc_TheaterMask", atlasShape = "artisanal_orgrimmar_theater" },
+  { key = "silvermoonArmory", name = "Silvermoon Armory", shape = "rect", cost = 12, connections = C_ALL, w = 6, h = 5, color = 5, icon = "Interface\\Icons\\INV_Sword_1H_BloodElf_C_01", atlasShape = "artisanal_silvermoon_armory" },
+  { key = "silvermoonDisplay", name = "Silvermoon Display Room", shape = "rect", cost = 12, connections = C_ALL, w = 6, h = 5, color = 5, icon = "Interface\\Icons\\INV_Misc_Gem_BloodGem_01", atlasShape = "artisanal_silvermoon_display" },
+  { key = "silvermoonLoftyStudy", name = "Silvermoon Lofty Study", shape = "rect", cost = 16, connections = C_ALL, w = 7, h = 6, color = 5, icon = "Interface\\Icons\\INV_Misc_Book_09", atlasShape = "artisanal_silvermoon_lofty_study" },
+  { key = "silvermoonSmallStudy", name = "Silvermoon Small Study", shape = "rect", cost = 10, connections = C_ALL, w = 5, h = 4, color = 5, icon = "Interface\\Icons\\INV_Misc_Book_11", atlasShape = "artisanal_silvermoon_small_study" },
+  { key = "stormwindArmory", name = "Stormwind Armory", shape = "rect", cost = 12, connections = C_ALL, w = 6, h = 5, color = 2, icon = "Interface\\Icons\\INV_Shield_05", atlasShape = "artisanal_stormwind_armory" },
+  { key = "stormwindDisplay", name = "Stormwind Display Room", shape = "rect", cost = 12, connections = C_ALL, w = 6, h = 5, color = 2, icon = "Interface\\Icons\\INV_Misc_EngGizmos_19", atlasShape = "artisanal_stormwind_display" },
+  { key = "stormwindGrandHall", name = "Stormwind Grand Hall", shape = "rect", cost = 20, connections = C_ALL, w = 8, h = 7, color = 2, icon = "Interface\\Icons\\INV_Misc_Castle_01", atlasShape = "artisanal_stormwind_grand_hall" },
+  { key = "stormwindKitchen", name = "Stormwind Kitchen", shape = "rect", cost = 10, connections = C_ALL, w = 5, h = 4, color = 2, icon = "Interface\\Icons\\INV_Misc_Food_15", atlasShape = "artisanal_stormwind_kitchen" },
 }
 
 local TEMPLATE_BY_KEY = {}
 local TEMPLATE_BY_ATLAS_SHAPE = {}
+local TEMPLATE_ALIASES = {
+  ["bel'ameth bedroom"] = "belamethBedroom",
+  ["orgrimmar theater room"] = "orgrimmarTheater",
+  ["full_layout_prefab_s"] = "squareSmall",
+  ["full_layout_rugged_prn"] = "squareSmall",
+}
 for _, template in ipairs(Architect.RoomTemplates) do
   TEMPLATE_BY_KEY[template.key] = template
   if template.atlasShape then TEMPLATE_BY_ATLAS_SHAPE[template.atlasShape] = template end
@@ -808,6 +834,8 @@ local function findTemplate(value)
   local id = tonumber(value)
   if id and TEMPLATE_KEY_BY_ROOM_TYPE_ID[id] then return TEMPLATE_BY_KEY[TEMPLATE_KEY_BY_ROOM_TYPE_ID[id]] end
   local v = tostring(value):lower()
+  local alias = TEMPLATE_ALIASES[v]
+  if alias and TEMPLATE_BY_KEY[alias] then return TEMPLATE_BY_KEY[alias] end
   for _, template in ipairs(Architect.RoomTemplates) do
     if tostring(template.key):lower() == v or tostring(template.name):lower() == v then
       return template
@@ -1220,7 +1248,7 @@ function Architect:ImportWoWDBJSON(text)
       local roomTypeID = tonumber(external.roomTypeId or external.roomTypeID or external.roomId or external.roomID)
       if entry.forceEntry and not roomTypeID then roomTypeID = ROOM_TYPE_ID_BY_KEY.entry end
       if isEntryTypeID(roomTypeID) then roomTypeID = ROOM_TYPE_ID_BY_KEY.entry end
-      local template = findTemplate(roomTypeID or external.templateKey or external.type or external.name)
+      local template = findTemplate(roomTypeID) or findTemplate(external.templateKey or external.type or external.name)
       local nextID = self:GetDB().nextRoomID
       local importedW = tonumber(external.w or external.width)
       local importedH = tonumber(external.h or external.height)
@@ -1286,6 +1314,23 @@ end
 function Architect:ImportAny(text)
   text = trim(text)
   if text == "" then return nil, "Paste a floorplan export first." end
+  local Blueprints = NS.Systems and NS.Systems.Blueprints
+  local BPAPI = _G.C_HousingBlueprint
+  if Blueprints and BPAPI and BPAPI.IsShareCodeValid then
+    local ok, valid = pcall(BPAPI.IsShareCodeValid, text)
+    if ok and valid then
+      local rec, saveErr = Blueprints:SaveCode(text, "Imported Blueprint")
+      if rec then
+        local layout, previewErr, pending = Blueprints:QueueArchitectPreview(rec.id, true)
+        if layout then return layout end
+        if pending then
+          return nil, "Inspecting the blueprint. Architect will open it automatically when Blizzard responds."
+        end
+        return nil, previewErr or "Blueprint saved, but its Architect preview could not be prepared yet."
+      end
+      return nil, saveErr or "Blueprint code could not be saved."
+    end
+  end
   if text:sub(1, 1) == "\"" and text:sub(-1) == "\"" and text:find("{", 1, true) then
     text = text:sub(2, -2):gsub("\\\"", "\""):gsub("\\n", "\n"):gsub("\\r", "\r"):gsub("\\t", "\t")
     text = trim(text)

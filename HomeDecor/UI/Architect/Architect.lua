@@ -15,6 +15,16 @@ local function A()
   return NS.Systems and NS.Systems.Architect
 end
 
+local function B()
+  return NS.Systems and NS.Systems.Blueprints
+end
+
+local function ArchitectChat(message)
+  if DEFAULT_CHAT_FRAME then
+    DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor Architect:|r " .. tostring(message or ""))
+  end
+end
+
 local function Theme()
   return (NS.UI.Theme and NS.UI.Theme.colors) or {}
 end
@@ -523,12 +533,12 @@ function UIA:Create(parent)
 
   local title = FS(top, "GameFontNormalLarge")
   title:SetPoint("LEFT", 12, 10)
-  title:SetText("Floorplan Builder")
+  title:SetText("Architect")
   TextColor(title, "accent")
 
   local subtitle = FS(top, "GameFontNormalSmall")
   subtitle:SetPoint("LEFT", title, "RIGHT", 12, 0)
-  subtitle:SetText("Design your house by snapping rooms together")
+  subtitle:SetText("Plan rooms, inspect blueprint codes, and track everything required")
   TextColor(subtitle, "textMuted")
 
   local budgetText = FS(top, "GameFontNormalSmall")
@@ -737,6 +747,22 @@ function UIA:Create(parent)
     opts[#opts + 1] = { value = "new", text = "+ New Layout" }
     opts[#opts + 1] = { value = "duplicate", text = "Copy Current Layout" }
     opts[#opts + 1] = { value = "rename", text = "Rename Current" }
+    local blueprints = B()
+    local saved = blueprints and blueprints:GetSaved() or {}
+    local existingBlueprintLayouts = {}
+    for _, layout in ipairs(layouts) do
+      if layout.blueprintCode then existingBlueprintLayouts[layout.blueprintCode] = true end
+    end
+    local addedBlueprintHeader = false
+    for _, rec in ipairs(saved) do
+      if rec.code and not existingBlueprintLayouts[rec.code] then
+        if not addedBlueprintHeader then
+          opts[#opts + 1] = { separator = true }
+          addedBlueprintHeader = true
+        end
+        opts[#opts + 1] = { value = "blueprint:" .. tostring(rec.id), text = "Blueprint: " .. tostring(rec.name or "Saved Code") }
+      end
+    end
     return opts
   end
 
@@ -754,7 +780,13 @@ function UIA:Create(parent)
       function(value)
         if panel.SaveCanvasView then panel:SaveCanvasView() end
         local layout, nameMode
-        if value == "new" then
+        local blueprintID = type(value) == "string" and value:match("^blueprint:(%d+)$")
+        if blueprintID then
+          local blueprints = B()
+          local preview, previewErr = blueprints and blueprints:QueueArchitectPreview(tonumber(blueprintID), true)
+          if previewErr then ArchitectChat(previewErr) end
+          layout = preview
+        elseif value == "new" then
           layout = sys:CreateLayout("New Layout")
           nameMode = "new"
         elseif value == "duplicate" then
@@ -1063,6 +1095,16 @@ function UIA:Create(parent)
   local rotateRoom = Button(right, "Rotate 90", 86)
   rotateRoom:SetPoint("LEFT", deleteRoom, "RIGHT", 8, 0)
 
+  local applyBlueprint = Button(right, "Apply Blueprint", 118)
+  applyBlueprint:SetPoint("TOPLEFT", selectedPreview, "BOTTOMLEFT", 0, -14)
+  applyBlueprint:Hide()
+  panel.applyBlueprint = applyBlueprint
+
+  local refreshBlueprint = Button(right, "Refresh", 78)
+  refreshBlueprint:SetPoint("LEFT", applyBlueprint, "RIGHT", 8, 0)
+  refreshBlueprint:Hide()
+  panel.refreshBlueprint = refreshBlueprint
+
   local markRoom = Button(right, "Mark Room", 98)
   markRoom:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -8)
   panel.markRoom = markRoom
@@ -1079,9 +1121,16 @@ function UIA:Create(parent)
   changesTitle:SetText("House Changes")
   TextColor(changesTitle, "accent")
 
-  local changesList = CreateFrame("Frame", nil, right)
-  changesList:SetPoint("TOPLEFT", changesTitle, "BOTTOMLEFT", 0, -8)
-  changesList:SetPoint("BOTTOMRIGHT", right, "BOTTOMRIGHT", -12, 12)
+  local changesScroll = CreateFrame("ScrollFrame", nil, right, "UIPanelScrollFrameTemplate")
+  changesScroll:SetPoint("TOPLEFT", changesTitle, "BOTTOMLEFT", 0, -8)
+  changesScroll:SetPoint("BOTTOMRIGHT", right, "BOTTOMRIGHT", -30, 12)
+  local changesList = CreateFrame("Frame", nil, changesScroll)
+  changesList:SetSize(220, 1)
+  changesScroll:SetScrollChild(changesList)
+  changesScroll:SetScript("OnSizeChanged", function(_, width)
+    changesList:SetWidth(max(1, (width or 220) - 2))
+  end)
+  panel.changesScroll = changesScroll
   panel.changesList = changesList
 
   local sharePopup = CreateFrame("Frame", nil, panel, "BackdropTemplate")
@@ -1112,31 +1161,89 @@ function UIA:Create(parent)
   local popupCloseX = Button(sharePopup, "X", 26)
   popupCloseX:SetPoint("TOPRIGHT", sharePopup, "TOPRIGHT", -10, -10)
 
-  local shareBox = EditBox(sharePopup)
-  shareBox:SetPoint("TOPLEFT", sharePopup, "TOPLEFT", 14, -46)
-  shareBox:SetPoint("BOTTOMRIGHT", sharePopup, "BOTTOMRIGHT", -14, 48)
+  local shareEditor = CreateFrame("Frame", nil, sharePopup, "BackdropTemplate")
+  shareEditor:SetPoint("TOPLEFT", sharePopup, "TOPLEFT", 14, -46)
+  shareEditor:SetPoint("BOTTOMRIGHT", sharePopup, "BOTTOMRIGHT", -14, 48)
+  Backdrop(shareEditor, T.row or T.panel, T.border)
+
+  local shareScroll = CreateFrame("ScrollFrame", nil, shareEditor, "UIPanelScrollFrameTemplate")
+  shareScroll:SetPoint("TOPLEFT", 7, -7)
+  shareScroll:SetPoint("BOTTOMRIGHT", -27, 7)
+  shareScroll:EnableMouseWheel(true)
+
+  local shareBox = CreateFrame("EditBox", nil, shareScroll)
   shareBox:SetMultiLine(true)
   shareBox:SetMaxLetters(20000)
+  shareBox:SetAutoFocus(false)
+  shareBox:SetFontObject(GameFontHighlightSmall)
+  shareBox:SetTextInsets(2, 2, 2, 2)
+  TextColor(shareBox, "text")
+  shareScroll:SetScrollChild(shareBox)
+  panel.shareScroll = shareScroll
   panel.shareBox = shareBox
 
-  local popupImport = Button(sharePopup, "Import JSON", 96)
+  local function resizeShareEditor()
+    local width = max(1, (shareScroll:GetWidth() or 480) - 4)
+    shareBox:SetWidth(width)
+    local fontString = shareBox.GetFontString and shareBox:GetFontString()
+    local textHeight = fontString and fontString:GetStringHeight() or 1
+    shareBox:SetHeight(max(1, shareScroll:GetHeight() or 1, textHeight + 14))
+  end
+
+  shareScroll:SetScript("OnSizeChanged", resizeShareEditor)
+  shareScroll:SetScript("OnMouseWheel", function(self, delta)
+    local step = 48
+    local nextOffset = (self:GetVerticalScroll() or 0) - ((tonumber(delta) or 0) * step)
+    self:SetVerticalScroll(max(0, min(self:GetVerticalScrollRange() or 0, nextOffset)))
+  end)
+  shareBox:SetScript("OnTextChanged", function()
+    resizeShareEditor()
+  end)
+  shareBox:SetScript("OnCursorChanged", function(_, _, y, _, height)
+    local top = max(0, -(tonumber(y) or 0))
+    local bottom = top + (tonumber(height) or 14)
+    local offset = shareScroll:GetVerticalScroll() or 0
+    local viewport = shareScroll:GetHeight() or 1
+    if top < offset then
+      shareScroll:SetVerticalScroll(top)
+    elseif bottom > offset + viewport then
+      shareScroll:SetVerticalScroll(min(shareScroll:GetVerticalScrollRange() or bottom, bottom - viewport))
+    end
+  end)
+
+  local popupImport = Button(sharePopup, "Import", 96)
   popupImport:SetPoint("BOTTOMLEFT", sharePopup, "BOTTOMLEFT", 14, 14)
   sharePopup.importBtn = popupImport
 
   local popupSelect = Button(sharePopup, "Select All", 84)
   popupSelect:SetPoint("LEFT", popupImport, "RIGHT", 8, 0)
 
+  local popupHouseCode = Button(sharePopup, "House Code", 88)
+  popupHouseCode:SetPoint("BOTTOMLEFT", sharePopup, "BOTTOMLEFT", 108, 14)
+  popupHouseCode:Hide()
+
+  local popupInteriorCode = Button(sharePopup, "Interior", 76)
+  popupInteriorCode:SetPoint("LEFT", popupHouseCode, "RIGHT", 6, 0)
+  popupInteriorCode:Hide()
+
+  local popupExteriorCode = Button(sharePopup, "Exterior", 76)
+  popupExteriorCode:SetPoint("LEFT", popupInteriorCode, "RIGHT", 6, 0)
+  popupExteriorCode:Hide()
+
   local popupClose = Button(sharePopup, "Close", 70)
   popupClose:SetPoint("BOTTOMRIGHT", sharePopup, "BOTTOMRIGHT", -14, 14)
 
   local function openSharePopup(mode, text)
-    local title = mode == "export" and "Export Floorplan JSON" or mode == "debug" and "Capture Debug JSON" or "Import Floorplan JSON"
-    local hint = mode == "export" and "Select the JSON and copy it."
+    local title = mode == "export" and "Export Floorplan or Blueprint" or mode == "debug" and "Capture Debug JSON" or "Import Floorplan or Blueprint"
+    local hint = mode == "export" and "Copy Architect JSON, or export your current in-game house as a Blizzard code."
       or mode == "debug" and "This can help diagnose capture issues."
-      or "Paste a floorplan JSON string, then import it."
+      or "Paste a floorplan JSON string or official blueprint code."
     sharePopup.title:SetText(title)
     sharePopup.hint:SetText(hint)
     popupImport:SetShown(mode ~= "export")
+    popupHouseCode:SetShown(mode == "export")
+    popupInteriorCode:SetShown(mode == "export")
+    popupExteriorCode:SetShown(mode == "export")
     popupSelect:ClearAllPoints()
     if mode == "export" then
       popupSelect:SetPoint("BOTTOMLEFT", sharePopup, "BOTTOMLEFT", 14, 14)
@@ -1144,9 +1251,12 @@ function UIA:Create(parent)
       popupSelect:SetPoint("LEFT", popupImport, "RIGHT", 8, 0)
     end
     shareBox:SetText(text or "")
+    resizeShareEditor()
+    shareScroll:SetVerticalScroll(0)
     sharePopup:Show()
     shareBox:SetFocus()
     shareBox:HighlightText()
+    shareScroll:SetVerticalScroll(0)
   end
   panel.OpenSharePopup = openSharePopup
 
@@ -1164,6 +1274,33 @@ function UIA:Create(parent)
   local function activeLayout()
     return sys:GetActiveLayout()
   end
+
+  local function exportBlueprintCode(kind)
+    local blueprints = B()
+    local layout = activeLayout()
+    local ok, err = blueprints and blueprints:Export(kind, layout and layout.name or "HomeDecor Blueprint")
+    if not ok and err then ArchitectChat(err) end
+  end
+
+  popupHouseCode:SetScript("OnClick", function() exportBlueprintCode("full") end)
+  popupInteriorCode:SetScript("OnClick", function() exportBlueprintCode("interior") end)
+  popupExteriorCode:SetScript("OnClick", function() exportBlueprintCode("exterior") end)
+
+  applyBlueprint:SetScript("OnClick", function()
+    local layout = activeLayout()
+    local blueprints = B()
+    local rec = layout and blueprints and blueprints:GetByCode(layout.blueprintCode)
+    local ok, err = blueprints and blueprints:Import(rec and rec.id or layout and layout.blueprintCode)
+    if not ok and err then ArchitectChat(err) end
+  end)
+
+  refreshBlueprint:SetScript("OnClick", function()
+    local layout = activeLayout()
+    local blueprints = B()
+    local rec = layout and blueprints and blueprints:GetByCode(layout.blueprintCode)
+    local ok, err = blueprints and blueprints:RequestContents(rec and rec.id or layout and layout.blueprintCode)
+    if not ok and err then ArchitectChat(err) end
+  end)
 
   function panel:CanvasViewKey()
     return tostring(self:GetActiveFloor() or "all")
@@ -1616,11 +1753,11 @@ function UIA:Create(parent)
     row:SetPoint("TOPRIGHT", changesList, "TOPRIGHT", 0, -((i - 1) * 21))
     row.name = FS(row, "GameFontNormalSmall")
     row.name:SetPoint("LEFT", 0, 0)
-    row.name:SetPoint("RIGHT", -36, 0)
+    row.name:SetPoint("RIGHT", -58, 0)
     row.name:SetWordWrap(false)
     row.cost = FS(row, "GameFontNormalSmall")
     row.cost:SetPoint("RIGHT", 0, 0)
-    row.cost:SetWidth(32)
+    row.cost:SetWidth(54)
     row.cost:SetJustifyH("RIGHT")
     TextColor(row.cost, "accent")
     panel.changeRows[i] = row
@@ -1900,7 +2037,13 @@ function UIA:Create(parent)
   end
 
   function panel:RefreshInspector()
+    local layout = activeLayout()
+    local isBlueprint = layout and layout.blueprintPreview == true
     local room = selectedRoom()
+    deleteRoom:SetShown(not isBlueprint)
+    rotateRoom:SetShown(not isBlueprint)
+    applyBlueprint:SetShown(isBlueprint)
+    refreshBlueprint:SetShown(isBlueprint)
     if not room then
       self.inspectorTitle:SetText("Room")
       self.roomName:SetText("")
@@ -1908,7 +2051,7 @@ function UIA:Create(parent)
       self.markRoom:Hide()
       self.markStatus:Hide()
       changesTitle:ClearAllPoints()
-      changesTitle:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -18)
+      changesTitle:SetPoint("TOPLEFT", isBlueprint and applyBlueprint or deleteRoom, "BOTTOMLEFT", 0, -18)
       DrawGrid(self.selectedPreview, self.selectedPreview.gridPool, 8, 6, 2, 0.035)
       DrawShape(self.selectedPreview, selectedTemplate(), self.selectedPreview.pool, true, 0.72)
       return
@@ -1919,11 +2062,13 @@ function UIA:Create(parent)
     self.roomStats:SetText("Cost: " .. tostring(sys:GetRoomCost(room)) ..
       "   Connections: " .. tostring(#(sys:GetRoomConnections(room) or {})) ..
       "   Rotation: " .. tostring(room.rotation or 0))
-    local capturedRoom = room.capture and room.capture.roomGUID ~= nil
+    local capturedRoom = not isBlueprint and room.capture and room.capture.roomGUID ~= nil
     self.markRoom:SetShown(capturedRoom)
     self.markStatus:SetShown(capturedRoom)
     changesTitle:ClearAllPoints()
-    if capturedRoom then
+    if isBlueprint then
+      changesTitle:SetPoint("TOPLEFT", applyBlueprint, "BOTTOMLEFT", 0, -18)
+    elseif capturedRoom then
       changesTitle:SetPoint("TOPLEFT", markRoom, "BOTTOMLEFT", 0, -14)
     else
       changesTitle:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -18)
@@ -1947,14 +2092,31 @@ function UIA:Create(parent)
   function panel:RefreshChanges()
     for _, row in ipairs(self.changeRows) do row:Hide() end
     local layout = activeLayout()
-    local rowLimit = max(1, floor(((self.changesList and self.changesList:GetHeight()) or 112) / 21))
+    if layout and layout.blueprintPreview then
+      local req = layout.blueprintRequirements or {}
+      changesTitle:SetText("Requirements  (" .. tostring(req.missingQty or 0) .. " missing)")
+      for i, item in ipairs(req.items or {}) do
+        local row = self.changeRows[i] or MakeChangeRow(i)
+        row.name:SetText((item.kind and (item.kind .. ": ") or "") .. tostring(item.name or "Requirement"))
+        row.cost:SetText(tostring(item.have or 0) .. "/" .. tostring(item.needed or 0))
+        local unavailable = item.invalid or (tonumber(item.missing) or 0) > 0
+        TextColor(row.cost, unavailable and "danger" or "success")
+        TextColor(row.name, unavailable and "text" or "textMuted")
+        row:Show()
+      end
+      self.changesList:SetHeight(max(1, #(req.items or {}) * 21))
+      return
+    end
+    changesTitle:SetText("House Changes")
     for i, room in ipairs((layout and layout.rooms) or {}) do
-      if i > rowLimit then break end
       local row = self.changeRows[i] or MakeChangeRow(i)
       row.name:SetText("+1 " .. (room.name or "Room"))
       row.cost:SetText(tostring(sys:GetRoomCost(room)))
+      TextColor(row.cost, "accent")
+      TextColor(row.name, "text")
       row:Show()
     end
+    self.changesList:SetHeight(max(1, #((layout and layout.rooms) or {}) * 21))
   end
 
   function panel:RefreshTotals()
@@ -1984,7 +2146,10 @@ function UIA:Create(parent)
     self.budgetText:SetText("Room Budget  " .. tostring(roomCost or 0) .. " / " .. tostring(limit or 0))
     local db = sys:GetDB()
     local last = db and db.capture and db.capture.last
-    if last then
+    if layout.blueprintPreview then
+      local req = layout.blueprintRequirements or {}
+      self.captureStatus:SetText("Blueprint room set  |  " .. tostring(req.missingQty or 0) .. " missing  |  Placement not exposed")
+    elseif last then
       local msg = "Last capture: " .. tostring(last.roomCount or 0) .. " rooms"
       if last.roomCount == 0 then msg = msg .. " (API probe only)" end
       self.captureStatus:SetText(msg)
@@ -2144,6 +2309,28 @@ function UIA:Create(parent)
   end)
 
   if NS.OnMessage then
+    NS.OnMessage("HOMEDECOR_ARCHITECT_BLUEPRINT_READY", function(layout, rec, err, reveal)
+      if err and DEFAULT_CHAT_FRAME then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor Architect:|r " .. tostring(err))
+      end
+      if not layout then return end
+      if reveal and NS.UI and NS.UI.MainFrame and NS.UI.MainFrame.SelectCategory then
+        NS.UI.MainFrame.SelectCategory("Architect")
+        NS.UI.MainFrame:Show()
+      end
+      if reveal and sharePopup then sharePopup:Hide() end
+      if reveal or panel:IsShown() then
+        panel.activeFloor = "all"
+        panel.hideOtherFloors = false
+        panel.selectedRoomID = layout.rooms and layout.rooms[1] and layout.rooms[1].id or nil
+        if panel.FitCanvasToLayout then panel:FitCanvasToLayout() end
+        refresh()
+      end
+      if DEFAULT_CHAT_FRAME then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor Architect:|r " .. tostring(rec and rec.name or "Blueprint") .. " room set is ready. Exact blueprint placement is not exposed by Blizzard.")
+      end
+    end)
+
     NS.OnMessage("HOMEDECOR_ARCHITECT_CAPTURED", function(layout, record)
       local rootUI = NS.UI
       if rootUI then
@@ -2171,6 +2358,11 @@ function UIA:Create(parent)
         DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor Architect:|r Captured " .. tostring(record and record.roomCount or #(layout.rooms or {})) .. " live rooms from the house layout.")
       end
     end)
+  end
+
+  local blueprints = B()
+  if blueprints and blueprints:IsClientSupported() then
+    blueprints:RequestCollection()
   end
 
   panel:SetScript("OnShow", function(self)

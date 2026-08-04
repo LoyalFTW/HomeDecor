@@ -40,6 +40,7 @@ local function getDB()
   if not ui.catalogMode then ui.catalogMode = "All Items" end
   if ui.detailsPanelOpen == nil then ui.detailsPanelOpen = true end
   if not ui.activeCategory then ui.activeCategory = "All" end
+  if ui.activeCategory == "Blueprints" then ui.activeCategory = "Architect" end
   if not ui.expanded then ui.expanded = {} end
   if ui.search == nil then ui.search = "" end
   if not ui.sortMode then ui.sortMode = "expAsc" end
@@ -718,7 +719,7 @@ function L:CreateShell()
     Shop = "Decor from store packs, editions, and preorder bonuses.",
     Professions = "Decor crafted or gathered through professions.",
     ["PvP"] = "Decor tied to PvP sources.",
-    Architect = "Plan rooms, decor budgets, and reusable furnishing ideas.",
+    Architect = "Plan rooms, inspect blueprint codes, track requirements, and import or export layouts.",
     Events = "Open active and seasonal event decor.",
     ["Decor Tracker"] = "Open your decor tracker.",
     ["Gather Tracker"] = "Open your gather tracker.",
@@ -1494,6 +1495,7 @@ function L:CreateShell()
     if UpdateSortVisibility then UpdateSortVisibility() end
     if UpdateRightToolbarVisibility then UpdateRightToolbarVisibility() end
   end
+  f.SelectCategory = SelectCategory
 
   for i = 1, #left.buttons do
     local b = left.buttons[i]
@@ -1891,7 +1893,7 @@ function L:CreateShell()
     if q == "all" or q == "everything" or q == "all sources" then return "All" end
     if q == "event" or q == "events" then return "Events" end
     if q == "pricing" or q == "decor pricing" or q == "price" then return "Decor Pricing" end
-    if q == "architect" or q == "planner" or q == "blueprint" or q == "layouts" then return "Architect" end
+    if q == "architect" or q == "planner" or q == "layouts" or q == "blueprint" or q == "blueprints" or q == "import" or q == "export" then return "Architect" end
     if q == "alts" or q == "alts professions" or q == "professions alts" then return "Alts Professions" end
     if q == "endeavor" or q == "endeavors" then return "Endeavors" end
     return nil
