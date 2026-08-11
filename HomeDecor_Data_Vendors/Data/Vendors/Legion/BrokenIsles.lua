@@ -9,6 +9,19 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
 
   {
     source={
+      id=89939,
+      type="vendor",
+      faction="Neutral",
+      zone="Azsuna",
+      worldmap="630:4780:2360"
+    },
+    items={
+      {decorID=2530, source={type="vendor", itemID=246864, currency="1000", currencytype=1220}, requirements={quest={id=37470}}},
+    }
+  },
+
+  {
+    source={
       id=93971,
       type="vendor",
       faction="Neutral",
@@ -270,7 +283,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="717:5876:3269"
     },
     items={
---       {decorID=5118, source={type="vendor", itemID=248941}, colors={"Copper","Teal"}, budgetCost=3, size="Medium"}, -- DNT / do not use
+       {decorID=5118, source={type="vendor", itemID=248941}, colors={"Copper","Teal"}, budgetCost=3, size="Medium"},
       {decorID=5120, source={type="vendor", itemID=248943, currency="1000", currencytype=1220}, colors={"Dark Brown","Forest Green","Tan"}, budgetCost=3, size="Medium"},
       {decorID=5127, source={type="vendor", itemID=248959, currency="500", currencytype=1220}, colors={"Black"}, budgetCost=3, size="Large"},
       {decorID=5292, source={type="vendor", itemID=249004, currency="500", currencytype=1220}, colors={"Forest Green","Green","Teal"}, budgetCost=5, size="Large"},

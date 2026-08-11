@@ -729,6 +729,20 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
 
   {
     source={
+      id=262726,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap=""
+    },
+    items={
+      {decorID=26492, source={type="vendor", itemID=278696}, budgetCost=1, size="Small"},
+      {decorID=26494, source={type="vendor", itemID=278701}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
       id=265551,
       type="vendor",
       faction="Neutral",
@@ -736,13 +750,13 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap="2351:5420:5597"
     },
     items={
---       {decorID=23179, source={type="vendor", itemID=276671}, budgetCost=1, size="Medium"}, -- HIDDENCATALOG
---       {decorID=23180, source={type="vendor", itemID=276656}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
---       {decorID=23183, source={type="vendor", itemID=276665}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
---       {decorID=23548, source={type="vendor", itemID=276654}, size="Small"}, -- HIDDENCATALOG
---       {decorID=23549, source={type="vendor", itemID=276677}, size="Small"}, -- HIDDENCATALOG
---       {decorID=23550, source={type="vendor", itemID=276673}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
---       {decorID=23551, source={type="vendor", itemID=276675}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
+       {decorID=23179, source={type="vendor", itemID=276671}, budgetCost=1, size="Medium"},
+       {decorID=23180, source={type="vendor", itemID=276656}, budgetCost=5, size="Large"},
+       {decorID=23183, source={type="vendor", itemID=276665}, budgetCost=3, size="Large"},
+       {decorID=23548, source={type="vendor", itemID=276654}, size="Small"},
+       {decorID=23549, source={type="vendor", itemID=276677}, size="Small"},
+       {decorID=23550, source={type="vendor", itemID=276673}, budgetCost=1, size="Small"},
+       {decorID=23551, source={type="vendor", itemID=276675}, budgetCost=1, size="Small"},
     }
   },
 
@@ -768,13 +782,13 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap="2351:5540:5752"
     },
     items={
---       {decorID=25101, source={type="vendor", itemID=277142, currency="500000", currencytype="money"}, budgetCost=5, size="Small"}, -- HIDDENCATALOG
---       {decorID=25102, source={type="vendor", itemID=277144, currency="500000", currencytype="money"}, budgetCost=5, size="Small"}, -- HIDDENCATALOG
---       {decorID=25103, source={type="vendor", itemID=277149, currency="500000", currencytype="money"}, budgetCost=5, size="Small"}, -- HIDDENCATALOG
---       {decorID=25105, source={type="vendor", itemID=277138, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"}, -- HIDDENCATALOG
---       {decorID=25106, source={type="vendor", itemID=277160, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"}, -- HIDDENCATALOG
---       {decorID=25121, source={type="vendor", itemID=277121, currency="500000", currencytype="money"}, budgetCost=5, size="Small"}, -- HIDDENCATALOG
---       {decorID=25122, source={type="vendor", itemID=277163, currency="500000", currencytype="money"}, budgetCost=5, size="Small"}, -- HIDDENCATALOG
+       {decorID=25101, source={type="vendor", itemID=277142, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
+       {decorID=25102, source={type="vendor", itemID=277144, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
+       {decorID=25103, source={type="vendor", itemID=277149, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
+       {decorID=25105, source={type="vendor", itemID=277138, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"},
+       {decorID=25106, source={type="vendor", itemID=277160, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"},
+       {decorID=25121, source={type="vendor", itemID=277121, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
+       {decorID=25122, source={type="vendor", itemID=277163, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
     }
   },
 
@@ -787,14 +801,14 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap="2351:5487:5730"
     },
     items={
---       {decorID=26364, source={type="vendor", itemID=280244}, budgetCost=1, size="Tiny"}, -- HIDDENCATALOG
+       {decorID=26364, source={type="vendor", itemID=280244}, budgetCost=1, size="Tiny"},
 --       {decorID=26367, source={type="vendor", itemID=280873}, budgetCost=1, size="Medium"}, -- HIDDENCATALOG
---       {decorID=26370, source={type="vendor", itemID=280230}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
---       {decorID=26373, source={type="vendor", itemID=280242}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
---       {decorID=26389, source={type="vendor", itemID=280227}, budgetCost=5, size="Medium"}, -- HIDDENCATALOG
---       {decorID=26478, source={type="vendor", itemID=280236}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
---       {decorID=26482, source={type="vendor", itemID=280221}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
---       {decorID=26871, source={type="vendor", itemID=280215}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
+       {decorID=26370, source={type="vendor", itemID=280230}, budgetCost=3, size="Large"},
+       {decorID=26373, source={type="vendor", itemID=280242}, budgetCost=3, size="Medium"},
+       {decorID=26389, source={type="vendor", itemID=280227}, budgetCost=5, size="Medium"},
+       {decorID=26478, source={type="vendor", itemID=280236}, budgetCost=5, size="Large"},
+       {decorID=26482, source={type="vendor", itemID=280221}, budgetCost=3, size="Medium"},
+       {decorID=26871, source={type="vendor", itemID=280215}, budgetCost=5, size="Large"},
 --       {decorID=27044, source={type="vendor", itemID=280846}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
     }
   },
@@ -808,15 +822,15 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap="2351:5489:5728"
     },
     items={
---       {decorID=26617, source={type="vendor", itemID=280253}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
---       {decorID=26618, source={type="vendor", itemID=280255}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
---       {decorID=26619, source={type="vendor", itemID=280251}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
---       {decorID=26785, source={type="vendor", itemID=280259}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
---       {decorID=26786, source={type="vendor", itemID=280261}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
---       {decorID=26787, source={type="vendor", itemID=280263}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
---       {decorID=26788, source={type="vendor", itemID=280267}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
---       {decorID=26938, source={type="vendor", itemID=280269}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
---       {decorID=26939, source={type="vendor", itemID=280275}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
+       {decorID=26617, source={type="vendor", itemID=280253}, budgetCost=3, size="Large"},
+       {decorID=26618, source={type="vendor", itemID=280255}, budgetCost=1, size="Small"},
+       {decorID=26619, source={type="vendor", itemID=280251}, budgetCost=1, size="Small"},
+       {decorID=26785, source={type="vendor", itemID=280259}, budgetCost=1, size="Small"},
+       {decorID=26786, source={type="vendor", itemID=280261}, budgetCost=5, size="Large"},
+       {decorID=26787, source={type="vendor", itemID=280263}, budgetCost=3, size="Medium"},
+       {decorID=26788, source={type="vendor", itemID=280267}, budgetCost=5, size="Large"},
+       {decorID=26938, source={type="vendor", itemID=280269}, budgetCost=1, size="Small"},
+       {decorID=26939, source={type="vendor", itemID=280275}, budgetCost=3, size="Large"},
 --       {decorID=27167, source={type="vendor", itemID=280513}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
     }
   },
@@ -830,7 +844,7 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap="2351:5239:5428"
     },
     items={
---       {decorID=25675, source={type="vendor", itemID=280335}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+       {decorID=25675, source={type="vendor", itemID=280335}, budgetCost=3, size="Medium"},
     }
   },
 
