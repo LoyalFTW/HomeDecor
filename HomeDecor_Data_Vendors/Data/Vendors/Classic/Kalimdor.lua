@@ -92,12 +92,12 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
     source={
       id=50483,
       type="vendor",
-      faction="Neutral",
+      faction="Horde",
       zone="Thunder Bluff",
-      worldmap=""
+      worldmap="88:4660:5000"
     },
     items={
---       {decorID=1281, source={type="vendor", itemID=243335, currency="1600000", currencytype="money"}, requirements={quest={id=26397}}, colors={"Copper","Light Brown","Navy Blue"}, budgetCost=3, size="Medium"}, -- missing verified worldmap
+      {decorID=1281, source={type="vendor", itemID=243335, currency="1600000", currencytype="money"}, requirements={quest={id=26397}}, colors={"Copper","Light Brown","Navy Blue"}, budgetCost=3, size="Medium"},
     }
   },
 

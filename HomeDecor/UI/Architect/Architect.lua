@@ -1121,14 +1121,20 @@ function UIA:Create(parent)
   changesTitle:SetText("House Changes")
   TextColor(changesTitle, "accent")
 
-  local changesScroll = CreateFrame("ScrollFrame", nil, right, "UIPanelScrollFrameTemplate")
+  local changesScroll = CreateFrame("ScrollFrame", nil, right, "ScrollFrameTemplate")
   changesScroll:SetPoint("TOPLEFT", changesTitle, "BOTTOMLEFT", 0, -8)
-  changesScroll:SetPoint("BOTTOMRIGHT", right, "BOTTOMRIGHT", -30, 12)
+  changesScroll:SetPoint("BOTTOMRIGHT", right, "BOTTOMRIGHT", -24, 12)
+  changesScroll:EnableMouseWheel(true)
+  if Controls() and Controls().SkinScrollFrame then Controls():SkinScrollFrame(changesScroll) end
   local changesList = CreateFrame("Frame", nil, changesScroll)
   changesList:SetSize(220, 1)
   changesScroll:SetScrollChild(changesList)
   changesScroll:SetScript("OnSizeChanged", function(_, width)
     changesList:SetWidth(max(1, (width or 220) - 2))
+  end)
+  changesScroll:SetScript("OnMouseWheel", function(self, delta)
+    local nextOffset = (self:GetVerticalScroll() or 0) - ((tonumber(delta) or 0) * 42)
+    self:SetVerticalScroll(max(0, min(self:GetVerticalScrollRange() or 0, nextOffset)))
   end)
   panel.changesScroll = changesScroll
   panel.changesList = changesList
@@ -1166,10 +1172,11 @@ function UIA:Create(parent)
   shareEditor:SetPoint("BOTTOMRIGHT", sharePopup, "BOTTOMRIGHT", -14, 48)
   Backdrop(shareEditor, T.row or T.panel, T.border)
 
-  local shareScroll = CreateFrame("ScrollFrame", nil, shareEditor, "UIPanelScrollFrameTemplate")
+  local shareScroll = CreateFrame("ScrollFrame", nil, shareEditor, "ScrollFrameTemplate")
   shareScroll:SetPoint("TOPLEFT", 7, -7)
-  shareScroll:SetPoint("BOTTOMRIGHT", -27, 7)
+  shareScroll:SetPoint("BOTTOMRIGHT", -21, 7)
   shareScroll:EnableMouseWheel(true)
+  if Controls() and Controls().SkinScrollFrame then Controls():SkinScrollFrame(shareScroll) end
 
   local shareBox = CreateFrame("EditBox", nil, shareScroll)
   shareBox:SetMultiLine(true)
@@ -1760,6 +1767,10 @@ function UIA:Create(parent)
     row.cost:SetWidth(54)
     row.cost:SetJustifyH("RIGHT")
     TextColor(row.cost, "accent")
+    row.sectionBG = row:CreateTexture(nil, "BACKGROUND")
+    row.sectionBG:SetAllPoints()
+    row.sectionBG:SetColorTexture(0.30, 0.42, 0.58, 0.13)
+    row.sectionBG:Hide()
     panel.changeRows[i] = row
     return row
   end
@@ -2094,26 +2105,61 @@ function UIA:Create(parent)
     local layout = activeLayout()
     if layout and layout.blueprintPreview then
       local req = layout.blueprintRequirements or {}
-      changesTitle:SetText("Requirements  (" .. tostring(req.missingQty or 0) .. " missing)")
-      for i, item in ipairs(req.items or {}) do
+      changesTitle:SetText("House Changes  (" .. tostring(req.missingQty or 0) .. " missing)")
+      local displayRows = {}
+      for _, group in ipairs(req.groups or {}) do
+        displayRows[#displayRows + 1] = { section = true, group = group }
+        for _, item in ipairs(group.items or {}) do displayRows[#displayRows + 1] = { item = item } end
+      end
+      if #displayRows == 0 then
+        for _, item in ipairs(req.items or {}) do displayRows[#displayRows + 1] = { item = item } end
+      end
+      for i, display in ipairs(displayRows) do
         local row = self.changeRows[i] or MakeChangeRow(i)
-        row.name:SetText((item.kind and (item.kind .. ": ") or "") .. tostring(item.name or "Requirement"))
-        row.cost:SetText(tostring(item.have or 0) .. "/" .. tostring(item.needed or 0))
-        local unavailable = item.invalid or (tonumber(item.missing) or 0) > 0
-        TextColor(row.cost, unavailable and "danger" or "success")
-        TextColor(row.name, unavailable and "text" or "textMuted")
+        row:ClearAllPoints()
+        row:SetPoint("TOPLEFT", changesList, "TOPLEFT", 0, -((i - 1) * 23))
+        row:SetPoint("TOPRIGHT", changesList, "TOPRIGHT", 0, -((i - 1) * 23))
+        row.name:ClearAllPoints()
+        row.name:SetPoint("RIGHT", -58, 0)
+        if display.section then
+          local group = display.group
+          local hasProblem = (tonumber(group.missingQty) or 0) > 0 or (tonumber(group.invalidCount) or 0) > 0
+          row.name:SetPoint("LEFT", 5, 0)
+          row.name:SetText(tostring(group.label or "Requirements") .. "  (" .. tostring(group.total or 0) .. ")")
+          row.cost:SetText((tonumber(group.missingQty) or 0) > 0 and (tostring(group.missingQty) .. " missing") or ((tonumber(group.invalidCount) or 0) > 0 and "Locked" or "Ready"))
+          TextColor(row.name, hasProblem and "danger" or "accent")
+          TextColor(row.cost, hasProblem and "danger" or "success")
+          row.sectionBG:Show()
+        else
+          local item = display.item or {}
+          row.name:SetPoint("LEFT", 12, 0)
+          row.name:SetText(tostring(item.name or "Requirement"))
+          row.cost:SetText(item.invalid and "Locked" or (tostring(item.have or 0) .. "/" .. tostring(item.needed or 0)))
+          local unavailable = item.invalid or (tonumber(item.missing) or 0) > 0
+          TextColor(row.cost, unavailable and "danger" or "success")
+          TextColor(row.name, unavailable and "text" or "textMuted")
+          row.sectionBG:Hide()
+        end
         row:Show()
       end
-      self.changesList:SetHeight(max(1, #(req.items or {}) * 21))
+      self.changesList:SetHeight(max(1, #displayRows * 23))
+      self.changesScroll:SetVerticalScroll(0)
       return
     end
     changesTitle:SetText("House Changes")
     for i, room in ipairs((layout and layout.rooms) or {}) do
       local row = self.changeRows[i] or MakeChangeRow(i)
+      row:ClearAllPoints()
+      row:SetPoint("TOPLEFT", changesList, "TOPLEFT", 0, -((i - 1) * 21))
+      row:SetPoint("TOPRIGHT", changesList, "TOPRIGHT", 0, -((i - 1) * 21))
+      row.name:ClearAllPoints()
+      row.name:SetPoint("LEFT", 0, 0)
+      row.name:SetPoint("RIGHT", -58, 0)
       row.name:SetText("+1 " .. (room.name or "Room"))
       row.cost:SetText(tostring(sys:GetRoomCost(room)))
       TextColor(row.cost, "accent")
       TextColor(row.name, "text")
+      row.sectionBG:Hide()
       row:Show()
     end
     self.changesList:SetHeight(max(1, #((layout and layout.rooms) or {}) * 21))

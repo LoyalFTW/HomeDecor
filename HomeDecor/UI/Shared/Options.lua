@@ -1123,6 +1123,91 @@ function Options:Ensure()
   cbHud:SetPoint("TOPLEFT", 32, ey)
   ey = ey - 34
 
+  local clockHeader = scrollChild:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  clockHeader:SetPoint("TOPLEFT", 16, ey)
+  clockHeader:SetText(L("OPT_EDITOR_CLOCK"))
+  ey = ey - 24
+
+  local cbClock = mkCheckbox(scrollChild, L("OPT_EDITOR_CLOCK_ENABLE"),
+    L("OPT_EDITOR_CLOCK_ENABLE_TIP"))
+  cbClock:SetPoint("TOPLEFT", 32, ey)
+  ey = ey - 34
+
+  local clockDisplayLabel = scrollChild:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  clockDisplayLabel:SetPoint("TOPLEFT", 32, ey)
+  clockDisplayLabel:SetText(L("OPT_EDITOR_CLOCK_DISPLAY"))
+  local ddClockDisplay = mkDropdown(scrollChild, 125)
+  ddClockDisplay:SetPoint("LEFT", clockDisplayLabel, "RIGHT", 2, -3)
+  ey = ey - 34
+
+  local clockSourceLabel = scrollChild:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  clockSourceLabel:SetPoint("TOPLEFT", 32, ey)
+  clockSourceLabel:SetText(L("OPT_EDITOR_CLOCK_SOURCE"))
+  local ddClockSource = mkDropdown(scrollChild, 125)
+  ddClockSource:SetPoint("LEFT", clockSourceLabel, "RIGHT", 2, -3)
+  ey = ey - 34
+
+  local clockFormatLabel = scrollChild:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  clockFormatLabel:SetPoint("TOPLEFT", 32, ey)
+  clockFormatLabel:SetText(L("OPT_EDITOR_CLOCK_FORMAT"))
+  local ddClockFormat = mkDropdown(scrollChild, 125)
+  ddClockFormat:SetPoint("LEFT", clockFormatLabel, "RIGHT", 2, -3)
+  ey = ey - 36
+
+  local resetClockButton = CreateFrame("Button", nil, scrollChild, "UIPanelButtonTemplate")
+  resetClockButton:SetSize(140, 22)
+  resetClockButton:SetPoint("TOPLEFT", 32, ey)
+  resetClockButton:SetText(L("OPT_EDITOR_CLOCK_RESET"))
+
+  local resetClockPositionButton = CreateFrame("Button", nil, scrollChild, "UIPanelButtonTemplate")
+  resetClockPositionButton:SetSize(120, 22)
+  resetClockPositionButton:SetPoint("LEFT", resetClockButton, "RIGHT", 8, 0)
+  resetClockPositionButton:SetText(L("OPT_EDITOR_CLOCK_RESET_POSITION"))
+  ey = ey - 38
+
+  local function refreshClock()
+    local clock = NS.Systems and NS.Systems.HouseEditorClock
+    if clock and clock.Refresh then clock:Refresh() end
+  end
+
+  local function initClockDropdown(dropdown, field, entries)
+    _G.UIDropDownMenu_Initialize(dropdown, function()
+      local prof = ensureProfile()
+      if not prof then return end
+      prof.houseEditorClock = prof.houseEditorClock or {}
+      for _, entry in ipairs(entries) do
+        local info = _G.UIDropDownMenu_CreateInfo()
+        info.text = entry.label
+        info.value = entry.value
+        info.checked = prof.houseEditorClock[field] == entry.value
+        info.func = function()
+          prof.houseEditorClock[field] = entry.value
+          _G.UIDropDownMenu_SetText(dropdown, entry.label)
+          refreshClock()
+        end
+        _G.UIDropDownMenu_AddButton(info)
+      end
+    end)
+  end
+
+  local clockDisplayEntries = {
+    { value = "clock", label = L("OPT_EDITOR_CLOCK_CURRENT") },
+    { value = "session", label = L("OPT_EDITOR_CLOCK_SESSION") },
+  }
+  local clockSourceEntries = {
+    { value = "auto", label = L("OPT_EDITOR_CLOCK_SOURCE_AUTO") },
+    { value = "local", label = L("OPT_EDITOR_CLOCK_SOURCE_LOCAL") },
+    { value = "realm", label = L("OPT_EDITOR_CLOCK_SOURCE_REALM") },
+  }
+  local clockFormatEntries = {
+    { value = "auto", label = L("OPT_EDITOR_CLOCK_FORMAT_AUTO") },
+    { value = "12", label = L("OPT_EDITOR_CLOCK_FORMAT_12") },
+    { value = "24", label = L("OPT_EDITOR_CLOCK_FORMAT_24") },
+  }
+  initClockDropdown(ddClockDisplay, "display", clockDisplayEntries)
+  initClockDropdown(ddClockSource, "timeSource", clockSourceEntries)
+  initClockDropdown(ddClockFormat, "timeFormat", clockFormatEntries)
+
   
   local clipHeader = scrollChild:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   clipHeader:SetPoint("TOPLEFT", 16, ey)
@@ -1542,6 +1627,31 @@ function Options:Ensure()
 
     cbEditorOn:SetChecked(db.on ~= false)
     cbHud:SetChecked(db.hud ~= false)
+    prof.houseEditorClock = prof.houseEditorClock or {}
+    local clockDB = prof.houseEditorClock
+    cbClock:SetChecked(clockDB.enabled ~= false)
+
+    local function setClockDropdownText(dropdown, value, entries)
+      for _, entry in ipairs(entries) do
+        if entry.value == value then
+          _G.UIDropDownMenu_SetText(dropdown, entry.label)
+          return
+        end
+      end
+      _G.UIDropDownMenu_SetText(dropdown, entries[1].label)
+    end
+    setClockDropdownText(ddClockDisplay, clockDB.display or "clock", clockDisplayEntries)
+    setClockDropdownText(ddClockSource, clockDB.timeSource or "auto", clockSourceEntries)
+    setClockDropdownText(ddClockFormat, clockDB.timeFormat or "auto", clockFormatEntries)
+    if clockDB.enabled == false then
+      _G.UIDropDownMenu_DisableDropDown(ddClockDisplay)
+      _G.UIDropDownMenu_DisableDropDown(ddClockSource)
+      _G.UIDropDownMenu_DisableDropDown(ddClockFormat)
+    else
+      _G.UIDropDownMenu_EnableDropDown(ddClockDisplay)
+      _G.UIDropDownMenu_EnableDropDown(ddClockSource)
+      _G.UIDropDownMenu_EnableDropDown(ddClockFormat)
+    end
     cbClipboard:SetChecked(
       db.clipboard ~= false and db.batchPlace ~= false
       and db.lock ~= false and db.rotPanel ~= false
@@ -1643,6 +1753,33 @@ function Options:Ensure()
       if val then EM.HUD.Boot(); EM.HUD.Refresh()
       else        EM.HUD.Destroy() end
     end
+  end)
+
+  cbClock:SetScript("OnClick", function(self)
+    local prof = ensureProfile()
+    if not prof then return end
+    prof.houseEditorClock = prof.houseEditorClock or {}
+    prof.houseEditorClock.enabled = self:GetChecked() and true or false
+    if prof.houseEditorClock.enabled then
+      _G.UIDropDownMenu_EnableDropDown(ddClockDisplay)
+      _G.UIDropDownMenu_EnableDropDown(ddClockSource)
+      _G.UIDropDownMenu_EnableDropDown(ddClockFormat)
+    else
+      _G.UIDropDownMenu_DisableDropDown(ddClockDisplay)
+      _G.UIDropDownMenu_DisableDropDown(ddClockSource)
+      _G.UIDropDownMenu_DisableDropDown(ddClockFormat)
+    end
+    refreshClock()
+  end)
+
+  resetClockButton:SetScript("OnClick", function()
+    local clock = NS.Systems and NS.Systems.HouseEditorClock
+    if clock and clock.ResetTotal then clock:ResetTotal() end
+  end)
+
+  resetClockPositionButton:SetScript("OnClick", function()
+    local clock = NS.Systems and NS.Systems.HouseEditorClock
+    if clock and clock.ResetPosition then clock:ResetPosition() end
   end)
 
   cbClipboard:SetScript("OnClick", function(self)

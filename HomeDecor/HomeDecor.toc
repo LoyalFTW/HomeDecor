@@ -1,4 +1,4 @@
-## Interface: 120005, 120007
+## Interface: 120007, 120100
 ## Title: Home|cffff7d0aDecor
 ## Author: Jay
 ## Version: @project-version@
@@ -45,6 +45,7 @@ Changelog.lua
 Systems\CatalogAvailability.lua
 Systems\NPCNames.lua
 Systems\HousingBootstrap.lua
+Systems\HouseEditorClock.lua
 Systems\EditMode\EditMode_API.lua
 Systems\EditMode\EditMode_Settings.lua
 Systems\EditMode\EditMode_Clipboard.lua
@@ -91,6 +92,7 @@ Systems\Vendor\VendorChecks.lua
 Systems\Vendor\VendorNPCTooltip.lua
 Systems\Endeavors.lua
 Systems\Architect.lua
+Systems\Blueprints.lua
 Systems\RoomNameNotices.lua
 UI\Endeavors\Endeavors.lua
 UI\Statistics\Statistics.lua

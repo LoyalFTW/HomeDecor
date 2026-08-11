@@ -241,6 +241,13 @@ local defaults = {
       },
     },
 
+    houseEditorClock = {
+      enabled = true,
+      display = "clock",
+      timeSource = "auto",
+      timeFormat = "auto",
+    },
+
     quickBar = {
       enabled  = true,
       page     = 1,
@@ -290,6 +297,9 @@ local defaults = {
   },
 
   global = {
+    houseEditorClock = {
+      totalSeconds = 0,
+    },
     changelog = {
       seenVersion = "",
     },
@@ -461,6 +471,10 @@ function Addon:OnInitialize()
 end
 
 function Addon:OnEnable()
+  if NS.Systems.HouseEditorClock and NS.Systems.HouseEditorClock.Init then
+    NS.Systems.HouseEditorClock:Init()
+  end
+
   
   if NS.Systems.EditMode and NS.Systems.EditMode.Init then
     NS.Systems.EditMode.Init()

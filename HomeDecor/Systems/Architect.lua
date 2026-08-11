@@ -843,6 +843,10 @@ local function findTemplate(value)
   end
 end
 
+function Architect:GetRoomTemplate(value)
+  return findTemplate(value)
+end
+
 local function baseRoomName(name)
   name = tostring(name or "")
   return (name:gsub("^Floor%s+%d+%s+%-%s+", ""))

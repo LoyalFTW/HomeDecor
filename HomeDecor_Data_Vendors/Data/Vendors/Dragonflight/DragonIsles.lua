@@ -13,30 +13,15 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Dragonscale Basecamp",
-      worldmap=""
+      worldmap="2022:4780:8200"
     },
     items={
---       {decorID=716, source={type="vendor", itemID=245285, currency="100", currencytype=2003}, requirements={rep="true"}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"}, -- missing verified worldmap
+      {decorID=716, source={type="vendor", itemID=245285, currency="100", currencytype=2003}, requirements={rep="true"}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
       {decorID=717, source={type="vendor", itemID=245287, currency="250", currencytype=2003}, colors={"Brown","Copper","Dark Brown"}, budgetCost=5, size="Large"},
       {decorID=718, source={type="vendor", itemID=245288, currency="250", currencytype=2003}, colors={"Brown","Copper","Dark Brown"}, budgetCost=3, size="Medium"},
---       {decorID=720, source={type="vendor", itemID=238975, currency="750", currencytype=2003}, requirements={rep="true"}, colors={"Dark Brown","Orange","Teal"}, budgetCost=1, size="Small"}, -- missing verified worldmap
---       {decorID=1177, source={type="vendor", itemID=245283, currency="400", currencytype=2003}, requirements={rep="true"}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Medium"}, -- missing verified worldmap
+      {decorID=720, source={type="vendor", itemID=238975, currency="750", currencytype=2003}, requirements={rep="true"}, colors={"Dark Brown","Orange","Teal"}, budgetCost=1, size="Small"},
+      {decorID=1177, source={type="vendor", itemID=245283, currency="400", currencytype=2003}, requirements={rep="true"}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Medium"},
       {decorID=1181, source={type="vendor", itemID=245286, currency="250", currencytype=2003}, colors={"Bronze","Brown","Dark Brown"}, budgetCost=5, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=189226,
-      type="vendor",
-      faction="Neutral",
-      zone="Dragonscale Basecamp",
-      worldmap=""
-    },
-    items={
---       {decorID=716, source={type="vendor", itemID=245285, currency="100", currencytype=2003}, requirements={rep="true"}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"}, -- missing verified worldmap
---       {decorID=720, source={type="vendor", itemID=238975, currency="750", currencytype=2003}, requirements={rep="true"}, colors={"Dark Brown","Orange","Teal"}, budgetCost=1, size="Small"}, -- missing verified worldmap
---       {decorID=1177, source={type="vendor", itemID=245283, currency="400", currencytype=2003}, requirements={rep="true"}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Medium"}, -- missing verified worldmap
     }
   },
 
@@ -52,6 +37,21 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       {decorID=717, source={type="vendor", itemID=245287, currency="250", currencytype=2003}, colors={"Brown","Copper","Dark Brown"}, budgetCost=5, size="Large"},
       {decorID=718, source={type="vendor", itemID=245288, currency="250", currencytype=2003}, colors={"Brown","Copper","Dark Brown"}, budgetCost=3, size="Medium"},
       {decorID=1181, source={type="vendor", itemID=245286, currency="250", currencytype=2003}, colors={"Bronze","Brown","Dark Brown"}, budgetCost=5, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=189226,
+      type="vendor",
+      faction="Neutral",
+      zone="Dragonscale Basecamp",
+      worldmap="2022:4710:8260"
+    },
+    items={
+      {decorID=716, source={type="vendor", itemID=245285, currency="100", currencytype=2003}, requirements={rep="true"}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=720, source={type="vendor", itemID=238975, currency="750", currencytype=2003}, requirements={rep="true"}, colors={"Dark Brown","Orange","Teal"}, budgetCost=1, size="Small"},
+      {decorID=1177, source={type="vendor", itemID=245283, currency="400", currencytype=2003}, requirements={rep="true"}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Medium"},
     }
   },
 
