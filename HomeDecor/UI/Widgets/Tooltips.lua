@@ -339,10 +339,11 @@ local function questTitleWarn()
   end
 end
 
-function TT:Attach(frame, data)
+function TT:Attach(frame, data, context)
   if not frame or not data then return end
   frame:EnableMouse(true)
   frame._hdTTData = data
+  frame._hdTTContext = context
 
   if frame.__hdTTScripts then return end
   frame.__hdTTScripts = true
@@ -354,6 +355,24 @@ function TT:Attach(frame, data)
 
     local s = d.source or {}
     local t = s.type
+    local ctx = frame._hdTTContext
+    local Nav = NS.UI and NS.UI.Navigation
+    local canWaypoint = not (Nav and Nav.CanResolve) or Nav:CanResolve(d, ctx)
+
+    if t == "vendor" and not canWaypoint and DEFAULT_CHAT_FRAME and not frame.__hdWpDebugShown then
+      frame.__hdWpDebugShown = true
+      local csrc = ctx and ctx.source
+      DEFAULT_CHAT_FRAME:AddMessage(
+        "|cffffd24aHomeDecor:|r [debug] tooltip decorID=" .. tostring(d.decorID)
+        .. " itemID=" .. tostring(d.itemID)
+        .. " item.source.worldmap=" .. tostring(s.worldmap)
+        .. " item._navVendor=" .. tostring(d._navVendor ~= nil)
+        .. " item.vendor=" .. tostring(d.vendor ~= nil)
+        .. " ctx=" .. tostring(ctx ~= nil)
+        .. " ctx.worldmap=" .. tostring(ctx and ctx.worldmap)
+        .. " ctx.source.worldmap=" .. tostring(csrc and csrc.worldmap)
+      )
+    end
 
     if d.type == "vendor" and d.items then
       GameTooltip:AddLine(d.title or L["VENDOR"], 1, 1, 1)
@@ -372,7 +391,7 @@ function TT:Attach(frame, data)
         label("[Vendor Item]")
         GameTooltip:AddLine(" ")
         actionLine(L["HINT_VIEW_ITEM"])
-        actionLine(L["HINT_VENDOR_LOCATION"])
+        if canWaypoint then actionLine(L["HINT_VENDOR_LOCATION"]) end
 
         local hasAchReq = false
         if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
@@ -414,7 +433,7 @@ function TT:Attach(frame, data)
       label("[PvP]")
       GameTooltip:AddLine(" ")
       actionLine(L["HINT_VIEW_ITEM"])
-      actionLine(L["HINT_VENDOR_LOCATION"])
+      if canWaypoint then actionLine(L["HINT_VENDOR_LOCATION"]) end
 
       if d.requirements and d.requirements.achievement and d.requirements.achievement.id then
         actionLine(L["HINT_CTRL_ACHIEVEMENT"])
@@ -459,7 +478,7 @@ function TT:Attach(frame, data)
         label("[Achievement]")
         GameTooltip:AddLine(" ")
         actionLine(L["HINT_VIEW_ITEM"])
-        actionLine(L["HINT_VENDOR_LOCATION"])
+        if canWaypoint then actionLine(L["HINT_VENDOR_LOCATION"]) end
         actionLine(L["HINT_CTRL_ACHIEVEMENT"])
         actionLine(L["HINT_ALT_WOWHEAD"])
         addCommonKeys(d, true)
@@ -471,7 +490,7 @@ function TT:Attach(frame, data)
         label("[Quest]")
         GameTooltip:AddLine(" ")
         actionLine(L["HINT_VIEW_ITEM"])
-        actionLine(L["HINT_VENDOR_LOCATION"])
+        if canWaypoint then actionLine(L["HINT_VENDOR_LOCATION"]) end
         actionLine(L["HINT_ALT_WOWHEAD"])
         questTitleWarn()
         addCommonKeys(d, true)

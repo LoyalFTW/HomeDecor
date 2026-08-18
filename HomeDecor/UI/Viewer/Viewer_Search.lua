@@ -257,6 +257,75 @@ local function AttachVendorCtx(it, vendor)
   return it
 end
 
+local function IsNestedCategory(tbl)
+  if type(tbl) ~= "table" then return false end
+  for k, v in pairs(tbl) do
+    if type(v) == "table" and type(k) == "string" then
+      for _, innerV in pairs(v) do
+        if type(innerV) == "table" then
+          return true
+        end
+      end
+    end
+  end
+  return false
+end
+
+local function FindManyByDecorID(decorIDSet)
+  local out = {}
+  if type(decorIDSet) ~= "table" or not next(decorIDSet) then return out end
+  if DataLoader and DataLoader.EnsureAllCatalogData then
+    DataLoader:EnsureAllCatalogData()
+  end
+
+  for categoryName, category in pairs(NS.Data or {}) do
+    if categoryName ~= "Prof_Reagents" and categoryName ~= "DropSources" and IsNestedCategory(category) then
+      for _, expansions in pairs(category or {}) do
+        if type(expansions) == "table" then
+          for _, entries in pairs(expansions or {}) do
+            if type(entries) == "table" then
+              for _, it in ipairs(entries) do
+                if type(it) == "table" and it.source and it.source.type == "vendor" and type(it.items) == "table" then
+                  local vSlim
+                  for _, vit in ipairs(it.items) do
+                    local vd = type(vit) == "table" and tonumber(vit.decorID)
+                    if vd and decorIDSet[vd] and not out[vd] then
+                      vSlim = vSlim or SlimVendor(it)
+                      local leaf = Copy(vit)
+                      AttachVendorCtx(leaf, vSlim or it)
+                      out[vd] = leaf
+                      if DEFAULT_CHAT_FRAME then
+                        DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor:|r [debug] decorID=" .. vd .. " via VENDOR branch, category=" .. tostring(categoryName) .. ", vendor.source.worldmap=" .. tostring(it.source.worldmap))
+                      end
+                    end
+                  end
+                elseif type(it) == "table" then
+                  local d = tonumber(it.decorID)
+                  if d and decorIDSet[d] and not out[d] then
+                    out[d] = Copy(it)
+                    if DEFAULT_CHAT_FRAME then
+                      DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor:|r [debug] decorID=" .. d .. " via NON-vendor branch, category=" .. tostring(categoryName) .. ", it.source.type=" .. tostring(it.source and it.source.type))
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  return out
+end
+
+local function FindByDecorID(decorID)
+  decorID = tonumber(decorID)
+  if not decorID then return nil end
+  local found = FindManyByDecorID({ [decorID] = true })
+  return found[decorID]
+end
+
 local function CollectAllFavorites(db)
   db = db or NS.db
   if not db or not db.favorites then return {} end
@@ -265,20 +334,6 @@ local function CollectAllFavorites(db)
   end
 
   local out, seen = {}, {}
-
-  local function IsNestedCategory(tbl)
-    if type(tbl) ~= "table" then return false end
-    for k, v in pairs(tbl) do
-      if type(v) == "table" and type(k) == "string" then
-        for _, innerV in pairs(v) do
-          if type(innerV) == "table" then
-            return true
-          end
-        end
-      end
-    end
-    return false
-  end
 
   for categoryName, category in pairs(NS.Data or {}) do
     if categoryName ~= "Prof_Reagents" and categoryName ~= "DropSources" and IsNestedCategory(category) then
@@ -327,5 +382,7 @@ end
 Search.BuildGlobalSearchResults = BuildGlobalSearchResults
 Search.AttachVendorCtx = AttachVendorCtx
 Search.CollectAllFavorites = CollectAllFavorites
+Search.FindByDecorID = FindByDecorID
+Search.FindManyByDecorID = FindManyByDecorID
 
 return Search

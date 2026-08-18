@@ -254,6 +254,7 @@ function Blueprints:RequestContents(id)
   local rec = self:GetByID(id)
   if not rec then return false, "Select or paste a blueprint first." end
   if not self:IsClientSupported() then return false, "Blueprint support is not available on this client." end
+  self.lastRequestedRecID = rec.id
   if rec.status == "checking" then return true end
   rec.status = "checking"
   rec.error = nil
@@ -404,8 +405,31 @@ function Blueprints:OnContentsReceived(info)
   local code = trim(info and info.shareCode)
   if code == "" then return end
   local rec = self:GetByCode(code)
-  if not rec then rec = self:SaveCode(code, "Imported Blueprint") end
+  local debugPath = rec and "exact code match" or nil
+  if not rec then
+    local lastID = self.lastRequestedRecID
+    if lastID then
+      rec = self:GetByID(lastID)
+      if rec then debugPath = "lastRequestedRecID=" .. tostring(lastID) end
+    end
+    if not rec then
+      for _, candidate in ipairs(self:GetSaved()) do
+        if candidate.status == "checking" then
+          rec = candidate
+          debugPath = "checking-status scan"
+          break
+        end
+      end
+    end
+    if rec then rec.code = code end
+  end
+  self.lastRequestedRecID = nil
+  if not rec then
+    rec = self:SaveCode(code, "Imported Blueprint")
+    debugPath = "no match, created new"
+  end
   if not rec then return end
+  chat("[debug] OnContentsReceived code=" .. code .. " via " .. tostring(debugPath) .. " -> rec.id=" .. tostring(rec.id) .. " rec.name=\"" .. tostring(rec.name) .. "\"")
   rec.requirements = requirementsFromInfo(info)
   rec.contents = true
   rec.status = "ready"

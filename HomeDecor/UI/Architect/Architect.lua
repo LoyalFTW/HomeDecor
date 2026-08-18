@@ -25,6 +25,12 @@ local function ArchitectChat(message)
   end
 end
 
+local function trim(value)
+  if type(value) ~= "string" then return "" end
+  return value:gsub("^%s+", ""):gsub("%s+$", "")
+end
+
+
 local function Theme()
   return (NS.UI.Theme and NS.UI.Theme.colors) or {}
 end
@@ -430,7 +436,6 @@ local function DrawShape(parent, roomOrTemplate, pool, selected, scaleGlow)
     fill:SetColorTexture(ROOM_BLUE_SOFT[1], ROOM_BLUE_SOFT[2], ROOM_BLUE_SOFT[3], selected and 0.62 or 0.44)
 
     if outlinePoints then
-      -- Composite shapes get one outer silhouette, matching the website-style room cards.
     else
     local left = rect[1] * w
     local top = -rect[2] * h
@@ -687,11 +692,26 @@ function UIA:Create(parent)
   layoutNameCancel:SetPoint("RIGHT", layoutNameSave, "LEFT", -8, 0)
 
   local function saveLayoutName()
-    local layout = layoutNamePopup.layoutID and sys:RenameLayout(layoutNamePopup.layoutID, layoutNameEdit:GetText() or "")
+    local newName = trim(layoutNameEdit:GetText() or "")
+    local layout = layoutNamePopup.layoutID and sys:RenameLayout(layoutNamePopup.layoutID, newName)
     if not layout then
       if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor Architect:|r Enter a layout name.") end
       return
     end
+
+    if layout.blueprintPreview and layout.blueprintCode and newName ~= "" then
+      local blueprints = B()
+      local rec = blueprints and blueprints.GetByCode and blueprints:GetByCode(layout.blueprintCode)
+      if rec then
+        rec.name = newName
+        ArchitectChat("Renamed to \"" .. newName .. "\" (layout + saved blueprint).")
+      else
+        ArchitectChat("Renamed layout to \"" .. newName .. "\", but found no saved blueprint for this layout's code to rename.")
+      end
+    else
+      ArchitectChat("Renamed layout to \"" .. newName .. "\".")
+    end
+
     layoutNamePopup:Hide()
     layoutNameEdit:ClearFocus()
     if panel.layoutDropdown and panel.layoutDropdown.ApplyText then panel.layoutDropdown:ApplyText() end
@@ -728,10 +748,16 @@ function UIA:Create(parent)
       opts[#opts + 1] = {
         value = layout.id,
         text = (layout.name and layout.name ~= "" and layout.name) or ("Layout " .. tostring(layout.id)),
-        deleteTooltip = "Delete layout",
+        deleteTooltip = layout.blueprintPreview and "Delete layout and saved blueprint" or "Delete layout",
         onDelete = canDelete and function(value)
           if panel.SaveCanvasView then panel:SaveCanvasView() end
+          local blueprintCode = layout.blueprintPreview and layout.blueprintCode or nil
           if sys:DeleteLayout(value) then
+            if blueprintCode then
+              local blueprints = B()
+              local rec = blueprints and blueprints.GetByCode and blueprints:GetByCode(blueprintCode)
+              if rec and blueprints.Delete then blueprints:Delete(rec.id) end
+            end
             local active = sys:GetActiveLayout()
             panel.activeFloor = "all"
             panel.selectedRoomID = active and active.rooms and active.rooms[1] and active.rooms[1].id or nil
@@ -760,7 +786,15 @@ function UIA:Create(parent)
           opts[#opts + 1] = { separator = true }
           addedBlueprintHeader = true
         end
-        opts[#opts + 1] = { value = "blueprint:" .. tostring(rec.id), text = "Blueprint: " .. tostring(rec.name or "Saved Code") }
+        opts[#opts + 1] = {
+          value = "blueprint:" .. tostring(rec.id),
+          text = "Blueprint: " .. tostring(rec.name or "Saved Code"),
+          deleteTooltip = "Delete saved blueprint",
+          onDelete = function()
+            if blueprints and blueprints.Delete then blueprints:Delete(rec.id) end
+            if panel.Refresh then panel:Refresh() end
+          end,
+        }
       end
     end
     return opts
@@ -1115,6 +1149,14 @@ function UIA:Create(parent)
   markStatus:SetJustifyH("LEFT")
   TextColor(markStatus, "textMuted")
   panel.markStatus = markStatus
+
+  local openInTrackerBtn = Button(right, "Open In Tracker", 262)
+  openInTrackerBtn:SetPoint("TOPLEFT", applyBlueprint, "BOTTOMLEFT", 0, -10)
+  openInTrackerBtn:SetHeight(32)
+  openInTrackerBtn.text:SetFontObject(GameFontNormal)
+  TextColor(openInTrackerBtn.text, "accent")
+  openInTrackerBtn:Hide()
+  panel.openInTrackerBtn = openInTrackerBtn
 
   local changesTitle = FS(right, "GameFontNormal")
   changesTitle:SetPoint("TOPLEFT", markRoom, "BOTTOMLEFT", 0, -14)
@@ -2062,7 +2104,7 @@ function UIA:Create(parent)
       self.markRoom:Hide()
       self.markStatus:Hide()
       changesTitle:ClearAllPoints()
-      changesTitle:SetPoint("TOPLEFT", isBlueprint and applyBlueprint or deleteRoom, "BOTTOMLEFT", 0, -18)
+      changesTitle:SetPoint("TOPLEFT", isBlueprint and openInTrackerBtn or deleteRoom, "BOTTOMLEFT", 0, -18)
       DrawGrid(self.selectedPreview, self.selectedPreview.gridPool, 8, 6, 2, 0.035)
       DrawShape(self.selectedPreview, selectedTemplate(), self.selectedPreview.pool, true, 0.72)
       return
@@ -2078,7 +2120,7 @@ function UIA:Create(parent)
     self.markStatus:SetShown(capturedRoom)
     changesTitle:ClearAllPoints()
     if isBlueprint then
-      changesTitle:SetPoint("TOPLEFT", applyBlueprint, "BOTTOMLEFT", 0, -18)
+      changesTitle:SetPoint("TOPLEFT", openInTrackerBtn, "BOTTOMLEFT", 0, -18)
     elseif capturedRoom then
       changesTitle:SetPoint("TOPLEFT", markRoom, "BOTTOMLEFT", 0, -14)
     else
@@ -2106,6 +2148,7 @@ function UIA:Create(parent)
     if layout and layout.blueprintPreview then
       local req = layout.blueprintRequirements or {}
       changesTitle:SetText("House Changes  (" .. tostring(req.missingQty or 0) .. " missing)")
+      openInTrackerBtn:SetShown((tonumber(req.missingQty) or 0) > 0)
       local displayRows = {}
       for _, group in ipairs(req.groups or {}) do
         displayRows[#displayRows + 1] = { section = true, group = group }
@@ -2146,6 +2189,7 @@ function UIA:Create(parent)
       self.changesScroll:SetVerticalScroll(0)
       return
     end
+    openInTrackerBtn:Hide()
     changesTitle:SetText("House Changes")
     for i, room in ipairs((layout and layout.rooms) or {}) do
       local row = self.changeRows[i] or MakeChangeRow(i)
@@ -2234,6 +2278,39 @@ function UIA:Create(parent)
     self:RefreshTotals()
   end
 
+  openInTrackerBtn:SetScript("OnClick", function()
+    local layout = activeLayout()
+    local req = layout and layout.blueprintRequirements
+    local BL = NS.Systems and NS.Systems.BlueprintList
+    if req and BL and BL.AddMissing then
+      local blueprintName = layout.name
+      local blueprints = B()
+      if blueprints and blueprints.GetByCode and layout.blueprintCode then
+        local rec = blueprints:GetByCode(layout.blueprintCode)
+        if rec and rec.name and rec.name ~= "" then
+          blueprintName = rec.name
+        end
+      end
+
+      local added = BL:AddMissing(req, blueprintName)
+      if added > 0 then
+        ArchitectChat("Added " .. tostring(added) .. " item(s) to the Blueprint List under \"" .. tostring(blueprintName) .. "\".")
+      end
+    end
+
+    local TrackerUI = NS.UI and NS.UI.Tracker
+    if TrackerUI and TrackerUI.Show then
+      TrackerUI:Show()
+      local tframe = TrackerUI.frame
+      if tframe and tframe._SetActiveTab then
+        tframe._SetActiveTab("blueprint")
+      end
+      if tframe and tframe.RequestRefresh then
+        tframe:RequestRefresh("blueprint")
+      end
+    end
+  end)
+
   sortButton:SetScript("OnClick", function()
     if panel.sortMode == "costAsc" then
       panel.sortMode = "costDesc"
@@ -2310,9 +2387,66 @@ function UIA:Create(parent)
     openSharePopup("export", sys:ExportWoWDBJSON(layout))
   end)
 
-  local function importFromPopup()
+  local blueprintNamePopup = CreateFrame("Frame", nil, panel, "BackdropTemplate")
+  blueprintNamePopup:SetSize(360, 128)
+  blueprintNamePopup:SetPoint("CENTER", panel, "CENTER", 0, 20)
+  blueprintNamePopup:SetFrameStrata("DIALOG")
+  blueprintNamePopup:SetFrameLevel(panel:GetFrameLevel() + 100)
+  blueprintNamePopup:SetClampedToScreen(true)
+  blueprintNamePopup:EnableMouse(true)
+  blueprintNamePopup:Hide()
+  Backdrop(blueprintNamePopup, { 0.035, 0.045, 0.065, 0.99 }, T.border)
+
+  blueprintNamePopup.title = FS(blueprintNamePopup, "GameFontNormalLarge")
+  blueprintNamePopup.title:SetPoint("TOPLEFT", 14, -14)
+  blueprintNamePopup.title:SetText("Name This Blueprint")
+  TextColor(blueprintNamePopup.title, "accent")
+
+  local blueprintNameEdit = EditBox(blueprintNamePopup)
+  blueprintNameEdit:SetPoint("TOPLEFT", blueprintNamePopup, "TOPLEFT", 14, -46)
+  blueprintNameEdit:SetPoint("TOPRIGHT", blueprintNamePopup, "TOPRIGHT", -14, -46)
+  blueprintNameEdit:SetHeight(26)
+
+  local blueprintNameSave = Button(blueprintNamePopup, "Save", 78)
+  blueprintNameSave:SetPoint("BOTTOMRIGHT", blueprintNamePopup, "BOTTOMRIGHT", -14, 12)
+  local blueprintNameCancel = Button(blueprintNamePopup, "Cancel", 78)
+  blueprintNameCancel:SetPoint("RIGHT", blueprintNameSave, "LEFT", -8, 0)
+
+  local function acceptBlueprintName()
+    local name = trim(blueprintNameEdit:GetText() or "")
+    if name == "" then name = "Imported Blueprint" end
+    local onAccept = blueprintNamePopup.onAccept
+    blueprintNamePopup.onAccept = nil
+    blueprintNamePopup:Hide()
+    blueprintNameEdit:ClearFocus()
+    if onAccept then onAccept(name) end
+  end
+
+  blueprintNameSave:SetScript("OnClick", acceptBlueprintName)
+  blueprintNameCancel:SetScript("OnClick", function()
+    blueprintNamePopup.onAccept = nil
+    blueprintNamePopup:Hide()
+    blueprintNameEdit:ClearFocus()
+  end)
+  blueprintNameEdit:SetScript("OnEnterPressed", acceptBlueprintName)
+  blueprintNameEdit:SetScript("OnEscapePressed", function(self)
+    self:ClearFocus()
+    blueprintNamePopup.onAccept = nil
+    blueprintNamePopup:Hide()
+  end)
+
+  local function openBlueprintNamePopup(suggested, onAccept)
+    blueprintNamePopup.onAccept = onAccept
+    blueprintNameEdit:SetText(suggested or "")
+    blueprintNamePopup:Show()
+    blueprintNameEdit:SetFocus()
+    blueprintNameEdit:HighlightText()
+  end
+
+  local function doImport(text, name)
     if panel.SaveCanvasView then panel:SaveCanvasView() end
-    local layout, err = sys:ImportAny(shareBox:GetText() or "")
+    ArchitectChat("[debug] doImport received name = \"" .. tostring(name) .. "\"")
+    local layout, err = sys:ImportAny(text, name)
     if layout then
       panel.selectedRoomID = layout.rooms and layout.rooms[1] and layout.rooms[1].id or nil
       if panel.FitCanvasToLayout then panel:FitCanvasToLayout() end
@@ -2321,6 +2455,23 @@ function UIA:Create(parent)
     elseif DEFAULT_CHAT_FRAME then
       DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor Architect:|r " .. tostring(err))
     end
+  end
+
+  local function importFromPopup()
+    local text = trim(shareBox:GetText() or "")
+    local BPAPI = _G.C_HousingBlueprint
+    local isBlueprintCode = false
+    if BPAPI and type(BPAPI.IsShareCodeValid) == "function" then
+      local ok, valid = pcall(BPAPI.IsShareCodeValid, text)
+      isBlueprintCode = ok and valid and true or false
+    end
+
+    if isBlueprintCode then
+      openBlueprintNamePopup("Imported Blueprint", function(name) doImport(text, name) end)
+      return
+    end
+
+    doImport(text, nil)
   end
 
   popupImport:SetScript("OnClick", importFromPopup)

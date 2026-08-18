@@ -171,6 +171,7 @@ local defaults = {
     },
 
     favorites = {},
+    blueprintList = {},
     collection = { completedItems = {} },
 
     architect = {

@@ -66,7 +66,8 @@ local function GetTrackerDB()
 end
 
 local function NormalizeActiveTab(which)
-  return (which == "saved") and "saved" or "tracker"
+  if which == "saved" or which == "blueprint" then return which end
+  return "tracker"
 end
 
 local function ReadSizeFromDB(db, defaultW, defaultH)
@@ -356,13 +357,19 @@ function UI:CreateFrame()
     return btn
   end
 
+  local tabWidth = (((tabBar:GetWidth() or 310) - 16) / 3)
+
   local tabTracker = MakeTab(tabBar, L["TRACKER_TITLE"] or "Tracker")
   tabTracker:SetPoint("TOPLEFT", tabBar, "TOPLEFT", 4, -2)
-  tabTracker:SetWidth(((tabBar:GetWidth() or 310) / 2) - 6)
+  tabTracker:SetWidth(tabWidth)
 
   local tabSaved = MakeTab(tabBar, L["SAVED_ITEMS"] or "Saved Items")
   tabSaved:SetPoint("TOPLEFT", tabTracker, "TOPRIGHT", 4, 0)
-  tabSaved:SetPoint("TOPRIGHT", tabBar, "TOPRIGHT", -4, -2)
+  tabSaved:SetWidth(tabWidth)
+
+  local tabBlueprint = MakeTab(tabBar, L["BLUEPRINT_LIST"] or "Blueprints")
+  tabBlueprint:SetPoint("TOPLEFT", tabSaved, "TOPRIGHT", 4, 0)
+  tabBlueprint:SetPoint("TOPRIGHT", tabBar, "TOPRIGHT", -4, -2)
 
   frame._activeTab = NormalizeActiveTab(db and db.activeTab)
 
@@ -372,13 +379,9 @@ function UI:CreateFrame()
     local d = GetTrackerDB()
     if d then d.activeTab = which end
 
-    if which == "tracker" then
-      Controls:TextColor(tabTracker.label, "accent")
-      Controls:TextColor(tabSaved.label, "text")
-    else
-      Controls:TextColor(tabTracker.label, "text")
-      Controls:TextColor(tabSaved.label, "accent")
-    end
+    Controls:TextColor(tabTracker.label, which == "tracker" and "accent" or "text")
+    Controls:TextColor(tabSaved.label, which == "saved" and "accent" or "text")
+    Controls:TextColor(tabBlueprint.label, which == "blueprint" and "accent" or "text")
   end
 
   SetActiveTab(frame._activeTab)
@@ -392,6 +395,12 @@ function UI:CreateFrame()
   tabSaved:SetScript("OnClick", function()
     if frame._activeTab == "saved" then return end
     SetActiveTab("saved")
+    frame:RequestRefresh("tab")
+  end)
+
+  tabBlueprint:SetScript("OnClick", function()
+    if frame._activeTab == "blueprint" then return end
+    SetActiveTab("blueprint")
     frame:RequestRefresh("tab")
   end)
 
@@ -755,6 +764,7 @@ function UI:CreateFrame()
     tabBar = tabBar,
     tabTracker = tabTracker,
     tabSaved = tabSaved,
+    tabBlueprint = tabBlueprint,
     trackRow = trackRow,
     overallRow = overallRow,
     scrollAnchor = scrollAnchor,

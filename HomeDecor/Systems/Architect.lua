@@ -162,10 +162,12 @@ end
 
 local function findLayout(db, id)
   if not db then return nil end
+  local explicit = id ~= nil
   id = tonumber(id or db.activeLayoutID)
   for i = 1, #db.layouts do
     if tonumber(db.layouts[i].id) == id then return db.layouts[i], i end
   end
+  if explicit then return nil end
   return db.layouts[1], 1
 end
 
@@ -1315,7 +1317,7 @@ function Architect:ImportWoWDBJSON(text)
   return layout
 end
 
-function Architect:ImportAny(text)
+function Architect:ImportAny(text, name)
   text = trim(text)
   if text == "" then return nil, "Paste a floorplan export first." end
   local Blueprints = NS.Systems and NS.Systems.Blueprints
@@ -1323,7 +1325,10 @@ function Architect:ImportAny(text)
   if Blueprints and BPAPI and BPAPI.IsShareCodeValid then
     local ok, valid = pcall(BPAPI.IsShareCodeValid, text)
     if ok and valid then
-      local rec, saveErr = Blueprints:SaveCode(text, "Imported Blueprint")
+      local rec, saveErr = Blueprints:SaveCode(text, name or "Imported Blueprint")
+      if rec and DEFAULT_CHAT_FRAME then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor Architect:|r [debug] SaveCode -> rec.id=" .. tostring(rec.id) .. " rec.name=\"" .. tostring(rec.name) .. "\"")
+      end
       if rec then
         local layout, previewErr, pending = Blueprints:QueueArchitectPreview(rec.id, true)
         if layout then return layout end
@@ -1440,7 +1445,6 @@ end
 local function sortedUniqueCardinals(doors)
   local out, seen = {}, {}
   for _, door in ipairs(doors or {}) do
-    -- Type 3 is the vertical stair link between floors, not a room doorway.
     if door.connectionType == nil or tonumber(door.connectionType) == 1 then
       local card = facingToCardinal(door.facing)
       if card and not seen[card] then
@@ -2290,8 +2294,6 @@ local function snapFloorRoomsToStairs(system, layout)
   for i, floor in ipairs(floors) do
     local rooms = byFloor[floor]
     if i == 1 or floorHasOnlyStairRooms(rooms) then
-      -- Do not let stair repair reshape the main captured floor, and do not invent
-      -- hallway links on floors that only captured a stair.
     else
     local stair = bestStairAnchor(rooms)
     if stair then
@@ -2362,9 +2364,6 @@ local function snapCapturedConnections(system, layout)
     if not changed then break end
   end
 
-  -- If Blizzard does not expose the linked room GUID, snap only very close projected
-  -- neighbors with opposite occupied doors. This keeps capture faithful without
-  -- turning unrelated rooms into a fake chain.
   for _, room in ipairs(layout.rooms) do
     local cap = room.capture or {}
     for _, card in ipairs(cap.occupiedCardinals or {}) do
@@ -2505,7 +2504,6 @@ function Architect:ArrangeCapturedByDoorTopology(layout)
       end
       placedSequence = placedSequence + 1
       placed[moving] = placedSequence
-      -- Leave room for a later attachment to extend back toward this component.
       componentX = math.max(componentX, (moving.x or 0) + (moving.w or 1) + maxRoomSpan + 3)
     end
   end
@@ -2590,7 +2588,6 @@ function Architect:ArrangeCapturedByPinPositions(layout)
     scale = math.max(scale, targetW / spanPX, targetH / spanPY)
     scale = math.max(0.035, math.min(0.80, scale))
 
-    -- Keep very wide or tall captures readable without crushing the smaller axis.
     local projectedW, projectedH = spanPX * scale, spanPY * scale
     local maxProjected = math.max(32, math.sqrt(count) * 14, maxRoomSide * 4)
     if projectedW > maxProjected or projectedH > maxProjected then

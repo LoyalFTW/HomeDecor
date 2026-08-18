@@ -149,6 +149,15 @@ local function SetArrow(tex, open)
   end
 end
 
+local function ToggleSectionRow(self)
+  local owner, key, kind = self._owner, self._sectionKey, self._sectionKind
+  if not owner or not key then return end
+  local store = (kind == "blueprint") and owner._openBlueprintCategories or owner._openVendors
+  if not store then return end
+  store[key] = not (store[key] == true)
+  owner:RequestRefresh("toggle")
+end
+
 local function ItemFaction(it)
   local f = it and (it.faction or (it.source and it.source.faction))
   if f == "Alliance" or f == "Horde" then
@@ -175,6 +184,22 @@ function Render:Attach(_, ctx)
           and not frame._collapsed
         then
           frame:RequestRefresh("favorites")
+        end
+      end)
+    end
+  end
+
+  if not frame.__hdBlueprintListListener then
+    frame.__hdBlueprintListListener = true
+    local BlueprintList = NS.Systems and NS.Systems.BlueprintList
+    if BlueprintList and BlueprintList.RegisterListener then
+      BlueprintList:RegisterListener(function()
+        if frame and frame._activeTab == "blueprint"
+          and frame.RequestRefresh
+          and frame.IsShown and frame:IsShown()
+          and not frame._collapsed
+        then
+          frame:RequestRefresh("blueprintlist")
         end
       end)
     end
@@ -279,6 +304,7 @@ function Render:Attach(_, ctx)
 
     if #items == 0 then
       local vr = Rows:Acquire(frame, "vendor")
+      if vr._blueprintCategoryRemoveBtn then vr._blueprintCategoryRemoveBtn:Hide() end
       vr:SetPoint("TOPLEFT", 0, 0)
       vr:SetPoint("TOPRIGHT", 0, 0)
       vr.label:SetText(L["NO_SAVED_ITEMS"] or "No saved items yet.")
@@ -306,6 +332,7 @@ function Render:Attach(_, ctx)
           local ir = Rows:Acquire(frame, "item")
           ir:SetPoint("TOPLEFT", 0, -y)
           ir:SetPoint("TOPRIGHT", 0, -y)
+          if ir._blueprintRemoveBtn then ir._blueprintRemoveBtn:Hide() end
 
           local title = it.title
           if (not title or title == "") and GetDecorName and it.decorID then
@@ -378,6 +405,207 @@ function Render:Attach(_, ctx)
     if frame._ApplyPanelsAlpha then frame:_ApplyPanelsAlpha(frame._bgAlpha, false) end
   end
 
+  local function BlueprintItemSatisfied(it)
+    local owned = 0
+    if DecorCounts and DecorCounts.GetBreakdownByItem and it.itemID and it.itemID > 0 then
+      owned = select(1, DecorCounts:GetBreakdownByItem(it.itemID)) or 0
+    end
+    local needed = tonumber(it.needed) or 0
+    return (needed > 0 and owned >= needed), owned, needed
+  end
+
+  local function RefreshBlueprintList()
+    if frame._collapsed then return end
+
+    Rows:ReleaseAll(frame)
+    if frame._SyncContentWidth then frame:_SyncContentWidth() end
+
+    overall.zone:SetText("")
+    overall.count:SetText("")
+    if overall.bar then overall.bar:Hide() end
+
+    frame._openBlueprintCategories = frame._openBlueprintCategories or {}
+
+    local BlueprintList = NS.Systems and NS.Systems.BlueprintList
+    local categories = (BlueprintList and BlueprintList.GetCategories and BlueprintList:GetCategories()) or {}
+
+    local totalFound, totalDone = 0, 0
+    for _, cat in ipairs(categories) do
+      for _, it in ipairs(cat.items) do
+        totalFound = totalFound + 1
+        if BlueprintItemSatisfied(it) then totalDone = totalDone + 1 end
+      end
+    end
+
+    if totalFound == 0 then
+      local vr = Rows:Acquire(frame, "vendor")
+      if vr._blueprintCategoryRemoveBtn then vr._blueprintCategoryRemoveBtn:Hide() end
+      vr:SetPoint("TOPLEFT", 0, 0)
+      vr:SetPoint("TOPRIGHT", 0, 0)
+      vr.label:SetText(L["NO_BLUEPRINT_ITEMS"] or "No blueprint items saved yet.")
+      vr.count:SetText("")
+      if vr.bar then vr.bar:Hide() end
+      if vr.arrow then vr.arrow:Hide() end
+      content:SetHeight(max(1, (vr:GetHeight() or 34) + 8))
+    else
+      local y = 0
+
+      for _, cat in ipairs(categories) do
+        local catKey = "bp:" .. tostring(cat.name)
+        local open = (frame._openBlueprintCategories[catKey] == true)
+
+        local catDone = 0
+        for _, it in ipairs(cat.items) do
+          if BlueprintItemSatisfied(it) then catDone = catDone + 1 end
+        end
+        local catTotal = #cat.items
+
+        local vr = Rows:Acquire(frame, "vendor")
+        vr:SetPoint("TOPLEFT", 0, -y)
+        vr:SetPoint("TOPRIGHT", 0, -y)
+        vr.label:SetText(cat.name)
+        vr.count:SetText(catDone .. " / " .. catTotal)
+        if vr.bar then
+          vr.bar:SetProgress(catDone, catTotal)
+          vr.bar:Show()
+        end
+        SetArrow(vr.arrow, open)
+
+        vr._owner, vr._sectionKey, vr._sectionKind = frame, catKey, "blueprint"
+        if not vr.__hdSectionClick then
+          vr.__hdSectionClick = true
+          vr:SetScript("OnClick", ToggleSectionRow)
+        end
+
+        if not vr._blueprintCategoryRemoveBtn and Rows.MakeSmallIconButton then
+          vr._blueprintCategoryRemoveBtn = Rows:MakeSmallIconButton(vr, 14)
+          vr._blueprintCategoryRemoveBtn:SetFrameLevel(vr:GetFrameLevel() + 5)
+          if vr._blueprintCategoryRemoveBtn.icon then
+            vr._blueprintCategoryRemoveBtn.icon:SetTexture("Interface\\Buttons\\UI-StopButton")
+          end
+          vr._blueprintCategoryRemoveBtn:SetScript("OnClick", function(btn)
+            local category = btn._blueprintCategory
+            local BL = NS.Systems and NS.Systems.BlueprintList
+            if category and BL and BL.RemoveCategory then
+              BL:RemoveCategory(category)
+            end
+          end)
+        end
+        if vr._blueprintCategoryRemoveBtn then
+          vr._blueprintCategoryRemoveBtn._blueprintCategory = cat.name
+          vr._blueprintCategoryRemoveBtn:ClearAllPoints()
+          vr._blueprintCategoryRemoveBtn:SetPoint("RIGHT", vr.count, "LEFT", -6, 0)
+          vr._blueprintCategoryRemoveBtn:Show()
+        end
+
+        y = y + (vr:GetHeight() or 34) + 8
+
+        if open then
+          for _, it in ipairs(cat.items) do
+            local ir = Rows:Acquire(frame, "item")
+            ir:SetPoint("TOPLEFT", 0, -y)
+            ir:SetPoint("TOPRIGHT", 0, -y)
+
+            local title = it.title
+            if (not title or title == "") and GetDecorName and it.decorID then
+              title = GetDecorName(it.decorID)
+            end
+            if not title or title == "" then
+              title = "Item " .. tostring(it.itemID or it.decorID or "")
+            end
+            ir.title:SetText(title)
+
+            if ir.icon then
+              ir.icon:SetTexture((GetDecorIcon and it.decorID and GetDecorIcon(it.decorID)) or "Interface\\Icons\\INV_Misc_QuestionMark")
+            end
+
+            local satisfied, owned, needed = BlueprintItemSatisfied(it)
+            if satisfied then ir.check:Show() else ir.check:Hide() end
+
+            if ir.owned then
+              if owned > 0 then
+                ir.owned:SetText(tostring(owned))
+                ir.owned:Show()
+              else
+                ir.owned:Hide()
+              end
+            end
+
+            ir.reqAQ:SetText((L["BLUEPRINT_NEED_FORMAT"] or "Need: %d"):format(needed))
+            ir.reqAQ:Show()
+
+            local groupLabel
+            if it.kind == "Dyes" then
+              groupLabel = "Dye"
+            elseif it.source and it.source.type == "profession" then
+              groupLabel = "Crafted"
+            else
+              local zone = it.zone or (it.source and it.source.zone) or (it._navVendor and it._navVendor.zone) or (it.vendor and it.vendor.zone)
+              groupLabel = (zone and zone ~= "" and zone) or it.kind
+            end
+            if groupLabel and groupLabel ~= "" then
+              ir.reqRep:SetText(groupLabel)
+              ir.reqRep:Show()
+            else
+              ir.reqRep:Hide()
+            end
+
+            local fac = ItemFaction(it)
+            if fac == "Alliance" then
+              ir.faction:SetTexture(ir._texAlliance)
+              ir.faction:Show()
+            elseif fac == "Horde" then
+              ir.faction:SetTexture(ir._texHorde)
+              ir.faction:Show()
+            else
+              ir.faction:Hide()
+            end
+
+            if IA and IA.Bind then
+              IA:Bind(ir, it, it._navVendor or it.vendor)
+            end
+
+            if not ir._blueprintRemoveBtn and Rows.MakeSmallIconButton then
+              ir._blueprintRemoveBtn = Rows:MakeSmallIconButton(ir, 16)
+              ir._blueprintRemoveBtn:SetPoint("TOPRIGHT", ir, "TOPRIGHT", -6, -6)
+              ir._blueprintRemoveBtn:SetFrameLevel(ir:GetFrameLevel() + 5)
+              if ir._blueprintRemoveBtn.icon then
+                ir._blueprintRemoveBtn.icon:SetTexture("Interface\\Buttons\\UI-StopButton")
+              end
+              ir._blueprintRemoveBtn:SetScript("OnClick", function(btn)
+                local key, category = btn._blueprintKey, btn._blueprintCategory
+                local BL = NS.Systems and NS.Systems.BlueprintList
+                if key and category and BL and BL.Remove then
+                  BL:Remove(category, key)
+                end
+              end)
+            end
+            if ir._blueprintRemoveBtn then
+              ir._blueprintRemoveBtn._blueprintKey = it._blueprintKey
+              ir._blueprintRemoveBtn._blueprintCategory = it._blueprintCategory
+              ir._blueprintRemoveBtn:Show()
+            end
+
+            y = y + (ir:GetHeight() or 54) + 8
+          end
+        end
+      end
+
+      overall.count:SetText(totalFound > 0 and (totalDone .. " / " .. totalFound) or "")
+      if overall.bar and totalFound > 0 then
+        overall.bar:SetProgress(totalDone, totalFound)
+        overall.bar:Show()
+      elseif overall.bar then
+        overall.bar:Hide()
+      end
+
+      content:SetHeight(max(1, y))
+    end
+
+    if frame._SyncBarsToWidth then frame:_SyncBarsToWidth() end
+    if frame._ApplyPanelsAlpha then frame:_ApplyPanelsAlpha(frame._bgAlpha, false) end
+  end
+
   function frame:Refresh()
     local activeTab = frame._activeTab or "tracker"
 
@@ -401,6 +629,11 @@ function Render:Attach(_, ctx)
 
     if activeTab == "saved" then
       RefreshSavedItems()
+      return
+    end
+
+    if activeTab == "blueprint" then
+      RefreshBlueprintList()
       return
     end
 
@@ -468,6 +701,7 @@ function Render:Attach(_, ctx)
           tAll = tAll + tV
 
           local vr = Rows:Acquire(frame, "vendor")
+          if vr._blueprintCategoryRemoveBtn then vr._blueprintCategoryRemoveBtn:Hide() end
           vr:SetPoint("TOPLEFT", 0, -y)
           vr:SetPoint("TOPRIGHT", 0, -y)
           do
@@ -486,15 +720,10 @@ function Render:Attach(_, ctx)
           end
           SetArrow(vr.arrow, open)
 
-          vr._owner, vr._vKey = frame, vKey
-          if not vr.__hdVendorClick then
-            vr.__hdVendorClick = true
-            vr:SetScript("OnClick", function(self)
-              local owner, key = self._owner, self._vKey
-              if not owner or not key then return end
-              owner._openVendors[key] = not (owner._openVendors[key] == true)
-              owner:RequestRefresh("toggle")
-            end)
+          vr._owner, vr._sectionKey, vr._sectionKind = frame, vKey, "vendor"
+          if not vr.__hdSectionClick then
+            vr.__hdSectionClick = true
+            vr:SetScript("OnClick", ToggleSectionRow)
           end
 
           y = y + (vr:GetHeight() or 34) + 8
@@ -508,6 +737,7 @@ function Render:Attach(_, ctx)
               local ir = Rows:Acquire(frame, "item")
               ir:SetPoint("TOPLEFT", 0, -y)
               ir:SetPoint("TOPRIGHT", 0, -y)
+              if ir._blueprintRemoveBtn then ir._blueprintRemoveBtn:Hide() end
 
               local title = it.title
               if (not title or title == "") and GetDecorName and it.decorID then

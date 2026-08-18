@@ -168,10 +168,10 @@ function IA:HandleMouseUp(it, btn, context)
     self:ViewItem(it)
 end
 
-function IA:AttachTooltip(frame, data)
+function IA:AttachTooltip(frame, data, context)
     local tt = GetTT()
     if tt and tt.Attach then
-        tt:Attach(frame, data)
+        tt:Attach(frame, data, context)
     end
 end
 
@@ -186,7 +186,7 @@ function IA:Bind(frame, data, context)
         frame:RegisterForClicks("AnyUp")
     end
 
-    self:AttachTooltip(frame, data)
+    self:AttachTooltip(frame, data, context)
 
     if frame._hdIABound then return end
     frame._hdIABound = true

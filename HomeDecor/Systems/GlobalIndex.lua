@@ -75,6 +75,31 @@ local function CountCollected(set)
     return n
 end
 
+local function slimVendor(vendor)
+    if type(vendor) ~= "table" then return nil end
+    local src = vendor.source
+    local worldmap = vendor.worldmap or (src and src.worldmap)
+    local zone = vendor.zone or (src and src.zone)
+    local faction = vendor.faction or (src and src.faction)
+
+    local mergedSource = {}
+    if type(src) == "table" then
+        for k, v in pairs(src) do mergedSource[k] = v end
+    end
+    mergedSource.worldmap = mergedSource.worldmap or worldmap
+    mergedSource.zone = mergedSource.zone or zone
+    mergedSource.faction = mergedSource.faction or faction
+
+    return {
+        title    = vendor.title,
+        name     = vendor.name,
+        zone     = zone,
+        faction  = faction,
+        worldmap = worldmap,
+        source   = mergedSource,
+    }
+end
+
 local function buildVendorCategories()
     local vendors = NS.Data and NS.Data.Vendors
     if type(vendors) ~= "table" then return end
@@ -84,6 +109,7 @@ local function buildVendorCategories()
                 local src = vendor and vendor.source or {}
                 local id = tonumber(src.id or vendor.npcID or vendor.id)
                 local isPvPVendor = id and PVP_VENDOR_IDS[id]
+                local navVendor
                 if type(vendor.items) == "table" then
                     for _, it in ipairs(vendor.items) do
                         if type(it) == "table" then
@@ -91,6 +117,15 @@ local function buildVendorCategories()
                             it.source.type = it.source.type or "vendor"
                             it.source.faction = it.source.faction or src.faction
                             it.faction = it.faction or src.faction
+                            it.source.zone = it.source.zone or vendor.zone or src.zone
+                            it.source.worldmap = it.source.worldmap or vendor.worldmap or src.worldmap
+                            if not it._navVendor then
+                                navVendor = navVendor or slimVendor(vendor)
+                                it._navVendor = navVendor
+                            end
+                            it.vendor = it.vendor or vendor
+                            if not it.zone then it.zone = vendor.zone or src.zone end
+                            if not it.worldmap then it.worldmap = vendor.worldmap or src.worldmap end
                         end
                         AddToCategory("Vendors", it)
                         if isPvPVendor then

@@ -136,6 +136,11 @@ local function PrintCoords(src)
     end
 end
 
+function Nav:CanResolve(item, context)
+    local src = ResolveCoords(item, context)
+    return src ~= nil and src.mapID ~= nil and src.x ~= nil and src.y ~= nil
+end
+
 function Nav:AddWaypoint(item, context)
     local src = ResolveCoords(item, context)
     if not src or not src.mapID or not src.x or not src.y then return end

@@ -37,6 +37,7 @@ local ANIM_TIME = 0.16
 local FILTERS = {
   { key = "missing", label = "VENDOR_ASSISTANT_MISSING" },
   { key = "saved", label = "VENDOR_ASSISTANT_SAVED" },
+  { key = "blueprint", label = "VENDOR_ASSISTANT_BLUEPRINT" },
 }
 
 local function Theme()
@@ -55,7 +56,7 @@ local function ProfileState()
   elseif state.open == nil then
     state.open = false
   end
-  if state.filter ~= "saved" and state.filter ~= "missing" then
+  if state.filter ~= "saved" and state.filter ~= "missing" and state.filter ~= "blueprint" then
     state.filter = "missing"
   end
   if state.compactRows == nil then state.compactRows = true end
@@ -138,6 +139,24 @@ local function IsCollected(item)
     return ok and value and true or false
   end
   return false
+end
+
+local function BlueprintMatches(itemID)
+  local BL = NS.Systems and NS.Systems.BlueprintList
+  if not BL or not BL.FindByItemID then return nil end
+  local matches = BL:FindByItemID(itemID)
+  if not matches or #matches == 0 then return nil end
+  return matches
+end
+
+local function BlueprintNamesText(matches)
+  if not matches or #matches == 0 then return nil end
+  local names = {}
+  for _, match in ipairs(matches) do
+    names[#names + 1] = match.category
+  end
+  table.sort(names)
+  return table.concat(names, ", ")
 end
 
 local function LiveMerchantItems()
@@ -577,10 +596,12 @@ function Assistant:RefreshRows()
   for _, item in ipairs(items) do
     item.collected = IsCollected(item)
     item.saved = IsSaved(item.itemID)
+    item.blueprintMatches = BlueprintMatches(item.itemID)
     if not item.collected then missing = missing + 1 end
     if item.saved then saved = saved + 1 end
     if (state.filter == "missing" and not item.collected)
       or (state.filter == "saved" and item.saved)
+      or (state.filter == "blueprint" and item.blueprintMatches)
     then
       visible[#visible + 1] = item
     end
@@ -609,6 +630,8 @@ function Assistant:RefreshRows()
     local row = self:AcquireRow(index)
     local data = MapUtil and MapUtil.GetItemData and MapUtil.GetItemData(item.itemID) or nil
     local live = liveByItem[item.itemID]
+    local showingBlueprintHint = state.filter == "blueprint" and item.blueprintMatches
+    local showCostLine = showPrices or showingBlueprintHint
     row.star.itemID = item.itemID
     SetStarTexture(row.star.texture, item.saved)
     row:SetHeight(rowHeight)
@@ -616,7 +639,7 @@ function Assistant:RefreshRows()
     row.icon:SetSize(iconSize, iconSize)
     row.icon:SetTexture((data and data.icon) or "Interface\\Icons\\INV_Misc_QuestionMark")
     row.title:ClearAllPoints()
-    if showPrices then
+    if showCostLine then
       row.title:SetPoint("TOPLEFT", row.media, "TOPRIGHT", compact and 8 or 10, compact and -5 or -8)
     else
       row.title:SetPoint("LEFT", row.media, "RIGHT", compact and 8 or 10, 0)
@@ -629,8 +652,14 @@ function Assistant:RefreshRows()
     end
     row.check:SetShown(item.collected)
     row:SetAlpha(item.collected and 0.68 or 1)
-    row.cost:SetText(CostText(live))
-    row.cost:SetShown(showPrices)
+    if showingBlueprintHint then
+      local names = BlueprintNamesText(item.blueprintMatches)
+      row.cost:SetText((L["VENDOR_ASSISTANT_BLUEPRINT_HINT"] or "Needed for: %s"):format(names or "?"))
+      row.cost:Show()
+    else
+      row.cost:SetText(CostText(live))
+      row.cost:SetShown(showPrices)
+    end
     row:ClearAllPoints()
     row:SetPoint("TOPLEFT", frame.content, "TOPLEFT", 0, -y)
     row:SetPoint("TOPRIGHT", frame.content, "TOPRIGHT", 0, -y)
@@ -649,6 +678,8 @@ function Assistant:RefreshRows()
   frame.content:SetHeight(math.max(1, y))
   frame.empty:SetText(state.filter == "saved"
     and (L["VENDOR_ASSISTANT_EMPTY_SAVED"] or "Star missing decor to save it here.")
+    or state.filter == "blueprint"
+    and (L["VENDOR_ASSISTANT_EMPTY_BLUEPRINT"] or "Nothing here is on a saved blueprint's list.")
     or (L["VENDOR_ASSISTANT_EMPTY_MISSING"] or "Nothing missing from this vendor."))
   frame.empty:SetShown(#visible == 0)
 
