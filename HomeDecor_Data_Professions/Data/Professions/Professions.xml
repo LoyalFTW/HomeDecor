@@ -120,4 +120,6 @@
     <Script file="Tailoring/Khaz Algar.lua"/>
     <Script file="Tailoring/Midnight.lua"/>
 
+    <Script file="JunkyardTinkering/Kul Tiran.lua"/>
+
 </Ui>

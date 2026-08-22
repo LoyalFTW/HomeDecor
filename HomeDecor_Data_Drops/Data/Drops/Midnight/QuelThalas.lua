@@ -75,4 +75,9 @@ NS.Data.Drops["Midnight"]["QuelThalas"] = {
     -- {decorID=21952, source={type="encounter", zone="The Venomous Abyss - Vashnik the Malignant", itemID=272361, name="The Venomous Abyss - Vashnik the Malignant"}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
     {decorID=16813, source={type="drop", zone="Drop", itemID=265389, name="Drop"}, colors={"Royal Blue","Tan","Teal"}, budgetCost=1, size="Tiny"},
     {decorID=2606, source={type="encounter", zone="Encounter", itemID=247235, name="Encounter"}, colors={"Beige","Copper","Deep Red"}, budgetCost=1, size="Medium"},
+    {decorID=5131, source={type="drop", zone="Drop", itemID=248963, name="Drop"}, colors={"Dark Brown","Olive","Teal"}, budgetCost=1, size="Small"},
+    {decorID=15284, source={type="drop", zone="Drop", itemID=263874, name="Drop"}, colors={"Dark Brown","Olive"}, size="Small"},
+    {decorID=18615, source={type="drop", zone="Drop", itemID=267080, name="Drop"}, colors={"Dark Gray","Gray","Royal Blue"}, size="Medium"},
+    {decorID=1426, source={type="encounter", zone="Encounter", itemID=244343, name="Encounter"}, colors={"Dark Gray","Forest Green"}, size="Large"},
+    {decorID=16093, source={type="encounter", zone="Encounter", itemID=264716, name="Encounter"}, colors={"Dark Gray","Royal Blue"}, budgetCost=5, size="Large"},
 }

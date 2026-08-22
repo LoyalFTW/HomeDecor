@@ -6,7 +6,6 @@ NS.Data.Vendors = NS.Data.Vendors or {}
 NS.Data.Vendors["Midnight"] = NS.Data.Vendors["Midnight"] or {}
 
 NS.Data.Vendors["Midnight"]["QuelThalas"] = {
-
   {
     source={
       id=112338,
@@ -132,8 +131,8 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
     items={
       {decorID=2503, source={type="vendor", itemID=246779}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=3, size="Medium"},
       {decorID=7780, source={type="vendor", itemID=250770}, colors={"Brown","Copper","Tan"}, budgetCost=3, size="Medium"},
-       {decorID=24765, source={type="vendor", itemID=275857}, budgetCost=3, size="Medium"},
-       {decorID=25296, source={type="vendor", itemID=275853}, budgetCost=1, size="Small"},
+      {decorID=24765, source={type="vendor", itemID=275857}, budgetCost=3, size="Medium"},
+      {decorID=25296, source={type="vendor", itemID=275853}, budgetCost=1, size="Small"},
     }
   },
 
@@ -153,7 +152,7 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       {decorID=15413, source={type="vendor", itemID=264008, currency="10", currencytype=3316}, colors={"Dark Brown"}, budgetCost=3, size="Medium"},
       {decorID=15455, source={type="vendor", itemID=264170, currency="10", currencytype=3316}, colors={"Dark Gray","Gray","Silver"}, budgetCost=3, size="Medium"},
       {decorID=15460, source={type="vendor", itemID=264175, currency="10", currencytype=3316}, colors={"Dark Brown","Olive"}, budgetCost=3, size="Medium"},
-       {decorID=21951, source={type="vendor", itemID=272360}, budgetCost=5, size="Huge"},
+      {decorID=21951, source={type="vendor", itemID=272360}, budgetCost=5, size="Huge"},
     }
   },
 
@@ -398,19 +397,6 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       type="vendor",
       faction="Neutral",
       zone="Zul'Aman",
-      worldmap=""
-    },
-    items={
---       {decorID=26203, source={type="vendor", itemID=278691}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
-    }
-  },
-
-  {
-    source={
-      id=254944,
-      type="vendor",
-      faction="Neutral",
-      zone="Zul'Aman",
       worldmap="2437:4604:6608"
     },
     items={
@@ -426,6 +412,7 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       {decorID=15744, source={type="vendor", itemID=264480, currency="250", currencytype=3316}, colors={"Black","Dark Brown"}, budgetCost=3, size="Large"},
       {decorID=15745, source={type="vendor", itemID=264481, currency="250", currencytype=3316}, colors={"Dark Brown","Teal"}, budgetCost=3, size="Large"},
       {decorID=16092, source={type="vendor", itemID=264715, currency="250", currencytype=3316}, colors={"Dark Brown","Gray","Red"}, budgetCost=3, size="Large"},
+--       {decorID=26203, source={type="vendor", itemID=278691}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
     }
   },
 
@@ -646,16 +633,16 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       {decorID=17521, source={type="vendor", itemID=265797, currency="1200", currencytype=3392}, requirements={achievement={id=62176}}, colors={"Dark Brown","Red"}, budgetCost=3, size="Medium"},
       {decorID=17522, source={type="vendor", itemID=265798, currency="800", currencytype=3392}, requirements={achievement={id=62154}}, colors={"Deep Red","Gray","Red"}, budgetCost=3, size="Medium"},
       {decorID=17523, source={type="vendor", itemID=265799, currency="800", currencytype=3392}, requirements={achievement={id=62158}}, colors={"Dark Brown","Red","Tan"}, budgetCost=3, size="Medium"},
-       {decorID=22145, source={type="vendor", itemID=278369}, requirements={achievement={id=63451}}, budgetCost=3, size="Medium"},
-       {decorID=22146, source={type="vendor", itemID=278372}, requirements={achievement={id=63452}}, budgetCost=3, size="Medium"},
-       {decorID=24891, source={type="vendor", itemID=278380}, requirements={achievement={id=63453}}, budgetCost=3, size="Medium"},
-       {decorID=25274, source={type="vendor", itemID=278130}, budgetCost=1, size="Small"},
-       {decorID=25279, source={type="vendor", itemID=278151}, budgetCost=3, size="Medium"},
-       {decorID=25284, source={type="vendor", itemID=278134}, budgetCost=1, size="Small"},
-       {decorID=25286, source={type="vendor", itemID=278123}, budgetCost=1, size="Small"},
-       {decorID=25287, source={type="vendor", itemID=278148}, budgetCost=1, size="Small"},
-       {decorID=25288, source={type="vendor", itemID=278145}, budgetCost=5, size="Large"},
-       {decorID=25289, source={type="vendor", itemID=278126}, budgetCost=1, size="Medium"},
+      {decorID=22145, source={type="vendor", itemID=278369}, requirements={achievement={id=63451}}, budgetCost=3, size="Medium"},
+      {decorID=22146, source={type="vendor", itemID=278372}, requirements={achievement={id=63452}}, budgetCost=3, size="Medium"},
+      {decorID=24891, source={type="vendor", itemID=278380}, requirements={achievement={id=63453}}, budgetCost=3, size="Medium"},
+      {decorID=25274, source={type="vendor", itemID=278130}, budgetCost=1, size="Small"},
+      {decorID=25279, source={type="vendor", itemID=278151}, budgetCost=3, size="Medium"},
+      {decorID=25284, source={type="vendor", itemID=278134}, budgetCost=1, size="Small"},
+      {decorID=25286, source={type="vendor", itemID=278123}, budgetCost=1, size="Small"},
+      {decorID=25287, source={type="vendor", itemID=278148}, budgetCost=1, size="Small"},
+      {decorID=25288, source={type="vendor", itemID=278145}, budgetCost=5, size="Large"},
+      {decorID=25289, source={type="vendor", itemID=278126}, budgetCost=1, size="Medium"},
     }
   },
 

@@ -6,7 +6,6 @@ NS.Data.Vendors = NS.Data.Vendors or {}
 NS.Data.Vendors["Wrath"] = NS.Data.Vendors["Wrath"] or {}
 
 NS.Data.Vendors["Wrath"]["Northrend"] = {
-
   {
     source={
       id=25206,

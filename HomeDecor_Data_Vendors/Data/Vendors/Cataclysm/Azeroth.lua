@@ -16,7 +16,7 @@ NS.Data.Vendors["Cataclysm"]["Azeroth"] = {
       worldmap="77:6160:2580"
     },
     items={
-      {decorID=11301, source={type="vendor", itemID=256903, currency="750000", currencytype="money"}, requirements={quest={id=28337}}},
+      {decorID=11301, source={type="vendor", itemID=256903, currency="750000", currencytype="money"}, requirements={quest={id=28337}}, colors={"Black","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
     }
   },
 

@@ -51,6 +51,11 @@ NS.Data.Shops["Midnight"]["QuelThalas"] = {
     {decorID=15547, source={type="shop", zone="Roofus charity pet (The Roofus Pack)", itemID=264275, name="Roofus charity pet (The Roofus Pack)"}, dyeable=true, colors={"Copper","Dark Gray","Deep Red"}, budgetCost=1, size="Medium"},
     {decorID=15548, source={type="shop", zone="Roofus charity pet (The Roofus Pack)", itemID=264276, name="Roofus charity pet (The Roofus Pack)"}, dyeable=true, colors={"Dark Gray","Deep Red","Tan"}, budgetCost=1, size="Medium"},
     {decorID=15549, source={type="shop", zone="Roofus charity pet (The Roofus Pack)", itemID=264277, name="Roofus charity pet (The Roofus Pack)"}, dyeable=true, colors={"Copper","Deep Red","Purple"}, budgetCost=1, size="Medium"},
+    {decorID=9270, source={type="shop", zone="Shop", itemID=253254, name="Shop"}, dyeable=true, colors={"Beige","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
+    {decorID=9274, source={type="shop", zone="Shop", itemID=253290, name="Shop"}, dyeable=true, budgetCost=3, size="Medium"},
+--     {decorID=26878, source={type="shop", zone="Shop", itemID=280523, name="Shop"}, dyeable=true, budgetCost=5, size="Large"}, -- HIDDENCATALOG
+--     {decorID=26879, source={type="shop", zone="Shop", itemID=280525, name="Shop"}, dyeable=true, budgetCost=3, size="Large"}, -- HIDDENCATALOG
+--     {decorID=27046, source={type="shop", zone="Shop", itemID=280527, name="Shop"}, dyeable=true, budgetCost=5, size="Large"}, -- HIDDENCATALOG
     {decorID=14432, source={type="shop", zone="Small Starter Decor Pack", itemID=260727, name="Small Starter Decor Pack"}, colors={"Copper","Dark Gray","Royal Blue"}, budgetCost=1, size="Small"},
     {decorID=14433, source={type="shop", zone="Small Starter Decor Pack", itemID=260728, name="Small Starter Decor Pack"}, colors={"Brown","Deep Red"}, budgetCost=1, size="Small"},
     {decorID=7829, source={type="shop", zone="Spring Blossom Decor Pack", itemID=250797, name="Spring Blossom Decor Pack"}, colors={"Dark Gray","Gray","Tan"}, budgetCost=1, size="Small"},
@@ -83,10 +88,13 @@ NS.Data.Shops["Midnight"]["QuelThalas"] = {
 --     {decorID=21061, source={type="shop", zone="Unknown Promo/Shop item", itemID=269605, name="Unknown Promo/Shop item"}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=1, size="Small"}, -- UNKNOWN PROMO/SHOP ITEM
 --     {decorID=21945, source={type="shop", zone="Unknown Promo/Shop item", itemID=272353, name="Unknown Promo/Shop item"}, dyeable=true, budgetCost=3, size="Small"}, -- UNKNOWN PROMO/SHOP ITEM
 --     {decorID=21946, source={type="shop", zone="Unknown Promo/Shop item", itemID=272354, name="Unknown Promo/Shop item"}, dyeable=true, budgetCost=5, size="Large"}, -- UNKNOWN PROMO/SHOP ITEM
+--     {decorID=21947, source={type="shop", zone="Unknown Promo/Shop item", itemID=272355, name="Unknown Promo/Shop item"}, dyeable=true, colors={"Deep Red","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"}, -- UNKNOWN PROMO/SHOP ITEM
+--     {decorID=21948, source={type="shop", zone="Unknown Promo/Shop item", itemID=272356, name="Unknown Promo/Shop item"}, budgetCost=5, size="Huge"}, -- UNKNOWN PROMO/SHOP ITEM
 --     {decorID=21949, source={type="shop", zone="Unknown Promo/Shop item", itemID=272358, name="Unknown Promo/Shop item"}, budgetCost=1, size="Tiny"}, -- UNKNOWN PROMO/SHOP ITEM
 --     {decorID=22144, source={type="shop", zone="Unknown Promo/Shop item", itemID=274784, name="Unknown Promo/Shop item"}, dyeable=true, budgetCost=3, size="Medium"}, -- UNKNOWN PROMO/SHOP ITEM
 --     {decorID=22397, source={type="shop", zone="Unknown Promo/Shop item", itemID=274899, name="Unknown Promo/Shop item"}, dyeable=true, budgetCost=5, size="Large"}, -- UNKNOWN PROMO/SHOP ITEM
 --     {decorID=22398, source={type="shop", zone="Unknown Promo/Shop item", itemID=274897, name="Unknown Promo/Shop item"}, dyeable=true, budgetCost=3, size="Medium"}, -- UNKNOWN PROMO/SHOP ITEM
+--     {decorID=22775, source={type="shop", zone="Unknown Promo/Shop item", itemID=273640, name="Unknown Promo/Shop item"}, budgetCost=1, size="Small"}, -- UNKNOWN PROMO/SHOP ITEM
 --     {decorID=22895, source={type="shop", zone="Unknown Promo/Shop item", itemID=274901, name="Unknown Promo/Shop item"}, dyeable=true, budgetCost=3, size="Medium"}, -- UNKNOWN PROMO/SHOP ITEM
 --     {decorID=23175, source={type="shop", zone="Unknown Promo/Shop item", itemID=274767, name="Unknown Promo/Shop item"}, dyeable=true, budgetCost=3, size="Medium"}, -- UNKNOWN PROMO/SHOP ITEM
 --     {decorID=23868, source={type="shop", zone="Unknown Promo/Shop item", itemID=274903, name="Unknown Promo/Shop item"}, dyeable=true, budgetCost=3, size="Medium"}, -- UNKNOWN PROMO/SHOP ITEM

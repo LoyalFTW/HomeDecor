@@ -6,7 +6,6 @@ NS.Data.Vendors = NS.Data.Vendors or {}
 NS.Data.Vendors["Warlords"] = NS.Data.Vendors["Warlords"] or {}
 
 NS.Data.Vendors["Warlords"]["Draenor"] = {
-
   {
     source={
       id=76872,
@@ -122,14 +121,14 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
     source={
       id=85946,
       type="vendor",
-      faction="Neutral",
+      faction="Alliance",
       zone="Stormshield",
       worldmap="622:4440:7520"
     },
     items={
-       {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
-       {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
-       {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"},
+      {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -158,29 +157,14 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
     source={
       id=86037,
       type="vendor",
-      faction="Neutral",
+      faction="Horde",
       zone="Warspear",
-      worldmap=""
+      worldmap="624:5330:6010"
     },
     items={
-       {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
-       {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
-       {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"},
-    }
-  },
-
-  {
-    source={
-      id=86698,
-      type="vendor",
-      faction="Alliance",
-      zone="Stormshield",
-      worldmap="622:4440:7520"
-    },
-    items={
-      {decorID=1323, source={type="vendor", itemID=245434}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
-      {decorID=1324, source={type="vendor", itemID=245435}, colors={"Dark Gray","Gray"}, budgetCost=1, size="Small"},
-      {decorID=1325, decorType="Storage", source={type="vendor", itemID=245436}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
+      {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -241,19 +225,6 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       {decorID=12205, source={type="vendor", itemID=258745, currency="80000", currencytype="money"}, requirements={quest={id=35704}}, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=3, size="Medium"},
       {decorID=12208, source={type="vendor", itemID=258748, currency="80000", currencytype="money"}, requirements={quest={id=35273}}, colors={"Bronze","Copper","Dark Brown"}, budgetCost=5, size="Large"},
       {decorID=12209, source={type="vendor", itemID=258749, currency="80000", currencytype="money"}, requirements={quest={id=35896}}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=1, size="Small"},
-    }
-  },
-
-  {
-    source={
-      id=88126,
-      type="vendor",
-      faction="Alliance",
-      zone="Lunarfall",
-      worldmap="582:2960:1620"
-    },
-    items={
-      {decorID=9424, source={type="vendor", itemID=253527, costs={{currency="3000000", currencytype="money"},{currency="500", currencytype=824}}}, requirements={quest={id=114}}},
     }
   },
 
