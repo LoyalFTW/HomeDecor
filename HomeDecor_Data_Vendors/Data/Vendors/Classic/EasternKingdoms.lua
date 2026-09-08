@@ -121,8 +121,8 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap=""
     },
     items={
-      {decorID=1998, source={type="vendor", itemID=246108, currency="20000000", currencytype="money"}, requirements={rep="true"}, colors={"Beige","Copper","Dark Brown"}, budgetCost=1, size="Tiny"},
-      {decorID=2242, source={type="vendor", itemID=246425, currency="4000000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
+      {decorID=1998, source={type="vendor", itemID=246108, currency="20000000", currencytype="money"}, requirements={reputation={name="Wildhammer Clan", standing="Honored"}}, colors={"Beige","Copper","Dark Brown"}, budgetCost=1, size="Tiny"},
+      {decorID=2242, source={type="vendor", itemID=246425, currency="4000000", currencytype="money"}, requirements={reputation={name="Wildhammer Clan", standing="Friendly"}}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -135,14 +135,14 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="84:6700:7200"
     },
     items={
-      {decorID=4402, source={type="vendor", itemID=248333, currency="950000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Navy Blue"}, budgetCost=5, size="Large"},
-      {decorID=4443, source={type="vendor", itemID=248617, currency="1425000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Gray","Tan"}, budgetCost=3, size="Medium"},
-      {decorID=4445, source={type="vendor", itemID=248619, currency="2375000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"},
-      {decorID=4446, source={type="vendor", itemID=248620, currency="1425000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Tan"}, budgetCost=3, size="Large"},
-      {decorID=4490, source={type="vendor", itemID=248665, currency="2375000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Gray","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"},
-      {decorID=4811, source={type="vendor", itemID=248794, currency="475000", currencytype="money"}, requirements={rep="true"}, colors={"Black","Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"},
-      {decorID=4812, source={type="vendor", itemID=248795, currency="712500", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"},
-      {decorID=5116, source={type="vendor", itemID=248939, currency="950000", currencytype="money"}, requirements={rep="true"}, colors={"Bronze","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=4402, source={type="vendor", itemID=248333, currency="950000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Honored"}}, colors={"Dark Brown","Dark Gray","Navy Blue"}, budgetCost=5, size="Large"},
+      {decorID=4443, source={type="vendor", itemID=248617, currency="1425000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Revered"}}, colors={"Dark Gray","Tan"}, budgetCost=3, size="Medium"},
+      {decorID=4445, source={type="vendor", itemID=248619, currency="2375000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Exalted"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"},
+      {decorID=4446, source={type="vendor", itemID=248620, currency="1425000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Revered"}}, colors={"Dark Brown","Tan"}, budgetCost=3, size="Large"},
+      {decorID=4490, source={type="vendor", itemID=248665, currency="2375000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Exalted"}}, colors={"Dark Gray","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"},
+      {decorID=4811, source={type="vendor", itemID=248794, currency="475000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Friendly"}}, colors={"Black","Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"},
+      {decorID=4812, source={type="vendor", itemID=248795, currency="712500", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Friendly"}}, colors={"Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"},
+      {decorID=5116, source={type="vendor", itemID=248939, currency="950000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Honored"}}, colors={"Bronze","Dark Gray"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -189,11 +189,11 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="87:5600:4700"
     },
     items={
-      {decorID=2243, source={type="vendor", itemID=246426, costs={{currency="5700000", currencytype="money"},{currency="6000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Royal Blue"}, budgetCost=3, size="Large"},
-      {decorID=2333, source={type="vendor", itemID=246490, costs={{currency="2375000", currencytype="money"},{currency="2500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray"}, budgetCost=1, size="Medium"},
-      {decorID=2334, source={type="vendor", itemID=246491, costs={{currency="1425000", currencytype="money"},{currency="1500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
-      {decorID=8982, source={type="vendor", itemID=252010, costs={{currency="4275000", currencytype="money"},{currency="4500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
-      {decorID=11133, source={type="vendor", itemID=256333, costs={{currency="9500000", currencytype="money"},{currency="10000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Purple","Gray"}, budgetCost=5, size="Large"},
+      {decorID=2243, source={type="vendor", itemID=246426, costs={{currency="5700000", currencytype="money"},{currency="6000000", currencytype="money"}}}, requirements={reputation={name="Ironforge", standing="Honored"}}, colors={"Dark Brown","Royal Blue"}, budgetCost=3, size="Large"},
+      {decorID=2333, source={type="vendor", itemID=246490, costs={{currency="2375000", currencytype="money"},{currency="2500000", currencytype="money"}}}, requirements={reputation={name="Ironforge", standing="Friendly"}}, colors={"Dark Gray"}, budgetCost=1, size="Medium"},
+      {decorID=2334, source={type="vendor", itemID=246491, costs={{currency="1425000", currencytype="money"},{currency="1500000", currencytype="money"}}}, requirements={reputation={name="Ironforge", standing="Friendly"}}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
+      {decorID=8982, source={type="vendor", itemID=252010, costs={{currency="4275000", currencytype="money"},{currency="4500000", currencytype="money"}}}, requirements={reputation={name="Ironforge", standing="Honored"}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=11133, source={type="vendor", itemID=256333, costs={{currency="9500000", currencytype="money"},{currency="10000000", currencytype="money"}}}, requirements={reputation={name="Ironforge", standing="Revered"}}, colors={"Dark Brown","Dark Purple","Gray"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -206,9 +206,9 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap=""
     },
     items={
-      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
-      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
-      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
+      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 7"}}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 5"}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 2"}}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -283,8 +283,8 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="241:4974:2957"
     },
     items={
-      {decorID=1998, source={type="vendor", itemID=246108, currency="20000000", currencytype="money"}, requirements={rep="true"}, colors={"Beige","Copper","Dark Brown"}, budgetCost=1, size="Tiny"},
-      {decorID=2242, source={type="vendor", itemID=246425, currency="4000000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
+      {decorID=1998, source={type="vendor", itemID=246108, currency="20000000", currencytype="money"}, requirements={reputation={name="Wildhammer Clan", standing="Honored"}}, colors={"Beige","Copper","Dark Brown"}, budgetCost=1, size="Tiny"},
+      {decorID=2242, source={type="vendor", itemID=246425, currency="4000000", currencytype="money"}, requirements={reputation={name="Wildhammer Clan", standing="Friendly"}}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
       {decorID=2244, source={type="vendor", itemID=246427, currency="10000000", currencytype="money"}, requirements={quest={id=28244}}, colors={"Dark Gray","Royal Blue"}, budgetCost=5, size="Large"},
       {decorID=2245, source={type="vendor", itemID=246428, currency="15000000", currencytype="money"}, requirements={quest={id=28655}}, colors={"Cyan","Dark Gray","Royal Blue"}, budgetCost=5, size="Large"},
     }
@@ -313,11 +313,11 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap=""
     },
     items={
-      {decorID=2243, source={type="vendor", itemID=246426, costs={{currency="5700000", currencytype="money"},{currency="6000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Royal Blue"}, budgetCost=3, size="Large"},
-      {decorID=2333, source={type="vendor", itemID=246490, costs={{currency="2375000", currencytype="money"},{currency="2500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray"}, budgetCost=1, size="Medium"},
-      {decorID=2334, source={type="vendor", itemID=246491, costs={{currency="1425000", currencytype="money"},{currency="1500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
-      {decorID=8982, source={type="vendor", itemID=252010, costs={{currency="4275000", currencytype="money"},{currency="4500000", currencytype="money"}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
-      {decorID=11133, source={type="vendor", itemID=256333, costs={{currency="9500000", currencytype="money"},{currency="10000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Purple","Gray"}, budgetCost=5, size="Large"},
+      {decorID=2243, source={type="vendor", itemID=246426, costs={{currency="5700000", currencytype="money"},{currency="6000000", currencytype="money"}}}, requirements={reputation={name="Ironforge", standing="Honored"}}, colors={"Dark Brown","Royal Blue"}, budgetCost=3, size="Large"},
+      {decorID=2333, source={type="vendor", itemID=246490, costs={{currency="2375000", currencytype="money"},{currency="2500000", currencytype="money"}}}, requirements={reputation={name="Ironforge", standing="Friendly"}}, colors={"Dark Gray"}, budgetCost=1, size="Medium"},
+      {decorID=2334, source={type="vendor", itemID=246491, costs={{currency="1425000", currencytype="money"},{currency="1500000", currencytype="money"}}}, requirements={reputation={name="Ironforge", standing="Friendly"}}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
+      {decorID=8982, source={type="vendor", itemID=252010, costs={{currency="4275000", currencytype="money"},{currency="4500000", currencytype="money"}}}, requirements={reputation={name="Ironforge", standing="Honored"}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=11133, source={type="vendor", itemID=256333, costs={{currency="9500000", currencytype="money"},{currency="10000000", currencytype="money"}}}, requirements={reputation={name="Ironforge", standing="Revered"}}, colors={"Dark Brown","Dark Purple","Gray"}, budgetCost=5, size="Large"},
     }
   },
 

@@ -1,3 +1,0 @@
-local ADDON, NS = ...
-
-NS.L = LibStub("AceLocale-3.0"):GetLocale("HomeDecor")

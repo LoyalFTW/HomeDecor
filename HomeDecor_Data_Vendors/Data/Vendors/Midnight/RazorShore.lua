@@ -709,6 +709,30 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
 
   {
     source={
+      id=257257,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5400:5900"
+    },
+    items={
+      {decorID=23553, source={type="vendor", itemID=280142, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"},
+      {decorID=23554, source={type="vendor", itemID=280144, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23555, source={type="vendor", itemID=280146, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"},
+      {decorID=23556, source={type="vendor", itemID=280148, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23557, source={type="vendor", itemID=280150, currency="500000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23558, source={type="vendor", itemID=280152, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"},
+      {decorID=23559, source={type="vendor", itemID=280154, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"},
+      {decorID=23560, source={type="vendor", itemID=280156, currency="500000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23707, source={type="vendor", itemID=280158, currency="250000", currencytype="money"}, dyeable=true, budgetCost=1, size="Small"},
+      {decorID=23708, source={type="vendor", itemID=280160, currency="1000000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23709, source={type="vendor", itemID=280162, currency="750000", currencytype="money"}, dyeable=true, budgetCost=3, size="Medium"},
+      {decorID=23710, source={type="vendor", itemID=280164, currency="750000", currencytype="money"}, budgetCost=3, size="Medium"},
+    }
+  },
+
+  {
+    source={
       id=260485,
       type="vendor",
       faction="Neutral",

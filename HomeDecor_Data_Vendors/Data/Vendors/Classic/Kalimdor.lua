@@ -68,8 +68,8 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       worldmap="89:5630:1350"
     },
     items={
-      {decorID=1794, source={type="vendor", itemID=245603, currency="3500000", currencytype="money"}, requirements={rep="true"}, colors={"Black"}, budgetCost=3, size="Large"},
-      {decorID=1796, source={type="vendor", itemID=245605, currency="3000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
+      {decorID=1794, source={type="vendor", itemID=245603, currency="3500000", currencytype="money"}, requirements={reputation={name="Gilneas", standing="Revered"}}, colors={"Black"}, budgetCost=3, size="Large"},
+      {decorID=1796, source={type="vendor", itemID=245605, currency="3000000", currencytype="money"}, requirements={reputation={name="Gilneas", standing="Honored"}}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
     }
   },
 
@@ -122,9 +122,9 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       worldmap=""
     },
     items={
-      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
-      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
-      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
+      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 7"}}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 5"}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 2"}}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -137,9 +137,9 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       worldmap=""
     },
     items={
-      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
-      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
-      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
+      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 7"}}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 5"}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 2"}}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -152,9 +152,9 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       worldmap="369:5000:2900"
     },
     items={
-      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
-      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
-      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
+      {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 7"}}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
+      {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 5"}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 2"}}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
     }
   },
 

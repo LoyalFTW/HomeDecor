@@ -28,7 +28,7 @@ NS.Data.Vendors["Shadowlands"]["TheShadowlands"] = {
       worldmap="1699:5400:2560"
     },
     items={
-      {decorID=756, source={type="vendor", itemID=245501, currency="1500", currencytype=1813}, requirements={rep="true"}, colors={"Dark Brown","Deep Red","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=756, source={type="vendor", itemID=245501, currency="1500", currencytype=1813}, requirements={reputation={name="Venthyr Covenant", standing="Renown 65"}}, colors={"Dark Brown","Deep Red","Light Brown"}, budgetCost=1, size="Small"},
     }
   },
 

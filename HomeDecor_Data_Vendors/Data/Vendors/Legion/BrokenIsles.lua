@@ -29,14 +29,14 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:3713:4655"
     },
     items={
-      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
-      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
-      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
-      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
-      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
-      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
+      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
+      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
+      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -81,12 +81,12 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="641:5470:7325"
     },
     items={
-      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220},{currency="8000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=3, size="Medium"},
-      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=5, size="Large"},
+      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220},{currency="8000000", currencytype="money"}}}, requirements={reputation={name="Dreamweavers", standing="Exalted"}}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=3, size="Medium"},
+      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={reputation={name="Dreamweavers", standing="Honored"}}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=5, size="Large"},
 --       {decorID=678, source={type="vendor", itemID=238862}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"}, -- DNT / do not use
-      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="7000000", currencytype="money"},{currency="1000", currencytype=1220},{currency="5000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Gray","Purple"}, budgetCost=1, size="Small"},
-      {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, requirements={rep="true"}, colors={"Dark Brown","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
-      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
+      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="7000000", currencytype="money"},{currency="1000", currencytype=1220},{currency="5000000", currencytype="money"}}}, requirements={reputation={name="Dreamweavers", standing="Revered"}}, colors={"Dark Brown","Gray","Purple"}, budgetCost=1, size="Small"},
+      {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, requirements={reputation={name="Dreamweavers", standing="Friendly"}}, colors={"Dark Brown","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
+      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={reputation={name="Dreamweavers", standing="Honored"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -99,14 +99,14 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="750:3860:4540"
     },
     items={
-      {decorID=1231, source={type="vendor", itemID=245452, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown"}, budgetCost=5, size="Huge"},
-      {decorID=1252, source={type="vendor", itemID=243290, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}, colors={"Black"}, budgetCost=5, size="Huge"},
-      {decorID=1292, source={type="vendor", itemID=243359, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray"}, budgetCost=5, size="Huge"},
-      {decorID=1293, source={type="vendor", itemID=245454, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Tan"}, budgetCost=1, size="Small"},
-      {decorID=1295, source={type="vendor", itemID=245458, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown"}, budgetCost=3, size="Small"},
-      {decorID=1297, source={type="vendor", itemID=245450, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Tan"}, budgetCost=5, size="Huge"},
-      {decorID=1703, source={type="vendor", itemID=245270, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Copper","Dark Brown"}, budgetCost=5, size="Large"},
-      {decorID=5136, source={type="vendor", itemID=248985, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
+      {decorID=1231, source={type="vendor", itemID=245452, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="Highmountain Tribe", standing="Honored"}}, colors={"Dark Brown"}, budgetCost=5, size="Huge"},
+      {decorID=1252, source={type="vendor", itemID=243290, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="Highmountain Tribe", standing="Exalted"}}, colors={"Black"}, budgetCost=5, size="Huge"},
+      {decorID=1292, source={type="vendor", itemID=243359, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="Highmountain Tribe", standing="Revered"}}, colors={"Dark Brown","Dark Gray"}, budgetCost=5, size="Huge"},
+      {decorID=1293, source={type="vendor", itemID=245454, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="Highmountain Tribe", standing="Friendly"}}, colors={"Dark Brown","Tan"}, budgetCost=1, size="Small"},
+      {decorID=1295, source={type="vendor", itemID=245458, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="Highmountain Tribe", standing="Friendly"}}, colors={"Dark Brown"}, budgetCost=3, size="Small"},
+      {decorID=1297, source={type="vendor", itemID=245450, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="Highmountain Tribe", standing="Exalted"}}, colors={"Dark Brown","Tan"}, budgetCost=5, size="Huge"},
+      {decorID=1703, source={type="vendor", itemID=245270, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="Highmountain Tribe", standing="Revered"}}, colors={"Copper","Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=5136, source={type="vendor", itemID=248985, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="Highmountain Tribe", standing="Honored"}}, colors={"Copper","Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -329,14 +329,14 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:3680:4660"
     },
     items={
-      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
-      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={rep="true"}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
-      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
-      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
-      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
-      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={rep="true"}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
+      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
+      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
+      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -378,12 +378,12 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:5090:7778"
     },
     items={
-      {decorID=1444, source={type="vendor", itemID=244654, currency="100", currencytype=1155}, requirements={rep="true"}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=1464, source={type="vendor", itemID=244676, currency="200", currencytype=1155}, requirements={rep="true"}, colors={"Dark Purple","Teal"}, budgetCost=1, size="Small"},
-      {decorID=1465, source={type="vendor", itemID=244677, currency="300", currencytype=1155}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=1, size="Small"},
-      {decorID=1466, source={type="vendor", itemID=244678, currency="100", currencytype=1155}, requirements={rep="true"}, colors={"Brown","Crimson","Purple"}, budgetCost=1, size="Small"},
-      {decorID=1919, source={type="vendor", itemID=246001, currency="200", currencytype=1155}, requirements={rep="true"}, colors={"Copper","Deep Red","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=1920, source={type="vendor", itemID=246002, currency="300", currencytype=1155}, requirements={rep="true"}, colors={"Brown","Copper","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=1444, source={type="vendor", itemID=244654, currency="100", currencytype=1155}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=1464, source={type="vendor", itemID=244676, currency="200", currencytype=1155}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Purple","Teal"}, budgetCost=1, size="Small"},
+      {decorID=1465, source={type="vendor", itemID=244677, currency="300", currencytype=1155}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=1, size="Small"},
+      {decorID=1466, source={type="vendor", itemID=244678, currency="100", currencytype=1155}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Brown","Crimson","Purple"}, budgetCost=1, size="Small"},
+      {decorID=1919, source={type="vendor", itemID=246001, currency="200", currencytype=1155}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Copper","Deep Red","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=1920, source={type="vendor", itemID=246002, currency="300", currencytype=1155}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Brown","Copper","Dark Purple"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -453,7 +453,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:4920:7700"
     },
     items={
-      {decorID=752, source={type="vendor", itemID=245448, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={achievement={id=11124}, rep="true"}, colors={"Dark Purple","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
+      {decorID=752, source={type="vendor", itemID=245448, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={achievement={id=11124}, reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Purple","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -504,11 +504,11 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="641:5540:7280"
     },
     items={
-      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220},{currency="8000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=3, size="Medium"},
-      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=5, size="Large"},
-      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="7000000", currencytype="money"},{currency="1000", currencytype=1220},{currency="5000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Dark Brown","Gray","Purple"}, budgetCost=1, size="Small"},
-      {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, requirements={rep="true"}, colors={"Dark Brown","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
-      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={rep="true"}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
+      {decorID=675, source={type="vendor", itemID=238859, costs={{currency="10000000", currencytype="money"},{currency="2000", currencytype=1220},{currency="8000000", currencytype="money"}}}, requirements={reputation={name="Dreamweavers", standing="Exalted"}}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=3, size="Medium"},
+      {decorID=677, source={type="vendor", itemID=238861, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={reputation={name="Dreamweavers", standing="Honored"}}, colors={"Dark Gray","Dark Purple","Purple"}, budgetCost=5, size="Large"},
+      {decorID=1695, source={type="vendor", itemID=245261, costs={{currency="7000000", currencytype="money"},{currency="1000", currencytype=1220},{currency="5000000", currencytype="money"}}}, requirements={reputation={name="Dreamweavers", standing="Revered"}}, colors={"Dark Brown","Gray","Purple"}, budgetCost=1, size="Small"},
+      {decorID=8195, source={type="vendor", itemID=251494, currency="200", currencytype=1220}, requirements={reputation={name="Dreamweavers", standing="Friendly"}}, colors={"Dark Brown","Light Purple","Navy Blue"}, budgetCost=1, size="Small"},
+      {decorID=15453, source={type="vendor", itemID=264168, costs={{currency="5000000", currencytype="money"},{currency="750", currencytype=1220},{currency="4000000", currencytype="money"}}}, requirements={reputation={name="Dreamweavers", standing="Honored"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
     }
   },
 

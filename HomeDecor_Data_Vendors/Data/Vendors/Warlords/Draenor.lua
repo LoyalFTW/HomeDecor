@@ -106,14 +106,14 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="622:4640:7460"
     },
     items={
-      {decorID=927, source={type="vendor", itemID=245423, currency="250", currencytype=824}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Light Purple"}, budgetCost=3, size="Medium"},
-      {decorID=8185, source={type="vendor", itemID=251476, currency="1000", currencytype=824}, requirements={rep="true"}, colors={"Dark Gray","Dark Purple","Royal Blue"}, budgetCost=5, size="Huge"},
-      {decorID=8188, source={type="vendor", itemID=251479, currency="1500", currencytype=824}, requirements={rep="true"}, colors={"Dark Gray","Royal Blue"}, budgetCost=5, size="Huge"},
-      {decorID=8190, source={type="vendor", itemID=251481, currency="500", currencytype=824}, requirements={rep="true"}, colors={"Blue","Dark Gray","Tan"}, budgetCost=5, size="Large"},
-      {decorID=8192, source={type="vendor", itemID=251483, currency="250", currencytype=824}, requirements={rep="true"}, colors={"Dark Brown","Dark Purple","Navy Blue"}, budgetCost=1, size="Small"},
-      {decorID=8193, source={type="vendor", itemID=251484, currency="1000", currencytype=824}, requirements={rep="true"}, colors={"Dark Brown","Dark Purple","Light Purple"}, budgetCost=5, size="Large"},
-      {decorID=8194, source={type="vendor", itemID=251493, currency="500", currencytype=824}, requirements={rep="true"}, colors={"Dark Gray","Gray","Royal Blue"}, budgetCost=5, size="Large"},
-      {decorID=8242, source={type="vendor", itemID=251551, currency="1500", currencytype=824}, requirements={rep="true"}, colors={"Copper","Dark Gray","Purple"}, budgetCost=5, size="Large"},
+      {decorID=927, source={type="vendor", itemID=245423, currency="250", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Friendly"}}, colors={"Dark Brown","Dark Gray","Light Purple"}, budgetCost=3, size="Medium"},
+      {decorID=8185, source={type="vendor", itemID=251476, currency="1000", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Revered"}}, colors={"Dark Gray","Dark Purple","Royal Blue"}, budgetCost=5, size="Huge"},
+      {decorID=8188, source={type="vendor", itemID=251479, currency="1500", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Exalted"}}, colors={"Dark Gray","Royal Blue"}, budgetCost=5, size="Huge"},
+      {decorID=8190, source={type="vendor", itemID=251481, currency="500", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Honored"}}, colors={"Blue","Dark Gray","Tan"}, budgetCost=5, size="Large"},
+      {decorID=8192, source={type="vendor", itemID=251483, currency="250", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Friendly"}}, colors={"Dark Brown","Dark Purple","Navy Blue"}, budgetCost=1, size="Small"},
+      {decorID=8193, source={type="vendor", itemID=251484, currency="1000", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Revered"}}, colors={"Dark Brown","Dark Purple","Light Purple"}, budgetCost=5, size="Large"},
+      {decorID=8194, source={type="vendor", itemID=251493, currency="500", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Honored"}}, colors={"Dark Gray","Gray","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=8242, source={type="vendor", itemID=251551, currency="1500", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Exalted"}}, colors={"Copper","Dark Gray","Purple"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -126,9 +126,9 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="622:4440:7520"
     },
     items={
-      {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
-      {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
-      {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"},
+      {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, requirements={reputation={name="Arakkoa Outcasts", standing="Honored"}}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, requirements={reputation={name="Arakkoa Outcasts", standing="Revered"}}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, requirements={reputation={name="Arakkoa Outcasts", standing="Friendly"}}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -162,9 +162,9 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="624:5330:6010"
     },
     items={
-      {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
-      {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
-      {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"},
+      {decorID=12203, source={type="vendor", itemID=258743, currency="80000", currencytype="money"}, requirements={reputation={name="Arakkoa Outcasts", standing="Honored"}}, colors={"Amber","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=12206, source={type="vendor", itemID=258746, currency="80000", currencytype="money"}, requirements={reputation={name="Arakkoa Outcasts", standing="Revered"}}, colors={"Copper","Dark Brown","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=12207, source={type="vendor", itemID=258747, currency="80000", currencytype="money"}, requirements={reputation={name="Arakkoa Outcasts", standing="Friendly"}}, colors={"Dark Brown","Light Brown","Orange"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -193,8 +193,8 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       worldmap="525:4800:6600"
     },
     items={
-      {decorID=1317, source={type="vendor", itemID=245431, costs={{currency="5000000", currencytype="money"},{currency="1000", currencytype=823}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
-      {decorID=1322, source={type="vendor", itemID=245433, costs={{currency="5000000", currencytype="money"},{currency="1000", currencytype=823}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=1317, source={type="vendor", itemID=245431, costs={{currency="5000000", currencytype="money"},{currency="1000", currencytype=823}}}, requirements={reputation={name="Laughing Skulls", standing="Friendly"}}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=1322, source={type="vendor", itemID=245433, costs={{currency="5000000", currencytype="money"},{currency="1000", currencytype=823}}}, requirements={reputation={name="Laughing Skulls", standing="Friendly"}}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
     }
   },
 

@@ -32,7 +32,7 @@ end
 
 
 local function Theme()
-  return (NS.UI.Theme and NS.UI.Theme.colors) or {}
+  return (NS.UI.Theme and NS.UI.Theme.colors) or (NS.UI.Controls and NS.UI.Controls.colors) or {}
 end
 
 local function Controls()
@@ -40,7 +40,45 @@ local function Controls()
 end
 
 local function DropdownWidget()
-  return NS.UI and NS.UI.Dropdown
+  local source = NS.UI and NS.UI.Dropdown
+  if not source or type(source.Show) ~= "function" then return nil end
+  if UIA.dropdownAdapter then return UIA.dropdownAdapter end
+  local adapter = {}
+  function adapter.Create(parent, label, icon, width, getValue, setValue, getOptions)
+    local C = Controls()
+    local button = C and C:CreateButton(parent, "", width or 160, 26) or CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    function button:GetOptions()
+      return type(getOptions) == "function" and getOptions() or getOptions or {}
+    end
+    function button:ApplyText()
+      local value = getValue and getValue()
+      local selected
+      for _, option in ipairs(self:GetOptions()) do
+        if option.value == value then selected = option.text or option.label or tostring(value) break end
+      end
+      self:SetText(tostring(label or "") .. ": " .. tostring(selected or value or "Select"))
+    end
+    button:SetScript("OnClick", function(self)
+      local options = {}
+      for _, option in ipairs(self:GetOptions()) do
+        if option.separator then
+          options[#options + 1] = { separator = true }
+        elseif option.title then
+          options[#options + 1] = { title = option.title }
+        elseif option.value ~= nil then
+          options[#options + 1] = { value = option.value, label = option.text or option.label or tostring(option.value) }
+        end
+      end
+      source:Show(self, options, getValue and getValue(), function(value)
+        if setValue then setValue(value) end
+        self:ApplyText()
+      end)
+    end)
+    button:ApplyText()
+    return button
+  end
+  UIA.dropdownAdapter = adapter
+  return adapter
 end
 
 local function Backdrop(frame, bg, border)
@@ -65,15 +103,7 @@ local function FS(parent, template)
 end
 
 local function Button(parent, label, width)
-  local T = Theme()
-  local b = CreateFrame("Button", nil, parent, "BackdropTemplate")
-  b:SetSize(width or 76, 24)
-  Backdrop(b, T.panel, T.border)
-  Hover(b, T.panel, T.hover)
-  b.text = FS(b, "GameFontNormalSmall")
-  b.text:SetPoint("CENTER")
-  b.text:SetText(label or "")
-  return b
+  return Controls():CreateButton(parent, label, width or 76, 24)
 end
 
 local function EditBox(parent)
@@ -436,6 +466,7 @@ local function DrawShape(parent, roomOrTemplate, pool, selected, scaleGlow)
     fill:SetColorTexture(ROOM_BLUE_SOFT[1], ROOM_BLUE_SOFT[2], ROOM_BLUE_SOFT[3], selected and 0.62 or 0.44)
 
     if outlinePoints then
+      -- Composite shapes get one outer silhouette, matching the website-style room cards.
     else
     local left = rect[1] * w
     local top = -rect[2] * h
@@ -700,6 +731,9 @@ function UIA:Create(parent)
     end
 
     if layout.blueprintPreview and layout.blueprintCode and newName ~= "" then
+      -- Keep the saved blueprint's own name in sync so the Blueprint List
+      -- category (and any future re-opens of this blueprint) use it too,
+      -- since Architect only has the layout name to rename otherwise.
       local blueprints = B()
       local rec = blueprints and blueprints.GetByCode and blueprints:GetByCode(layout.blueprintCode)
       if rec then
@@ -741,7 +775,7 @@ function UIA:Create(parent)
 
   local function layoutOptions()
     local db = sys:GetDB()
-    local opts = {}
+    local opts = { { title = "Layouts" } }
     local layouts = (db and db.layouts) or {}
     local canDelete = #layouts > 1
     for _, layout in ipairs(layouts) do
@@ -770,6 +804,7 @@ function UIA:Create(parent)
       }
     end
     opts[#opts + 1] = { separator = true }
+    opts[#opts + 1] = { title = "Layout Actions" }
     opts[#opts + 1] = { value = "new", text = "+ New Layout" }
     opts[#opts + 1] = { value = "duplicate", text = "Copy Current Layout" }
     opts[#opts + 1] = { value = "rename", text = "Rename Current" }
@@ -784,6 +819,7 @@ function UIA:Create(parent)
       if rec.code and not existingBlueprintLayouts[rec.code] then
         if not addedBlueprintHeader then
           opts[#opts + 1] = { separator = true }
+          opts[#opts + 1] = { title = "Saved Blueprints" }
           addedBlueprintHeader = true
         end
         opts[#opts + 1] = {
@@ -1163,20 +1199,14 @@ function UIA:Create(parent)
   changesTitle:SetText("House Changes")
   TextColor(changesTitle, "accent")
 
-  local changesScroll = CreateFrame("ScrollFrame", nil, right, "ScrollFrameTemplate")
+  local changesScroll = Controls():CreateScrollFrame(right, "ScrollFrameTemplate")
   changesScroll:SetPoint("TOPLEFT", changesTitle, "BOTTOMLEFT", 0, -8)
   changesScroll:SetPoint("BOTTOMRIGHT", right, "BOTTOMRIGHT", -24, 12)
-  changesScroll:EnableMouseWheel(true)
-  if Controls() and Controls().SkinScrollFrame then Controls():SkinScrollFrame(changesScroll) end
   local changesList = CreateFrame("Frame", nil, changesScroll)
   changesList:SetSize(220, 1)
-  changesScroll:SetScrollChild(changesList)
-  changesScroll:SetScript("OnSizeChanged", function(_, width)
+  Controls():ConfigureScrollFrame(changesScroll, changesList, { step = 42 })
+  changesScroll:HookScript("OnSizeChanged", function(_, width)
     changesList:SetWidth(max(1, (width or 220) - 2))
-  end)
-  changesScroll:SetScript("OnMouseWheel", function(self, delta)
-    local nextOffset = (self:GetVerticalScroll() or 0) - ((tonumber(delta) or 0) * 42)
-    self:SetVerticalScroll(max(0, min(self:GetVerticalScrollRange() or 0, nextOffset)))
   end)
   panel.changesScroll = changesScroll
   panel.changesList = changesList
@@ -1186,11 +1216,7 @@ function UIA:Create(parent)
   sharePopup:SetPoint("CENTER", panel, "CENTER", 0, 0)
   sharePopup:SetFrameStrata("DIALOG")
   sharePopup:SetFrameLevel(panel:GetFrameLevel() + 80)
-  sharePopup:EnableMouse(true)
-  sharePopup:SetMovable(true)
-  sharePopup:RegisterForDrag("LeftButton")
-  sharePopup:SetScript("OnDragStart", function(self) self:StartMoving() end)
-  sharePopup:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+  NS.UI.Controls:MakeMovable(sharePopup, sharePopup)
   sharePopup:Hide()
   Backdrop(sharePopup, { 0.035, 0.045, 0.065, 0.98 }, T.border)
   panel.sharePopup = sharePopup
@@ -1206,7 +1232,7 @@ function UIA:Create(parent)
   sharePopup.hint:SetJustifyH("LEFT")
   TextColor(sharePopup.hint, "textMuted")
 
-  local popupCloseX = Button(sharePopup, "X", 26)
+  local popupCloseX = Controls():CreateCloseButton(sharePopup, function() sharePopup:Hide() end, 26, 22)
   popupCloseX:SetPoint("TOPRIGHT", sharePopup, "TOPRIGHT", -10, -10)
 
   local shareEditor = CreateFrame("Frame", nil, sharePopup, "BackdropTemplate")
@@ -1214,11 +1240,9 @@ function UIA:Create(parent)
   shareEditor:SetPoint("BOTTOMRIGHT", sharePopup, "BOTTOMRIGHT", -14, 48)
   Backdrop(shareEditor, T.row or T.panel, T.border)
 
-  local shareScroll = CreateFrame("ScrollFrame", nil, shareEditor, "ScrollFrameTemplate")
+  local shareScroll = Controls():CreateScrollFrame(shareEditor, "ScrollFrameTemplate")
   shareScroll:SetPoint("TOPLEFT", 7, -7)
   shareScroll:SetPoint("BOTTOMRIGHT", -21, 7)
-  shareScroll:EnableMouseWheel(true)
-  if Controls() and Controls().SkinScrollFrame then Controls():SkinScrollFrame(shareScroll) end
 
   local shareBox = CreateFrame("EditBox", nil, shareScroll)
   shareBox:SetMultiLine(true)
@@ -1227,7 +1251,7 @@ function UIA:Create(parent)
   shareBox:SetFontObject(GameFontHighlightSmall)
   shareBox:SetTextInsets(2, 2, 2, 2)
   TextColor(shareBox, "text")
-  shareScroll:SetScrollChild(shareBox)
+  Controls():ConfigureScrollFrame(shareScroll, shareBox, { step = 48 })
   panel.shareScroll = shareScroll
   panel.shareBox = shareBox
 
@@ -1239,12 +1263,7 @@ function UIA:Create(parent)
     shareBox:SetHeight(max(1, shareScroll:GetHeight() or 1, textHeight + 14))
   end
 
-  shareScroll:SetScript("OnSizeChanged", resizeShareEditor)
-  shareScroll:SetScript("OnMouseWheel", function(self, delta)
-    local step = 48
-    local nextOffset = (self:GetVerticalScroll() or 0) - ((tonumber(delta) or 0) * step)
-    self:SetVerticalScroll(max(0, min(self:GetVerticalScrollRange() or 0, nextOffset)))
-  end)
+  shareScroll:HookScript("OnSizeChanged", resizeShareEditor)
   shareBox:SetScript("OnTextChanged", function()
     resizeShareEditor()
   end)
@@ -1254,9 +1273,9 @@ function UIA:Create(parent)
     local offset = shareScroll:GetVerticalScroll() or 0
     local viewport = shareScroll:GetHeight() or 1
     if top < offset then
-      shareScroll:SetVerticalScroll(top)
+      Controls():SetScrollOffset(shareScroll, top, false)
     elseif bottom > offset + viewport then
-      shareScroll:SetVerticalScroll(min(shareScroll:GetVerticalScrollRange() or bottom, bottom - viewport))
+      Controls():SetScrollOffset(shareScroll, bottom - viewport, false)
     end
   end)
 
@@ -1301,15 +1320,14 @@ function UIA:Create(parent)
     end
     shareBox:SetText(text or "")
     resizeShareEditor()
-    shareScroll:SetVerticalScroll(0)
+    Controls():ResetScrollFrame(shareScroll, false)
     sharePopup:Show()
     shareBox:SetFocus()
     shareBox:HighlightText()
-    shareScroll:SetVerticalScroll(0)
+    Controls():ResetScrollFrame(shareScroll, false)
   end
   panel.OpenSharePopup = openSharePopup
 
-  popupCloseX:SetScript("OnClick", function() sharePopup:Hide() end)
   popupClose:SetScript("OnClick", function() sharePopup:Hide() end)
   popupSelect:SetScript("OnClick", function()
     shareBox:SetFocus()
@@ -1797,6 +1815,7 @@ function UIA:Create(parent)
 
   local function MakeChangeRow(i)
     local row = CreateFrame("Frame", nil, changesList)
+    Controls():ForwardScrollWheel(row, changesScroll)
     row:SetHeight(20)
     row:SetPoint("TOPLEFT", changesList, "TOPLEFT", 0, -((i - 1) * 21))
     row:SetPoint("TOPRIGHT", changesList, "TOPRIGHT", 0, -((i - 1) * 21))
@@ -2115,7 +2134,8 @@ function UIA:Create(parent)
     self.roomStats:SetText("Cost: " .. tostring(sys:GetRoomCost(room)) ..
       "   Connections: " .. tostring(#(sys:GetRoomConnections(room) or {})) ..
       "   Rotation: " .. tostring(room.rotation or 0))
-    local capturedRoom = not isBlueprint and room.capture and room.capture.roomGUID ~= nil
+    local notices = NS.Systems and NS.Systems.RoomNameNotices
+    local capturedRoom = notices and not isBlueprint and room.capture and room.capture.roomGUID ~= nil
     self.markRoom:SetShown(capturedRoom)
     self.markStatus:SetShown(capturedRoom)
     changesTitle:ClearAllPoints()
@@ -2126,7 +2146,6 @@ function UIA:Create(parent)
     else
       changesTitle:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -18)
     end
-    local notices = NS.Systems and NS.Systems.RoomNameNotices
     local state = notices and notices:GetMappingState(room, activeLayout()) or "unmapped"
     if state == "first" then
       self.markRoom.text:SetText("Save Corner 2")
@@ -2186,7 +2205,7 @@ function UIA:Create(parent)
         row:Show()
       end
       self.changesList:SetHeight(max(1, #displayRows * 23))
-      self.changesScroll:SetVerticalScroll(0)
+      Controls():ResetScrollFrame(self.changesScroll, false)
       return
     end
     openInTrackerBtn:Hide()
@@ -2293,21 +2312,20 @@ function UIA:Create(parent)
       end
 
       local added = BL:AddMissing(req, blueprintName)
+      if BL.SetActive then
+        BL:SetActive(blueprintName)
+      end
       if added > 0 then
         ArchitectChat("Added " .. tostring(added) .. " item(s) to the Blueprint List under \"" .. tostring(blueprintName) .. "\".")
       end
     end
 
-    local TrackerUI = NS.UI and NS.UI.Tracker
-    if TrackerUI and TrackerUI.Show then
-      TrackerUI:Show()
-      local tframe = TrackerUI.frame
-      if tframe and tframe._SetActiveTab then
-        tframe._SetActiveTab("blueprint")
-      end
-      if tframe and tframe.RequestRefresh then
-        tframe:RequestRefresh("blueprint")
-      end
+    local TrackerUI = NS.UI and NS.UI.TrackerPanel
+    if TrackerUI then
+      if NS.UI.TrackerData then NS.UI.TrackerData:SetTab("blueprints") end
+      local tframe = TrackerUI:Create()
+      tframe:Show()
+      TrackerUI:Refresh(true)
     end
   end)
 
@@ -2445,7 +2463,6 @@ function UIA:Create(parent)
 
   local function doImport(text, name)
     if panel.SaveCanvasView then panel:SaveCanvasView() end
-    ArchitectChat("[debug] doImport received name = \"" .. tostring(name) .. "\"")
     local layout, err = sys:ImportAny(text, name)
     if layout then
       panel.selectedRoomID = layout.rooms and layout.rooms[1] and layout.rooms[1].id or nil
@@ -2511,9 +2528,8 @@ function UIA:Create(parent)
         DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor Architect:|r " .. tostring(err))
       end
       if not layout then return end
-      if reveal and NS.UI and NS.UI.MainFrame and NS.UI.MainFrame.SelectCategory then
-        NS.UI.MainFrame.SelectCategory("Architect")
-        NS.UI.MainFrame:Show()
+      if reveal and NS.UI and NS.UI.CatalogView then
+        NS.UI.CatalogView:Open("architect")
       end
       if reveal and sharePopup then sharePopup:Hide() end
       if reveal or panel:IsShown() then
@@ -2530,16 +2546,7 @@ function UIA:Create(parent)
 
     NS.OnMessage("HOMEDECOR_ARCHITECT_CAPTURED", function(layout, record)
       local rootUI = NS.UI
-      if rootUI then
-        local db = NS.db and NS.db.profile
-        if db and db.ui then db.ui.activeCategory = "Architect" end
-        rootUI.activeCategory = "Architect"
-        if rootUI.CreateMainFrame and not rootUI.MainFrame then rootUI:CreateMainFrame() end
-        if rootUI.MainFrame then
-          rootUI.MainFrame:Show()
-          if rootUI.MainFrame.view then rootUI.MainFrame.view:Hide() end
-        end
-      end
+      if rootUI and rootUI.CatalogView then rootUI.CatalogView:Open("architect") end
       if panel then
         panel:Show()
         if layout then
@@ -2571,6 +2578,14 @@ function UIA:Create(parent)
 
   self.panel = panel
   return panel
+end
+
+function UIA:Refresh()
+  if self.panel and self.panel.Refresh then self.panel:Refresh() end
+end
+
+function UIA:Toggle()
+  if NS.UI and NS.UI.CatalogView then NS.UI.CatalogView:Open("architect") end
 end
 
 return UIA

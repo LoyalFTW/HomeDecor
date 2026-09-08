@@ -75,10 +75,10 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       {decorID=935, source={type="vendor", itemID=245475, currency="300", currencytype=1560}, requirements={quest={id=51985}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Large"},
       {decorID=936, source={type="vendor", itemID=245470, currency="300", currencytype=1560}, requirements={quest={id=52978}}, colors={"Amber","Dark Gray","Gray"}, budgetCost=1, size="Small"},
       {decorID=941, source={type="vendor", itemID=245478, currency="200", currencytype=1560}, colors={"Dark Gray","Deep Red","Red"}, budgetCost=1, size="Small"},
-      {decorID=942, source={type="vendor", itemID=245479, currency="300", currencytype=1560}, requirements={rep="true"}, colors={"Dark Gray","Forest Green","Green"}, budgetCost=1, size="Small"},
+      {decorID=942, source={type="vendor", itemID=245479, currency="300", currencytype=1560}, requirements={reputation={name="The Honorbound", standing="Revered"}}, colors={"Dark Gray","Forest Green","Green"}, budgetCost=1, size="Small"},
       {decorID=944, source={type="vendor", itemID=241062, currency="200", currencytype=1560}, requirements={achievement={id=12509}}, colors={"Dark Purple","Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
-      {decorID=945, source={type="vendor", itemID=245480, currency="200", currencytype=1560}, requirements={rep="true"}, colors={"Bronze","Deep Red","Yellow"}, budgetCost=3, size="Medium"},
-      {decorID=946, source={type="vendor", itemID=245481, currency="300", currencytype=1560}, requirements={rep="true"}, colors={"Dark Brown","Gray","Green"}, budgetCost=3, size="Medium"},
+      {decorID=945, source={type="vendor", itemID=245480, currency="200", currencytype=1560}, requirements={reputation={name="The Honorbound", standing="Honored"}}, colors={"Bronze","Deep Red","Yellow"}, budgetCost=3, size="Medium"},
+      {decorID=946, source={type="vendor", itemID=245481, currency="300", currencytype=1560}, requirements={reputation={name="The Honorbound", standing="Revered"}}, colors={"Dark Brown","Gray","Green"}, budgetCost=3, size="Medium"},
     }
   },
 

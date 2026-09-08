@@ -15,8 +15,8 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="371:5670:4440"
     },
     items={
-      {decorID=3870, source={type="vendor", itemID=247730, currency="8000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Deep Red","Navy Blue"}, budgetCost=5, size="Huge"},
-      {decorID=3872, source={type="vendor", itemID=247732, currency="4000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Deep Red","Red"}, budgetCost=5, size="Large"},
+      {decorID=3870, source={type="vendor", itemID=247730, currency="8000000", currencytype="money"}, requirements={reputation={name="Order of the Cloud Serpent", standing="Revered"}}, colors={"Dark Brown","Deep Red","Navy Blue"}, budgetCost=5, size="Huge"},
+      {decorID=3872, source={type="vendor", itemID=247732, currency="4000000", currencytype="money"}, requirements={reputation={name="Order of the Cloud Serpent", standing="Honored"}}, colors={"Dark Brown","Deep Red","Red"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -42,10 +42,10 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="376:5320:5160"
     },
     items={
-      {decorID=1201, source={type="vendor", itemID=245508, currency="8000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Purple","Light Brown"}, budgetCost=5, size="Large"},
-      {decorID=3840, source={type="vendor", itemID=247670, currency="8000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Deep Red"}, budgetCost=5, size="Large"},
-      {decorID=3874, source={type="vendor", itemID=247734, currency="6400000", currencytype="money"}, requirements={rep="true"}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
-      {decorID=3877, source={type="vendor", itemID=247737, currency="2400000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Gray","Tan"}, budgetCost=1, size="Medium"},
+      {decorID=1201, source={type="vendor", itemID=245508, currency="8000000", currencytype="money"}, requirements={reputation={name="Tina Mudclaw", standing="Good Friend"}}, colors={"Dark Brown","Dark Purple","Light Brown"}, budgetCost=5, size="Large"},
+      {decorID=3840, source={type="vendor", itemID=247670, currency="8000000", currencytype="money"}, requirements={reputation={name="Ella", standing="Good Friend"}}, colors={"Dark Brown","Dark Gray","Deep Red"}, budgetCost=5, size="Large"},
+      {decorID=3874, source={type="vendor", itemID=247734, currency="6400000", currencytype="money"}, requirements={reputation={name="Farmer Fung", standing="Good Friend"}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
+      {decorID=3877, source={type="vendor", itemID=247737, currency="2400000", currencytype="money"}, requirements={reputation={name="Jogu the Drunk", standing="Good Friend"}}, colors={"Dark Gray","Tan"}, budgetCost=1, size="Medium"},
     }
   },
 
@@ -153,11 +153,11 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="390:8220:2940"
     },
     items={
-      {decorID=1172, source={type="vendor", itemID=245512, currency="2400000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=3832, source={type="vendor", itemID=247662, currency="4000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Silver"}, budgetCost=3, size="Medium"},
-      {decorID=3833, source={type="vendor", itemID=247663, currency="16000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Red","Silver"}, budgetCost=5, size="Huge"},
-      {decorID=3993, source={type="vendor", itemID=247855, currency="2400000", currencytype="money"}, requirements={rep="true"}, colors={"Amber","Dark Brown","Red"}, budgetCost=1, size="Small"},
-      {decorID=11873, source={type="vendor", itemID=258147, currency="8000000", currencytype="money"}, requirements={rep="true"}, colors={"Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
+      {decorID=1172, source={type="vendor", itemID=245512, currency="2400000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Friendly"}}, colors={"Dark Brown","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=3832, source={type="vendor", itemID=247662, currency="4000000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Honored"}}, colors={"Dark Brown","Dark Gray","Silver"}, budgetCost=3, size="Medium"},
+      {decorID=3833, source={type="vendor", itemID=247663, currency="16000000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Revered"}}, colors={"Dark Brown","Red","Silver"}, budgetCost=5, size="Huge"},
+      {decorID=3993, source={type="vendor", itemID=247855, currency="2400000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Honored"}}, colors={"Amber","Dark Brown","Red"}, budgetCost=1, size="Small"},
+      {decorID=11873, source={type="vendor", itemID=258147, currency="8000000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Revered"}}, colors={"Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
     }
   },
 

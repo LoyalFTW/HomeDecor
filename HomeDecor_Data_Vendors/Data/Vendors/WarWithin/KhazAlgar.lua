@@ -54,7 +54,7 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2214:4320:3280"
     },
     items={
-      {decorID=9236, source={type="vendor", itemID=253162, currency="600", currencytype=2815}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=9236, source={type="vendor", itemID=253162, currency="600", currencytype=2815}, requirements={reputation={name="The Assembly of the Deeps", standing="Renown 12"}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -67,10 +67,10 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2339:3920:2440"
     },
     items={
-      {decorID=760, source={type="vendor", itemID=245295, currency="1000", currencytype=2815}, requirements={rep="true"}, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
-      {decorID=761, source={type="vendor", itemID=245296, currency="1000", currencytype=2815}, requirements={rep="true"}, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
-      {decorID=762, source={type="vendor", itemID=245297, currency="1000", currencytype=2815}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=1, size="Small"},
-      {decorID=1750, source={type="vendor", itemID=245561, currency="620", currencytype=2815}, requirements={rep="true"}, colors={"Amber","Copper","Dark Brown"}, budgetCost=3, size="Medium"},
+      {decorID=760, source={type="vendor", itemID=245295, currency="1000", currencytype=2815}, requirements={reputation={name="Council of Dornogal", standing="Renown 15"}}, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
+      {decorID=761, source={type="vendor", itemID=245296, currency="1000", currencytype=2815}, requirements={reputation={name="Council of Dornogal", standing="Renown 15"}}, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=1, size="Small"},
+      {decorID=762, source={type="vendor", itemID=245297, currency="1000", currencytype=2815}, requirements={reputation={name="Council of Dornogal", standing="Renown 15"}}, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=1, size="Small"},
+      {decorID=1750, source={type="vendor", itemID=245561, currency="620", currencytype=2815}, requirements={reputation={name="Council of Dornogal", standing="Renown 9"}}, colors={"Amber","Copper","Dark Brown"}, budgetCost=3, size="Medium"},
       {decorID=9242, source={type="vendor", itemID=253168, costs={{currency="10000", currencytype="money"},{currency="9500", currencytype="money"},{currency="200000", currencytype="money"},{currency="8000", currencytype="money"}}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
     }
   },
@@ -97,8 +97,8 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:2970:4100"
     },
     items={
-      {decorID=1268, source={type="vendor", itemID=245307, currency="800", currencytype=2815}, requirements={rep="true"}, colors={"Beige","Bronze","Dark Gray"}, budgetCost=3, size="Medium"},
-      {decorID=11127, source={type="vendor", itemID=256327, currency="450", currencytype=2815}, requirements={rep="true"}, colors={"Brown","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=1268, source={type="vendor", itemID=245307, currency="800", currencytype=2815}, requirements={reputation={name="Darkfuse Solutions", standing="Honored"}}, colors={"Beige","Bronze","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=11127, source={type="vendor", itemID=256327, currency="450", currencytype=2815}, requirements={reputation={name="Darkfuse Solutions", standing="Friendly"}}, colors={"Brown","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -111,8 +111,8 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:6320:1680"
     },
     items={
-      {decorID=4560, source={type="vendor", itemID=248758, currency="900", currencytype=2815}, requirements={rep="true"}, colors={"Dark Gray","Forest Green","Gold"}, budgetCost=1, size="Small"},
-      {decorID=10853, source={type="vendor", itemID=255642, currency="475", currencytype=2815}, requirements={rep="true"}, colors={"Black","Dark Brown","Yellow"}, budgetCost=3, size="Medium"},
+      {decorID=4560, source={type="vendor", itemID=248758, currency="900", currencytype=2815}, requirements={reputation={name="Blackwater Cartel", standing="Revered"}}, colors={"Dark Gray","Forest Green","Gold"}, budgetCost=1, size="Small"},
+      {decorID=10853, source={type="vendor", itemID=255642, currency="475", currencytype=2815}, requirements={reputation={name="Blackwater Cartel", standing="Honored"}}, colors={"Black","Dark Brown","Yellow"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -125,8 +125,8 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:3900:2200"
     },
     items={
-      {decorID=1259, source={type="vendor", itemID=245313, currency="450", currencytype=2815}, requirements={rep="true"}, colors={"Dark Brown","Purple","Teal"}, budgetCost=1, size="Small"},
-      {decorID=10889, source={type="vendor", itemID=255674, currency="450", currencytype=2815}, requirements={rep="true"}, colors={"Bronze","Brown","Dark Brown"}, budgetCost=1, size="Medium"},
+      {decorID=1259, source={type="vendor", itemID=245313, currency="450", currencytype=2815}, requirements={reputation={name="Bilgewater Cartel", standing="Honored"}}, colors={"Dark Brown","Purple","Teal"}, budgetCost=1, size="Small"},
+      {decorID=10889, source={type="vendor", itemID=255674, currency="450", currencytype=2815}, requirements={reputation={name="Bilgewater Cartel", standing="Honored"}}, colors={"Bronze","Brown","Dark Brown"}, budgetCost=1, size="Medium"},
     }
   },
 
@@ -139,8 +139,8 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:5320:7260"
     },
     items={
-      {decorID=1269, source={type="vendor", itemID=245311, currency="600", currencytype=2815}, requirements={rep="true"}, colors={"Dark Gray","Forest Green","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=10857, source={type="vendor", itemID=255647, currency="650", currencytype=2815}, requirements={rep="true"}, colors={"Brown","Copper","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=1269, source={type="vendor", itemID=245311, currency="600", currencytype=2815}, requirements={reputation={name="Venture Company", standing="Honored"}}, colors={"Dark Gray","Forest Green","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=10857, source={type="vendor", itemID=255647, currency="650", currencytype=2815}, requirements={reputation={name="Venture Company", standing="Revered"}}, colors={"Brown","Copper","Dark Gray"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -153,8 +153,8 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:2720:7240"
     },
     items={
-      {decorID=1265, source={type="vendor", itemID=245321, currency="400", currencytype=2815}, requirements={rep="true"}, colors={"Dark Gray","Gray"}, budgetCost=1, size="Small"},
-      {decorID=10852, source={type="vendor", itemID=255641, currency="500", currencytype=2815}, requirements={rep="true"}, colors={"Dark Gray","Forest Green","Yellow"}, budgetCost=1, size="Small"},
+      {decorID=1265, source={type="vendor", itemID=245321, currency="400", currencytype=2815}, requirements={reputation={name="Steamwheedle Cartel", standing="Friendly"}}, colors={"Dark Gray","Gray"}, budgetCost=1, size="Small"},
+      {decorID=10852, source={type="vendor", itemID=255641, currency="500", currencytype=2815}, requirements={reputation={name="Steamwheedle Cartel", standing="Honored"}}, colors={"Dark Gray","Forest Green","Yellow"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -167,10 +167,10 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:4380:5080"
     },
     items={
-      {decorID=1257, source={type="vendor", itemID=245314, costs={{currency="650", currencytype=2815},{currency="850", currencytype=2815}}}, requirements={rep="true"}, colors={"Beige","Dark Gray","Teal"}, budgetCost=1, size="Small"},
-      {decorID=1258, source={type="vendor", itemID=243312, costs={{currency="700", currencytype=2815},{currency="900", currencytype=2815}}}, requirements={rep="true"}, colors={"Dark Gray","Forest Green"}, budgetCost=3, size="Medium"},
-      {decorID=1262, source={type="vendor", itemID=245319, currency="350", currencytype=2815}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
-      {decorID=1263, source={type="vendor", itemID=245318, currency="450", currencytype=2815}, requirements={rep="true"}, colors={"Copper","Dark Gray","Teal"}, budgetCost=1, size="Medium"},
+      {decorID=1257, source={type="vendor", itemID=245314, costs={{currency="650", currencytype=2815},{currency="850", currencytype=2815}}}, requirements={reputation={name="The Cartels of Undermine", standing="Renown 10"}}, colors={"Beige","Dark Gray","Teal"}, budgetCost=1, size="Small"},
+      {decorID=1258, source={type="vendor", itemID=243312, costs={{currency="700", currencytype=2815},{currency="900", currencytype=2815}}}, requirements={reputation={name="The Cartels of Undermine", standing="Renown 10"}}, colors={"Dark Gray","Forest Green"}, budgetCost=3, size="Medium"},
+      {decorID=1262, source={type="vendor", itemID=245319, currency="350", currencytype=2815}, requirements={reputation={name="The Cartels of Undermine", standing="Renown 5"}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
+      {decorID=1263, source={type="vendor", itemID=245318, currency="450", currencytype=2815}, requirements={reputation={name="The Cartels of Undermine", standing="Renown 5"}}, colors={"Copper","Dark Gray","Teal"}, budgetCost=1, size="Medium"},
     }
   },
 
@@ -247,10 +247,10 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2346:0710:5300"
     },
     items={
-      {decorID=1257, source={type="vendor", itemID=245314, costs={{currency="650", currencytype=2815},{currency="850", currencytype=2815}}}, requirements={rep="true"}, colors={"Beige","Dark Gray","Teal"}, budgetCost=1, size="Small"},
-      {decorID=1258, source={type="vendor", itemID=243312, costs={{currency="700", currencytype=2815},{currency="900", currencytype=2815}}}, requirements={rep="true"}, colors={"Dark Gray","Forest Green"}, budgetCost=3, size="Medium"},
-      {decorID=1262, source={type="vendor", itemID=245319, currency="350", currencytype=2815}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
-      {decorID=1263, source={type="vendor", itemID=245318, currency="450", currencytype=2815}, requirements={rep="true"}, colors={"Copper","Dark Gray","Teal"}, budgetCost=1, size="Medium"},
+      {decorID=1257, source={type="vendor", itemID=245314, costs={{currency="650", currencytype=2815},{currency="850", currencytype=2815}}}, requirements={reputation={name="The Cartels of Undermine", standing="Renown 10"}}, colors={"Beige","Dark Gray","Teal"}, budgetCost=1, size="Small"},
+      {decorID=1258, source={type="vendor", itemID=243312, costs={{currency="700", currencytype=2815},{currency="900", currencytype=2815}}}, requirements={reputation={name="The Cartels of Undermine", standing="Renown 10"}}, colors={"Dark Gray","Forest Green"}, budgetCost=3, size="Medium"},
+      {decorID=1262, source={type="vendor", itemID=245319, currency="350", currencytype=2815}, requirements={reputation={name="The Cartels of Undermine", standing="Renown 5"}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
+      {decorID=1263, source={type="vendor", itemID=245318, currency="450", currencytype=2815}, requirements={reputation={name="The Cartels of Undermine", standing="Renown 5"}}, colors={"Copper","Dark Gray","Teal"}, budgetCost=1, size="Medium"},
     }
   },
 
@@ -309,7 +309,7 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
     items={
       {decorID=9178, source={type="vendor", itemID=253020, currency="500", currencytype=2815}, requirements={quest={id=78761}}, colors={"Copper","Dark Brown","Tan"}, budgetCost=1, size="Small"},
       {decorID=9188, source={type="vendor", itemID=253040, currency="650", currencytype=2815}, requirements={quest={id=82144}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
-      {decorID=9236, source={type="vendor", itemID=253162, currency="600", currencytype=2815}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=9236, source={type="vendor", itemID=253162, currency="600", currencytype=2815}, requirements={reputation={name="The Assembly of the Deeps", standing="Renown 12"}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=3, size="Medium"},
       {decorID=9246, source={type="vendor", itemID=253172, currency="850", currencytype=2815}, requirements={quest={id=83160}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=5, size="Large"},
     }
   },

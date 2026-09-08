@@ -29,11 +29,11 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       worldmap="1161:6760:2180"
     },
     items={
-      {decorID=2091, source={type="vendor", itemID=246222, currency="75", currencytype=1560}, requirements={rep="true"}, colors={"Dark Brown"}, budgetCost=1, size="Large"},
-      {decorID=8984, source={type="vendor", itemID=252036, currency="500", currencytype=1560}, requirements={rep="true"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=5, size="Large"},
-      {decorID=9036, source={type="vendor", itemID=252387, currency="100", currencytype=1560}, requirements={rep="true"}, colors={"Black","Dark Gray"}, budgetCost=1, size="Medium"},
-      {decorID=9037, source={type="vendor", itemID=252388, currency="50", currencytype=1560}, requirements={rep="true"}, colors={"Black","Dark Gray"}, budgetCost=1, size="Medium"},
-      {decorID=9051, source={type="vendor", itemID=252402, currency="450", currencytype=1560}, requirements={rep="true"}, colors={"Dark Gray","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=2091, source={type="vendor", itemID=246222, currency="75", currencytype=1560}, requirements={reputation={name="Proudmoore Admiralty", standing="Honored"}}, colors={"Dark Brown"}, budgetCost=1, size="Large"},
+      {decorID=8984, source={type="vendor", itemID=252036, currency="500", currencytype=1560}, requirements={reputation={name="Proudmoore Admiralty", standing="Revered"}}, colors={"Dark Brown","Olive","Tan"}, budgetCost=5, size="Large"},
+      {decorID=9036, source={type="vendor", itemID=252387, currency="100", currencytype=1560}, requirements={reputation={name="Proudmoore Admiralty", standing="Friendly"}}, colors={"Black","Dark Gray"}, budgetCost=1, size="Medium"},
+      {decorID=9037, source={type="vendor", itemID=252388, currency="50", currencytype=1560}, requirements={reputation={name="Proudmoore Admiralty", standing="Friendly"}}, colors={"Black","Dark Gray"}, budgetCost=1, size="Medium"},
+      {decorID=9051, source={type="vendor", itemID=252402, currency="450", currencytype=1560}, requirements={reputation={name="Proudmoore Admiralty", standing="Revered"}}, colors={"Dark Gray","Olive"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -91,14 +91,14 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       worldmap="1460:7140:3860"
     },
     items={
-      {decorID=2323, source={type="vendor", itemID=246480, costs={{currency="8000000", currencytype="money"},{currency="5", itemID=168327},{currency="5", itemID=168832}}}, requirements={rep="true"}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=5, size="Huge"},
-      {decorID=2327, source={type="vendor", itemID=246484, costs={{currency="1", itemID=170500}}}, requirements={rep="true"}, colors={"Blue","Dark Brown","Teal"}, budgetCost=1, size="Small"},
-      {decorID=2337, source={type="vendor", itemID=246497, costs={{currency="1", itemID=170500}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Yellow"}, budgetCost=1, size="Medium"},
-      {decorID=2338, source={type="vendor", itemID=246498, costs={{currency="800000", currencytype="money"},{currency="1", itemID=170500}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Gold"}, budgetCost=3, size="Large"},
-      {decorID=2339, source={type="vendor", itemID=246499, costs={{currency="1200000", currencytype="money"},{currency="2", itemID=170500}}}, requirements={rep="true"}, colors={"Blue","Dark Brown","Teal"}, budgetCost=3, size="Large"},
-      {decorID=2341, source={type="vendor", itemID=246501, costs={{currency="1600000", currencytype="money"},{currency="2", itemID=168832}}}, requirements={rep="true"}, colors={"Bronze","Dark Brown","Silver"}, budgetCost=3, size="Medium"},
-      {decorID=2343, source={type="vendor", itemID=246503, costs={{currency="800000", currencytype="money"},{currency="2", itemID=169610}}}, requirements={rep="true"}, colors={"Copper","Dark Brown","Teal"}, budgetCost=3, size="Medium"},
-      {decorID=2437, source={type="vendor", itemID=246605, costs={{currency="1200000", currencytype="money"},{currency="2", itemID=168327}}}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=3, size="Large"},
+      {decorID=2323, source={type="vendor", itemID=246480, costs={{currency="8000000", currencytype="money"},{currency="5", itemID=168327},{currency="5", itemID=168832}}}, requirements={reputation={name="Rustbolt Resistance", standing="Exalted"}}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=5, size="Huge"},
+      {decorID=2327, source={type="vendor", itemID=246484, costs={{currency="1", itemID=170500}}}, requirements={reputation={name="Rustbolt Resistance", standing="Friendly"}}, colors={"Blue","Dark Brown","Teal"}, budgetCost=1, size="Small"},
+      {decorID=2337, source={type="vendor", itemID=246497, costs={{currency="1", itemID=170500}}}, requirements={reputation={name="Rustbolt Resistance", standing="Friendly"}}, colors={"Copper","Dark Brown","Yellow"}, budgetCost=1, size="Medium"},
+      {decorID=2338, source={type="vendor", itemID=246498, costs={{currency="800000", currencytype="money"},{currency="1", itemID=170500}}}, requirements={reputation={name="Rustbolt Resistance", standing="Honored"}}, colors={"Copper","Dark Brown","Gold"}, budgetCost=3, size="Large"},
+      {decorID=2339, source={type="vendor", itemID=246499, costs={{currency="1200000", currencytype="money"},{currency="2", itemID=170500}}}, requirements={reputation={name="Rustbolt Resistance", standing="Revered"}}, colors={"Blue","Dark Brown","Teal"}, budgetCost=3, size="Large"},
+      {decorID=2341, source={type="vendor", itemID=246501, costs={{currency="1600000", currencytype="money"},{currency="2", itemID=168832}}}, requirements={reputation={name="Rustbolt Resistance", standing="Exalted"}}, colors={"Bronze","Dark Brown","Silver"}, budgetCost=3, size="Medium"},
+      {decorID=2343, source={type="vendor", itemID=246503, costs={{currency="800000", currencytype="money"},{currency="2", itemID=169610}}}, requirements={reputation={name="Rustbolt Resistance", standing="Honored"}}, colors={"Copper","Dark Brown","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=2437, source={type="vendor", itemID=246605, costs={{currency="1200000", currencytype="money"},{currency="2", itemID=168327}}}, requirements={reputation={name="Rustbolt Resistance", standing="Revered"}}, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=3, size="Large"},
     }
   },
 
@@ -143,11 +143,11 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
     },
     items={
       {decorID=1900, source={type="vendor", itemID=245984, currency="350", currencytype=1560}, requirements={quest={id=50783}}, colors={"Amber","Copper","Teal"}, budgetCost=3, size="Medium"},
-      {decorID=9043, source={type="vendor", itemID=252394, currency="550", currencytype=1560}, requirements={rep="true"}, colors={"Dark Brown","Dark Gray","Olive"}, budgetCost=5, size="Large"},
+      {decorID=9043, source={type="vendor", itemID=252394, currency="550", currencytype=1560}, requirements={reputation={name="Storm's Wake", standing="Revered"}}, colors={"Dark Brown","Dark Gray","Olive"}, budgetCost=5, size="Large"},
       {decorID=9044, source={type="vendor", itemID=252395, currency="450", currencytype=1560}, requirements={quest={id=51401}}, colors={"Copper","Dark Brown","Light Brown"}, budgetCost=5, size="Large"},
-      {decorID=9045, source={type="vendor", itemID=252396, currency="125", currencytype=1560}, requirements={rep="true"}, colors={"Light Brown","Orange","Teal"}, budgetCost=1, size="Small"},
-      {decorID=9047, source={type="vendor", itemID=252398, currency="200", currencytype=1560}, requirements={rep="true"}, colors={"Black","Dark Gray"}, budgetCost=1, size="Small"},
-      {decorID=9139, source={type="vendor", itemID=252652, currency="800", currencytype=1560}, requirements={rep="true"}, colors={"Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=9045, source={type="vendor", itemID=252396, currency="125", currencytype=1560}, requirements={reputation={name="Storm's Wake", standing="Friendly"}}, colors={"Light Brown","Orange","Teal"}, budgetCost=1, size="Small"},
+      {decorID=9047, source={type="vendor", itemID=252398, currency="200", currencytype=1560}, requirements={reputation={name="Storm's Wake", standing="Honored"}}, colors={"Black","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=9139, source={type="vendor", itemID=252652, currency="800", currencytype=1560}, requirements={reputation={name="Storm's Wake", standing="Revered"}}, colors={"Dark Brown"}, budgetCost=5, size="Large"},
       {decorID=9142, source={type="vendor", itemID=252655, currency="175", currencytype=1560}, requirements={quest={id=50611}}, colors={"Copper","Gold","Teal"}, budgetCost=1, size="Small"},
     }
   },

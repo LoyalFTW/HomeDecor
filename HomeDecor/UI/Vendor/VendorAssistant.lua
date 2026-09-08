@@ -1,751 +1,520 @@
-local ADDON, NS = ...
+local _, NS = ...
 
 NS.UI = NS.UI or {}
-local Assistant = NS.UI.VendorAssistant or {}
-NS.UI.VendorAssistant = Assistant
+local VendorAssistant = {}
+NS.UI.VendorAssistant = VendorAssistant
 
-local L = NS.L
-local CreateFrame = _G.CreateFrame
-local MerchantFrame = _G.MerchantFrame
-local UIParent = _G.UIParent
-local GetItemInfo = _G.GetItemInfo
-local GetMerchantNumItems = _G.GetMerchantNumItems
-local GetMerchantItemInfo = _G.GetMerchantItemInfo
-local GetMerchantItemID = _G.GetMerchantItemID
-local GetMerchantItemLink = _G.GetMerchantItemLink
-local GetMerchantItemCostInfo = _G.GetMerchantItemCostInfo
-local GetMerchantItemCostItem = _G.GetMerchantItemCostItem
-local GetCoinTextureString = _G.GetCoinTextureString
-local UnitGUID = _G.UnitGUID
-local strsplit = _G.strsplit
-local GetTime = _G.GetTime
-local C_Timer = _G.C_Timer
-local unpack = _G.unpack or table.unpack
-
-local Controls = NS.UI.Controls
-local RowStyles = NS.UI.RowStyles
-local MapUtil = NS.UI.MapPopupUtil
-local Favorite = NS.UI.FavoriteStar
-local IA = NS.UI.ItemInteractions
-
-local DRAWER_W = 320
-local DRAWER_H = 408
-local TAB_W = 28
-local TAB_H = 208
-local ANIM_TIME = 0.16
-
-local FILTERS = {
-  { key = "missing", label = "VENDOR_ASSISTANT_MISSING" },
-  { key = "saved", label = "VENDOR_ASSISTANT_SAVED" },
-  { key = "blueprint", label = "VENDOR_ASSISTANT_BLUEPRINT" },
-}
-
-local function Theme()
-  return NS.UI and NS.UI.Theme and NS.UI.Theme.colors or {}
-end
-
-local function ProfileState()
-  local profile = NS.db and NS.db.profile
-  if not profile then return nil end
-  profile.vendor = profile.vendor or {}
-  profile.vendor.assistant = profile.vendor.assistant or {}
-  local state = profile.vendor.assistant
-  if state.drawerStyle == nil then
-    state.open = false
-    state.drawerStyle = true
-  elseif state.open == nil then
-    state.open = false
-  end
-  if state.filter ~= "saved" and state.filter ~= "missing" and state.filter ~= "blueprint" then
-    state.filter = "missing"
-  end
-  if state.compactRows == nil then state.compactRows = true end
-  if state.showPrices == nil then state.showPrices = true end
-  return state
-end
-
-local function ItemIDFromLink(link)
-  if type(link) ~= "string" then return nil end
-  local id = link:match("item:(%d+)")
-  return id and tonumber(id) or nil
-end
+local ROW_HEIGHT = 46
+local ROW_COUNT = 6
+local QUESTION_MARK_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
 
 local function MerchantItemID(index)
-  if GetMerchantItemID then
-    local ok, itemID = pcall(GetMerchantItemID, index)
-    if ok and tonumber(itemID) then return tonumber(itemID) end
-  end
-  return GetMerchantItemLink and ItemIDFromLink(GetMerchantItemLink(index)) or nil
+  if type(_G.GetMerchantItemID) ~= "function" then return nil end
+  local ok, itemID = pcall(_G.GetMerchantItemID, index)
+  return ok and tonumber(itemID) or nil
 end
 
-local function CurrentNPCID()
-  if not UnitGUID then return nil end
-  local ok, guid = pcall(UnitGUID, "npc")
-  if not ok or type(guid) ~= "string" then return nil end
-  if _G.issecretvalue and _G.issecretvalue(guid) then return nil end
-  local unitType, _, _, _, _, npcID = strsplit("-", guid)
-  if unitType ~= "Creature" and unitType ~= "Vehicle" then return nil end
-  return tonumber(npcID)
+local function MerchantInfo(index)
+  local api = _G.C_MerchantFrame and _G.C_MerchantFrame.GetItemInfo
+  if type(api) == "function" then
+    local ok, info = pcall(api, index)
+    if ok and type(info) == "table" then return info end
+  end
+  if type(_G.GetMerchantItemInfo) ~= "function" then return nil end
+  local ok, name, texture, price, quantity, numAvailable, isUsable, extendedCost = pcall(_G.GetMerchantItemInfo, index)
+  if not ok then return nil end
+  return { name = name, texture = texture, price = price, quantity = quantity, numAvailable = numAvailable, isUsable = isUsable, hasExtendedCost = extendedCost }
 end
 
-local function IsSaved(itemID)
-  if Favorite and Favorite.IsFavorite then
-    return Favorite:IsFavorite(itemID)
-  end
-  local favorites = NS.db and NS.db.profile and NS.db.profile.favorites
-  return favorites and favorites[itemID] and true or false
+local function FormatGold(value)
+  if value <= 0 then return nil end
+  if type(_G.GetCoinTextureString) == "function" then return _G.GetCoinTextureString(value) end
+  return tostring(value) .. " copper"
 end
 
-local function SetStarTexture(texture, active)
-  if texture.SetAtlas then
-    texture:SetAtlas(active and "auctionhouse-icon-favorite" or "auctionhouse-icon-favorite-off", true)
-  else
-    texture:SetTexture("Interface\\Common\\ReputationStar")
-  end
-  texture:SetVertexColor(1, active and 0.84 or 0.78, active and 0.24 or 0.64, 1)
-  texture:SetAlpha(active and 1 or 0.62)
-end
-
-local function ToggleSaved(itemID)
-  local saved
-  if Favorite and Favorite.Toggle then
-    saved = Favorite:Toggle(itemID)
-  else
-    local favorites = NS.db and NS.db.profile and NS.db.profile.favorites
-    if not favorites then return false end
-    favorites[itemID] = not favorites[itemID]
-    if not favorites[itemID] then favorites[itemID] = nil end
-    saved = favorites[itemID] and true or false
-  end
-
-  local tracker = NS.UI and NS.UI.Tracker
-  if tracker and tracker.frame and tracker.frame.RequestRefresh then
-    tracker.frame:RequestRefresh("saved")
-  end
-  local main = NS.UI and NS.UI.MainFrame
-  if main and main.view and main.view.RequestRender then
-    main.view:RequestRender(false)
-  end
-  return saved
-end
-
-local function IsCollected(item)
-  if MapUtil and MapUtil.IsCollected then
-    return MapUtil.IsCollected(item.decorID)
-  end
-  local collection = NS.Systems and NS.Systems.Collection
-  if collection and collection.IsCollected then
-    local ok, value = pcall(collection.IsCollected, collection, { decorID = item.decorID })
-    return ok and value and true or false
-  end
-  return false
-end
-
-local function BlueprintMatches(itemID)
-  local BL = NS.Systems and NS.Systems.BlueprintList
-  if not BL or not BL.FindByItemID then return nil end
-  local matches = BL:FindByItemID(itemID)
-  if not matches or #matches == 0 then return nil end
-  return matches
-end
-
-local function BlueprintNamesText(matches)
-  if not matches or #matches == 0 then return nil end
-  local names = {}
-  for _, match in ipairs(matches) do
-    names[#names + 1] = match.category
-  end
-  table.sort(names)
-  return table.concat(names, ", ")
-end
-
-local function LiveMerchantItems()
-  local byItem = {}
-  local total = GetMerchantNumItems and GetMerchantNumItems() or 0
-  for index = 1, total do
-    local itemID = MerchantItemID(index)
-    if itemID then
-      local price, extendedCost = 0, false
-      if GetMerchantItemInfo then
-        local ok, _, _, livePrice, _, _, _, liveExtended = pcall(GetMerchantItemInfo, index)
-        if ok then
-          price = tonumber(livePrice) or 0
-          extendedCost = liveExtended and true or false
-        end
-      end
-      byItem[itemID] = {
-        index = index,
-        price = price,
-        extendedCost = extendedCost,
-      }
+local function MerchantCosts(index, info, costCount)
+  local costs = {}
+  local price = info and tonumber(info.price) or 0
+  if price > 0 then costs[#costs + 1] = { kind = "gold", amount = price, name = "gold" } end
+  if costCount > 0 and type(_G.GetMerchantItemCostItem) ~= "function" then return nil end
+  for costIndex = 1, costCount do
+    local ok, texture, value, link, currencyName = pcall(_G.GetMerchantItemCostItem, index, costIndex)
+    value = tonumber(value)
+    if not ok or not value or value <= 0 or type(link) ~= "string" then return nil end
+    local currencyID
+    local currencyAPI = _G.C_CurrencyInfo and _G.C_CurrencyInfo.GetCurrencyIDFromLink
+    if currencyName and type(currencyAPI) == "function" then
+      local idOK, id = pcall(currencyAPI, link)
+      if idOK then currencyID = tonumber(id) end
+    end
+    if currencyID then
+      costs[#costs + 1] = { kind = "currency", id = currencyID, amount = value, name = currencyName, icon = texture }
+    else
+      local itemID = tonumber(link:match("item:(%d+)"))
+      if not itemID then return nil end
+      local itemName = link:match("%[([^%]]+)%]") or "item " .. tostring(itemID)
+      costs[#costs + 1] = { kind = "item", id = itemID, amount = value, name = itemName, icon = texture }
     end
   end
-  return byItem
+  return #costs > 0 and costs or nil
 end
 
-local function AddExtendedCosts(target, merchantIndex)
-  if not (GetMerchantItemCostInfo and GetMerchantItemCostItem) then return end
-  local ok, count = pcall(GetMerchantItemCostInfo, merchantIndex)
-  count = ok and tonumber(count) or 0
-  for costIndex = 1, count do
-    local costOK, _, amount, link, currencyName = pcall(GetMerchantItemCostItem, merchantIndex, costIndex)
-    if costOK then
-      amount = tonumber(amount) or 0
-      local name = currencyName
-      if (not name or name == "") and link and GetItemInfo then
-        name = GetItemInfo(link)
-      end
-      name = name or L["CURRENCY"] or "Currency"
-      target[name] = (target[name] or 0) + amount
-    end
-  end
-end
-
-local function CostText(live)
-  if not live then return "" end
+local function FormatCosts(costs)
   local parts = {}
-  if live.price and live.price > 0 and GetCoinTextureString then
-    parts[#parts + 1] = GetCoinTextureString(live.price)
-  end
-  if live.extendedCost and GetMerchantItemCostInfo and GetMerchantItemCostItem then
-    local extended = {}
-    AddExtendedCosts(extended, live.index)
-    for name, amount in pairs(extended) do
-      parts[#parts + 1] = tostring(amount) .. " " .. tostring(name)
+  for _, cost in ipairs(costs or {}) do
+    if cost.kind == "gold" then
+      local text = FormatGold(cost.amount)
+      if text then parts[#parts + 1] = text end
+    else
+      local icon = tonumber(cost.icon) and ("|T" .. tostring(cost.icon) .. ":14:14|t ") or ""
+      parts[#parts + 1] = icon .. tostring(cost.amount) .. " " .. tostring(cost.name or cost.kind)
     end
   end
   return table.concat(parts, " + ")
 end
 
-local function NewButton(parent, label)
-  local T = Theme()
-  local button = CreateFrame("Button", nil, parent, "BackdropTemplate")
-  button:SetHeight(24)
-  if Controls and Controls.Backdrop then
-    Controls:Backdrop(button, T.panel, T.border)
-    Controls:ApplyHover(button, T.panel, T.hover, T.border, T.accentSoft)
-  end
-  button.text = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  button.text:SetPoint("CENTER")
-  button.text:SetText(label)
-  return button
+local function ProfileState()
+  local profile = NS.Systems.Database:GetProfile()
+  if not profile then return nil end
+  profile.vendorAssistant = type(profile.vendorAssistant) == "table" and profile.vendorAssistant or {}
+  if profile.vendorAssistant.open == nil then profile.vendorAssistant.open = true end
+  if profile.vendorAssistant.view ~= "shopping" then profile.vendorAssistant.view = "vendor" end
+  return profile.vendorAssistant
 end
 
-local function DecorLine(parent, y)
-  local T = Theme()
-  local line = parent:CreateTexture(nil, "ARTWORK")
-  line:SetHeight(1)
-  line:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, y)
-  line:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -10, y)
-  local accent = T.accent or { 0.90, 0.72, 0.18, 1 }
-  line:SetColorTexture(accent[1], accent[2], accent[3], 0.34)
-  return line
+local function CurrentNPCID()
+  if not _G.UnitGUID or not _G.strsplit then return nil end
+  local ok, guid = pcall(_G.UnitGUID, "npc")
+  if not ok or type(guid) ~= "string" then return nil end
+  if _G.issecretvalue and _G.issecretvalue(guid) then return nil end
+  if _G.canaccessvalue and not _G.canaccessvalue(guid) then return nil end
+  local splitOK, unitType, _, _, _, _, npcID = pcall(_G.strsplit, "-", guid)
+  if not splitOK then return nil end
+  if unitType ~= "Creature" and unitType ~= "Vehicle" then return nil end
+  return tonumber(npcID)
 end
 
-local function NewOptionCheckbox(parent, label, y, getValue, setValue)
-  local check = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
-  check:SetSize(22, 22)
-  check:SetPoint("TOPLEFT", 10, y)
-  check.label = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  check.label:SetPoint("LEFT", check, "RIGHT", 3, 0)
-  check.label:SetText(label)
-  check:SetScript("OnShow", function(self) self:SetChecked(getValue() and true or false) end)
-  check:SetScript("OnClick", function(self)
-    setValue(self:GetChecked() and true or false)
-    Assistant:RefreshRows()
-  end)
-  return check
-end
-
-function Assistant:SetDrawerOpen(open, animate)
-  local frame = self.frame
-  local state = ProfileState()
-  if not (frame and state) then return end
-  open = open and true or false
-  state.open = open
-  if not open and frame.settings then frame.settings:Hide() end
-
-  frame:SetScript("OnUpdate", nil)
-  local fromWidth = frame:IsShown() and (frame:GetWidth() or 1) or 1
-  local toWidth = open and DRAWER_W or 1
-  if open then
-    frame:Show()
-    frame:Raise()
-    self:RefreshRows()
-  end
-
-  local function finish()
-    frame:SetWidth(toWidth)
-    frame:SetAlpha(open and 1 or 0)
-    if open then self:RefreshRows() end
-    if not open then frame:Hide() end
-    if self.tab and self.tab.arrow then self.tab.arrow:SetText(open and ">" or "<") end
-  end
-
-  if not animate or not GetTime then
-    finish()
-    return
-  end
-
-  local startTime = GetTime()
-  frame:SetAlpha(open and 0.92 or 1)
-  frame:SetScript("OnUpdate", function(self)
-    local progress = math.min(1, (GetTime() - startTime) / ANIM_TIME)
-    local eased = 1 - ((1 - progress) * (1 - progress))
-    self:SetWidth(fromWidth + ((toWidth - fromWidth) * eased))
-    self:SetAlpha(open and (0.92 + 0.08 * eased) or (1 - 0.18 * eased))
-    if progress >= 1 then
-      self:SetScript("OnUpdate", nil)
-      finish()
+local function RecordsForMerchant(npcID)
+  local records = npcID and NS.Systems.VendorIndex:Get(npcID)
+  if records and #records > 0 then return records end
+  local out, seen = {}, {}
+  local count = type(_G.GetMerchantNumItems) == "function" and tonumber(_G.GetMerchantNumItems()) or 0
+  for index = 1, count do
+    local itemID = MerchantItemID(index)
+    local candidates = itemID and NS.Systems.VendorIndex:GetByItem(itemID)
+    local record = itemID and NS.Systems.Lists:GetRecordByItem(itemID, nil, npcID) or nil
+    if not record and candidates then
+      record = candidates[1]
+      for _, candidate in ipairs(candidates) do
+        if npcID and tonumber(candidate.sourceID) == npcID then record = candidate break end
+      end
     end
-  end)
-end
-
-function Assistant:Ensure()
-  if self.frame or not MerchantFrame then return end
-  local T = Theme()
-  local accent = T.accent or { 0.90, 0.72, 0.18, 1 }
-  local text = T.text or { 0.92, 0.92, 0.92, 1 }
-  local muted = T.textMuted or { 0.65, 0.65, 0.68, 1 }
-
-  local tab = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
-  tab:SetSize(TAB_W, TAB_H)
-  tab:SetPoint("TOPLEFT", MerchantFrame, "TOPRIGHT", 0, -50)
-  tab:SetFrameStrata("DIALOG")
-  tab:SetFrameLevel((MerchantFrame:GetFrameLevel() or 1) + 12)
-  tab:Hide()
-  if Controls and Controls.Backdrop then
-    Controls:Backdrop(tab, T.header or T.panel, T.border)
-    Controls:ApplyHover(tab, T.header or T.panel, T.hover, T.border, T.accentSoft)
-  end
-  local glow = tab:CreateTexture(nil, "ARTWORK")
-  glow:SetPoint("LEFT", 1, 0)
-  glow:SetSize(2, TAB_H - 8)
-  glow:SetColorTexture(accent[1], accent[2], accent[3], 0.9)
-  tab.glow = glow
-
-  tab.label = tab:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  tab.label:SetPoint("CENTER", -1, 0)
-  tab.label:SetJustifyH("CENTER")
-  tab.label:SetText("H\nO\nM\nE\nD\nE\nC\nO\nR")
-  Controls:TextColor(tab.label, "accent")
-
-  tab.arrow = tab:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  tab.arrow:SetPoint("BOTTOM", 0, 7)
-  tab.arrow:SetText("<")
-  Controls:TextColor(tab.arrow, "text", 0.8)
-
-  tab:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetText(L["VENDOR_ASSISTANT_TOGGLE"] or "Open HomeDecor vendor drawer")
-    GameTooltip:Show()
-  end)
-  tab:SetScript("OnLeave", function() GameTooltip:Hide() end)
-  tab:SetScript("OnClick", function()
-    local state = ProfileState()
-    if not state then return end
-    Assistant:SetDrawerOpen(not state.open, true)
-  end)
-  self.tab = tab
-
-  local frame = CreateFrame("Frame", "HomeDecorVendorAssistant", UIParent, "BackdropTemplate")
-  frame:SetSize(DRAWER_W, DRAWER_H)
-  frame:SetPoint("TOPLEFT", tab, "TOPRIGHT", 0, 0)
-  frame:SetFrameStrata("DIALOG")
-  frame:SetFrameLevel(tab:GetFrameLevel() - 1)
-  frame:SetClampedToScreen(true)
-  frame:SetClipsChildren(true)
-  frame:Hide()
-  if Controls and Controls.Backdrop then Controls:Backdrop(frame, T.panel, T.border) end
-
-  local inner = CreateFrame("Frame", nil, frame)
-  inner:SetSize(DRAWER_W, DRAWER_H)
-  inner:SetPoint("TOPLEFT")
-  frame.inner = inner
-
-  local header = CreateFrame("Frame", nil, inner, "BackdropTemplate")
-  header:SetPoint("TOPLEFT", 6, -6)
-  header:SetPoint("TOPRIGHT", -6, -6)
-  header:SetHeight(46)
-  if RowStyles and RowStyles.SkinTrackerHeader then
-    RowStyles:SkinTrackerHeader(header, 0)
-  elseif Controls and Controls.Backdrop then
-    Controls:Backdrop(header, T.header, T.border)
-  end
-
-  header.title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-  header.title:SetPoint("TOPLEFT", 12, -7)
-  header.title:SetText("HomeDecor")
-  Controls:TextColor(header.title, "accent")
-
-  header.sub = header:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  header.sub:SetPoint("TOPLEFT", header.title, "BOTTOMLEFT", 0, -1)
-  header.sub:SetText(L["VENDOR_ASSISTANT_SUBTITLE"] or "Decor shopping list")
-  Controls:TextColor(header.sub, "textMuted")
-
-  header.close = NewButton(header, ">")
-  header.close:SetSize(24, 24)
-  header.close:SetPoint("RIGHT", -8, 0)
-  header.close:SetScript("OnClick", function() Assistant:SetDrawerOpen(false, true) end)
-
-  header.settings = CreateFrame("Button", nil, header, "BackdropTemplate")
-  header.settings:SetSize(24, 24)
-  header.settings:SetPoint("RIGHT", header.close, "LEFT", -5, 0)
-  if Controls and Controls.Backdrop then
-    Controls:Backdrop(header.settings, T.panel, T.border)
-    Controls:ApplyHover(header.settings, T.panel, T.hover, T.border, T.accentSoft)
-  end
-  header.settings.icon = header.settings:CreateTexture(nil, "OVERLAY")
-  header.settings.icon:SetSize(14, 14)
-  header.settings.icon:SetPoint("CENTER")
-  header.settings.icon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
-  if Controls and Controls.TextureColor then Controls:TextureColor(header.settings.icon, "accent") end
-  header.settings:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetText(L["VENDOR_ASSISTANT_OPTIONS"] or "Drawer Options")
-    GameTooltip:Show()
-  end)
-  header.settings:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-  local settings = CreateFrame("Frame", nil, inner, "BackdropTemplate")
-  settings:SetSize(190, 82)
-  settings:SetPoint("TOPRIGHT", header.settings, "BOTTOMRIGHT", 0, -5)
-  settings:SetFrameLevel(frame:GetFrameLevel() + 20)
-  settings:Hide()
-  if Controls and Controls.Backdrop then Controls:Backdrop(settings, T.panel, T.border) end
-  settings.title = settings:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  settings.title:SetPoint("TOPLEFT", 12, -9)
-  settings.title:SetText(L["VENDOR_ASSISTANT_OPTIONS"] or "Drawer Options")
-  Controls:TextColor(settings.title, "accent")
-  NewOptionCheckbox(settings, L["VENDOR_ASSISTANT_COMPACT_ROWS"] or "Compact item rows", -26,
-    function() local state = ProfileState(); return state and state.compactRows end,
-    function(value) local state = ProfileState(); if state then state.compactRows = value end end)
-  NewOptionCheckbox(settings, L["VENDOR_ASSISTANT_SHOW_PRICES"] or "Show prices", -50,
-    function() local state = ProfileState(); return state and state.showPrices end,
-    function(value) local state = ProfileState(); if state then state.showPrices = value end end)
-  header.settings:SetScript("OnClick", function()
-    settings:SetShown(not settings:IsShown())
-  end)
-
-  local cards = CreateFrame("Frame", nil, inner)
-  cards:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -6)
-  cards:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -6)
-  cards:SetHeight(36)
-
-  local function MakeMetric(anchor, title)
-    local card = CreateFrame("Frame", nil, cards, "BackdropTemplate")
-    card:SetSize(91, 34)
-    card:SetPoint("LEFT", anchor, anchor == cards and "LEFT" or "RIGHT", anchor == cards and 0 or 6, 0)
-    if Controls and Controls.Backdrop then Controls:Backdrop(card, T.row, T.border) end
-    card.title = card:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    card.title:SetPoint("TOPLEFT", 7, -4)
-    card.title:SetText(title)
-    Controls:TextColor(card.title, "textMuted")
-    card.value = card:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    card.value:SetPoint("BOTTOMLEFT", 7, 3)
-    Controls:TextColor(card.value, "accent")
-    return card
-  end
-
-  cards.missing = MakeMetric(cards, L["VENDOR_ASSISTANT_MISSING"] or "Missing")
-  cards.saved = MakeMetric(cards.missing, L["VENDOR_ASSISTANT_SAVED"] or "Saved")
-  cards.total = MakeMetric(cards.saved, "Vendor")
-
-  local filterBar = CreateFrame("Frame", nil, inner)
-  filterBar:SetPoint("TOPLEFT", cards, "BOTTOMLEFT", 0, -5)
-  filterBar:SetPoint("TOPRIGHT", cards, "BOTTOMRIGHT", 0, -5)
-  filterBar:SetHeight(24)
-  frame.filterButtons = {}
-  for index, info in ipairs(FILTERS) do
-    local button = NewButton(filterBar, L[info.label] or info.key)
-    button:SetSize(91, 23)
-    if index == 1 then
-      button:SetPoint("LEFT", 0, 0)
-    else
-      button:SetPoint("LEFT", frame.filterButtons[index - 1], "RIGHT", 6, 0)
+    local key = record and record.storageKey
+    if key and not seen[key] then
+      seen[key] = true
+      out[#out + 1] = record
     end
-    button.filterKey = info.key
-    button:SetScript("OnClick", function()
-      local state = ProfileState()
-      if not state then return end
-      state.filter = info.key
-      Assistant:RefreshRows()
-    end)
-    frame.filterButtons[index] = button
   end
-  DecorLine(inner, -120)
-
-  local scroll = CreateFrame("ScrollFrame", nil, inner, "ScrollFrameTemplate")
-  scroll:SetPoint("TOPLEFT", filterBar, "BOTTOMLEFT", 0, -11)
-  scroll:SetPoint("BOTTOMRIGHT", inner, "BOTTOMRIGHT", -26, 38)
-  if Controls and Controls.SkinScrollFrame then Controls:SkinScrollFrame(scroll) end
-
-  local content = CreateFrame("Frame", nil, scroll)
-  content:SetSize(1, 1)
-  scroll:SetScrollChild(content)
-
-  local empty = inner:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  empty:SetPoint("CENTER", scroll, "CENTER", 0, 12)
-  empty:SetWidth(260)
-  empty:SetJustifyH("CENTER")
-  Controls:TextColor(empty, "textMuted")
-  empty:Hide()
-
-  local total = inner:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  total:SetPoint("BOTTOMLEFT", inner, "BOTTOMLEFT", 12, 12)
-  total:SetPoint("RIGHT", inner, "RIGHT", -12, 0)
-  total:SetJustifyH("LEFT")
-  Controls:TextColor(total, "text")
-  DecorLine(inner, -378)
-
-  frame.header = header
-  frame.settings = settings
-  frame.cards = cards
-  frame.scroll = scroll
-  frame.content = content
-  frame.empty = empty
-  frame.total = total
-  frame.rows = {}
-  self.frame = frame
+  return #out > 0 and out or nil
 end
 
-function Assistant:AcquireRow(index)
-  local frame = self.frame
-  local row = frame.rows[index]
-  if row then return row end
-  local T = Theme()
-  local muted = T.textMuted or { 0.65, 0.65, 0.68, 1 }
+local function Preview(record)
+  local itemID = record and (record.itemID or record.id)
+  if itemID and _G.DressUpItemLink and pcall(_G.DressUpItemLink, "item:" .. tostring(itemID)) then return end
+  NS.UI.CatalogView:Open("tracked")
+  NS.UI.Inspector:Show(record)
+end
 
-  row = CreateFrame("Button", nil, frame.content, "BackdropTemplate")
-  row:SetHeight(42)
-  row:RegisterForClicks("AnyUp")
-  if RowStyles and RowStyles.SkinTrackerItem then
-    RowStyles:SkinTrackerItem(row, 0.14)
-  elseif Controls and Controls.Backdrop then
-    Controls:Backdrop(row, T.row, T.border)
-  end
-
-  row.media = CreateFrame("Frame", nil, row, "BackdropTemplate")
-  row.media:SetSize(32, 32)
-  row.media:SetPoint("LEFT", 6, 0)
-  if Controls and Controls.Backdrop then Controls:Backdrop(row.media, T.iconBG or T.row, T.border) end
-
-  row.icon = row.media:CreateTexture(nil, "ARTWORK")
-  row.icon:SetSize(27, 27)
-  row.icon:SetPoint("CENTER")
-  row.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-
-  row.check = row.media:CreateTexture(nil, "OVERLAY", nil, 7)
-  row.check:SetSize(13, 13)
-  row.check:SetPoint("BOTTOMLEFT", 1, 1)
-  if row.check.SetAtlas then row.check:SetAtlas("common-icon-checkmark", true) end
-  row.check:SetVertexColor(0.75, 0.95, 0.75, 0.95)
-
+function VendorAssistant:CreateRow(parent)
+  local row = CreateFrame("Button", nil, parent, "BackdropTemplate")
+  row:SetHeight(ROW_HEIGHT - 2)
+  row:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+  NS.UI.Controls:Backdrop(row, NS.UI.Controls.colors.row, NS.UI.Controls.colors.border)
+  row.icon = row:CreateTexture(nil, "ARTWORK")
+  row.icon:SetSize(30, 30)
+  row.icon:SetPoint("LEFT", 7, 0)
+  row.check = row:CreateTexture(nil, "OVERLAY")
+  row.check:SetSize(15, 15)
+  row.check:SetPoint("TOP", row.icon, "TOP", 0, 2)
+  row.check:SetTexture("Interface\\RaidFrame\\ReadyCheck-Ready")
+  row.check:Hide()
   row.title = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  row.title:SetPoint("TOPLEFT", row.media, "TOPRIGHT", 8, -5)
-  row.title:SetPoint("RIGHT", row, "RIGHT", -34, 0)
+  row.title:SetPoint("TOPLEFT", row.icon, "TOPRIGHT", 8, -5)
+  row.title:SetPoint("TOPRIGHT", -60, -5)
   row.title:SetJustifyH("LEFT")
   row.title:SetWordWrap(false)
-  row.title:SetMaxLines(1)
-
-  row.cost = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  row.cost:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -1)
-  row.cost:SetPoint("RIGHT", row, "RIGHT", -34, 0)
-  row.cost:SetJustifyH("LEFT")
-  Controls:TextColor(row.cost, "textMuted")
-
-  row.star = CreateFrame("Button", nil, row)
-  row.star:SetSize(20, 20)
-  row.star:SetPoint("RIGHT", -7, 0)
-  row.star.texture = row.star:CreateTexture(nil, "OVERLAY")
-  row.star.texture:SetAllPoints()
-  row.star:SetScript("OnClick", function(self)
-    if not self.itemID then return end
-    ToggleSaved(self.itemID)
-    Assistant:RefreshRows()
+  row.meta = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  row.meta:SetPoint("BOTTOMLEFT", row.icon, "BOTTOMRIGHT", 8, 5)
+  row.meta:SetPoint("BOTTOMRIGHT", -60, 5)
+  row.meta:SetJustifyH("LEFT")
+  row.meta:SetWordWrap(false)
+  row.favorite = NS.UI.FavoriteStar:Create(row, 20)
+  row.favorite:SetSize(22, 22)
+  row.favorite:SetPoint("RIGHT", -6, 0)
+  row.shopping = NS.UI.Controls:CreateButton(row, "+", 22, 22)
+  row.shopping:SetPoint("RIGHT", row.favorite, "LEFT", -3, 0)
+  row.shopping:SetScript("OnClick", function(self)
+    local record = self:GetParent().record
+    if not record then return end
+    NS.UI.ListSelector:Show(self, record, function(id, selected)
+      NS.Systems.Lists:Toggle(selected, id)
+      VendorAssistant:Refresh()
+      if NS.UI.TrackerPanel then NS.UI.TrackerPanel:Refresh(false) end
+    end, "Choose Shopping Lists")
   end)
-  row.star:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetText(L["VENDOR_ASSISTANT_SAVED_HINT"] or "Click to add or remove from Saved Items.")
-    GameTooltip:Show()
+  row.shopping:SetScript("OnEnter", function(self)
+    local record = self:GetParent().record
+    if not record or not _G.GameTooltip then return end
+    local existing = NS.Systems.Lists:GetRecordByItem(record.itemID, nil, CurrentNPCID())
+    _G.GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    _G.GameTooltip:SetText("Choose Shopping Lists")
+    _G.GameTooltip:AddLine(existing and "This item is on the active list." or "This item is not on the active list.", 0.8, 0.8, 0.8)
+    _G.GameTooltip:Show()
   end)
-  row.star:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-  frame.rows[index] = row
+  row.shopping:SetScript("OnLeave", function() if _G.GameTooltip then _G.GameTooltip:Hide() end end)
+  row:SetScript("OnClick", function(self, button)
+    if not self.record then return end
+    if NS.UI.ItemInteractions:HandleClick(self.record) then return end
+    if button == "RightButton" then
+      NS.Systems.Navigation:Open(self.record)
+    else
+      Preview(self.record)
+    end
+  end)
+  row:SetScript("OnEnter", function(self)
+    if not self.record then return end
+    NS.UI.ItemTooltip:Show(self, self.record, "vendor")
+  end)
+  row:SetScript("OnLeave", function() NS.UI.ItemTooltip:Hide() end)
   return row
 end
 
-function Assistant:RefreshRows()
-  local frame = self.frame
-  local state = ProfileState()
-  if not frame or not frame:IsShown() or not state or not state.open then return end
-  local items = self.items or {}
-  local liveByItem = self.liveByItem or {}
-  local visible = {}
-  local missing, saved = 0, 0
-  local compact = state.compactRows ~= false
-  local showPrices = state.showPrices ~= false
-  local rowHeight = compact and 42 or 52
-  local mediaSize = compact and 32 or 40
-  local iconSize = compact and 27 or 34
-  local step = rowHeight + (compact and 4 or 5)
-  if Controls and Controls.SyncScrollChildWidth then
-    Controls:SyncScrollChildWidth(frame.scroll, frame.content)
-  end
-
-  for _, item in ipairs(items) do
-    item.collected = IsCollected(item)
-    item.saved = IsSaved(item.itemID)
-    item.blueprintMatches = BlueprintMatches(item.itemID)
-    if not item.collected then missing = missing + 1 end
-    if item.saved then saved = saved + 1 end
-    if (state.filter == "missing" and not item.collected)
-      or (state.filter == "saved" and item.saved)
-      or (state.filter == "blueprint" and item.blueprintMatches)
-    then
-      visible[#visible + 1] = item
+function VendorAssistant:GetShoppingRecords()
+  local list, listID = NS.Systems.Lists:GetActive()
+  if not list then return {}, 0 end
+  local npcID = CurrentNPCID()
+  local records, quantity, seen = {}, 0, {}
+  local count = type(_G.GetMerchantNumItems) == "function" and tonumber(_G.GetMerchantNumItems()) or 0
+  for index = 1, count do
+    local itemID = MerchantItemID(index)
+    local record, needed = NS.Systems.Lists:GetRecordByItem(itemID, listID, npcID)
+    local key = record and record.storageKey
+    if key and needed > 0 and not seen[key] then
+      seen[key] = true
+      records[#records + 1] = record
+      quantity = quantity + needed
     end
   end
-
-  frame.cards.missing.value:SetText(tostring(missing))
-  frame.cards.saved.value:SetText(tostring(saved))
-  frame.cards.total.value:SetText(tostring(#items))
-  for _, button in ipairs(frame.filterButtons) do
-    local selected = button.filterKey == state.filter
-    Controls:TextColor(button.text, selected and "accent" or "textMuted")
-    if RowStyles and RowStyles.SetSelected then
-      RowStyles:SetSelected(button, selected, 0.24)
-    end
-  end
-
-  table.sort(visible, function(a, b)
-    if a.saved ~= b.saved then return a.saved end
-    return tostring(a.title or a.itemID):lower() < tostring(b.title or b.itemID):lower()
-  end)
-
-  local totalGold = 0
-  local totalExtended = {}
-  local y = 0
-  for index, item in ipairs(visible) do
-    local row = self:AcquireRow(index)
-    local data = MapUtil and MapUtil.GetItemData and MapUtil.GetItemData(item.itemID) or nil
-    local live = liveByItem[item.itemID]
-    local showingBlueprintHint = state.filter == "blueprint" and item.blueprintMatches
-    local showCostLine = showPrices or showingBlueprintHint
-    row.star.itemID = item.itemID
-    SetStarTexture(row.star.texture, item.saved)
-    row:SetHeight(rowHeight)
-    row.media:SetSize(mediaSize, mediaSize)
-    row.icon:SetSize(iconSize, iconSize)
-    row.icon:SetTexture((data and data.icon) or "Interface\\Icons\\INV_Misc_QuestionMark")
-    row.title:ClearAllPoints()
-    if showCostLine then
-      row.title:SetPoint("TOPLEFT", row.media, "TOPRIGHT", compact and 8 or 10, compact and -5 or -8)
-    else
-      row.title:SetPoint("LEFT", row.media, "RIGHT", compact and 8 or 10, 0)
-    end
-    row.title:SetPoint("RIGHT", row, "RIGHT", -34, 0)
-    row.title:SetText((data and data.name) or item.title or ("Item " .. tostring(item.itemID)))
-    Controls:TextColor(row.title, "text")
-    if data and MapUtil and MapUtil.GetQualityColor then
-      row.title:SetTextColor(MapUtil.GetQualityColor(data.quality))
-    end
-    row.check:SetShown(item.collected)
-    row:SetAlpha(item.collected and 0.68 or 1)
-    if showingBlueprintHint then
-      local names = BlueprintNamesText(item.blueprintMatches)
-      row.cost:SetText((L["VENDOR_ASSISTANT_BLUEPRINT_HINT"] or "Needed for: %s"):format(names or "?"))
-      row.cost:Show()
-    else
-      row.cost:SetText(CostText(live))
-      row.cost:SetShown(showPrices)
-    end
-    row:ClearAllPoints()
-    row:SetPoint("TOPLEFT", frame.content, "TOPLEFT", 0, -y)
-    row:SetPoint("TOPRIGHT", frame.content, "TOPRIGHT", 0, -y)
-    row:Show()
-    if IA and IA.Bind then IA:Bind(row, item, item.navVendor) end
-    y = y + step
-    if live then
-      totalGold = totalGold + (tonumber(live.price) or 0)
-      if live.extendedCost then AddExtendedCosts(totalExtended, live.index) end
-    end
-  end
-  for index = #visible + 1, #frame.rows do
-    frame.rows[index]:Hide()
-  end
-
-  frame.content:SetHeight(math.max(1, y))
-  frame.empty:SetText(state.filter == "saved"
-    and (L["VENDOR_ASSISTANT_EMPTY_SAVED"] or "Star missing decor to save it here.")
-    or state.filter == "blueprint"
-    and (L["VENDOR_ASSISTANT_EMPTY_BLUEPRINT"] or "Nothing here is on a saved blueprint's list.")
-    or (L["VENDOR_ASSISTANT_EMPTY_MISSING"] or "Nothing missing from this vendor."))
-  frame.empty:SetShown(#visible == 0)
-
-  local totalParts = {}
-  if totalGold > 0 and GetCoinTextureString then
-    totalParts[#totalParts + 1] = GetCoinTextureString(totalGold)
-  end
-  for name, amount in pairs(totalExtended) do
-    totalParts[#totalParts + 1] = tostring(amount) .. " " .. tostring(name)
-  end
-  local totalText = #totalParts > 0 and table.concat(totalParts, " + ") or "-"
-  frame.total:SetText((L["VENDOR_ASSISTANT_TOTAL"] or "Shopping total:") .. "  " .. totalText)
-  frame.total:SetShown(showPrices)
+  return records, quantity
 end
 
-function Assistant:Refresh()
-  if not MerchantFrame or not MerchantFrame:IsShown() then
-    self:Hide()
-    return
-  end
-  self:Ensure()
-  if not self.frame then return end
-
+function VendorAssistant:GetShoppingPurchase()
+  local list, listID = NS.Systems.Lists:GetActive()
+  if not list then return {}, nil, 0, {}, 0 end
   local npcID = CurrentNPCID()
-  local items = npcID and MapUtil and MapUtil.GetVendorItems and MapUtil.GetVendorItems(npcID) or {}
-  if type(items) ~= "table" or #items == 0 then
-    self:Hide()
-    return
+  local rows, total, totals, totalByKey, skipped, seen = {}, 0, {}, {}, 0, {}
+  local count = type(_G.GetMerchantNumItems) == "function" and tonumber(_G.GetMerchantNumItems()) or 0
+  for index = 1, count do
+    local itemID = MerchantItemID(index)
+    local record, quantity = NS.Systems.Lists:GetRecordByItem(itemID, listID, npcID)
+    if record and quantity > 0 and not seen[itemID] then
+      seen[itemID] = true
+      local info = MerchantInfo(index)
+      local costOK, costCount = pcall(_G.GetMerchantItemCostInfo or function() return 0 end, index)
+      costCount = costOK and tonumber(costCount) or 0
+      local costs = MerchantCosts(index, info, costCount)
+      if costs then
+        rows[#rows + 1] = { index = index, itemID = itemID, record = record, quantity = quantity, costs = costs }
+        total = total + quantity
+        for _, cost in ipairs(costs) do
+          local key = tostring(cost.kind) .. ":" .. tostring(cost.id or 0)
+          local aggregate = totalByKey[key]
+          if not aggregate then
+            aggregate = { kind = cost.kind, id = cost.id, name = cost.name, icon = cost.icon, amount = 0 }
+            totalByKey[key] = aggregate
+            totals[#totals + 1] = aggregate
+          end
+          aggregate.amount = aggregate.amount + cost.amount * quantity
+        end
+      else
+        skipped = skipped + 1
+      end
+    end
   end
+  return rows, listID, total, totals, skipped
+end
 
-  self.npcID = npcID
-  self.items = items
-  self.liveByItem = LiveMerchantItems()
-  self.tab:Show()
+function VendorAssistant:Create()
+  if self.frame then return self.frame end
+  local tab = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
+  tab:SetSize(28, 142)
+  tab:SetPoint("TOPLEFT", _G.MerchantFrame or UIParent, "TOPRIGHT", 0, -50)
+  tab:SetFrameStrata("DIALOG")
+  tab:SetFrameLevel(((_G.MerchantFrame and _G.MerchantFrame:GetFrameLevel()) or 1) + 12)
+  NS.UI.Controls:Backdrop(tab, NS.UI.Controls.colors.panel, NS.UI.Controls.colors.border)
+  tab.label = tab:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  tab.label:SetPoint("CENTER", 0, 8)
+  tab.label:SetText("H\nO\nM\nE\n\nD\nE\nC\nO\nR")
+  NS.UI.Controls:TextColor(tab.label, "accent")
+  tab.arrow = tab:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  tab.arrow:SetPoint("BOTTOM", 0, 5)
+  tab:Hide()
+  local frame = CreateFrame("Frame", "HomeDecorVendorAssistant", UIParent, "BackdropTemplate")
+  frame:SetSize(330, 350)
+  frame:SetPoint("TOPLEFT", tab, "TOPRIGHT", 0, 0)
+  frame:SetFrameStrata("DIALOG")
+  frame:SetFrameLevel(110)
+  frame:SetToplevel(true)
+  frame:SetClampedToScreen(true)
+  NS.UI.Controls:Backdrop(frame, NS.UI.Controls.colors.background, NS.UI.Controls.colors.border)
+  local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+  title:SetPoint("TOPLEFT", 14, -13)
+  title:SetText("Home Decor")
+  frame.count = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  frame.count:SetPoint("TOPRIGHT", -48, -18)
+  local close = NS.UI.Controls:CreateButton(frame, ">", 24, 24)
+  close:SetPoint("TOPRIGHT", -10, -9)
+  close:SetScript("OnClick", function() VendorAssistant:SetOpen(false) end)
+  local vendorView = NS.UI.Controls:CreateButton(frame, "Vendor Items", 104, 22)
+  vendorView:SetPoint("TOPLEFT", 12, -41)
+  local shoppingView = NS.UI.Controls:CreateButton(frame, "Shopping List", 112, 22)
+  shoppingView:SetPoint("LEFT", vendorView, "RIGHT", 5, 0)
+  frame.viewTabs = { vendor = vendorView, shopping = shoppingView }
+  local function SetView(view)
+    local state = ProfileState()
+    if not state then return end
+    state.view = view == "shopping" and "shopping" or "vendor"
+    NS.UI.Controls:ResetScrollFrame(frame.scroll, false)
+    VendorAssistant:Refresh()
+  end
+  vendorView:SetScript("OnClick", function() SetView("vendor") end)
+  shoppingView:SetScript("OnClick", function() SetView("shopping") end)
+  local scroll = NS.UI.Controls:CreateScrollFrame(frame)
+  scroll:SetPoint("TOPLEFT", 12, -71)
+  scroll:SetPoint("BOTTOMRIGHT", -28, 46)
+  local content = CreateFrame("Frame", nil, scroll)
+  content:SetWidth(280)
+  content:SetHeight(1)
+  NS.UI.Controls:ConfigureScrollFrame(scroll, content, { step = ROW_HEIGHT, onScroll = function() VendorAssistant:Refresh() end })
+  frame.scroll = scroll
+  frame.content = content
+  frame.empty = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+  frame.empty:SetPoint("TOPLEFT", scroll, "TOPLEFT", 15, -42)
+  frame.empty:SetPoint("TOPRIGHT", scroll, "TOPRIGHT", -15, -42)
+  frame.empty:SetJustifyH("CENTER")
+  frame.empty:SetText("No active Shopping List items are sold here.")
+  NS.UI.Controls:TextColor(frame.empty, "muted")
+  frame.empty:Hide()
+  local buyAll = NS.UI.Controls:CreateButton(frame, "Buy Shopping List", 126, 24)
+  buyAll:SetPoint("BOTTOMLEFT", 12, 12)
+  local shoppingStatus = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  shoppingStatus:SetPoint("LEFT", buyAll, "RIGHT", 8, 0)
+  shoppingStatus:SetPoint("RIGHT", frame, "RIGHT", -12, 0)
+  shoppingStatus:SetJustifyH("LEFT")
+  shoppingStatus:SetWordWrap(false)
+  NS.UI.Controls:TextColor(shoppingStatus, "muted")
+  frame.buyAll = buyAll
+  frame.shoppingStatus = shoppingStatus
+  frame.rows = {}
+  for index = 1, ROW_COUNT do
+    local row = self:CreateRow(content)
+    NS.UI.Controls:ForwardScrollWheel(row, scroll)
+    NS.UI.Controls:ForwardScrollWheel(row.shopping, scroll)
+    NS.UI.Controls:ForwardScrollWheel(row.favorite, scroll)
+    row:Hide()
+    frame.rows[index] = row
+  end
+  if _G.StaticPopupDialogs and not _G.StaticPopupDialogs.HOMEDECOR_BUY_SHOPPING_LIST then
+    _G.StaticPopupDialogs.HOMEDECOR_BUY_SHOPPING_LIST = {
+      text = "Buy %s shopping-list item(s) for %s?",
+      button1 = _G.ACCEPT,
+      button2 = _G.CANCEL,
+      timeout = 0,
+      whileDead = false,
+      hideOnEscape = true,
+      OnAccept = function(_, data)
+        local ok, err = NS.Systems.ShoppingBuyQueue:Start(data.rows, data.listID)
+        if not ok and _G.DEFAULT_CHAT_FRAME then _G.DEFAULT_CHAT_FRAME:AddMessage("|cffff6666HomeDecor:|r " .. tostring(err)) end
+      end,
+    }
+  end
+  buyAll:SetScript("OnClick", function()
+    local queue = NS.Systems.ShoppingBuyQueue
+    if queue:IsRunning() then queue:Cancel("cancelled by player") return end
+    local rows, listID, total, costs, skipped = VendorAssistant:GetShoppingPurchase()
+    if total == 0 then return end
+    if skipped > 0 and _G.DEFAULT_CHAT_FRAME then _G.DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor:|r " .. tostring(skipped) .. " shopping-list item(s) use an unsupported cost and will be skipped.") end
+    _G.StaticPopup_Show("HOMEDECOR_BUY_SHOPPING_LIST", tostring(total), FormatCosts(costs), { rows = rows, listID = listID })
+  end)
+  frame:Hide()
+  tab:SetScript("OnClick", function()
+    local state = ProfileState()
+    if state then VendorAssistant:SetOpen(not state.open) end
+  end)
+  tab:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetText("Open or close Home Decor")
+    GameTooltip:Show()
+  end)
+  tab:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  self.tab = tab
+  self.frame = frame
+  return frame
+end
 
+function VendorAssistant:SetOpen(open)
   local state = ProfileState()
   if not state then return end
-  if state.open then
-    if not self.frame:IsShown() then
-      self:SetDrawerOpen(true, false)
-    else
-      self:RefreshRows()
+  state.open = open == true
+  if self.tab then self.tab.arrow:SetText(state.open and ">" or "<") end
+  if state.open and self.records then
+    self.frame:Show()
+    self:Refresh()
+  elseif self.frame then
+    self.frame:Hide()
+  end
+end
+
+function VendorAssistant:Refresh()
+  local frame = self.frame
+  if not frame or not frame:IsShown() or not self.records then return end
+  local state = ProfileState()
+  local view = state and state.view or "vendor"
+  local shoppingRecords, shoppingQuantity = self:GetShoppingRecords()
+  local records = view == "shopping" and shoppingRecords or self.records
+  NS.UI.Controls:SetButtonSelected(frame.viewTabs.vendor, view == "vendor")
+  NS.UI.Controls:SetButtonSelected(frame.viewTabs.shopping, view == "shopping")
+  local total = #records
+  local ownedByIndex = {}
+  local collected = 0
+  for index = 1, total do
+    local record = records[index]
+    local owned = NS.Systems.Collection:IsItemOwned(record.itemID)
+    if owned == nil then
+      local _, _, displayOwned = NS.Systems.Housing:GetDisplay(record)
+      owned = displayOwned == true
     end
+    ownedByIndex[index] = owned
+    if owned then collected = collected + 1 end
+  end
+  if view == "shopping" then
+    frame.count:SetText(tostring(total) .. " items / " .. tostring(shoppingQuantity) .. " needed")
   else
-    self.frame:Hide()
-    self.tab.arrow:SetText("<")
+    frame.count:SetText(tostring(collected) .. " / " .. tostring(total) .. " collected")
   end
-
-  if C_Timer and C_Timer.After then
-    C_Timer.After(0.2, function()
-      if Assistant.frame and Assistant.frame:IsShown() and Assistant.npcID == npcID then
-        Assistant:RefreshRows()
-      end
-    end)
+  frame.empty:SetShown(view == "shopping" and total == 0)
+  local purchaseRows, _, shoppingTotal, shoppingCosts, skipped = self:GetShoppingPurchase()
+  local queue = NS.Systems.ShoppingBuyQueue
+  if queue:IsRunning() then
+    local bought, buyingTotal = queue:GetProgress()
+    frame.buyAll:SetText("Stop " .. tostring(bought) .. " / " .. tostring(buyingTotal))
+    frame.buyAll:SetEnabled(true)
+    frame.shoppingStatus:SetText("Purchasing one at a time")
+  else
+    frame.buyAll:SetText("Buy Shopping List")
+    frame.buyAll:SetEnabled(#purchaseRows > 0)
+    local status = shoppingTotal > 0 and (tostring(shoppingTotal) .. " here") or "No list items here"
+    local costText = FormatCosts(shoppingCosts)
+    if costText ~= "" then status = status .. "  -  " .. costText end
+    if skipped > 0 then status = status .. "  -  " .. tostring(skipped) .. " skipped" end
+    frame.shoppingStatus:SetText(status)
+  end
+  frame.content:SetHeight(math.max(1, total * ROW_HEIGHT))
+  local first = math.max(0, math.floor((frame.scroll:GetVerticalScroll() or 0) / ROW_HEIGHT))
+  local visible = math.max(0, math.min(ROW_COUNT, total - first))
+  local npcID = CurrentNPCID()
+  for index = 1, visible do
+    local record = records[first + index]
+    local row = frame.rows[index]
+    row:ClearAllPoints()
+    row:SetPoint("TOPLEFT", 0, -((first + index - 1) * ROW_HEIGHT))
+    row:SetPoint("TOPRIGHT", 0, -((first + index - 1) * ROW_HEIGHT))
+    row.record = record
+    local title, icon = NS.Systems.Housing:GetDisplay(record)
+    local owned = ownedByIndex[first + index]
+    local placeholder = not icon or icon == QUESTION_MARK_ICON or tonumber(icon) == 134400
+    row.icon:SetTexture(placeholder and nil or icon)
+    row.icon:SetAlpha(placeholder and 0 or 1)
+    row.check:SetShown(owned)
+    row.title:SetText(title)
+    local formatter = NS.Systems.Cost
+    local cost = formatter and formatter.Format and formatter:Format(record) or nil
+    local dyeLabel = NS.Systems.Housing:GetDyeableLabel(record)
+    local _, needed = NS.Systems.Lists:GetRecordByItem(record.itemID, nil, npcID)
+    local shoppingText = needed > 0 and ("Shopping x" .. tostring(needed) .. "  -  ") or ""
+    row.meta:SetText(shoppingText .. (owned and "Collected" or "Not collected") .. (dyeLabel and "  -  " .. dyeLabel or "") .. (cost and "  -  " .. cost or ""))
+    row.favorite:SetRecord(record)
+    NS.UI.Controls:SetButtonSelected(row.shopping, needed > 0)
+    row.shopping:SetEnabled(not queue:IsRunning())
+    row:Show()
+  end
+  for index = visible + 1, ROW_COUNT do
+    frame.rows[index].record = nil
+    frame.rows[index]:Hide()
   end
 end
 
-function Assistant:Hide()
-  if self.frame then
-    self.frame:SetScript("OnUpdate", nil)
-    self.frame:Hide()
+NS.OnMessage("HOMEDECOR_SHOPPING_BUY_UPDATED", function()
+  if VendorAssistant.frame and VendorAssistant.frame:IsShown() then VendorAssistant:Refresh() end
+  if NS.UI and NS.UI.TrackerPanel then NS.UI.TrackerPanel:Refresh(false) end
+end)
+
+NS.OnMessage("HOMEDECOR_LISTS_UPDATED", function()
+  if VendorAssistant.frame and VendorAssistant.frame:IsShown() then VendorAssistant:Refresh() end
+end)
+
+function VendorAssistant:ShowForCurrentVendor()
+  if NS.Systems.Settings and not NS.Systems.Settings:Get("vendorAssistant") then
+    self:Hide()
+    return
   end
+  local npcID = CurrentNPCID()
+  local records = RecordsForMerchant(npcID)
+  if not records or #records == 0 then
+    self:Hide()
+    return
+  end
+  local frame = self:Create()
+  self.records = records
+  NS.UI.Controls:ResetScrollFrame(frame.scroll, false)
+  self.tab:Show()
+  local state = ProfileState()
+  self.tab.arrow:SetText(state and state.open and ">" or "<")
+  if state and state.open then frame:Show() self:Refresh() else frame:Hide() end
+end
+
+function VendorAssistant:Hide()
+  self.records = nil
   if self.tab then self.tab:Hide() end
-  self.items = nil
-  self.liveByItem = nil
-  self.npcID = nil
+  if self.frame then
+    for index = 1, #self.frame.rows do
+      self.frame.rows[index].record = nil
+      self.frame.rows[index]:Hide()
+    end
+    self.frame:Hide()
+  end
 end
 
-return Assistant
+local events = CreateFrame("Frame")
+events:RegisterEvent("MERCHANT_SHOW")
+events:RegisterEvent("MERCHANT_UPDATE")
+events:RegisterEvent("MERCHANT_CLOSED")
+local queued = false
+events:SetScript("OnEvent", function(_, event)
+  if event == "MERCHANT_CLOSED" then
+    queued = false
+    VendorAssistant:Hide()
+  else
+    if queued then return end
+    queued = true
+    local function show()
+      queued = false
+      VendorAssistant:ShowForCurrentVendor()
+    end
+    if _G.C_Timer and _G.C_Timer.After then
+      _G.C_Timer.After(0, show)
+    else
+      show()
+    end
+  end
+end)
