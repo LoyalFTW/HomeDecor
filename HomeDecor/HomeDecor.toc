@@ -27,8 +27,10 @@ Libs\HereBeDragons\HereBeDragons-Pins-2.0.lua
 Libs\Krowi_WorldMapButtons\Krowi_WorldMapButtons.lua
 Libs\Foundry\Foundry-1.0.xml
 HomeDecor.xml
+Changelog.lua
 
 Core\Runtime\Namespace.lua
+Locales\Localization.xml
 Core\State\Database.lua
 Core\State\Layout.lua
 Core\Data\ItemResolver.lua
