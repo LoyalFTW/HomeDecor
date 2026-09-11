@@ -304,7 +304,7 @@ function GatherTracker:Create()
   frame.scroll:SetPoint("BOTTOMRIGHT", -22, 43)
   frame.content = CreateFrame("Frame", nil, frame.scroll)
   frame.content:SetSize(370, 1)
-  Controls():ConfigureScrollFrame(frame.scroll, frame.content, { step = ROW_HEIGHT, onScroll = function() GatherTracker:RenderRows() end })
+  Controls():ConfigureScrollFrame(frame.scroll, frame.content, { step = ROW_HEIGHT, barInset = -18, onScroll = function() GatherTracker:RenderRows() end })
   frame.rows = {}
   for index = 1, ROW_POOL do frame.rows[index] = self:CreateRow(frame.content, frame.scroll) end
   frame.empty = Label(frame, "GameFontNormalSmall", "muted")

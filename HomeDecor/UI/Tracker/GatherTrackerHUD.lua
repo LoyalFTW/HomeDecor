@@ -18,6 +18,8 @@ local function AnchoredToMinimap(frame)
   if not frame.GetNumPoints or not frame.GetPoint then return false end
   local countOK, count = pcall(frame.GetNumPoints, frame)
   if not countOK then return false end
+  if issecretvalue and issecretvalue(count) then return false end
+  if canaccessvalue and not canaccessvalue(count) then return false end
   count = tonumber(count) or 0
   for index = 1, count do
     local ok, _, relative = pcall(frame.GetPoint, frame, index)
@@ -45,11 +47,20 @@ function GatherTracker:HideMinimapObjects()
   for _, child in ipairs({ Minimap:GetChildren() }) do HideObject(child) end
   for _, object in ipairs(self._hiddenMinimapObjects) do HideObject(object) end
   if EnumerateFrames and not self._minimapObjectsScanned then
-    self._minimapObjectsScanned = true
-    local frame = EnumerateFrames()
-    while frame do
+    local frame = self._minimapScanCursor
+    for _ = 1, 40 do
+      if frame then
+        frame = EnumerateFrames(frame)
+      else
+        frame = EnumerateFrames()
+      end
+      if not frame then
+        self._minimapObjectsScanned = true
+        self._minimapScanCursor = nil
+        break
+      end
       if AnchoredToMinimap(frame) then HideObject(frame) end
-      frame = EnumerateFrames(frame)
+      self._minimapScanCursor = frame
     end
   end
 end
@@ -61,6 +72,7 @@ function GatherTracker:RestoreMinimapObjects()
   self._hiddenMinimapObjects = nil
   self._hiddenMinimapLookup = nil
   self._minimapObjectsScanned = nil
+  self._minimapScanCursor = nil
 end
 
 local function CaptureMinimap()

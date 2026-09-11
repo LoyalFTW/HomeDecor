@@ -802,7 +802,7 @@ function Pricing:Create(parent)
   frame.scroll:SetPoint("BOTTOMRIGHT", -20, 0)
   frame.content = CreateFrame("Frame", nil, frame.scroll)
   frame.content:SetSize(760, 1)
-  Controls():ConfigureScrollFrame(frame.scroll, frame.content, { step = ROW_HEIGHT, onScroll = function() Pricing:Render() end })
+  Controls():ConfigureScrollFrame(frame.scroll, frame.content, { step = ROW_HEIGHT, barInset = -18, onScroll = function() Pricing:Render() end })
   frame.rows = {}
   for index = 1, ROW_COUNT do
     frame.rows[index] = createRow(frame.content)

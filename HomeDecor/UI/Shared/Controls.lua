@@ -588,8 +588,8 @@ function Controls:ConfigureScrollFrame(scroll, content, options)
   end)
   if content and scroll._hdForwardContent then self:ForwardScrollWheelTree(content, scroll) end
   local bar = scroll.ScrollBar or scroll.scrollBar
-  local barInset = tonumber(options.barInset)
-  if bar and barInset then
+  local barInset = tonumber(options.barInset) or -8
+  if bar then
     bar:ClearAllPoints()
     bar:SetPoint("TOPRIGHT", scroll, "TOPRIGHT", -barInset, -(tonumber(options.barTop) or 12))
     bar:SetPoint("BOTTOMRIGHT", scroll, "BOTTOMRIGHT", -barInset, tonumber(options.barBottom) or 12)
