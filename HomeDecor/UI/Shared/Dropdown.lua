@@ -43,6 +43,15 @@ function Dropdown:CreateRow(index)
     Dropdown:Hide()
     if callback then callback(value) end
   end)
+  row:HookScript("OnMouseDown", function()
+    frame._hdTransientMouseDown = true
+  end)
+  row:SetHighlightTexture("Interface\\Buttons\\UI-Listbox-Highlight2")
+  local highlight = row:GetHighlightTexture()
+  if highlight then
+    highlight:SetBlendMode("ADD")
+    highlight:SetAlpha(0.22)
+  end
   row:SetScript("OnMouseWheel", function(_, delta) Dropdown:Scroll(delta) end)
   row:EnableMouseWheel(true)
   frame.rows[index] = row
@@ -64,7 +73,7 @@ function Dropdown:Render()
     row:SetShown(option ~= nil)
     if option ~= nil then
       local separator = type(option) == "table" and option.separator == true
-      local title = type(option) == "table" and option.title
+      local title = type(option) == "table" and option.title or nil
       local value = optionValue(option)
       local disabled = separator or title ~= nil or (type(option) == "table" and option.disabled == true)
       row.value = value
@@ -102,7 +111,7 @@ end
 function Dropdown:Create()
   if self.frame then return self.frame end
   local frame = CreateFrame("Frame", "HomeDecorDropdown", UIParent, "BackdropTemplate")
-  frame:SetFrameStrata("TOOLTIP")
+  frame:SetFrameStrata("FULLSCREEN_DIALOG")
   frame:SetFrameLevel(500)
   frame:SetToplevel(true)
   frame:EnableMouse(true)

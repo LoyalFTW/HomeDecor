@@ -27,6 +27,9 @@ end
 
 local defaults = {
   version = NS.Version,
+  global = {
+    sales = { history = {}, totals = { characters = {} } },
+  },
   profile = {
     ui = {
       category = "All",
@@ -46,6 +49,7 @@ local defaults = {
     favorites = {},
     tracked = {},
     lists = { order = {}, entries = {}, nextID = 1 },
+    minimap = { hide = false, showInCompartment = true },
     settings = { mapPins = true, mapMinimapPins = true, vendorAssistant = true, vendorMarkers = true, quickBar = true, editorFeatures = true, editorHints = true, editorClock = true, editorClockDisplay = "clock", editorClockSource = "auto", editorClockFormat = "auto", hideCollected = false, zoneFavoriteAlerts = true, mapPinStyle = "house", mapPinSize = 1, mapPinColor = { r = 1, g = 1, b = 1 }, mapTooltipAnchor = "ANCHOR_RIGHT", trackerTransparent = false, trackerTransparency = 0, trackerHideCompleted = false, trackerTrackCurrentZone = true },
     quickBar = { page = 1, pages = {}, recent = nil },
     editorTools = { clipboard = true, batchPlace = true, batchRotate = true, batchStep = 15, lock = true, locks = {}, keybinds = { copy = "CTRL-C", cut = "CTRL-X", paste = "CTRL-V", duplicate = "CTRL-D", lock = "L" } },
@@ -66,7 +70,7 @@ function Database:Load()
   local db = foundry.DB:New({
     name = NS.Name,
     sv = "HomeDecorDB",
-    defaults = { profile = defaults.profile },
+    defaults = { global = defaults.global, profile = defaults.profile },
     defaultProfile = true,
   })
   local profile = db.profile
@@ -127,6 +131,33 @@ function Database:Load()
     profile.settings.mapPinColor = { r = 1, g = 1, b = 1 }
     profile.mapPinVisualVersion = 1
   end
+  local global = db.global
+  global.sales = type(global.sales) == "table" and global.sales or { history = {}, totals = { characters = {} } }
+  global.sales.history = type(global.sales.history) == "table" and global.sales.history or {}
+  if global.sales.profileMigrationV1 ~= true then
+    local seen = {}
+    local function Fingerprint(sale)
+      return table.concat({ tostring(sale.timestamp), tostring(sale.itemID), tostring(sale.gold), tostring(sale.count), tostring(sale.characterKey), tostring(sale.name) }, "|")
+    end
+    for _, sale in ipairs(global.sales.history) do
+      local key = Fingerprint(sale)
+      seen[key] = (seen[key] or 0) + 1
+    end
+    for _, savedProfile in pairs(type(HomeDecorDB) == "table" and type(HomeDecorDB.profiles) == "table" and HomeDecorDB.profiles or {}) do
+      local history = savedProfile.decorPricing and savedProfile.decorPricing.sales and savedProfile.decorPricing.sales.history
+      local occurrences = {}
+      for _, sale in ipairs(type(history) == "table" and history or {}) do
+        local key = Fingerprint(sale)
+        occurrences[key] = (occurrences[key] or 0) + 1
+        if occurrences[key] > (seen[key] or 0) then
+          global.sales.history[#global.sales.history + 1] = CopyDefaults(sale)
+          seen[key] = (seen[key] or 0) + 1
+        end
+      end
+    end
+    global.sales.totals = { characters = {} }
+    global.sales.profileMigrationV1 = true
+  end
   NS.DB = db
   NS.db = db
   return db
@@ -134,4 +165,8 @@ end
 
 function Database:GetProfile()
   return NS.DB and NS.DB.profile
+end
+
+function Database:GetGlobal()
+  return NS.DB and NS.DB.global
 end

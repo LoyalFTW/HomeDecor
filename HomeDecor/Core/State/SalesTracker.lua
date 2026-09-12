@@ -39,13 +39,12 @@ local function EnsureTotals(state)
 end
 
 local function State()
-  local profile = NS.Systems.Database:GetProfile()
-  if not profile then return nil end
-  profile.decorPricing = profile.decorPricing or {}
-  profile.decorPricing.sales = profile.decorPricing.sales or { history = {} }
-  profile.decorPricing.sales.history = profile.decorPricing.sales.history or {}
-  EnsureTotals(profile.decorPricing.sales)
-  return profile.decorPricing.sales
+  local global = NS.Systems.Database:GetGlobal()
+  if not global then return nil end
+  global.sales = global.sales or { history = {} }
+  global.sales.history = global.sales.history or {}
+  EnsureTotals(global.sales)
+  return global.sales
 end
 
 local function Accessible(value)

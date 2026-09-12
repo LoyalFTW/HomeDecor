@@ -19,6 +19,11 @@ SlashCmdList.HOMEDECOR = function(message)
     NS.UI.GatherTracker:Toggle()
   elseif command == "settings" then
     NS.UI.Settings:Toggle()
+  elseif command == "minimap" then
+    local profile = NS.Systems.Database:GetProfile()
+    local hide = not (profile.minimap and profile.minimap.hide)
+    NS.UI.MinimapLauncher:SetMinimapHidden(hide)
+    print(hide and "HomeDecor: Minimap button hidden." or "HomeDecor: Minimap button shown.")
   elseif command == "overview" or command == "stats" then
     NS.UI.Overview:Toggle()
   elseif command == "map" or command == "locations" then

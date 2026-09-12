@@ -19,7 +19,7 @@ local COLUMNS = {
   { key = "sell", label = "SELL", width = 62, align = "RIGHT" },
   { key = "profit", label = "PROFIT", width = 66, align = "RIGHT" },
   { key = "ppl", label = "PER LBR", width = 64, align = "RIGHT" },
-  { key = "margin", label = "%", width = 38, align = "RIGHT" },
+  { key = "margin", label = "%", width = 46, align = "RIGHT" },
 }
 
 local function Controls()
@@ -382,10 +382,10 @@ end
 function Pricing:LayoutTable()
   local frame = self.panel
   if not frame then return end
-  local width = math.max(680, frame.scroll:GetWidth() or frame.listPanel:GetWidth() or 780)
+  local width = math.max(1, frame.scroll:GetWidth() or frame.listPanel:GetWidth() or 780)
   local fixed = 56
   for _, column in ipairs(COLUMNS) do if not column.flex then fixed = fixed + column.width end end
-  local flexible = math.max(132, width - fixed - 10)
+  local flexible = math.max(96, width - fixed - 10)
   local x = 58
   for _, column in ipairs(COLUMNS) do
     column.currentWidth = column.flex and flexible or column.width
@@ -466,6 +466,7 @@ function Pricing:UpdateInspector()
   frame.inspectMeta:SetText(entry.profession .. "  |  " .. entry.expansion .. "\nItem " .. tostring(entry.itemID))
   local settings = self:GetSettings()
   local quantity = tonumber(settings.queue[tostring(entry.itemID)]) or 0
+  local displayQuantity = math.max(1, quantity)
   frame.queueQty:SetText(tostring(quantity))
   frame.addQueue:SetText(quantity > 0 and "Add Another" or "Add to Queue")
   local reagents = getReagents(entry.entry)
@@ -475,7 +476,7 @@ function Pricing:UpdateInspector()
     materialRow:SetShown(reagent ~= nil)
     if reagent then
       local reagentID = tonumber(reagent.itemID)
-      local quantity = tonumber(reagent.count or reagent.qty or reagent.amount) or 1
+      local quantity = (tonumber(reagent.count or reagent.qty or reagent.amount) or 1) * displayQuantity
       local price = source and source.GetItemPrice and source.GetItemPrice(reagentID)
       local subtotal = price and price * quantity or nil
       materialRow.icon:SetTexture(itemIcon(reagentID))
@@ -496,9 +497,12 @@ function Pricing:UpdateInspector()
     frame.materialStatus:SetText(tostring(#reagents) .. " priced materials")
     TextColor(frame.materialStatus, "success")
   end
-  setMoney(frame.inspectCost, entry.cost)
-  setMoney(frame.inspectSell, entry.sell, entry.sell and "accent" or "muted")
-  setMoney(frame.inspectProfit, entry.profit, entry.profit and entry.profit >= 0 and "success" or entry.profit and "danger" or "muted")
+  local totalCost = entry.cost and entry.cost * displayQuantity or nil
+  local totalSell = entry.sell and entry.sell * displayQuantity or nil
+  local totalProfit = entry.profit and entry.profit * displayQuantity or nil
+  setMoney(frame.inspectCost, totalCost)
+  setMoney(frame.inspectSell, totalSell, totalSell and "accent" or "muted")
+  setMoney(frame.inspectProfit, totalProfit, totalProfit and totalProfit >= 0 and "success" or totalProfit and "danger" or "muted")
   frame.inspectMargin:SetText(entry.margin and string.format("%.1f%%", entry.margin) or "--")
   TextColor(frame.inspectMargin, entry.margin and entry.margin >= 0 and "success" or entry.margin and "danger" or "muted")
   local history = NS.Systems.MarketHistory and NS.Systems.MarketHistory:GetStats(entry.itemID, 7)

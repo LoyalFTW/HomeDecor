@@ -241,7 +241,7 @@ function Lists:GetRecordByItem(itemID, id, sourceID)
   itemID = tonumber(itemID)
   sourceID = tonumber(sourceID)
   local entry = id and self:Get(id) or self:GetActive()
-  if not entry or not itemID then return nil end
+  if not entry or not itemID then return nil, 0 end
   local fallback
   for key in pairs(entry.keys) do
     local record = NS.Systems.Catalog.byID[key]

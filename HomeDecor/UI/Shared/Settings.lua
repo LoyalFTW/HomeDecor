@@ -31,7 +31,7 @@ function AddonSettings:SetMinimapShown(shown)
   if not profile then return end
   profile.minimap = profile.minimap or { hide = false }
   profile.minimap.hide = shown ~= true
-  if NS.UI.MinimapLauncher then NS.UI.MinimapLauncher:SetShown(shown) end
+  if NS.UI.MinimapLauncher then NS.UI.MinimapLauncher:SetMinimapHidden(shown ~= true) end
 end
 
 function AddonSettings:Apply(key)
