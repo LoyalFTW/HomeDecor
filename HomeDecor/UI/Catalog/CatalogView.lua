@@ -331,7 +331,7 @@ function CatalogView:ApplyShellLayout()
     frame.toolbar:SetPoint("TOPLEFT", frame.sidebar, "TOPRIGHT", 8, 0)
   end
   frame.toolbar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -7, catalogOnly and -46 or -70)
-  frame.toolbar:SetHeight(catalogOnly and 128 or 72)
+  frame.toolbar:SetHeight(catalogOnly and 98 or 72)
   frame.search:ClearAllPoints()
   frame.panelTop:ClearAllPoints()
   frame.modeTop:ClearAllPoints()
@@ -361,6 +361,12 @@ function CatalogView:ApplyShellLayout()
   for index = 2, #frame.ownershipButtons do frame.ownershipButtons[index]:SetPoint("LEFT", frame.ownershipButtons[index - 1], "RIGHT", 0, 0) end
   frame.sortTop:ClearAllPoints()
   frame.sortTop:SetPoint("LEFT", frame.ownershipButtons[#frame.ownershipButtons], "RIGHT", 8, 0)
+  frame.compactTop:ClearAllPoints()
+  if catalogOnly then
+    frame.compactTop:SetPoint("RIGHT", frame.closeButton, "LEFT", -6, 0)
+  else
+    frame.compactTop:SetPoint("RIGHT", frame.settingsButton, "LEFT", -6, 0)
+  end
   self:RefreshCompactExpansions()
   self:UpdateResponsiveLayout()
   frame._applyingShellLayout = nil
@@ -840,8 +846,12 @@ function CatalogView:BindItemRow(row, record, columns, rowWidth, lightweight)
     row.favorite:SetPoint("RIGHT", -9, 0)
     row.tracked:SetPoint("RIGHT", row.favorite, "LEFT", -8, 0)
     if catalogOnly then
-      row.meta:SetPoint("RIGHT", row, "RIGHT", -68, 0)
-      row.meta:SetWidth(140)
+      row.meta:SetPoint("LEFT", row, "RIGHT", -212, 0)
+      if (row._sourceCount or 0) > 1 then
+        row.meta:SetPoint("RIGHT", row.sources, "LEFT", -8, 0)
+      else
+        row.meta:SetPoint("RIGHT", row.favorite, "LEFT", -8, 0)
+      end
       row.meta:SetJustifyH("RIGHT")
       row.meta:SetWordWrap(false)
     end
@@ -1415,7 +1425,7 @@ function CatalogView:Create()
   compactColumnHeader.item:SetText("ITEM")
   SetTextColor(compactColumnHeader.item, COLOR.accent)
   compactColumnHeader.source = compactColumnHeader:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  compactColumnHeader.source:SetPoint("RIGHT", compactColumnHeader, "RIGHT", -69, 0)
+  compactColumnHeader.source:SetPoint("RIGHT", compactColumnHeader, "RIGHT", -128, 0)
   compactColumnHeader.source:SetText("SOURCE")
   SetTextColor(compactColumnHeader.source, COLOR.accent)
   compactColumnHeader:Hide()
@@ -1539,6 +1549,7 @@ function CatalogView:Create()
 
   local close = NS.UI.Controls:CreateCloseButton(header, function() frame:Hide() end)
   close:SetPoint("RIGHT", header, "RIGHT", -8, 0)
+  frame.closeButton = close
   local settings = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate,BackdropTemplate")
   settings:SetSize(30, 22)
   settings:SetPoint("RIGHT", close, "LEFT", -2, -1)

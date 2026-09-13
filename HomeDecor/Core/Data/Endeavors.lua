@@ -361,10 +361,23 @@ end
 
 function Endeavors:TrackTask(taskID, tracked)
   local api = API()
-  if not api or not taskID then return end
-  if tracked then SafeCall(api.AddTrackedInitiativeTask, taskID) else SafeCall(api.RemoveTrackedInitiativeTask, taskID) end
+  taskID = tonumber(taskID)
+  if not api or not taskID then return false end
+  if tracked then
+    if type(api.AddTrackedInitiativeTask) ~= "function" then return false end
+    api.AddTrackedInitiativeTask(taskID)
+  else
+    if type(api.RemoveTrackedInitiativeTask) ~= "function" then return false end
+    api.RemoveTrackedInitiativeTask(taskID)
+  end
   for _, task in ipairs(state.tasks) do if task.id == taskID then task.tracked = tracked == true end end
   Notify("tracking")
+  if _G.ObjectiveTrackerManager and _G.InitiativeTasksObjectiveTracker and type(_G.ObjectiveTrackerManager.UpdateModule) == "function" then
+    _G.ObjectiveTrackerManager:UpdateModule(_G.InitiativeTasksObjectiveTracker)
+  elseif _G.InitiativeTasksObjectiveTracker and type(_G.InitiativeTasksObjectiveTracker.MarkDirty) == "function" then
+    _G.InitiativeTasksObjectiveTracker:MarkDirty()
+  end
+  return true
 end
 
 function Endeavors:GetTasks()
