@@ -1175,6 +1175,54 @@ function UIA:Create(parent)
   refreshBlueprint:Hide()
   panel.refreshBlueprint = refreshBlueprint
 
+  local applySelectedHouseFit
+  local houseFitDropdown
+  if Dropdown then
+    houseFitDropdown = Dropdown.Create(right, "House", nil, 172, function()
+      local layout = sys:GetActiveLayout()
+      local blueprints = B()
+      local rec = layout and layout.blueprintCode and blueprints and blueprints:GetByCode(layout.blueprintCode)
+      return rec and rec.selectedHouseGUID
+    end, function(value)
+      local layout = sys:GetActiveLayout()
+      local blueprints = B()
+      local rec = layout and layout.blueprintCode and blueprints and blueprints:GetByCode(layout.blueprintCode)
+      if rec then rec.selectedHouseGUID = value end
+      if applySelectedHouseFit then applySelectedHouseFit(layout) end
+      if panel.Refresh then panel:Refresh() end
+    end, function()
+      local options = {}
+      local layout = sys:GetActiveLayout()
+      local blueprints = B()
+      local rec = layout and layout.blueprintCode and blueprints and blueprints:GetByCode(layout.blueprintCode)
+      for index, house in ipairs(blueprints and blueprints:GetOwnedHouses() or {}) do
+        local fit = rec and rec.houseFits and rec.houseFits[house.houseGUID]
+        local label = house.houseName or house.neighborhoodName or ("House " .. tostring(index))
+        if fit and fit.status == "checking" then
+          label = label .. " (checking)"
+        elseif fit and fit.status == "ready" then
+          label = label .. (fit.summary and fit.summary.ready and " (fits)" or " (blocked)")
+        elseif fit and fit.status == "error" then
+          label = label .. " (error)"
+        end
+        options[#options + 1] = { value = house.houseGUID, text = label }
+      end
+      return options
+    end)
+    houseFitDropdown:SetPoint("TOPLEFT", applyBlueprint, "BOTTOMLEFT", 0, -8)
+    houseFitDropdown:Hide()
+    panel.houseFitDropdown = houseFitDropdown
+  end
+
+  local checkHouses = Button(right, "Check Houses", 82)
+  if houseFitDropdown then
+    checkHouses:SetPoint("LEFT", houseFitDropdown, "RIGHT", 8, 0)
+  else
+    checkHouses:SetPoint("TOPLEFT", applyBlueprint, "BOTTOMLEFT", 0, -8)
+  end
+  checkHouses:Hide()
+  panel.checkHouses = checkHouses
+
   local markRoom = Button(right, "Mark Room", 98)
   markRoom:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -8)
   panel.markRoom = markRoom
@@ -1187,7 +1235,7 @@ function UIA:Create(parent)
   panel.markStatus = markStatus
 
   local openInTrackerBtn = Button(right, "Open In Tracker", 262)
-  openInTrackerBtn:SetPoint("TOPLEFT", applyBlueprint, "BOTTOMLEFT", 0, -10)
+  openInTrackerBtn:SetPoint("TOPLEFT", houseFitDropdown or checkHouses, "BOTTOMLEFT", 0, -8)
   openInTrackerBtn:SetHeight(32)
   openInTrackerBtn.text:SetFontObject(GameFontNormal)
   TextColor(openInTrackerBtn.text, "accent")
@@ -1342,6 +1390,16 @@ function UIA:Create(parent)
     return sys:GetActiveLayout()
   end
 
+  applySelectedHouseFit = function(layout)
+    if not (layout and layout.blueprintPreview and layout.blueprintCode) then return end
+    local blueprints = B()
+    local rec = blueprints and blueprints:GetByCode(layout.blueprintCode)
+    local fit = rec and rec.selectedHouseGUID and rec.houseFits and rec.houseFits[rec.selectedHouseGUID]
+    layout.blueprintHouseGUID = rec and rec.selectedHouseGUID or nil
+    layout.blueprintFit = fit
+    layout.blueprintRequirements = fit and fit.status == "ready" and fit.requirements or rec and rec.requirements or layout.blueprintBaseRequirements or layout.blueprintRequirements
+  end
+
   local function exportBlueprintCode(kind)
     local blueprints = B()
     local layout = activeLayout()
@@ -1367,6 +1425,16 @@ function UIA:Create(parent)
     local rec = layout and blueprints and blueprints:GetByCode(layout.blueprintCode)
     local ok, err = blueprints and blueprints:RequestContents(rec and rec.id or layout and layout.blueprintCode)
     if not ok and err then ArchitectChat(err) end
+  end)
+
+  checkHouses:SetScript("OnClick", function()
+    local layout = activeLayout()
+    local blueprints = B()
+    local rec = layout and blueprints and blueprints:GetByCode(layout.blueprintCode)
+    local ok, err = blueprints and blueprints:RequestHouseFits(rec and rec.id)
+    if not ok and err then ArchitectChat(err) end
+    if houseFitDropdown and houseFitDropdown.ApplyText then houseFitDropdown:ApplyText() end
+    panel:Refresh()
   end)
 
   function panel:CanvasViewKey()
@@ -2111,11 +2179,17 @@ function UIA:Create(parent)
   function panel:RefreshInspector()
     local layout = activeLayout()
     local isBlueprint = layout and layout.blueprintPreview == true
+    if isBlueprint and applySelectedHouseFit then applySelectedHouseFit(layout) end
     local room = selectedRoom()
     deleteRoom:SetShown(not isBlueprint)
     rotateRoom:SetShown(not isBlueprint)
     applyBlueprint:SetShown(isBlueprint)
     refreshBlueprint:SetShown(isBlueprint)
+    checkHouses:SetShown(isBlueprint)
+    if houseFitDropdown then
+      houseFitDropdown:SetShown(isBlueprint)
+      if isBlueprint and houseFitDropdown.ApplyText then houseFitDropdown:ApplyText() end
+    end
     if not room then
       self.inspectorTitle:SetText("Room")
       self.roomName:SetText("")
@@ -2169,6 +2243,20 @@ function UIA:Create(parent)
       changesTitle:SetText("House Changes  (" .. tostring(req.missingQty or 0) .. " missing)")
       openInTrackerBtn:SetShown((tonumber(req.missingQty) or 0) > 0)
       local displayRows = {}
+      local fit = layout.blueprintFit
+      if fit then
+        displayRows[#displayRows + 1] = { fitStatus = fit }
+        if fit.status == "error" and fit.error then displayRows[#displayRows + 1] = { problem = fit.error } end
+        if fit.status == "ready" and fit.summary then
+          for _, problem in ipairs(fit.summary.blockers or {}) do displayRows[#displayRows + 1] = { problem = problem } end
+          for _, scope in ipairs({ fit.summary.budgets and fit.summary.budgets.interior or {}, fit.summary.budgets and fit.summary.budgets.exterior or {} }) do
+            if #scope > 0 then
+              displayRows[#displayRows + 1] = { budgetSection = scope[1].scope }
+              for _, budget in ipairs(scope) do displayRows[#displayRows + 1] = { budget = budget } end
+            end
+          end
+        end
+      end
       for _, group in ipairs(req.groups or {}) do
         displayRows[#displayRows + 1] = { section = true, group = group }
         for _, item in ipairs(group.items or {}) do displayRows[#displayRows + 1] = { item = item } end
@@ -2183,7 +2271,53 @@ function UIA:Create(parent)
         row:SetPoint("TOPRIGHT", changesList, "TOPRIGHT", 0, -((i - 1) * 23))
         row.name:ClearAllPoints()
         row.name:SetPoint("RIGHT", -58, 0)
-        if display.section then
+        if display.fitStatus then
+          local houseFit = display.fitStatus
+          row.name:SetPoint("LEFT", 5, 0)
+          row.name:SetText(tostring(houseFit.houseName or "Selected house"))
+          if houseFit.status == "checking" or houseFit.status == "queued" then
+            row.cost:SetText("Checking")
+            TextColor(row.name, "accent")
+            TextColor(row.cost, "accent")
+          elseif houseFit.status == "error" then
+            row.cost:SetText("Error")
+            TextColor(row.name, "danger")
+            TextColor(row.cost, "danger")
+          else
+            local ready = houseFit.summary and houseFit.summary.ready
+            row.cost:SetText(ready and "Fits" or "Blocked")
+            TextColor(row.name, ready and "success" or "danger")
+            TextColor(row.cost, ready and "success" or "danger")
+          end
+          row.sectionBG:Show()
+        elseif display.problem then
+          row.name:SetPoint("LEFT", 12, 0)
+          row.name:SetText(tostring(display.problem))
+          row.cost:SetText("Blocked")
+          TextColor(row.name, "danger")
+          TextColor(row.cost, "danger")
+          row.sectionBG:Hide()
+        elseif display.budgetSection then
+          row.name:SetPoint("LEFT", 5, 0)
+          row.name:SetText(tostring(display.budgetSection) .. " Budgets")
+          row.cost:SetText("")
+          TextColor(row.name, "accent")
+          TextColor(row.cost, "textMuted")
+          row.sectionBG:Show()
+        elseif display.budget then
+          local budget = display.budget
+          local over = (tonumber(budget.excess) or 0) > 0
+          row.name:SetPoint("LEFT", 12, 0)
+          row.name:SetText(tostring(budget.label) .. "  (+" .. tostring(budget.cost or 0) .. ")")
+          if budget.projected and budget.maximum then
+            row.cost:SetText(tostring(budget.projected) .. "/" .. tostring(budget.maximum))
+          else
+            row.cost:SetText(tostring(budget.cost or 0))
+          end
+          TextColor(row.name, over and "danger" or "text")
+          TextColor(row.cost, over and "danger" or "success")
+          row.sectionBG:Hide()
+        elseif display.section then
           local group = display.group
           local hasProblem = (tonumber(group.missingQty) or 0) > 0 or (tonumber(group.invalidCount) or 0) > 0
           row.name:SetPoint("LEFT", 5, 0)
@@ -2257,7 +2391,14 @@ function UIA:Create(parent)
     local last = db and db.capture and db.capture.last
     if layout.blueprintPreview then
       local req = layout.blueprintRequirements or {}
-      self.captureStatus:SetText("Blueprint room set  |  " .. tostring(req.missingQty or 0) .. " missing  |  Placement not exposed")
+      local fit = layout.blueprintFit
+      if fit and fit.status == "ready" and fit.summary then
+        self.captureStatus:SetText((fit.summary.ready and "Fits " or "Blocked for ") .. tostring(fit.houseName or "selected house") .. "  |  " .. tostring(req.missingQty or 0) .. " missing")
+      elseif fit and (fit.status == "checking" or fit.status == "queued") then
+        self.captureStatus:SetText("Checking " .. tostring(fit.houseName or "selected house") .. "...")
+      else
+        self.captureStatus:SetText("Blueprint room set  |  " .. tostring(req.missingQty or 0) .. " missing  |  Check owned houses")
+      end
     elseif last then
       local msg = "Last capture: " .. tostring(last.roomCount or 0) .. " rooms"
       if last.roomCount == 0 then msg = msg .. " (API probe only)" end
@@ -2542,6 +2683,13 @@ function UIA:Create(parent)
       if DEFAULT_CHAT_FRAME then
         DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor Architect:|r " .. tostring(rec and rec.name or "Blueprint") .. " room set is ready. Exact blueprint placement is not exposed by Blizzard.")
       end
+    end)
+
+    NS.OnMessage("HOMEDECOR_BLUEPRINTS_UPDATED", function(rec)
+      local layout = activeLayout()
+      if not (panel:IsShown() and layout and layout.blueprintCode and rec and rec.code == layout.blueprintCode) then return end
+      if applySelectedHouseFit then applySelectedHouseFit(layout) end
+      panel:Refresh()
     end)
 
     NS.OnMessage("HOMEDECOR_ARCHITECT_CAPTURED", function(layout, record)

@@ -13,6 +13,23 @@ local CONTENT_LABELS = {
   [5] = "Fixtures",
 }
 
+local BUDGET_LABELS = {
+  [0] = "Rooms",
+  [1] = "Decor",
+  [2] = "Pets",
+}
+
+local REQUIREMENT_FLAGS = {
+  { value = 1, label = "Insufficient placement budget" },
+  { value = 2, label = "Missing room" },
+  { value = 4, label = "Missing fixture" },
+  { value = 8, label = "Missing decor" },
+  { value = 16, label = "Missing dye" },
+  { value = 32, label = "Exterior faction does not match" },
+  { value = 64, label = "House type is locked" },
+  { value = 128, label = "House size is too small" },
+}
+
 local EXPORT_KIND = {
   full = "House",
   room = "Room",
@@ -48,8 +65,9 @@ local function profile()
   return p.blueprints
 end
 
-local function notify()
+local function notify(rec)
   if Blueprints.OnLibraryChanged then Blueprints.OnLibraryChanged() end
+  if NS.SendMessage then NS.SendMessage("HOMEDECOR_BLUEPRINTS_UPDATED", rec) end
 end
 
 local function chat(message, danger)
@@ -121,6 +139,47 @@ local function requirementsFromInfo(info)
   return req
 end
 
+local function hasFlag(flags, value)
+  flags = math.max(0, tonumber(flags) or 0)
+  value = math.max(1, tonumber(value) or 1)
+  if _G.bit and type(_G.bit.band) == "function" then return _G.bit.band(flags, value) ~= 0 end
+  return math.floor(flags / value) % 2 == 1
+end
+
+local function requirementProblems(flags)
+  local problems = {}
+  for _, entry in ipairs(REQUIREMENT_FLAGS) do
+    if hasFlag(flags, entry.value) then problems[#problems + 1] = entry.label end
+  end
+  return problems
+end
+
+local function copyBudgets(source, scope)
+  local result = {}
+  for key, value in pairs(type(source) == "table" and source or {}) do
+    if type(value) == "table" then
+      local budgetType = tonumber(value.budgetType)
+      if budgetType == nil then budgetType = tonumber(key) end
+      local cost = math.max(0, tonumber(value.cost) or 0)
+      local current = tonumber(value.current)
+      local maximum = tonumber(value.max)
+      local projected = current and current + cost or nil
+      result[#result + 1] = {
+        scope = scope,
+        budgetType = budgetType,
+        label = BUDGET_LABELS[budgetType] or ("Budget " .. tostring(budgetType or "?")),
+        cost = cost,
+        current = current,
+        maximum = maximum,
+        projected = projected,
+        excess = projected and maximum and math.max(0, projected - maximum) or 0,
+      }
+    end
+  end
+  table.sort(result, function(a, b) return (a.budgetType or 99) < (b.budgetType or 99) end)
+  return result
+end
+
 local function summaryFromInfo(info, req)
   local summary = {
     type = Blueprints:GetTypeLabel(info and info.shareCode),
@@ -130,6 +189,7 @@ local function summaryFromInfo(info, req)
     fixtures = 0,
     missing = req.acquirableMissingQty,
     missingAll = req.missingQty,
+    unmetRequirementFlags = tonumber(info and info.unmetRequirementFlags) or 0,
     blockingRequirementFlags = tonumber(info and info.blockingRequirementFlags) or 0,
     hasArchitectRooms = false,
   }
@@ -140,20 +200,36 @@ local function summaryFromInfo(info, req)
     if group.contentType == 5 then summary.fixtures = summary.fixtures + group.total end
   end
   summary.hasArchitectRooms = summary.rooms > 0
-  local costs = info and (info.budgetCosts or info.budgetCostMap or info.budgetCostInfo)
-  if type(costs) == "table" then
+  summary.problems = requirementProblems(summary.unmetRequirementFlags)
+  summary.blockers = requirementProblems(summary.blockingRequirementFlags)
+  summary.ready = summary.blockingRequirementFlags == 0
+  summary.budgets = { interior = {}, exterior = {} }
+  local budgetInfo = info and info.budgetInfo
+  if type(budgetInfo) == "table" then
+    summary.budgets.interior = copyBudgets(budgetInfo.interiorBudgets, "Interior")
+    summary.budgets.exterior = copyBudgets(budgetInfo.exteriorBudgets, "Exterior")
     local total = 0
-    local function walk(value)
-      if type(value) ~= "table" then return end
-      if tonumber(value.cost) then total = total + math.max(0, tonumber(value.cost) or 0) end
-      for _, child in pairs(value) do
-        if type(child) == "table" then walk(child) end
-      end
+    for _, scope in ipairs({ summary.budgets.interior, summary.budgets.exterior }) do
+      for _, budget in ipairs(scope) do total = total + budget.cost end
     end
-    walk(costs)
     summary.budget = total
   end
   return summary
+end
+
+local function normalizeHouses(houses)
+  if type(houses) ~= "table" then return {} end
+  if type(houses.houseInfoList) == "table" then houses = houses.houseInfoList end
+  if type(houses.houseInfos) == "table" then houses = houses.houseInfos end
+  local result = {}
+  for _, house in ipairs(houses) do
+    if type(house) == "table" and house.houseGUID then result[#result + 1] = house end
+  end
+  return result
+end
+
+local function houseLabel(house, index)
+  return house and (house.houseName or house.neighborhoodName or house.ownerName) or ("House " .. tostring(index or ""))
 end
 
 function Blueprints:IsClientSupported()
@@ -261,6 +337,9 @@ function Blueprints:RequestContents(id)
   local rec = self:GetByID(id)
   if not rec then return false, "Select or paste a blueprint first." end
   if not self:IsClientSupported() then return false, "Blueprint support is not available on this client." end
+  if self.fitQueue then return false, "Wait for the current house check to finish." end
+  self.fitQueue = nil
+  self.activeFitRequest = nil
   self.lastRequestedRecID = rec.id
   if rec.status == "checking" then return true end
   rec.status = "checking"
@@ -274,6 +353,96 @@ end
 function Blueprints:GetRequirements(id)
   local rec = self:GetByID(id)
   return rec and rec.requirements
+end
+
+function Blueprints:GetOwnedHouses()
+  if self.cachedHouses and #self.cachedHouses > 0 then return self.cachedHouses end
+  local endeavors = NS.Systems and NS.Systems.Endeavors
+  local houses = endeavors and endeavors.GetHouses and normalizeHouses(endeavors:GetHouses()) or {}
+  if #houses > 0 then self.cachedHouses = houses end
+  return houses
+end
+
+function Blueprints:GetHouseFit(id, houseGUID)
+  local rec = self:GetByID(id)
+  return rec and rec.houseFits and rec.houseFits[houseGUID] or nil
+end
+
+function Blueprints:BeginNextHouseFit()
+  local queue = self.fitQueue
+  if not queue then return end
+  queue.index = queue.index + 1
+  local house = queue.houses[queue.index]
+  local rec = self:GetByID(queue.recID)
+  if not rec or not house then
+    if rec then rec.fitStatus = "ready" end
+    self.activeFitRequest = nil
+    self.lastRequestedRecID = nil
+    self.fitQueue = nil
+    notify(rec)
+    return
+  end
+  self.activeFitRequest = { recID = rec.id, houseGUID = house.houseGUID }
+  local fit = rec.houseFits[house.houseGUID]
+  fit.status = "checking"
+  rec.fitStatus = "checking"
+  rec.fitProgress = queue.index
+  rec.fitTotal = #queue.houses
+  self.lastRequestedRecID = rec.id
+  local ok = pcall(_G.C_HousingBlueprint.RequestBlueprintContentsForContext, rec.code, house.houseGUID)
+  if not ok then
+    fit.status = "error"
+    fit.error = "This house could not be checked."
+    self.activeFitRequest = nil
+    self:BeginNextHouseFit()
+    return
+  end
+  local request = self.activeFitRequest
+  C_Timer.After(12, function()
+    if Blueprints.activeFitRequest ~= request then return end
+    local current = Blueprints:GetByID(request.recID)
+    local currentFit = current and current.houseFits and current.houseFits[request.houseGUID]
+    if currentFit then
+      currentFit.status = "error"
+      currentFit.error = "The server did not answer this house check."
+    end
+    Blueprints.activeFitRequest = nil
+    notify(current)
+    Blueprints:BeginNextHouseFit()
+  end)
+  notify(rec)
+end
+
+function Blueprints:RequestHouseFits(id)
+  local rec = self:GetByID(id)
+  if not rec then return false, "Select or paste a blueprint first." end
+  if rec.status == "checking" then return false, "Wait for the blueprint inspection to finish." end
+  local api = _G.C_HousingBlueprint
+  if not (api and type(api.RequestBlueprintContentsForContext) == "function") then return false, "Per-house blueprint checks require the 12.1 housing API." end
+  if self.fitQueue then return false, "A blueprint house check is already running." end
+  local houses = self:GetOwnedHouses()
+  if #houses == 0 then
+    self.pendingHouseFitRecID = rec.id
+    if _G.C_Housing and type(_G.C_Housing.GetPlayerOwnedHouses) == "function" then pcall(_G.C_Housing.GetPlayerOwnedHouses) end
+    rec.fitStatus = "loadingHouses"
+    notify(rec)
+    return true
+  end
+  rec.houseFits = rec.houseFits or {}
+  for index, house in ipairs(houses) do
+    local fit = rec.houseFits[house.houseGUID] or {}
+    fit.houseGUID = house.houseGUID
+    fit.houseName = houseLabel(house, index)
+    fit.neighborhoodName = house.neighborhoodName
+    fit.status = "queued"
+    fit.error = nil
+    rec.houseFits[house.houseGUID] = fit
+  end
+  if not rec.selectedHouseGUID or not rec.houseFits[rec.selectedHouseGUID] then rec.selectedHouseGUID = houses[1].houseGUID end
+  self.fitQueue = { recID = rec.id, houses = houses, index = 0 }
+  self.activeFitRequest = nil
+  self:BeginNextHouseFit()
+  return true
 end
 
 function Blueprints:GetHyperlink(code)
@@ -342,6 +511,7 @@ function Blueprints:BuildArchitectPreview(rec)
   layout.blueprintCode = rec.code
   layout.blueprintPreview = true
   layout.blueprintRequirements = rec.requirements
+  layout.blueprintBaseRequirements = rec.requirements
   layout.rooms = {}
   local x, y, rowHeight = 2, 2, 0
   for _, group in ipairs(rec.requirements.groups or {}) do
@@ -426,6 +596,21 @@ function Blueprints:OnContentsReceived(info)
   end
   self.lastRequestedRecID = nil
   if not rec then return end
+  local activeFit = self.activeFitRequest
+  if activeFit and activeFit.recID == rec.id then
+    rec.houseFits = rec.houseFits or {}
+    local fit = rec.houseFits[activeFit.houseGUID] or { houseGUID = activeFit.houseGUID }
+    fit.requirements = requirementsFromInfo(info)
+    fit.summary = summaryFromInfo(info, fit.requirements)
+    fit.status = "ready"
+    fit.error = nil
+    fit.updated = time and time() or 0
+    rec.houseFits[activeFit.houseGUID] = fit
+    self.activeFitRequest = nil
+    notify(rec)
+    self:BeginNextHouseFit()
+    return
+  end
   rec.requirements = requirementsFromInfo(info)
   rec.contents = true
   rec.status = "ready"
@@ -435,7 +620,7 @@ function Blueprints:OnContentsReceived(info)
   rec.updated = time and time() or rec.updated
   local queued, reveal = rec.previewQueued, rec.previewReveal
   rec.previewQueued, rec.previewReveal = nil, nil
-  notify()
+  notify(rec)
   if queued then
     local layout, err = self:BuildArchitectPreview(rec)
     if NS.SendMessage then NS.SendMessage("HOMEDECOR_ARCHITECT_BLUEPRINT_READY", layout, rec, err, reveal) end
@@ -444,7 +629,20 @@ end
 
 function Blueprints:OnContentsFailure(code, reason)
   local rec = self:GetByCode(code)
+  local activeFit = self.activeFitRequest
+  if not rec and activeFit then rec = self:GetByID(activeFit.recID) end
   if not rec then return end
+  if activeFit and activeFit.recID == rec.id then
+    local fit = rec.houseFits and rec.houseFits[activeFit.houseGUID]
+    if fit then
+      fit.status = "error"
+      fit.error = resultText(reason, "This house could not be checked.")
+    end
+    self.activeFitRequest = nil
+    notify(rec)
+    self:BeginNextHouseFit()
+    return
+  end
   rec.status = "error"
   rec.error = resultText(reason, "The blueprint contents could not be loaded.")
   rec.previewQueued, rec.previewReveal = nil, nil
@@ -473,6 +671,21 @@ if NS.SafeRegisterEvent then
   NS.SafeRegisterEvent(Blueprints, "HOUSING_BLUEPRINT_EXPORT_SUCCESS", function(code) Blueprints:OnExportSuccess(code) end)
   NS.SafeRegisterEvent(Blueprints, "HOUSING_BLUEPRINT_EXPORT_FAILURE", function(reason) Blueprints:OnExportFailure(reason) end)
   NS.SafeRegisterEvent(Blueprints, "HOUSING_BLUEPRINT_DELETE_SUCCESS", function() Blueprints:RequestCollection() end)
+  NS.SafeRegisterEvent(Blueprints, "PLAYER_HOUSE_LIST_UPDATED", function(houses)
+    local normalized = normalizeHouses(houses)
+    if #normalized > 0 then Blueprints.cachedHouses = normalized end
+    local recID = Blueprints.pendingHouseFitRecID
+    Blueprints.pendingHouseFitRecID = nil
+    if recID and #normalized > 0 then
+      Blueprints:RequestHouseFits(recID)
+    elseif recID then
+      local rec = Blueprints:GetByID(recID)
+      if rec then
+        rec.fitStatus = "error"
+        notify(rec)
+      end
+    end
+  end)
 end
 
 return Blueprints

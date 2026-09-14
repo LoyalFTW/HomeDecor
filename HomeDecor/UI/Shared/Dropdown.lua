@@ -69,7 +69,7 @@ function Dropdown:Render()
     local option = rowIndex <= visible and values[optionIndex] or nil
     row:ClearAllPoints()
     row:SetPoint("TOPLEFT", 4, -4 - ((rowIndex - 1) * ROW_HEIGHT))
-    row:SetPoint("TOPRIGHT", -4, -4 - ((rowIndex - 1) * ROW_HEIGHT))
+    row:SetPoint("TOPRIGHT", frame.scrollable and -18 or -4, -4 - ((rowIndex - 1) * ROW_HEIGHT))
     row:SetShown(option ~= nil)
     if option ~= nil then
       local separator = type(option) == "table" and option.separator == true
@@ -101,6 +101,10 @@ end
 function Dropdown:Scroll(delta)
   local frame = self.frame
   if not frame or not frame:IsShown() then return end
+  if frame.scrollable and frame.scroll then
+    NS.UI.Controls:ScrollFrameByWheel(frame.scroll, delta)
+    return
+  end
   local count = #(frame.values or {})
   local visible = math.min(tonumber(frame.visibleRows) or VISIBLE_ROWS, count)
   local maximum = math.max(1, count - visible + 1)
@@ -119,6 +123,24 @@ function Dropdown:Create()
   NS.UI.Controls:Backdrop(frame, NS.UI.Controls.colors.header)
   frame:EnableMouseWheel(true)
   frame:SetScript("OnMouseWheel", function(_, delta) Dropdown:Scroll(delta) end)
+  frame.scroll = NS.UI.Controls:CreateScrollFrame(frame)
+  frame.scroll:SetPoint("TOPLEFT", 4, -4)
+  frame.scroll:SetPoint("BOTTOMRIGHT", -4, 4)
+  frame.scroll:SetFrameLevel(frame:GetFrameLevel() + 1)
+  frame.scrollContent = CreateFrame("Frame", nil, frame.scroll)
+  frame.scrollContent:SetWidth(1)
+  frame.scrollContent:SetHeight(1)
+  NS.UI.Controls:ConfigureScrollFrame(frame.scroll, frame.scrollContent, {
+    step = ROW_HEIGHT,
+    barInset = 5,
+    barTop = 4,
+    barBottom = 4,
+    forwardContent = false,
+    onScroll = function(scroll)
+      frame.first = math.floor((scroll:GetVerticalScroll() or 0) / ROW_HEIGHT) + 1
+      Dropdown:Render()
+    end,
+  })
   frame.rows = {}
   frame.measure = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   frame.measure:Hide()
@@ -167,8 +189,14 @@ function Dropdown:Show(anchor, values, selected, callback)
   frame.visibleRows = math.max(1, math.min(VISIBLE_ROWS, math.floor((height - 8) / ROW_HEIGHT)))
   local scrollable = count > frame.visibleRows
   local width = math.min(MAX_WIDTH, widest + (scrollable and 18 or 0))
+  height = frame.visibleRows * ROW_HEIGHT + 8
+  frame.scrollable = scrollable
 
   frame:SetSize(width, height)
+  frame.scrollContent:SetHeight(math.max(1, count * ROW_HEIGHT))
+  NS.UI.Controls:ResetScrollFrame(frame.scroll, false)
+  local bar = frame.scroll.ScrollBar or frame.scroll.scrollBar
+  if bar then bar:SetShown(scrollable) end
   frame:ClearAllPoints()
   if openAbove then
     frame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
