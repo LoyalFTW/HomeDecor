@@ -12,4 +12,5 @@ NS.Data.Professions["Inscription"]["Kul Tiran"] = {
   {decorID=8983, decorType="Storage", source={type="profession", skillID=1260583, itemID=252035}, colors={"Dark Gray"}, budgetCost=1, size="Small"},
   {decorID=9038, decorType="Storage", source={type="profession", skillID=1260593, itemID=252389}, colors={"Dark Brown"}, budgetCost=3, size="Medium"},
   {decorID=9050, decorType="Storage", source={type="profession", skillID=1260596, itemID=252401}, colors={"Dark Gray","Tan"}, budgetCost=3, size="Medium"},
+--   {decorID=28457, decorType="Ornamental", source={type="profession", skillID=1315465, itemID=283321}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
 }

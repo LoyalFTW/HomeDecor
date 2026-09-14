@@ -13,4 +13,6 @@ NS.Data.Professions["Inscription"]["Shadowlands"] = {
   {decorID=11924, decorType="Storage", source={type="profession", skillID=1263247, itemID=258245}, colors={"Dark Gray","Gray"}, budgetCost=3, size="Medium"},
   {decorID=11925, decorType="Storage", source={type="profession", skillID=1263278, itemID=258247}, colors={"Dark Brown"}, budgetCost=3, size="Large"},
   {decorID=11927, decorType="Storage", source={type="profession", skillID=1263243, itemID=258250}, colors={"Dark Gray","Royal Blue","Tan"}, budgetCost=1, size="Medium"},
+--   {decorID=28549, decorType="Ornamental", source={type="profession", skillID=1316306, itemID=284504}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
+--   {decorID=28575, decorType="Wall Hangings", source={type="profession", skillID=1315335, itemID=283301}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
 }
