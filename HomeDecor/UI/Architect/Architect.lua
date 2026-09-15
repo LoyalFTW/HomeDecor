@@ -1223,8 +1223,13 @@ function UIA:Create(parent)
   checkHouses:Hide()
   panel.checkHouses = checkHouses
 
+  local saveRoomBlueprint = Button(right, "Save Room Blueprint", 262)
+  saveRoomBlueprint:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -8)
+  saveRoomBlueprint:Hide()
+  panel.saveRoomBlueprint = saveRoomBlueprint
+
   local markRoom = Button(right, "Mark Room", 98)
-  markRoom:SetPoint("TOPLEFT", deleteRoom, "BOTTOMLEFT", 0, -8)
+  markRoom:SetPoint("TOPLEFT", saveRoomBlueprint, "BOTTOMLEFT", 0, -8)
   panel.markRoom = markRoom
 
   local markStatus = FS(right, "GameFontNormalSmall")
@@ -1436,6 +1441,14 @@ function UIA:Create(parent)
     if houseFitDropdown and houseFitDropdown.ApplyText then houseFitDropdown:ApplyText() end
     panel:Refresh()
   end)
+
+  saveRoomBlueprint:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetText("Save Room Blueprint")
+    GameTooltip:AddLine(self.exportError or "Save the selected captured room as an official Blizzard blueprint.", 0.85, 0.85, 0.85, true)
+    GameTooltip:Show()
+  end)
+  saveRoomBlueprint:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
   function panel:CanvasViewKey()
     return tostring(self:GetActiveFloor() or "all")
@@ -2196,6 +2209,7 @@ function UIA:Create(parent)
       self.roomStats:SetText("Select a room on the canvas.")
       self.markRoom:Hide()
       self.markStatus:Hide()
+      self.saveRoomBlueprint:Hide()
       changesTitle:ClearAllPoints()
       changesTitle:SetPoint("TOPLEFT", isBlueprint and openInTrackerBtn or deleteRoom, "BOTTOMLEFT", 0, -18)
       DrawGrid(self.selectedPreview, self.selectedPreview.gridPool, 8, 6, 2, 0.035)
@@ -2210,8 +2224,19 @@ function UIA:Create(parent)
       "   Rotation: " .. tostring(room.rotation or 0))
     local notices = NS.Systems and NS.Systems.RoomNameNotices
     local capturedRoom = notices and not isBlueprint and room.capture and room.capture.roomGUID ~= nil
+    local roomGUID = capturedRoom and room.capture.roomGUID or nil
+    local canExportRoom, exportError = false, nil
+    if roomGUID then
+      local blueprints = B()
+      canExportRoom, exportError = blueprints and blueprints:CanExportRoom(roomGUID)
+    end
+    self.saveRoomBlueprint:SetShown(capturedRoom and true or false)
+    self.saveRoomBlueprint.exportError = exportError
+    if canExportRoom then self.saveRoomBlueprint:Enable() else self.saveRoomBlueprint:Disable() end
     self.markRoom:SetShown(capturedRoom)
     self.markStatus:SetShown(capturedRoom)
+    self.markRoom:ClearAllPoints()
+    self.markRoom:SetPoint("TOPLEFT", capturedRoom and self.saveRoomBlueprint or deleteRoom, "BOTTOMLEFT", 0, -8)
     changesTitle:ClearAllPoints()
     if isBlueprint then
       changesTitle:SetPoint("TOPLEFT", openInTrackerBtn, "BOTTOMLEFT", 0, -18)
@@ -2601,6 +2626,20 @@ function UIA:Create(parent)
     blueprintNameEdit:SetFocus()
     blueprintNameEdit:HighlightText()
   end
+
+  saveRoomBlueprint:SetScript("OnClick", function()
+    local room = selectedRoom()
+    local roomGUID = room and room.capture and room.capture.roomGUID
+    if not roomGUID then
+      ArchitectChat("Select a captured room first.")
+      return
+    end
+    openBlueprintNamePopup(room.name or "HomeDecor Room", function(name)
+      local blueprints = B()
+      local ok, err = blueprints and blueprints:ExportRoom(name, roomGUID)
+      if not ok and err then ArchitectChat(err) end
+    end)
+  end)
 
   local function doImport(text, name)
     if panel.SaveCanvasView then panel:SaveCanvasView() end

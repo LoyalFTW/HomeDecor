@@ -480,6 +480,36 @@ function Blueprints:Export(kind, name)
   return true
 end
 
+function Blueprints:CanExportRoom(roomGUID)
+  local api = _G.C_HousingBlueprint
+  if not (api and type(api.ExportRoomBlueprint) == "function" and type(api.CanExportRoom) == "function") then
+    return false, "Room blueprint export requires the 12.1 housing API."
+  end
+  if not roomGUID then return false, "Select a captured room first." end
+  local success = _G.Enum and _G.Enum.HousingResult and _G.Enum.HousingResult.Success or 0
+  if type(api.GetExportAvailability) == "function" then
+    local ok, result = pcall(api.GetExportAvailability)
+    if not ok or result ~= success then return false, resultText(result, "Room blueprints cannot be saved here.") end
+  end
+  local ok, canExport = pcall(api.CanExportRoom, roomGUID)
+  if not ok or not canExport then return false, "This room cannot currently be exported." end
+  return true
+end
+
+function Blueprints:ExportRoom(name, roomGUID)
+  local ready, reason = self:CanExportRoom(roomGUID)
+  if not ready then return false, reason end
+  name = trim(name)
+  if name == "" then name = "HomeDecor Room" end
+  self.pendingExportName = name
+  local ok = pcall(_G.C_HousingBlueprint.ExportRoomBlueprint, name, roomGUID)
+  if not ok then
+    self.pendingExportName = nil
+    return false, "The room blueprint export could not be started."
+  end
+  return true
+end
+
 function Blueprints:Delete(id)
   local db = profile()
   local rec = self:GetByID(id)
