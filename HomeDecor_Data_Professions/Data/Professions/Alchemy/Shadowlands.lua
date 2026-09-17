@@ -8,5 +8,5 @@ NS.Data.Professions["Alchemy"] = NS.Data.Professions["Alchemy"] or {}
 NS.Data.Professions["Alchemy"]["Shadowlands"] = {
   {decorID=11385, decorType="Misc Nature", source={type="profession", skillID=1261958, itemID=257050}, colors={"Dark Gray","Royal Blue","Silver"}, budgetCost=3, size="Medium"},
   {decorID=11386, decorType="Small Lights", source={type="profession", skillID=1261972, itemID=257051}, colors={"Brown","Deep Red","Orange"}, budgetCost=1, size="Small"},
---   {decorID=28566, decorType="Utility", source={type="profession", skillID=1316323, itemID=284552}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--   {decorID=28566, decorType="Uncategorized", source={type="profession", skillID=1316323, itemID=284552}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
 }
