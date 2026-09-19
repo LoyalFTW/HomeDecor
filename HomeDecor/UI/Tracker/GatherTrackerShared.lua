@@ -31,7 +31,13 @@ end
 
 function Shared.TimeText(seconds)
   seconds = math.max(0, math.floor(tonumber(seconds) or 0))
-  return string.format("%d:%02d", math.floor(seconds / 60), seconds % 60)
+  local hours = math.floor(seconds / 3600)
+  local minutes = math.floor((seconds % 3600) / 60)
+  local secs = seconds % 60
+  if hours > 0 then
+    return string.format("%d:%02d:%02d", hours, minutes, secs)
+  end
+  return string.format("%d:%02d", minutes, secs)
 end
 
 function Shared.KindLabel(kind)
