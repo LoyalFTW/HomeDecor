@@ -174,6 +174,7 @@ function GatherTracker:ShowHUDTooltip()
     end
   end
   GameTooltip:AddLine(self:GetSettings().hudLocked and "Unlock the HUD to drag it." or "Drag this handle to move the HUD.", 0.65, 0.62, 0.56, true)
+  GameTooltip:AddLine("Right-click this handle to close the HUD and restore the minimap.", 0.65, 0.62, 0.56, true)
   GameTooltip:Show()
 end
 
@@ -245,6 +246,13 @@ function GatherTracker:CreateHUD()
     hud:StopMovingOrSizing()
     NS.Systems.Layout:Save(hud, "gatherHUD")
   end)
+  hud.handle:SetScript("OnMouseUp", function(_, button)
+    if button ~= "RightButton" then return end
+    GatherTracker:GetSettings().hudEnabled = false
+    if GatherTracker.frame and GatherTracker.frame.hudEnabled then GatherTracker.frame.hudEnabled:SetChecked(false) end
+    if GameTooltip then GameTooltip:Hide() end
+    GatherTracker:RefreshHUD()
+  end)
   hud.handle:SetScript("OnEnter", function() GatherTracker:ShowHUDTooltip() end)
   hud.handle:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
   hud:SetScript("OnUpdate", function(self, elapsed)
@@ -266,7 +274,7 @@ end
 function GatherTracker:RefreshHUD()
   local settings = self:GetSettings()
   local hud = self.hud
-  if not settings.hudEnabled then
+  if not settings.hudEnabled or Shared.IsInInstance() then
     self:RestoreMinimap()
     if hud then hud:Hide() end
     return

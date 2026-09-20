@@ -419,7 +419,7 @@ end
 NS.OnMessage("HOMEDECOR_GATHER_UPDATED", function()
   if GatherTracker.frame and GatherTracker.frame:IsShown() then GatherTracker:Refresh(false) end
   local settings = GatherTracker:GetSettings()
-  if settings.autoFarm and not settings.farmerDismissed and NS.Systems.GatherTracker:GetState().session.active and (not GatherTracker.farmer or not GatherTracker.farmer:IsShown()) then GatherTracker:ShowFarmer() else GatherTracker:RefreshFarmer() end
+  if settings.autoFarm and not Shared.IsInInstance() and not settings.farmerDismissed and NS.Systems.GatherTracker:GetState().session.active and (not GatherTracker.farmer or not GatherTracker.farmer:IsShown()) then GatherTracker:ShowFarmer() else GatherTracker:RefreshFarmer() end
 end)
 
 NS.Systems.ItemResolver:Subscribe(GatherTracker, function()
@@ -430,7 +430,7 @@ end)
 NS.SafeRegisterEvent(GatherTracker, "PLAYER_LOGIN", function()
   C_Timer.After(1.2, function()
     local settings = GatherTracker:GetSettings()
-    if not settings.farmerOpen and not settings.hudEnabled then return end
+    if Shared.IsInInstance() or (not settings.farmerOpen and not settings.hudEnabled) then return end
     GatherTracker:Create()
     if settings.farmerOpen then GatherTracker:ShowFarmer() else GatherTracker:RefreshHUD() end
   end)

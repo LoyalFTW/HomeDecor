@@ -45,4 +45,10 @@ function Shared.KindLabel(kind)
   return info and info.label or "Material"
 end
 
+function Shared.IsInInstance()
+  if type(IsInInstance) ~= "function" then return false end
+  local inInstance = IsInInstance()
+  return inInstance == true
+end
+
 return Shared
