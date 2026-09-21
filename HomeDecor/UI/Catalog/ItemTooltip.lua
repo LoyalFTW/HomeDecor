@@ -35,6 +35,8 @@ function ItemTooltip:Show(owner, record, mode)
   if source then tooltip:AddLine(source, 0.8, 0.8, 0.8) end
   if record.sourceName or record.vendorName then tooltip:AddLine(tostring(record.sourceName or record.vendorName), 0.93, 0.91, 0.85) end
   if record.zone then tooltip:AddLine(tostring(record.zone), 0.8, 0.8, 0.8) end
+  local dateLabel = NS.Systems.EventSchedule:DateLabel(record)
+  if dateLabel then tooltip:AddLine(dateLabel, 1, 0.76, 0.08) end
   local faction = FactionText(record.faction)
   if faction then tooltip:AddLine("Faction: " .. faction, 0.8, 0.8, 0.8) end
   local class = NS.Systems.Housing:GetClassRestriction(record)

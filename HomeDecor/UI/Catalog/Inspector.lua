@@ -88,6 +88,8 @@ local function SourceText(record)
   if record.zone then location[#location + 1] = tostring(record.zone) end
   if record.expansion then location[#location + 1] = tostring(record.expansion) end
   if #location > 0 then lines[#lines + 1] = table.concat(location, "  ·  ") end
+  local dateLabel = NS.Systems.EventSchedule:DateLabel(record)
+  if dateLabel then lines[#lines + 1] = dateLabel end
   if #lines == 0 then lines[1] = "Source details unavailable" end
   return table.concat(lines, "\n")
 end
@@ -426,7 +428,6 @@ function Inspector:Create(parent)
     local active = NS.Systems.Tracker:Toggle(record)
     Inspector:Show(record)
     if NS.UI.CatalogView then NS.UI.CatalogView:InvalidateDisplay() end
-    NS.Systems.MapPins:RequestRefresh()
     NS.UI.ListSelector:Show(button, record, function(id, selected)
       NS.Systems.Lists:Toggle(selected, id)
       if NS.UI.TrackerPanel then NS.UI.TrackerPanel:Refresh(false) end
@@ -642,3 +643,10 @@ function Inspector:Clear()
   frame.list:Hide()
   frame.architect:Hide()
 end
+
+NS.OnMessage("HOMEDECOR_LISTS_UPDATED", function()
+  local frame = Inspector.frame
+  if frame and Inspector.record then
+    frame.track:SetText(NS.Systems.Tracker:IsTracked(Inspector.record) and "Untrack" or "Track")
+  end
+end)

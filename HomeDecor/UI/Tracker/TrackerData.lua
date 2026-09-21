@@ -64,7 +64,7 @@ function TrackerData:IsComplete(record, tab)
   if tab == "blueprints" then
     local needed = math.max(1, tonumber(record and record.needed) or 1)
     local have = math.max(0, tonumber(record and record.have) or 0)
-    if record and record.itemID and C_Item and C_Item.GetItemCount then
+    if record and record.kind == "Dyes" and record.itemID and C_Item and C_Item.GetItemCount then
       local ok, count = pcall(C_Item.GetItemCount, record.itemID, true, false, true, true)
       if ok and tonumber(count) then have = math.max(0, tonumber(count)) end
     end

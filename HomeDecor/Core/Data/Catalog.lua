@@ -29,6 +29,8 @@ local function CopyRecord(source)
     sourceType = source.sourceType,
     sourceID = source.sourceID,
     sourceName = source.sourceName,
+    eventStartDate = source.eventStartDate,
+    eventEndDate = source.eventEndDate,
     skillID = source.skillID,
     vendorName = source.vendorName,
     requirements = source.requirements,

@@ -2477,7 +2477,7 @@ function UIA:Create(parent)
         end
       end
 
-      local added = BL:AddMissing(req, blueprintName)
+      local added = BL:AddMissing(req, blueprintName, layout.blueprintCode, layout.blueprintHouseGUID)
       if BL.SetActive then
         BL:SetActive(blueprintName)
       end

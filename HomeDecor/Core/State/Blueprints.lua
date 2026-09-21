@@ -345,6 +345,7 @@ function Blueprints:RequestContents(id)
   rec.status = "checking"
   rec.error = nil
   rec.requestedAt = GetTime and GetTime() or 0
+  if NS.Systems.BlueprintList then NS.Systems.BlueprintList:OnRequestStarted(rec.code) end
   _G.C_HousingBlueprint.RequestBlueprintContents(rec.code)
   notify()
   return true
@@ -380,6 +381,7 @@ function Blueprints:BeginNextHouseFit()
     self.lastRequestedRecID = nil
     self.fitQueue = nil
     notify(rec)
+    if NS.Systems.BlueprintList then NS.Systems.BlueprintList:RetryPending() end
     return
   end
   self.activeFitRequest = { recID = rec.id, houseGUID = house.houseGUID }
@@ -389,6 +391,7 @@ function Blueprints:BeginNextHouseFit()
   rec.fitProgress = queue.index
   rec.fitTotal = #queue.houses
   self.lastRequestedRecID = rec.id
+  if NS.Systems.BlueprintList then NS.Systems.BlueprintList:OnRequestStarted(rec.code, house.houseGUID) end
   local ok = pcall(_G.C_HousingBlueprint.RequestBlueprintContentsForContext, rec.code, house.houseGUID)
   if not ok then
     fit.status = "error"
@@ -441,6 +444,19 @@ function Blueprints:RequestHouseFits(id)
   if not rec.selectedHouseGUID or not rec.houseFits[rec.selectedHouseGUID] then rec.selectedHouseGUID = houses[1].houseGUID end
   self.fitQueue = { recID = rec.id, houses = houses, index = 0 }
   self.activeFitRequest = nil
+  self:BeginNextHouseFit()
+  return true
+end
+
+function Blueprints:RequestHouseFit(id, houseGUID)
+  local rec = self:GetByID(id)
+  if not rec or not houseGUID then return false end
+  if rec.status == "checking" or self.fitQueue then return false end
+  local api = _G.C_HousingBlueprint
+  if not (api and type(api.RequestBlueprintContentsForContext) == "function") then return false end
+  rec.houseFits = rec.houseFits or {}
+  rec.houseFits[houseGUID] = rec.houseFits[houseGUID] or { houseGUID = houseGUID }
+  self.fitQueue = { recID = rec.id, houses = { { houseGUID = houseGUID } }, index = 0 }
   self:BeginNextHouseFit()
   return true
 end
@@ -637,6 +653,7 @@ function Blueprints:OnContentsReceived(info)
     fit.updated = time and time() or 0
     rec.houseFits[activeFit.houseGUID] = fit
     self.activeFitRequest = nil
+    if NS.Systems.BlueprintList then NS.Systems.BlueprintList:OnBlueprintUpdated(rec, fit) end
     notify(rec)
     self:BeginNextHouseFit()
     return
@@ -648,9 +665,11 @@ function Blueprints:OnContentsReceived(info)
   rec.type = self:GetTypeLabel(code)
   rec.summary = summaryFromInfo(info, rec.requirements)
   rec.updated = time and time() or rec.updated
+  if NS.Systems.BlueprintList then NS.Systems.BlueprintList:OnBlueprintUpdated(rec) end
   local queued, reveal = rec.previewQueued, rec.previewReveal
   rec.previewQueued, rec.previewReveal = nil, nil
   notify(rec)
+  if NS.Systems.BlueprintList then NS.Systems.BlueprintList:RetryPending() end
   if queued then
     local layout, err = self:BuildArchitectPreview(rec)
     if NS.SendMessage then NS.SendMessage("HOMEDECOR_ARCHITECT_BLUEPRINT_READY", layout, rec, err, reveal) end

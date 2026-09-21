@@ -32,11 +32,17 @@ local function QueueCollectionRefresh()
   end
 end
 
-NS.SafeRegisterEvent(frame, "HOUSING_COLLECTION_UPDATED", QueueCollectionRefresh)
-NS.SafeRegisterEvent(frame, "HOUSING_DECOR_ITEM_LEARNED", QueueCollectionRefresh)
+local function QueueHousingRefresh()
+  QueueCollectionRefresh()
+  if NS.Systems.BlueprintList then NS.Systems.BlueprintList:OnStorageChanged() end
+end
+
+NS.SafeRegisterEvent(frame, "HOUSING_COLLECTION_UPDATED", QueueHousingRefresh)
+NS.SafeRegisterEvent(frame, "HOUSING_DECOR_ITEM_LEARNED", QueueHousingRefresh)
 NS.SafeRegisterEvent(frame, "QUEST_TURNED_IN", QueueCollectionRefresh)
 NS.SafeRegisterEvent(frame, "ACHIEVEMENT_EARNED", QueueCollectionRefresh)
 NS.SafeRegisterEvent(frame, "BAG_UPDATE_DELAYED", function()
+  if NS.Systems.BlueprintList then NS.Systems.BlueprintList:OnStorageChanged() end
   if (_G.MerchantFrame and _G.MerchantFrame:IsShown()) or (NS.UI and NS.UI.CatalogView and NS.UI.CatalogView.frame and NS.UI.CatalogView.frame:IsShown()) then
     QueueCollectionRefresh()
   end
@@ -95,7 +101,7 @@ frame:SetScript("OnEvent", function(_, event, name, reason)
     if NS.Systems.EditorTools then NS.Systems.EditorTools:Init() end
     if NS.Systems.AddonConflict then NS.Systems.AddonConflict:Init() end
   elseif event == "HOUSE_DECOR_ADDED_TO_CHEST" or event == "HOUSING_DECOR_PLACE_SUCCESS" or event == "HOUSING_STORAGE_ENTRY_UPDATED" or event == "HOUSING_STORAGE_UPDATED" or event == "NEW_HOUSING_ITEM_ACQUIRED" then
-    QueueCollectionRefresh()
+    QueueHousingRefresh()
     if (event == "HOUSE_DECOR_ADDED_TO_CHEST" or event == "HOUSING_DECOR_PLACE_SUCCESS") and NS.UI and NS.UI.QuickBar then NS.UI.QuickBar:OnPlacementSuccess() end
   elseif event == "HOUSE_EDITOR_MODE_CHANGED" then
     if _G.C_Timer and _G.C_Timer.After then

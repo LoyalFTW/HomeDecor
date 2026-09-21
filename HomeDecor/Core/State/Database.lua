@@ -60,6 +60,8 @@ local defaults = {
     statistics = { view = "sources", sort = { key = "percent", header = "percentText", descending = true } },
     changelog = { autoOpen = true, lastSeenVersion = "" },
     blueprintList = { categories = {}, active = nil },
+    blueprintListCodes = {},
+    blueprintListHouseGUIDs = {},
     blueprints = { nextID = 1, saved = {} },
   },
 }
@@ -122,6 +124,8 @@ function Database:Load()
   if type(profile.endeavors.couponGains) ~= "table" then profile.endeavors.couponGains = {} end
   if type(profile.endeavors.taskActualCoupons) ~= "table" then profile.endeavors.taskActualCoupons = {} end
   if type(profile.blueprintList) ~= "table" then profile.blueprintList = CopyDefaults(defaults.profile.blueprintList) end
+  if type(profile.blueprintListCodes) ~= "table" then profile.blueprintListCodes = {} end
+  if type(profile.blueprintListHouseGUIDs) ~= "table" then profile.blueprintListHouseGUIDs = {} end
   if type(profile.blueprints) ~= "table" then profile.blueprints = CopyDefaults(defaults.profile.blueprints) end
   if type(profile.blueprints.saved) ~= "table" then profile.blueprints.saved = {} end
   if type(profile.changelog) ~= "table" then profile.changelog = CopyDefaults(defaults.profile.changelog) end

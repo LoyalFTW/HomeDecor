@@ -174,13 +174,14 @@ end
 
 function Lists:DeleteActive()
   local store, profile = self:GetStore()
-  local _, id = self:GetActive()
+  local entry, id = self:GetActive()
   if not store or not id then return false end
   store.entries[id] = nil
   for index = #store.order, 1, -1 do
     if store.order[index] == id then table.remove(store.order, index) end
   end
   profile.ui.activeListID = store.order[1]
+  self:ReconcileTracking(entry.keys)
   self:Touch()
   return true
 end
@@ -205,6 +206,30 @@ function Lists:Contains(record, id)
   return entry and key and entry.keys[key] == true or false
 end
 
+function Lists:ContainsAny(record)
+  local store = self:GetStore()
+  local key = record and record.storageKey
+  local trackedKey = NS.Systems.Favorites:Key(record)
+  if not store or not trackedKey then return false end
+  for _, entry in pairs(store.entries) do
+    for storageKey, enabled in pairs(entry.keys) do
+      if enabled and storageKey == key then return true end
+      if enabled then
+        local candidate = NS.Systems.Catalog.byID[storageKey]
+        if candidate and NS.Systems.Favorites:Key(candidate) == trackedKey then return true end
+      end
+    end
+  end
+  return false
+end
+
+function Lists:ReconcileTracking(keys)
+  for storageKey in pairs(keys or {}) do
+    local record = NS.Systems.Catalog.byID[storageKey]
+    if record then NS.Systems.Tracker:ClearIfUnlisted(record) end
+  end
+end
+
 function Lists:GetQuantity(record, id)
   local entry = id and self:Get(id) or self:GetActive()
   local key = record and record.storageKey
@@ -222,6 +247,7 @@ function Lists:SetQuantity(record, quantity, id)
   if quantity == 0 then
     entry.keys[key] = nil
     entry.quantities[key] = nil
+    NS.Systems.Tracker:ClearIfUnlisted(record)
   else
     entry.keys[key] = true
     entry.quantities[key] = quantity
@@ -271,6 +297,7 @@ function Lists:Remove(record, id)
   if not entry or not key or entry.keys[key] ~= true then return false end
   entry.keys[key] = nil
   if entry.quantities then entry.quantities[key] = nil end
+  NS.Systems.Tracker:ClearIfUnlisted(record)
   self:Touch()
   return true
 end
@@ -337,10 +364,11 @@ function Lists:Import(encoded)
     end
   end
   local rawName = meta.name or meta.desc or "Imported Shopping List"
-  local entry, id
+  local entry, id, replacedKeys
   if existingID then
     id = existingID
     entry = store.entries[id]
+    replacedKeys = entry.keys
     entry.name = UniqueName(store, rawName, id)
     entry.keys = keys
     entry.quantities = quantities
@@ -354,6 +382,7 @@ function Lists:Import(encoded)
   entry.meta.source = entry.meta.source or (format == "HDGVL" and "HDG compatible" or "HomeDecor")
   entry.meta.format = format
   profile.ui.activeListID = id
+  self:ReconcileTracking(replacedKeys)
   self:Touch()
   return { entry = entry, id = id, count = count, total = total, unresolved = unresolved, replaced = existingID ~= nil, format = format }
 end

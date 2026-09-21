@@ -1,7 +1,7 @@
 local ADDON, NS = ...
 NS.Systems = NS.Systems or {}
 
-local BlueprintList = { revision = 0 }
+local BlueprintList = { revision = 0, refreshed = {}, dirty = {}, requested = {}, generation = 0 }
 NS.Systems.BlueprintList = BlueprintList
 
 local wipe = _G.wipe or function(t) for k in pairs(t) do t[k] = nil end end
@@ -36,6 +36,19 @@ local function db()
   end
   p.blueprintList = p.blueprintList or {}
   return p.blueprintList
+end
+
+local function ensureProfile(self)
+  local profile = NS.Systems.Database:GetProfile()
+  if self.profile ~= profile then
+    self.profile = profile
+    self.refreshed = {}
+    self.dirty = {}
+    self.requested = {}
+    self.generation = 0
+    self.pendingRefresh = nil
+  end
+  return profile
 end
 
 local function resolveKey(itemID, decorID)
@@ -110,10 +123,19 @@ end
 --- table (Systems/Blueprints.lua requirementsFromInfo shape) into its own
 --- category, named after the blueprint. Re-saving the same blueprint refreshes
 --- the needed/have counts for that category instead of double-counting.
-function BlueprintList:AddMissing(req, blueprintName)
+function BlueprintList:AddMissing(req, blueprintName, blueprintCode, houseGUID, authoritative)
   local d = db()
   if not d or not req then return 0 end
   blueprintName = (type(blueprintName) == "string" and blueprintName ~= "") and blueprintName or "Blueprint"
+  local profile = ensureProfile(self)
+  profile.blueprintListCodes = type(profile.blueprintListCodes) == "table" and profile.blueprintListCodes or {}
+  profile.blueprintListHouseGUIDs = type(profile.blueprintListHouseGUIDs) == "table" and profile.blueprintListHouseGUIDs or {}
+  if type(blueprintCode) == "string" and blueprintCode ~= "" then
+    profile.blueprintListCodes[blueprintName] = blueprintCode
+    profile.blueprintListHouseGUIDs[blueprintName] = houseGUID
+  end
+  local context = blueprintCode and (blueprintCode .. ":" .. tostring(houseGUID or ""))
+  if not authoritative and context then self.dirty[context] = true end
 
   -- Batch-resolve every missing decor item's catalog data (with vendor
   -- context attached) in a single catalog walk, instead of one full walk
@@ -136,6 +158,7 @@ function BlueprintList:AddMissing(req, blueprintName)
     resolved[decorID] = resolved[decorID] or catalogItem(decorID)
   end
 
+  local category = {}
   local touched = 0
   for _, reqItem in ipairs(req.items or {}) do
     local missing = tonumber(reqItem.missing) or 0
@@ -143,30 +166,119 @@ function BlueprintList:AddMissing(req, blueprintName)
       local decorID = (tonumber(reqItem.contentType) == 3) and tonumber(reqItem.recordID) or nil
       local entry, key = buildBaseEntry(reqItem, decorID and resolved[decorID])
       if key then
-        local category = d[blueprintName]
-        if not category then
-          category = {}
-          d[blueprintName] = category
-        end
-
-        local existing = category[key]
-        if existing then
-          existing.needed = missing
-          existing.have = tonumber(reqItem.have) or existing.have
-          existing.kind = reqItem.kind or existing.kind
-        else
-          entry.needed = missing
-          entry.have = tonumber(reqItem.have) or 0
-          entry.kind = reqItem.kind
-          category[key] = entry
-        end
+        entry.needed = tonumber(reqItem.needed) or missing + (tonumber(reqItem.have) or 0)
+        entry.have = tonumber(reqItem.have) or 0
+        entry.kind = reqItem.kind
+        category[key] = entry
         touched = touched + 1
       end
     end
   end
 
-  if touched > 0 then notify() end
+  d[blueprintName] = category
+  notify()
   return touched
+end
+
+function BlueprintList:GetBlueprintCode(name)
+  local profile = NS.Systems.Database:GetProfile()
+  if not profile or not name then return nil end
+  local codes = profile.blueprintListCodes
+  local code = type(codes) == "table" and codes[name]
+  if code then return code end
+  local blueprints = NS.Systems.Blueprints
+  if not blueprints or not blueprints.GetSaved then return nil end
+  for _, rec in ipairs(blueprints:GetSaved() or {}) do
+    if rec.name == name then return rec.code end
+  end
+end
+
+function BlueprintList:GetHouseGUID(name)
+  local profile = NS.Systems.Database:GetProfile()
+  local contexts = profile and profile.blueprintListHouseGUIDs
+  return type(contexts) == "table" and contexts[name] or nil
+end
+
+function BlueprintList:OnRequestStarted(code, houseGUID)
+  ensureProfile(self)
+  if code then self.requested[code .. ":" .. tostring(houseGUID or "")] = self.generation end
+end
+
+function BlueprintList:RefreshActive()
+  ensureProfile(self)
+  local active = self:GetActive()
+  local code = active and self:GetBlueprintCode(active.name)
+  local houseGUID = active and self:GetHouseGUID(active.name)
+  local context = code and (code .. ":" .. tostring(houseGUID or ""))
+  local blueprints = NS.Systems.Blueprints
+  local rec = code and blueprints and blueprints:GetByCode(code)
+  if not rec then return end
+  if self.refreshed[context] and not self.dirty[context] then return end
+  if rec.status == "checking" or blueprints.fitQueue then
+    self.pendingRefresh = true
+    return
+  end
+  if houseGUID then
+    blueprints:RequestHouseFit(rec.id, houseGUID)
+  else
+    blueprints:RequestContents(rec.id)
+  end
+end
+
+function BlueprintList:OnStorageChanged()
+  local profile = ensureProfile(self)
+  self.generation = self.generation + 1
+  local d = profile and profile.blueprintList
+  if type(d) ~= "table" then return end
+  for name in pairs(d) do
+    local code = self:GetBlueprintCode(name)
+    if code then self.dirty[code .. ":" .. tostring(self:GetHouseGUID(name) or "")] = true end
+  end
+  local panel = NS.UI and NS.UI.TrackerPanel
+  local trackerData = NS.UI and NS.UI.TrackerData
+  if not (panel and panel.frame and panel.frame:IsShown() and trackerData and trackerData:GetTab() == "blueprints") then return end
+  if self.refreshQueued then return end
+  self.refreshQueued = true
+  local function refresh()
+    BlueprintList.refreshQueued = false
+    if panel and panel.frame and panel.frame:IsShown() and trackerData and trackerData:GetTab() == "blueprints" then
+      BlueprintList:RefreshActive()
+    end
+  end
+  if _G.C_Timer and _G.C_Timer.After then _G.C_Timer.After(0.5, refresh) else refresh() end
+end
+
+function BlueprintList:OnBlueprintUpdated(rec, fit)
+  local requirements = fit and fit.requirements or rec and rec.requirements
+  if not rec or not rec.code or not requirements then return end
+  local houseGUID = fit and fit.houseGUID
+  local context = rec.code .. ":" .. tostring(houseGUID or "")
+  local profile = ensureProfile(self)
+  local d = profile and profile.blueprintList
+  if type(d) ~= "table" then return end
+  local names = {}
+  for name in pairs(d) do
+    if self:GetBlueprintCode(name) == rec.code and self:GetHouseGUID(name) == houseGUID then names[#names + 1] = name end
+  end
+  for _, name in ipairs(names) do self:AddMissing(requirements, name, rec.code, houseGUID, true) end
+  self.refreshed[context] = true
+  if self.requested[context] == self.generation then
+    self.dirty[context] = nil
+  elseif self.dirty[context] then
+    if fit then
+      self.pendingRefresh = true
+    elseif _G.C_Timer and _G.C_Timer.After then
+      _G.C_Timer.After(0, function() BlueprintList:RefreshActive() end)
+    else
+      self:RefreshActive()
+    end
+  end
+end
+
+function BlueprintList:RetryPending()
+  if not self.pendingRefresh then return end
+  self.pendingRefresh = nil
+  self:RefreshActive()
 end
 
 function BlueprintList:Remove(categoryName, key)
@@ -174,14 +286,20 @@ function BlueprintList:Remove(categoryName, key)
   local category = d and categoryName and d[categoryName]
   if not category or not key or not category[key] then return end
   category[key] = nil
-  if not next(category) then d[categoryName] = nil end
-  notify()
+  if not next(category) then
+    self:RemoveCategory(categoryName)
+  else
+    notify()
+  end
 end
 
 function BlueprintList:RemoveCategory(categoryName)
   local d = db()
   if not d or not categoryName or not d[categoryName] then return end
   d[categoryName] = nil
+  local profile = NS.Systems.Database:GetProfile()
+  if profile and type(profile.blueprintListCodes) == "table" then profile.blueprintListCodes[categoryName] = nil end
+  if profile and type(profile.blueprintListHouseGUIDs) == "table" then profile.blueprintListHouseGUIDs[categoryName] = nil end
   notify()
 end
 
@@ -189,6 +307,11 @@ function BlueprintList:Clear()
   local d = db()
   if not d or not next(d) then return end
   wipe(d)
+  local profile = NS.Systems.Database:GetProfile()
+  if profile then
+    profile.blueprintListCodes = {}
+    profile.blueprintListHouseGUIDs = {}
+  end
   notify()
 end
 
@@ -326,6 +449,7 @@ function BlueprintList:Cycle(delta)
   index = ((index - 1 + (tonumber(delta) or 1)) % #categories) + 1
   local profile = NS.Systems.Database:GetProfile()
   if profile then profile.blueprintListActive = categories[index].name end
+  self:RefreshActive()
   return self:GetActive()
 end
 
@@ -336,6 +460,7 @@ function BlueprintList:SetActive(name)
   if not profile then return false end
   profile.blueprintListActive = name
   notify()
+  self:RefreshActive()
   return true
 end
 
@@ -351,6 +476,14 @@ function BlueprintList:RenameActive(name)
   d[name] = d[oldName]
   d[oldName] = nil
   local profile = NS.Systems.Database:GetProfile()
+  if profile and type(profile.blueprintListCodes) == "table" then
+    profile.blueprintListCodes[name] = profile.blueprintListCodes[oldName]
+    profile.blueprintListCodes[oldName] = nil
+  end
+  if profile and type(profile.blueprintListHouseGUIDs) == "table" then
+    profile.blueprintListHouseGUIDs[name] = profile.blueprintListHouseGUIDs[oldName]
+    profile.blueprintListHouseGUIDs[oldName] = nil
+  end
   if profile then profile.blueprintListActive = name end
   if layout and NS.Systems.Architect then NS.Systems.Architect:RenameLayout(layout.id, name) end
   local blueprints = NS.Systems.Blueprints

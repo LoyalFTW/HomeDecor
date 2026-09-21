@@ -199,6 +199,7 @@ local function AddLeaf(leaf, context)
     dyeable = leaf.dyeable == true or source.dyeable == true,
     dropLocations = DropLocations(source),
   }
+  NS.Systems.EventSchedule:Apply(record, leaf, source)
   record.displayMeta = table.concat({ record.category or "", record.zone or "", record.sourceType or "" }, "  -  ")
   NS.Systems.Catalog:Add(record)
   local vendorID = vendor and tonumber(vendorSource.id or vendor.npcID or vendor.id)

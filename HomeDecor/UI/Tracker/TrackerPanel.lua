@@ -249,6 +249,7 @@ function TrackerPanel:Create()
       if GetTab() == tab then return end
       SetTab(tab)
       TrackerPanel:Refresh(true)
+      if tab == "blueprints" then NS.Systems.BlueprintList:RefreshActive() end
     end)
     button.tab = tab
     frame.tabs[#frame.tabs + 1] = button
@@ -605,6 +606,7 @@ function TrackerPanel:Create()
     if NS.UI.CatalogView and NS.UI.CatalogView.frame then NS.UI.Controls:SetButtonSelected(NS.UI.CatalogView.frame.trackerButton, true) end
     TrackerPanel:ApplyAppearance()
     TrackerPanel:Refresh(true)
+    if GetTab() == "blueprints" then NS.Systems.BlueprintList:RefreshActive() end
   end)
   frame:SetScript("OnHide", function()
     NS.UI.Controls:CloseTransientPopups()
@@ -715,7 +717,7 @@ function TrackerPanel:RenderRows()
     local shoppingQuantity = tab == "lists" and NS.Systems.Lists:GetQuantity(record) or nil
     local quantity = tab == "blueprints" and math.max(1, tonumber(record.needed) or 1) or nil
     local have = quantity and math.max(0, tonumber(record.have) or 0) or nil
-    if quantity and record.itemID and C_Item and C_Item.GetItemCount then
+    if quantity and record.kind == "Dyes" and record.itemID and C_Item and C_Item.GetItemCount then
       local ok, count = pcall(C_Item.GetItemCount, record.itemID, true, false, true, true)
       if ok and tonumber(count) then have = math.max(0, tonumber(count)) end
     end

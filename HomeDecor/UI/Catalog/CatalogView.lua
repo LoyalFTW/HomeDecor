@@ -221,7 +221,9 @@ end
 
 local function CardSourceText(record)
   local values = { SourceLabel(record) }
-  if record.zone then values[#values + 1] = tostring(record.zone) end
+  if record.zone and record.zone ~= record.sourceName then values[#values + 1] = tostring(record.zone) end
+  local dateLabel = NS.Systems.EventSchedule:DateLabel(record)
+  if dateLabel then values[#values + 1] = dateLabel end
   return table.concat(values, "  ·  ")
 end
 
@@ -479,6 +481,7 @@ function CatalogView:GetFilteredRecords(query)
     tostring(NS.Systems.Tracker.revision or 0),
     tostring(NS.Systems.Requirements.revision or 0),
     tostring(query.category or ""),
+    tostring(NS.Systems.EventSchedule:Today() or ""),
     tostring(query.search or ""),
     tostring(query.favoriteOnly == true),
     tostring(query.trackedOnly == true),
@@ -1140,6 +1143,7 @@ function CatalogView:RenderGrouped(query, columns, rowHeight, scrollOffset, ligh
     tostring(NS.Systems.Requirements.revision or 0),
     tostring(self._displayRevision or 0),
     tostring(query.category or ""),
+    tostring(NS.Systems.EventSchedule:Today() or ""),
     tostring(query.sourceType or ""),
     tostring(query.faction or ""),
     tostring(query.expansion or ""),

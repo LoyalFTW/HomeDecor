@@ -11,6 +11,7 @@ end
 local function Matches(record, query, search)
   if not query then return true end
   if query.category and query.category ~= "All" and record.category ~= query.category then return false end
+  if (query.category == "Events" or query.sourceType == "event") and record.sourceType == "event" and not NS.Systems.EventSchedule:IsCurrent(record) then return false end
   if query.expansion and NS.Systems.QueryState:NormalizeExpansion(record.expansion) ~= NS.Systems.QueryState:NormalizeExpansion(query.expansion) then return false end
   if query.profession and record.profession ~= query.profession then return false end
   if query.class and query.class ~= "All" and Normalize(NS.Systems.Housing:GetClassRestriction(record)) ~= Normalize(query.class) then return false end
