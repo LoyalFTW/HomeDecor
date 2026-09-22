@@ -65,6 +65,7 @@ Core\Data\Housing.lua
 Core\Data\Requirements.lua
 Core\Data\Collection.lua
 Core\Data\NPCNames.lua
+Core\Data\EventSchedule.lua
 Core\Data\SourceAdapter.lua
 Core\Data\SearchIndex.lua
 Core\Data\QueryState.lua
