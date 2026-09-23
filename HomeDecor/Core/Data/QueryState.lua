@@ -430,11 +430,12 @@ end
 function QueryState:ResetFilters()
   local profile = self:GetProfile()
   if not profile then return end
+  local needsSort = profile.ui.sort ~= "name"
   wipe(profile.filters)
   profile.ui.search = ""
   profile.ui.ownership = "All"
   profile.ui.sort = "name"
-  if NS.Systems.Catalog then NS.Systems.Catalog:Sort("name") end
+  if needsSort and NS.Systems.Catalog then NS.Systems.Catalog:Sort("name") end
 end
 
 function QueryState:GetRoute()

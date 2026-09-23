@@ -2300,13 +2300,25 @@ function CatalogView:Create()
     frame.rows[index] = row
   end
   frame:SetScript("OnShow", function()
-    if _G.C_Housing and type(_G.C_Housing.GetPlayerOwnedHouses) == "function" then
-      local ok, houses = pcall(_G.C_Housing.GetPlayerOwnedHouses)
-      local house = ok and type(houses) == "table" and houses[1]
-      if house and house.houseGUID and type(_G.C_Housing.GetCurrentHouseLevelFavor) == "function" then pcall(_G.C_Housing.GetCurrentHouseLevelFavor, house.houseGUID) end
+    if CatalogView.releaseTimer then CatalogView.releaseTimer:Cancel() CatalogView.releaseTimer = nil end
+    local recent = frame._hiddenAt and GetTime() - frame._hiddenAt < 0.75
+    local unchanged = frame._hiddenCatalogRevision == NS.Systems.Catalog.revision
+      and frame._hiddenCollectionRevision == NS.Systems.Collection.revision
+      and frame._hiddenFavoritesRevision == NS.Systems.Favorites.revision
+      and frame._hiddenTrackerRevision == NS.Systems.Tracker.revision
+      and frame._hiddenRequirementsRevision == NS.Systems.Requirements.revision
+      and frame._hiddenDisplayRevision == CatalogView._displayRevision
+    local reuse = CatalogView._quickReopen and recent and unchanged and not frame._catalogReleased
+    CatalogView._quickReopen = nil
+    if not reuse then
+      if _G.C_Housing and type(_G.C_Housing.GetPlayerOwnedHouses) == "function" then
+        local ok, houses = pcall(_G.C_Housing.GetPlayerOwnedHouses)
+        local house = ok and type(houses) == "table" and houses[1]
+        if house and house.houseGUID and type(_G.C_Housing.GetCurrentHouseLevelFavor) == "function" then pcall(_G.C_Housing.GetCurrentHouseLevelFavor, house.houseGUID) end
+      end
+      CatalogView:UpdateResponsiveLayout()
+      CatalogView:Refresh(true)
     end
-    CatalogView:UpdateResponsiveLayout()
-    CatalogView:Refresh(true)
     if NS.Systems.Changelog then NS.Systems.Changelog:TryAutoOpen(frame.whatsNewButton) end
   end)
   frame:SetScript("OnSizeChanged", function()
@@ -2319,19 +2331,20 @@ function CatalogView:Create()
     if CatalogView.scrollDetailTimer then CatalogView.scrollDetailTimer:Cancel() CatalogView.scrollDetailTimer = nil end
     if CatalogView.itemDisplayTimer then CatalogView.itemDisplayTimer:Cancel() CatalogView.itemDisplayTimer = nil end
     CatalogView._searchToken = (CatalogView._searchToken or 0) + 1
-    CatalogView:ReleaseCatalogPage()
-    for index = 1, #frame.rows do
-      local row = frame.rows[index]
-      row.record = nil
-      row.requirement.record = nil
-      row.sources.record = nil
-      row._displayRecord = nil
-      row._displayRevision = nil
-      row._factionTexture = nil
-      row:Hide()
-    end
-    CatalogView.selected = nil
-    NS.UI.Inspector:Clear()
+    frame._hiddenAt = GetTime()
+    frame._hiddenCatalogRevision = NS.Systems.Catalog.revision
+    frame._hiddenCollectionRevision = NS.Systems.Collection.revision
+    frame._hiddenFavoritesRevision = NS.Systems.Favorites.revision
+    frame._hiddenTrackerRevision = NS.Systems.Tracker.revision
+    frame._hiddenRequirementsRevision = NS.Systems.Requirements.revision
+    frame._hiddenDisplayRevision = CatalogView._displayRevision
+    if CatalogView.releaseTimer then CatalogView.releaseTimer:Cancel() end
+    CatalogView.releaseTimer = C_Timer.NewTimer(0.75, function()
+      CatalogView.releaseTimer = nil
+      if frame:IsShown() then return end
+      CatalogView:ReleaseCatalogPage()
+      CatalogView.selected = nil
+    end)
   end)
   self.frame = frame
   return frame
@@ -2598,6 +2611,13 @@ function CatalogView:Toggle()
   NS.UI.Controls:CloseTransientPopups()
   local frame = self:Create()
   if not frame:IsShown() then
+    local profile = NS.Systems.Database:GetProfile()
+    local ui = profile and profile.ui
+    self._quickReopen = ui and NS.Systems.QueryState:GetRoute() == "catalog"
+      and ui.category == "All" and ui.search == "" and ui.ownership == "All"
+      and ui.sort == "name" and not ui.favoriteOnly and not ui.trackedOnly
+      and not next(profile.filters or {})
+      and (not NS.Systems.Settings:GetValue("openCompact", false) or ui.catalogOnly == true)
     NS.Systems.QueryState:ResetFilters()
     NS.Systems.QueryState:SetCategory("All")
     NS.Systems.QueryState:SetRoute("catalog")
