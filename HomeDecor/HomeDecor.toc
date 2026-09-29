@@ -53,6 +53,7 @@ Core\State\EditorTools.lua
 Core\Data\VendorIndex.lua
 Core\Map\MapPins.lua
 Core\State\Navigation.lua
+Core\State\DecorRun.lua
 Core\Runtime\Diagnostics.lua
 Core\Data\Catalog.lua
 Core\Data\Cost.lua
@@ -92,6 +93,7 @@ UI\Catalog\Inspector.lua
 UI\Catalog\CatalogView.lua
 UI\Shell\QuickBar.lua
 UI\Tracker\TrackerData.lua
+UI\Tracker\DecorRun.lua
 UI\Tracker\TrackerOptions.lua
 UI\Tracker\TrackerPanel.lua
 UI\Tracker\GatherTrackerShared.lua

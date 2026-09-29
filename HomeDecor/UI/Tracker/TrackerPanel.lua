@@ -380,6 +380,9 @@ function TrackerPanel:Create()
   frame.listImport = importButton
   frame.listExport = exportButton
   frame.listSource = listSource
+  local listRun = NS.UI.Controls:CreateButton(listBar, "Plan Run", 92, 22)
+  listRun:SetPoint("LEFT", exportButton, "RIGHT", 4, 0)
+  listRun:SetScript("OnClick", function() NS.UI.DecorRun:Open("lists") end)
   local transfer = CreateFrame("Frame", nil, frame, "BackdropTemplate")
   transfer:SetSize(500, 330)
   transfer:SetPoint("CENTER", frame, "CENTER", 0, 0)
@@ -569,6 +572,9 @@ function TrackerPanel:Create()
     blueprintRename:Show()
   end)
   frame.blueprintOpen = blueprintOpen
+  local blueprintRun = NS.UI.Controls:CreateButton(blueprintBar, "Plan Run", 92, 22)
+  blueprintRun:SetPoint("TOPLEFT", blueprintBar, "TOPLEFT", 0, -26)
+  blueprintRun:SetScript("OnClick", function() NS.UI.DecorRun:Open("blueprints") end)
   frame.blueprintBar = blueprintBar
   frame.blueprintName = blueprintName
   frame.blueprintSelector = blueprintSelector
@@ -962,7 +968,7 @@ function TrackerPanel:Refresh(resetScroll)
   frame.areaLabel:SetText(areaName)
   frame.areaMapID = areaMapID
   frame.scroll:ClearAllPoints()
-  frame.scroll:SetPoint("TOPLEFT", 12, tab == "lists" and -160 or (tab == "area" or tab == "blueprints") and -112 or -86)
+  frame.scroll:SetPoint("TOPLEFT", 12, tab == "lists" and -160 or tab == "blueprints" and -138 or tab == "area" and -112 or -86)
   frame.scroll:SetPoint("BOTTOMRIGHT", -28, 12)
   local entry = tab == "lists" and activeList or nil
   frame.listName:SetEnabled(entry ~= nil)
