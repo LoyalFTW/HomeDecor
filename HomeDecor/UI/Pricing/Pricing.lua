@@ -640,6 +640,7 @@ function Pricing:StartScan(force)
     end
     self.scanning = false
     self.lastRefresh = time()
+    if NS.Systems.MarketHistory then NS.Systems.MarketHistory:Record(entries) end
     frame.refreshButton:SetEnabled(true)
     frame.progress:SetText(#candidates > 0 and "Cached recipe prices ready" or "No profession decor recipes were found")
     self:UpdateHeader()
