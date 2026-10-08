@@ -640,6 +640,7 @@ function Pricing:StartScan(force)
     end
     self.scanning = false
     self.lastRefresh = time()
+    self.priceRevision = source.GetRevision()
     if NS.Systems.MarketHistory then NS.Systems.MarketHistory:Record(entries) end
     frame.refreshButton:SetEnabled(true)
     frame.progress:SetText(#candidates > 0 and "Cached recipe prices ready" or "No profession decor recipes were found")
@@ -1031,7 +1032,7 @@ function Pricing:Create(parent)
     Pricing:UpdateQueueButton()
     Pricing:UpdateSortHeaders()
     Pricing:UpdateInspector()
-    if Pricing.invalidated or not Pricing.entries or not Pricing.lastRefresh then Pricing:QueueScan(false) else Pricing:Render() end
+    Pricing:Refresh(false)
   end)
   frame:SetScript("OnHide", function()
     Pricing.searchToken = (Pricing.searchToken or 0) + 1
@@ -1113,7 +1114,9 @@ end
 function Pricing:Refresh(force)
   if not self.panel then return end
   self:UpdateHeader()
-  if force or self.invalidated or not self.entries or not self.lastRefresh then self:QueueScan(force == true) else self:UpdateMetrics() self:Render() end
+  local source = PriceSource()
+  local revision = source and source.GetRevision and source.GetRevision()
+  if force or self.invalidated or not self.entries or not self.lastRefresh or self.priceRevision ~= revision then self:QueueScan(force == true) else self:UpdateMetrics() self:Render() end
 end
 
 function Pricing:Toggle()

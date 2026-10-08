@@ -177,6 +177,7 @@ function AltProfessions:EnsurePrices()
     for position = #candidates + 1, #entries do entries[position] = nil end
     pricing.entries = entries
     pricing.lastRefresh = time()
+    pricing.priceRevision = NS.Systems.PriceSource.GetRevision()
     pricing.invalidated = false
     pricing.scanning = false
     AltProfessions.priceScan = false

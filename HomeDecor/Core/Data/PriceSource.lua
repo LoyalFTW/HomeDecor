@@ -18,7 +18,7 @@ local cacheTimestamp = 0
 local CACHE_TTL  = 120
 
 local function IsCacheStale()
-  return (time() - cacheTimestamp) > CACHE_TTL
+  return (time() - cacheTimestamp) >= CACHE_TTL
 end
 
 function PriceSource.FlushPriceCache()
@@ -119,6 +119,7 @@ function PriceSource.SetPreferredSource(name)
 end
 
 function PriceSource.GetRevision()
+  if IsCacheStale() then PriceSource.FlushPriceCache() end
   return PriceSource.revision
 end
 
