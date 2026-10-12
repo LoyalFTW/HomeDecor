@@ -3,12 +3,7 @@ local _, NS = ...
 local SearchIndex = {}
 NS.Systems.SearchIndex = SearchIndex
 
-local entries = {}
-local entryOrder = {}
-local entryHead = 1
-local entrySize = 0
-local entryToken = 0
-local ENTRY_CAPACITY = 512
+local entries = setmetatable({}, { __mode = "k" })
 local compiled = {}
 local compiledOrder = {}
 
@@ -97,22 +92,6 @@ local function Entry(record)
   local classRestriction = NS.Systems.Housing and NS.Systems.Housing:GetClassRestriction(record)
   if not entry or entry.title ~= record.title or entry.dyeable ~= record.dyeable or entry.classRestriction ~= classRestriction then
     entry = Build(record)
-    entryToken = entryToken + 1
-    entry.cacheToken = entryToken
-    local slot
-    if entrySize >= ENTRY_CAPACITY then
-      slot = entryOrder[entryHead]
-      local expired = slot and entries[slot.record]
-      if expired and expired.cacheToken == slot.token then entries[slot.record] = nil end
-      entryHead = entryHead + 1
-      if entryHead > ENTRY_CAPACITY then entryHead = 1 end
-    else
-      entrySize = entrySize + 1
-      slot = entryOrder[entrySize] or {}
-      entryOrder[entrySize] = slot
-    end
-    slot.record = record
-    slot.token = entry.cacheToken
     entries[record] = entry
   end
   return entry
@@ -147,9 +126,6 @@ function SearchIndex:Invalidate(record)
     entries[record] = nil
   else
     wipe(entries)
-    wipe(entryOrder)
-    entryHead = 1
-    entrySize = 0
   end
 end
 
