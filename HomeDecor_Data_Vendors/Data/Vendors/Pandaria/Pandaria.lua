@@ -11,8 +11,8 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       id=58414,
       type="vendor",
       faction="Neutral",
-      zone="The Jade Forest - Arboretum",
-      worldmap="371:5670:4440"
+      zone="The Jade Forest",
+      worldmap="371:5670:4438"
     },
     items={
       {decorID=3870, source={type="vendor", itemID=247730, currency="8000000", currencytype="money"}, requirements={reputation={name="Order of the Cloud Serpent", standing="Revered"}}, colors={"Dark Brown","Deep Red","Navy Blue"}, budgetCost=5, size="Huge"},
@@ -72,6 +72,40 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
     },
     items={
 --       {decorID=3879, source={type="vendor", itemID=247739, currency="16000000", currencytype="money"}, requirements={quest={id=30612}}, colors={"Copper","Dark Gray","Light Brown"}, budgetCost=5, size="Large"}, -- DNT / do not use
+    }
+  },
+
+  {
+    source={
+      id=62088,
+      type="vendor",
+      faction="Neutral",
+      zone="Vale of Eternal Blossoms",
+      worldmap="1530:8330:2826"
+    },
+    items={
+      {decorID=767, source={type="vendor", itemID=245332, currency="20000000", currencytype="money"}, requirements={achievement={id=61467}}, colors={"Brown","Copper","Dark Brown"}, budgetCost=1, size="Tiny"},
+      {decorID=11453, source={type="vendor", itemID=257351, currency="20000000", currencytype="money"}, requirements={achievement={id=42189}}, colors={"Dark Brown","Forest Green"}, budgetCost=1, size="Small"},
+      {decorID=11456, source={type="vendor", itemID=257354, currency="20000000", currencytype="money"}, requirements={achievement={id=42187}}, colors={"Light Purple","Purple","Tan"}, budgetCost=1, size="Small"},
+      {decorID=11457, source={type="vendor", itemID=257355, currency="20000000", currencytype="money"}, requirements={achievement={id=42188}}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=21857, source={type="vendor", itemID=271971}, requirements={achievement={id=61442}}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=62088,
+      type="vendor",
+      faction="Neutral",
+      zone="Vale of Eternal Blossoms",
+      worldmap="390:8278:3075"
+    },
+    items={
+      {decorID=767, source={type="vendor", itemID=245332, currency="20000000", currencytype="money"}, requirements={achievement={id=61467}}, colors={"Brown","Copper","Dark Brown"}, budgetCost=1, size="Tiny"},
+      {decorID=11453, source={type="vendor", itemID=257351, currency="20000000", currencytype="money"}, requirements={achievement={id=42189}}, colors={"Dark Brown","Forest Green"}, budgetCost=1, size="Small"},
+      {decorID=11456, source={type="vendor", itemID=257354, currency="20000000", currencytype="money"}, requirements={achievement={id=42187}}, colors={"Light Purple","Purple","Tan"}, budgetCost=1, size="Small"},
+      {decorID=11457, source={type="vendor", itemID=257355, currency="20000000", currencytype="money"}, requirements={achievement={id=42188}}, colors={"Copper","Dark Brown","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=21857, source={type="vendor", itemID=271971}, requirements={achievement={id=61442}}, budgetCost=1, size="Small"},
     }
   },
 
@@ -150,13 +184,14 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       type="vendor",
       faction="Neutral",
       zone="Vale of Eternal Blossoms",
-      worldmap="390:8220:2940"
+      worldmap="1530:8274:2677"
     },
     items={
       {decorID=1172, source={type="vendor", itemID=245512, currency="2400000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Friendly"}}, colors={"Dark Brown","Light Brown"}, budgetCost=1, size="Small"},
       {decorID=3832, source={type="vendor", itemID=247662, currency="4000000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Honored"}}, colors={"Dark Brown","Dark Gray","Silver"}, budgetCost=3, size="Medium"},
       {decorID=3833, source={type="vendor", itemID=247663, currency="16000000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Revered"}}, colors={"Dark Brown","Red","Silver"}, budgetCost=5, size="Huge"},
       {decorID=3993, source={type="vendor", itemID=247855, currency="2400000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Honored"}}, colors={"Amber","Dark Brown","Red"}, budgetCost=1, size="Small"},
+      {decorID=3995, source={type="vendor", itemID=247858, currency="16000000", currencytype="money"}, requirements={quest={id=32816}}, colors={"Dark Brown","Gray"}, budgetCost=5, size="Huge"},
       {decorID=11873, source={type="vendor", itemID=258147, currency="8000000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Revered"}}, colors={"Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
     }
   },
@@ -167,10 +202,15 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       type="vendor",
       faction="Neutral",
       zone="Vale of Eternal Blossoms",
-      worldmap="390:8223:2933"
+      worldmap="390:8223:2927"
     },
     items={
+      {decorID=1172, source={type="vendor", itemID=245512, currency="2400000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Friendly"}}, colors={"Dark Brown","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=3832, source={type="vendor", itemID=247662, currency="4000000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Honored"}}, colors={"Dark Brown","Dark Gray","Silver"}, budgetCost=3, size="Medium"},
+      {decorID=3833, source={type="vendor", itemID=247663, currency="16000000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Revered"}}, colors={"Dark Brown","Red","Silver"}, budgetCost=5, size="Huge"},
+      {decorID=3993, source={type="vendor", itemID=247855, currency="2400000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Honored"}}, colors={"Amber","Dark Brown","Red"}, budgetCost=1, size="Small"},
       {decorID=3995, source={type="vendor", itemID=247858, currency="16000000", currencytype="money"}, requirements={quest={id=32816}}, colors={"Dark Brown","Gray"}, budgetCost=5, size="Huge"},
+      {decorID=11873, source={type="vendor", itemID=258147, currency="8000000", currencytype="money"}, requirements={reputation={name="The Lorewalkers", standing="Revered"}}, colors={"Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
     }
   },
 

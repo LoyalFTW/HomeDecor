@@ -136,47 +136,37 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
     },
     items={
       {decorID=4402, source={type="vendor", itemID=248333, currency="950000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Honored"}}, colors={"Dark Brown","Dark Gray","Navy Blue"}, budgetCost=5, size="Large"},
+      {decorID=4405, source={type="vendor", itemID=248336, currency="2850000", currencytype="money"}, requirements={quest={id=59583}}, colors={"Dark Brown","Dark Gray","Silver"}, budgetCost=3, size="Large"},
       {decorID=4443, source={type="vendor", itemID=248617, currency="1425000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Revered"}}, colors={"Dark Gray","Tan"}, budgetCost=3, size="Medium"},
+      {decorID=4444, source={type="vendor", itemID=248618, currency="1900000", currencytype="money"}, requirements={quest={id=26270}}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
       {decorID=4445, source={type="vendor", itemID=248619, currency="2375000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Exalted"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"},
       {decorID=4446, source={type="vendor", itemID=248620, currency="1425000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Revered"}}, colors={"Dark Brown","Tan"}, budgetCost=3, size="Large"},
+      {decorID=4447, source={type="vendor", itemID=248621, currency="2850000", currencytype="money"}, requirements={quest={id=26390}}, colors={"Black","Dark Brown"}, budgetCost=3, size="Large"},
+      {decorID=4487, source={type="vendor", itemID=248662, currency="4750000", currencytype="money"}, requirements={quest={id=543}}, colors={"Navy Blue","Olive","Royal Blue"}, budgetCost=5, size="Huge"},
       {decorID=4490, source={type="vendor", itemID=248665, currency="2375000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Exalted"}}, colors={"Dark Gray","Navy Blue","Royal Blue"}, budgetCost=5, size="Huge"},
       {decorID=4811, source={type="vendor", itemID=248794, currency="475000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Friendly"}}, colors={"Black","Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"},
       {decorID=4812, source={type="vendor", itemID=248795, currency="712500", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Friendly"}}, colors={"Dark Brown","Dark Gray"}, budgetCost=1, size="Medium"},
-      {decorID=5116, source={type="vendor", itemID=248939, currency="950000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Honored"}}, colors={"Bronze","Dark Gray"}, budgetCost=3, size="Medium"},
-    }
-  },
-
-  {
-    source={
-      id=49877,
-      type="vendor",
-      faction="Neutral",
-      zone="Stormwind City",
-      worldmap="84:6775:7306"
-    },
-    items={
-      {decorID=4405, source={type="vendor", itemID=248336, currency="2850000", currencytype="money"}, requirements={quest={id=59583}}, colors={"Dark Brown","Dark Gray","Silver"}, budgetCost=3, size="Large"},
-      {decorID=4444, source={type="vendor", itemID=248618, currency="1900000", currencytype="money"}, requirements={quest={id=26270}}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
-      {decorID=4447, source={type="vendor", itemID=248621, currency="2850000", currencytype="money"}, requirements={quest={id=26390}}, colors={"Black","Dark Brown"}, budgetCost=3, size="Large"},
-      {decorID=4487, source={type="vendor", itemID=248662, currency="4750000", currencytype="money"}, requirements={quest={id=543}}, colors={"Navy Blue","Olive","Royal Blue"}, budgetCost=5, size="Huge"},
       {decorID=4814, source={type="vendor", itemID=248797}, requirements={quest={id=26229}}, colors={"Dark Brown","Red","Yellow"}, budgetCost=1, size="Tiny"},
       {decorID=4815, source={type="vendor", itemID=248798, currency="1900000", currencytype="money"}, requirements={quest={id=54}}, colors={"Dark Brown","Dark Gray","Light Gray"}, budgetCost=1, size="Small"},
       {decorID=4819, source={type="vendor", itemID=248801, currency="950000", currencytype="money"}, requirements={quest={id=26297}}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
       {decorID=5115, source={type="vendor", itemID=248938, currency="1425000", currencytype="money"}, requirements={quest={id=60}}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
+      {decorID=5116, source={type="vendor", itemID=248939, currency="950000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Honored"}}, colors={"Bronze","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=9242, source={type="vendor", itemID=253168, costs={{currency="10000", currencytype="money"},{currency="9500", currencytype="money"},{currency="200000", currencytype="money"},{currency="8000", currencytype="money"}}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
       {decorID=11274, source={type="vendor", itemID=256673, currency="9500000", currencytype="money"}, requirements={quest={id=7604}}, colors={"Dark Gray","Gray"}, budgetCost=5, size="Huge"},
     }
   },
 
   {
     source={
-      id=49877,
+      id=50307,
       type="vendor",
       faction="Neutral",
-      zone="Trade District, Stormwind",
-      worldmap="84:6760:7280"
+      zone="Stormwind City",
+      worldmap="89:3716:4743"
     },
     items={
-      {decorID=9242, source={type="vendor", itemID=253168, costs={{currency="10000", currencytype="money"},{currency="9500", currencytype="money"},{currency="200000", currencytype="money"},{currency="8000", currencytype="money"}}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
+      {decorID=858, source={type="vendor", itemID=245518, currency="1500000", currencytype="money"}, requirements={quest={id=24675}}, colors={"Copper","Dark Brown"}, budgetCost=3, size="Medium"},
+      {decorID=1829, source={type="vendor", itemID=245620, currency="500000", currencytype="money"}, requirements={quest={id=14402}}, colors={"Black","Dark Gray"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -209,22 +199,6 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=10913, source={type="vendor", itemID=255840, currency="80000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 7"}}, colors={"Dark Brown","Olive","Tan"}, budgetCost=1, size="Small"},
       {decorID=12263, source={type="vendor", itemID=259071, currency="40000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 5"}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
       {decorID=14815, source={type="vendor", itemID=263026, currency="5000000", currencytype="money"}, requirements={reputation={name="Brawl'gar Arena", standing="Rank 2"}}, colors={"Dark Brown","Gray","Tan"}, budgetCost=5, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=100196,
-      type="vendor",
-      faction="Neutral",
-      zone="Sanctum of Light",
-      worldmap="23:7564:4909"
-    },
-    items={
-      {decorID=7572, source={type="vendor", itemID=250231, currency="500", currencytype=1220}, colors={"Dark Gray","Navy Blue","Silver"}, budgetCost=5, size="Large"},
-      {decorID=7573, source={type="vendor", itemID=250232, currency="500", currencytype=1220}, colors={"Blue","Dark Gray","Gray"}, budgetCost=3, size="Medium"},
-      {decorID=7576, source={type="vendor", itemID=250235, currency="1000", currencytype=1220}, colors={"Dark Gray","Gray"}, budgetCost=3, size="Medium"},
-      {decorID=7577, source={type="vendor", itemID=250236, currency="2000", currencytype=1220}, requirements={achievement={id=60987}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
     }
   },
 
@@ -271,6 +245,29 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=714, source={type="vendor", itemID=245284, costs={{currency="3000", currencytype=2815},{currency="50", currencytype=3319}}}, colors={"Dark Brown","Purple","Tan"}, budgetCost=1, size="Small"},
       {decorID=1227, source={type="vendor", itemID=251997, costs={{currency="5000", currencytype=2815},{currency="75", currencytype=3319}}}, colors={"Crimson","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
       {decorID=1236, source={type="vendor", itemID=245330, costs={{currency="3000", currencytype=2815},{currency="50", currencytype=3319}}}, colors={"Bronze","Dark Brown","Gold"}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=252312,
+      type="vendor",
+      faction="Neutral",
+      zone="Stormwind City",
+      worldmap="2339:5284:6800"
+    },
+    items={
+      {decorID=1693, source={type="vendor", itemID=245259, currency="500000", currencytype="money"}, colors={"Light Purple","Navy Blue","Tan"}, budgetCost=1, size="Small"},
+      {decorID=1861, source={type="vendor", itemID=245655, currency="10", currencytype=2003}, colors={"Cyan","Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=2330, source={type="vendor", itemID=246487, currency="750000", currencytype="money"}, colors={"Dark Purple","Silver","Tan"}, budgetCost=3, size="Large"},
+      {decorID=2433, source={type="vendor", itemID=246601, costs={{currency="10", itemID=166846}}}, colors={"Dark Gray","Silver"}, budgetCost=1, size="Small"},
+      {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}, colors={"Dark Gray","Light Purple","Orange"}, budgetCost=1, size="Small"},
+      {decorID=4029, source={type="vendor", itemID=247915, currency="1000000", currencytype="money"}, colors={"Dark Gray","Gray","Purple"}, budgetCost=3, size="Large"},
+      {decorID=4172, source={type="vendor", itemID=248116, currency="750000", currencytype="money"}, colors={"Bronze","Dark Brown","Royal Blue"}, budgetCost=1, size="Medium"},
+      {decorID=5111, source={type="vendor", itemID=248934, currency="15000000", currencytype="money"}, colors={"Amber","Copper","Dark Brown"}, budgetCost=3, size="Large"},
+      {decorID=9242, source={type="vendor", itemID=253168, costs={{currency="10000", currencytype="money"},{currency="9500", currencytype="money"},{currency="200000", currencytype="money"},{currency="8000", currencytype="money"}}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
+      {decorID=9247, source={type="vendor", itemID=253173, currency="200000", currencytype="money"}, requirements={quest={id=92572}}, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=5, size="Large"},
+      {decorID=10962, source={type="vendor", itemID=256168, currency="10", currencytype=2003}, colors={"Bronze","Dark Brown","Yellow"}, budgetCost=1, size="Small"},
     }
   },
 
@@ -404,6 +401,55 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
     },
     items={
       {decorID=14467, source={type="vendor", itemID=260785, costs={{currency="15000000", currencytype="money"},{currency="13500000", currencytype="money"}}}, requirements={achievement={id=62387}}, colors={"Dark Gray","Forest Green","Tan"}, budgetCost=5, size="Huge"},
+      {decorID=15070, source={type="vendor", itemID=263239}, colors={"Blue","Dark Brown","Tan"}, budgetCost=1, size="Tiny"},
+      {decorID=15072, source={type="vendor", itemID=263241}, colors={"Brown","Teal"}, budgetCost=1, size="Tiny"},
+      {decorID=15073, source={type="vendor", itemID=263242}, colors={"Dark Brown","Light Purple","Olive"}, budgetCost=1, size="Tiny"},
+      {decorID=15074, source={type="vendor", itemID=263243}, colors={"Dark Brown","Silver","Teal"}, budgetCost=1, size="Tiny"},
+      {decorID=15142, source={type="vendor", itemID=263292}, colors={"Cyan","Dark Gray","Light Purple"}, budgetCost=1, size="Tiny"},
+      {decorID=15143, source={type="vendor", itemID=263293}, colors={"Light Gray","Light Purple","Purple"}, budgetCost=1, size="Tiny"},
+      {decorID=15144, source={type="vendor", itemID=263294}, colors={"Dark Brown","Olive","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=15145, source={type="vendor", itemID=263295}, colors={"Brown","Forest Green","Gold"}, budgetCost=1, size="Tiny"},
+      {decorID=15146, source={type="vendor", itemID=263296}, colors={"Dark Brown","Forest Green","Tan"}, budgetCost=1, size="Tiny"},
+      {decorID=15147, source={type="vendor", itemID=263297}, colors={"Dark Purple","Light Purple","Olive"}, budgetCost=1, size="Tiny"},
+      {decorID=15150, source={type="vendor", itemID=263300}, colors={"Dark Purple","Light Purple","Royal Blue"}, budgetCost=1, size="Tiny"},
+      {decorID=15152, source={type="vendor", itemID=263302}, colors={"Copper","Cyan","Dark Purple"}, budgetCost=1, size="Tiny"},
+      {decorID=15153, source={type="vendor", itemID=263303}, colors={"Dark Brown","Navy Blue","Yellow"}, budgetCost=1, size="Tiny"},
+      {decorID=16027, source={type="vendor", itemID=264680}, colors={"Cyan","Forest Green","Teal"}, budgetCost=1, size="Tiny"},
+      {decorID=16028, source={type="vendor", itemID=264681}, colors={"Copper","Dark Brown","Tan"}, budgetCost=1, size="Tiny"},
+      {decorID=16029, source={type="vendor", itemID=264682}, colors={"Crimson","Dark Brown","Gold"}, budgetCost=1, size="Tiny"},
+      {decorID=16030, source={type="vendor", itemID=264683}, colors={"Crimson","Dark Brown","Tan"}, budgetCost=1, size="Tiny"},
+      {decorID=16031, source={type="vendor", itemID=264684}, colors={"Dark Purple","Light Purple","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=16032, source={type="vendor", itemID=264685}, colors={"Dark Purple","Light Purple","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=16033, source={type="vendor", itemID=264686}, colors={"Beige","Dark Brown","Olive"}, budgetCost=1, size="Tiny"},
+      {decorID=16034, source={type="vendor", itemID=264687}, colors={"Dark Purple","Light Gray","Light Purple"}, budgetCost=1, size="Tiny"},
+      {decorID=16035, source={type="vendor", itemID=264688}, colors={"Copper","Dark Brown","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=16036, source={type="vendor", itemID=264689}, colors={"Blue","Light Gray","Royal Blue"}, budgetCost=1, size="Tiny"},
+      {decorID=16037, source={type="vendor", itemID=264690}, colors={"Dark Brown","Forest Green","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=16038, source={type="vendor", itemID=264691}, colors={"Crimson","Dark Brown","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=16811, source={type="vendor", itemID=265387}, colors={"Dark Brown","Olive"}, budgetCost=1, size="Tiny"},
+      {decorID=16812, source={type="vendor", itemID=265388}, colors={"Dark Brown","Gold","Olive"}, budgetCost=1, size="Tiny"},
+      {decorID=16814, source={type="vendor", itemID=265390}, colors={"Cyan","Navy Blue","Teal"}, budgetCost=1, size="Tiny"},
+      {decorID=16815, source={type="vendor", itemID=265391}, colors={"Dark Purple","Light Purple","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=16816, source={type="vendor", itemID=265392}, colors={"Dark Brown","Dark Purple","Light Purple"}, budgetCost=1, size="Tiny"},
+      {decorID=16817, source={type="vendor", itemID=265393}, colors={"Dark Brown","Navy Blue","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=16818, source={type="vendor", itemID=265394}, colors={"Dark Gray","Gray","Light Gray"}, budgetCost=1, size="Tiny"},
+      {decorID=16819, source={type="vendor", itemID=265395}, colors={"Dark Gray","Gray","Light Gray"}, budgetCost=1, size="Tiny"},
+      {decorID=16820, source={type="vendor", itemID=265396}, colors={"Dark Gray","Light Gray"}, budgetCost=1, size="Tiny"},
+      {decorID=16821, source={type="vendor", itemID=265397}, colors={"Dark Brown","Gold","Royal Blue"}, budgetCost=1, size="Tiny"},
+      {decorID=16822, source={type="vendor", itemID=265398}, colors={"Forest Green","Light Gray","Teal"}, budgetCost=1, size="Tiny"},
+      {decorID=16964, source={type="vendor", itemID=265544}, colors={"Dark Brown","Royal Blue","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=16965, source={type="vendor", itemID=265545}, colors={"Amber","Light Purple","Navy Blue"}, budgetCost=1, size="Tiny"},
+      {decorID=16966, source={type="vendor", itemID=265546}, colors={"Forest Green","Light Purple","Purple"}, budgetCost=1, size="Tiny"},
+      {decorID=16967, source={type="vendor", itemID=265547}, colors={"Blue","Light Purple","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=16968, source={type="vendor", itemID=265548}, colors={"Dark Purple","Light Purple","Teal"}, budgetCost=1, size="Tiny"},
+      {decorID=16969, source={type="vendor", itemID=265549}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=1, size="Tiny"},
+      {decorID=16970, source={type="vendor", itemID=265550}, colors={"Forest Green","Purple"}, budgetCost=1, size="Tiny"},
+      {decorID=16971, source={type="vendor", itemID=265551}, colors={"Dark Brown","Navy Blue","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=16972, source={type="vendor", itemID=265552}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=1, size="Tiny"},
+      {decorID=16973, source={type="vendor", itemID=265553}, colors={"Amber","Dark Brown","Light Brown"}, budgetCost=1, size="Tiny"},
+      {decorID=23706, source={type="vendor", itemID=274731, currency="50000000", currencytype="money"}, budgetCost=1, size="Small"},
+      {decorID=24193, source={type="vendor", itemID=274734, currency="50000000", currencytype="money"}, budgetCost=1, size="Small"},
+      {decorID=24194, source={type="vendor", itemID=274736, currency="50000000", currencytype="money"}, budgetCost=1, size="Small"},
     }
   },
 

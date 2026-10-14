@@ -101,9 +101,9 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
     source={
       id=85932,
       type="vendor",
-      faction="Alliance",
+      faction="Neutral",
       zone="Stormshield",
-      worldmap="622:4640:7460"
+      worldmap="622:4660:7677"
     },
     items={
       {decorID=927, source={type="vendor", itemID=245423, currency="250", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Friendly"}}, colors={"Dark Brown","Dark Gray","Light Purple"}, budgetCost=3, size="Medium"},

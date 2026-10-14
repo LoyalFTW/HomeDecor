@@ -57,6 +57,25 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
 
   {
     source={
+      id=148924,
+      type="vendor",
+      faction="Neutral",
+      zone="Zuldazar",
+      worldmap="862:5838:6073"
+    },
+    items={
+      {decorID=839, source={type="vendor", itemID=245464, currency="200", currencytype=1560}, colors={"Dark Gray","Forest Green"}, budgetCost=1, size="Small"},
+      {decorID=932, source={type="vendor", itemID=245474, currency="300", currencytype=1560}, colors={"Dark Gray","Gray"}, budgetCost=5, size="Large"},
+      {decorID=937, source={type="vendor", itemID=245476, currency="300", currencytype=1560}, requirements={achievement={id=13284}}, colors={"Dark Gray","Gray"}, budgetCost=5, size="Huge"},
+      {decorID=938, source={type="vendor", itemID=245477, currency="200", currencytype=1560}, colors={"Black","Dark Purple"}, budgetCost=5, size="Huge"},
+      {decorID=939, source={type="vendor", itemID=245471, currency="150", currencytype=1560}, colors={"Dark Gray","Forest Green","Tan"}, budgetCost=1, size="Small"},
+      {decorID=940, source={type="vendor", itemID=245472, currency="150", currencytype=1560}, colors={"Dark Gray","Forest Green","Gray"}, budgetCost=1, size="Small"},
+      {decorID=949, source={type="vendor", itemID=241067, currency="200", currencytype=1560}, colors={"Dark Gray","Red","Yellow"}, budgetCost=3, size="Medium"},
+    }
+  },
+
+  {
+    source={
       id=251921,
       type="vendor",
       faction="Horde",
@@ -89,6 +108,37 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       faction="Neutral",
       zone="Zuldazar",
       worldmap="1164:3694:5917"
+    },
+    items={
+      {decorID=1175, source={type="vendor", itemID=245487, currency="500", currencytype=1560}, requirements={achievement={id=13038}}, colors={"Copper","Dark Brown"}, budgetCost=3, size="Medium"},
+      {decorID=1179, source={type="vendor", itemID=245491, currency="600", currencytype=1560}, requirements={quest={id=50808}}, colors={"Dark Brown","Olive","Teal"}, budgetCost=5, size="Large"},
+      {decorID=1180, source={type="vendor", itemID=243113, currency="150", currencytype=1560}, colors={"Black","Navy Blue","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=1183, source={type="vendor", itemID=245522, currency="1200", currencytype=1560}, requirements={achievement={id=12479}}, colors={"Cyan","Dark Brown","Tan"}, budgetCost=5, size="Large"},
+      {decorID=1185, source={type="vendor", itemID=245494, currency="200", currencytype=1560}, requirements={achievement={id=13039}}, colors={"Dark Brown","Teal"}, budgetCost=1, size="Small"},
+      {decorID=1188, source={type="vendor", itemID=245497, currency="500", currencytype=1560}, requirements={achievement={id=12614}}, colors={"Amber","Dark Brown","Teal"}, budgetCost=5, size="Large"},
+      {decorID=1189, source={type="vendor", itemID=245521, currency="100", currencytype=1560}, colors={"Bronze","Dark Brown","Yellow"}, budgetCost=1, size="Small"},
+      {decorID=1191, source={type="vendor", itemID=245490, currency="600", currencytype=1560}, requirements={achievement={id=12733}}, colors={"Dark Brown","Red","Teal"}, budgetCost=5, size="Large"},
+      {decorID=1192, source={type="vendor", itemID=245489, currency="150", currencytype=1560}, requirements={quest={id=47250}}, colors={"Dark Brown"}, budgetCost=1, size="Tiny"},
+      {decorID=1193, source={type="vendor", itemID=245486, currency="150", currencytype=1560}, requirements={quest={id=47432}}, colors={"Dark Brown","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=1196, source={type="vendor", itemID=245493, currency="200", currencytype=1560}, requirements={quest={id=47741}}, colors={"Dark Brown","Teal"}, budgetCost=1, size="Small"},
+      {decorID=1197, source={type="vendor", itemID=243130, currency="300", currencytype=1560}, colors={"Dark Brown","Dark Gray","Gold"}, budgetCost=3, size="Large"},
+      {decorID=1205, source={type="vendor", itemID=245485, currency="1000", currencytype=1560}, requirements={quest={id=50963}}, colors={"Copper","Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
+      {decorID=1310, source={type="vendor", itemID=245417, currency="400", currencytype=1560}, requirements={quest={id=47874}}, colors={"Copper","Dark Brown","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=1417, source={type="vendor", itemID=244325, currency="400", currencytype=1560}, requirements={achievement={id=12746}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=1418, source={type="vendor", itemID=244326, currency="150", currencytype=1560}, requirements={achievement={id=13018}}, colors={"Blue","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=1697, source={type="vendor", itemID=245263, currency="150", currencytype=1560}, requirements={quest={id=48554}}, colors={"Copper","Dark Brown","Tan"}, budgetCost=1, size="Small"},
+      {decorID=11319, source={type="vendor", itemID=256919, currency="300", currencytype=1560}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
+      {decorID=11489, source={type="vendor", itemID=257399, currency="300", currencytype=1560}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=252326,
+      type="vendor",
+      faction="Neutral",
+      zone="Zuldazar",
+      worldmap="862:5770:4414"
     },
     items={
       {decorID=1175, source={type="vendor", itemID=245487, currency="500", currencytype=1560}, requirements={achievement={id=13038}}, colors={"Copper","Dark Brown"}, budgetCost=3, size="Medium"},

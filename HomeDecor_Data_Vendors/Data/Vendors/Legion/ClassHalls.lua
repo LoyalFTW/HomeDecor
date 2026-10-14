@@ -11,19 +11,6 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       id=93550,
       type="vendor",
       faction="Neutral",
-      zone="Acherus: Ebon Hold",
-      worldmap="647:4390:3717"
-    },
-    items={
-      {decorID=14361, source={type="vendor", itemID=260584, currency="3000", currencytype=1220}, requirements={achievement={id=60962}}, colors={"Cyan","Dark Gray","Gray"}, budgetCost=3, size="Medium"},
-    }
-  },
-
-  {
-    source={
-      id=93550,
-      type="vendor",
-      faction="Neutral",
       zone="Acherus: The Ebon Hold",
       worldmap="647:4390:3717"
     },
@@ -35,6 +22,7 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       {decorID=5882, source={type="vendor", itemID=250115, currency="1500", currencytype=1220}, requirements={achievement={id=42270}}, colors={"Blue","Cyan","Forest Green"}, budgetCost=3, size="Medium"},
       {decorID=5888, source={type="vendor", itemID=250123, currency="5000", currencytype=1220}, requirements={achievement={id=42287}}, colors={"Cyan","Navy Blue","Royal Blue"}, budgetCost=3, size="Large"},
       {decorID=5889, source={type="vendor", itemID=250124, currency="1000", currencytype=1220}, colors={"Dark Purple","Light Purple"}, budgetCost=3, size="Medium"},
+      {decorID=14361, source={type="vendor", itemID=260584, currency="3000", currencytype=1220}, requirements={achievement={id=60962}}, colors={"Cyan","Dark Gray","Gray"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -48,8 +36,12 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     },
     items={
       {decorID=7571, source={type="vendor", itemID=250230, currency="5000", currencytype=1220}, requirements={achievement={id=42293}}, colors={"Dark Gray","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=7572, source={type="vendor", itemID=250231, currency="500", currencytype=1220}, colors={"Dark Gray","Navy Blue","Silver"}, budgetCost=5, size="Large"},
+      {decorID=7573, source={type="vendor", itemID=250232, currency="500", currencytype=1220}, colors={"Blue","Dark Gray","Gray"}, budgetCost=3, size="Medium"},
       {decorID=7574, source={type="vendor", itemID=250233, currency="3000", currencytype=1220}, requirements={achievement={id=60968}}, colors={"Dark Brown","Tan","Yellow"}, budgetCost=5, size="Large"},
       {decorID=7575, source={type="vendor", itemID=250234, currency="1500", currencytype=1220}, requirements={achievement={id=42276}}, colors={"Bronze","Dark Brown","Yellow"}, budgetCost=1, size="Medium"},
+      {decorID=7576, source={type="vendor", itemID=250235, currency="1000", currencytype=1220}, colors={"Dark Gray","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=7577, source={type="vendor", itemID=250236, currency="2000", currencytype=1220}, requirements={achievement={id=60987}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
     }
   },
 
@@ -62,9 +54,33 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       worldmap="739:4456:4888"
     },
     items={
+      {decorID=1740, source={type="vendor", itemID=245549, currency="500", currencytype=1220}, colors={"Copper","Dark Gray","Deep Red"}, budgetCost=5, size="Huge"},
       {decorID=4042, source={type="vendor", itemID=248011, currency="1500", currencytype=1220}, requirements={achievement={id=42273}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Large"},
+      {decorID=5877, source={type="vendor", itemID=250110, currency="500", currencytype=1220}, colors={"Dark Brown","Dark Purple","Light Purple"}, budgetCost=3, size="Medium"},
       {decorID=5890, source={type="vendor", itemID=250125, currency="5000", currencytype=1220}, requirements={achievement={id=42290}}, colors={"Beige","Dark Gray","Tan"}, budgetCost=3, size="Large"},
+      {decorID=5891, source={type="vendor", itemID=250126, currency="2000", currencytype=1220}, requirements={achievement={id=60984}}, colors={"Dark Brown","Forest Green","Tan"}, budgetCost=1, size="Small"},
       {decorID=5892, source={type="vendor", itemID=250127, currency="3000", currencytype=1220}, requirements={achievement={id=60965}}, colors={"Dark Brown","Tan"}, budgetCost=1, size="Small"},
+      {decorID=5893, source={type="vendor", itemID=250128, currency="1000", currencytype=1220}, colors={"Dark Gray","Forest Green","Tan"}, budgetCost=3, size="Medium"},
+    }
+  },
+
+  {
+    source={
+      id=105986,
+      type="vendor",
+      faction="Neutral",
+      zone="The Hall of Shadows",
+      worldmap="619:4516:6478"
+    },
+    items={
+      {decorID=7815, source={type="vendor", itemID=250783, currency="500", currencytype=1220}, colors={"Dark Gray","Gray","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=7816, source={type="vendor", itemID=250784, currency="500", currencytype=1220}, colors={"Dark Gray","Tan","Teal"}, budgetCost=1, size="Small"},
+      {decorID=7817, source={type="vendor", itemID=250785, currency="1000", currencytype=1220}, colors={"Black"}, budgetCost=5, size="Large"},
+      {decorID=7818, source={type="vendor", itemID=250786, currency="2000", currencytype=1220}, requirements={achievement={id=60989}}, colors={"Dark Gray","Red","Tan"}, budgetCost=3, size="Medium"},
+      {decorID=7819, source={type="vendor", itemID=250787, currency="5000", currencytype=1220}, requirements={achievement={id=42295}}, colors={"Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=7820, source={type="vendor", itemID=250788, currency="3000", currencytype=1220}, requirements={achievement={id=60970}}, colors={"Dark Gray","Deep Red"}, budgetCost=5, size="Large"},
+      {decorID=11493, source={type="vendor", itemID=257403, currency="1500", currencytype=1220}, requirements={achievement={id=42280}}, colors={"Amber","Dark Brown","Red"}, budgetCost=5, size="Huge"},
+      {decorID=14461, source={type="vendor", itemID=260776, currency="1500", currencytype=1220}, requirements={achievement={id=42279}}, colors={"Dark Gray","Light Brown"}, budgetCost=5, size="Huge"},
     }
   },
 
@@ -77,6 +93,10 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       worldmap="626:2692:3683"
     },
     items={
+      {decorID=7815, source={type="vendor", itemID=250783, currency="500", currencytype=1220}, colors={"Dark Gray","Gray","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=7816, source={type="vendor", itemID=250784, currency="500", currencytype=1220}, colors={"Dark Gray","Tan","Teal"}, budgetCost=1, size="Small"},
+      {decorID=7817, source={type="vendor", itemID=250785, currency="1000", currencytype=1220}, colors={"Black"}, budgetCost=5, size="Large"},
+      {decorID=7818, source={type="vendor", itemID=250786, currency="2000", currencytype=1220}, requirements={achievement={id=60989}}, colors={"Dark Gray","Red","Tan"}, budgetCost=3, size="Medium"},
       {decorID=7819, source={type="vendor", itemID=250787, currency="5000", currencytype=1220}, requirements={achievement={id=42295}}, colors={"Dark Gray","Gray"}, budgetCost=3, size="Large"},
       {decorID=7820, source={type="vendor", itemID=250788, currency="3000", currencytype=1220}, requirements={achievement={id=60970}}, colors={"Dark Gray","Deep Red"}, budgetCost=5, size="Large"},
       {decorID=11493, source={type="vendor", itemID=257403, currency="1500", currencytype=1220}, requirements={achievement={id=42280}}, colors={"Amber","Dark Brown","Red"}, budgetCost=5, size="Huge"},
@@ -95,6 +115,10 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     items={
       {decorID=7837, source={type="vendor", itemID=250914, currency="5000", currencytype=1220}, requirements={achievement={id=42296}}, colors={"Black","Dark Gray"}, budgetCost=3, size="Large"},
       {decorID=7838, source={type="vendor", itemID=250915, currency="3000", currencytype=1220}, requirements={achievement={id=60971}}, colors={"Copper","Dark Brown","Teal"}, budgetCost=5, size="Large"},
+      {decorID=7839, source={type="vendor", itemID=250916, currency="500", currencytype=1220}, colors={"Dark Purple","Deep Red","Navy Blue"}, budgetCost=3, size="Medium"},
+      {decorID=7841, source={type="vendor", itemID=250918, currency="1000", currencytype=1220}, colors={"Dark Gray","Red","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=7874, source={type="vendor", itemID=251014, currency="2000", currencytype=1220}, requirements={achievement={id=60990}}, colors={"Dark Gray"}, budgetCost=5, size="Large"},
+      {decorID=7875, source={type="vendor", itemID=251015, currency="500", currencytype=1220}, colors={"Dark Brown","Deep Red"}, budgetCost=5, size="Large"},
       {decorID=11493, source={type="vendor", itemID=257403, currency="1500", currencytype=1220}, requirements={achievement={id=42280}}, colors={"Amber","Dark Brown","Red"}, budgetCost=5, size="Huge"},
     }
   },
@@ -108,8 +132,13 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       worldmap="747:4002:1772"
     },
     items={
+      {decorID=1741, source={type="vendor", itemID=245550, currency="500", currencytype=1220}, colors={"Dark Gray","Gray","Royal Blue"}, budgetCost=3, size="Large"},
+      {decorID=2086, source={type="vendor", itemID=246216, currency="500", currencytype=1220}, colors={"Cyan","Dark Gray","Light Purple"}, budgetCost=3, size="Medium"},
+      {decorID=5527, source={type="vendor", itemID=249459, currency="1500", currencytype=1220}, requirements={achievement={id=42271}}, colors={"Blue","Dark Gray","Tan"}, budgetCost=1, size="Small"},
       {decorID=5878, source={type="vendor", itemID=250111, currency="3000", currencytype=1220}, requirements={achievement={id=60964}}, colors={"Dark Brown","Dark Gray","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=5897, source={type="vendor", itemID=250133, currency="1000", currencytype=1220}, colors={"Bronze","Dark Brown","Royal Blue"}, budgetCost=3, size="Medium"},
       {decorID=5898, source={type="vendor", itemID=250134, currency="5000", currencytype=1220}, requirements={achievement={id=42289}}, colors={"Dark Brown","Forest Green","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=7873, source={type="vendor", itemID=251013, currency="2000", currencytype=1220}, requirements={achievement={id=60983}}, colors={"Dark Brown","Dark Purple","Olive"}, budgetCost=5, size="Huge"},
       {decorID=14358, source={type="vendor", itemID=260581, currency="1500", currencytype=1220}, requirements={achievement={id=42272}}, colors={"Cyan","Dark Gray","Gray"}, budgetCost=3, size="Medium"},
     }
   },
@@ -123,9 +152,14 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       worldmap="709:5033:5913"
     },
     items={
+      {decorID=5112, source={type="vendor", itemID=248935, currency="500", currencytype=1220}, colors={"Dark Brown","Dark Gray","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=5113, source={type="vendor", itemID=248936, currency="500", currencytype=1220}, colors={"Dark Brown","Gray"}, budgetCost=3, size="Large"},
+      {decorID=5119, source={type="vendor", itemID=248942, currency="2000", currencytype=1220}, requirements={achievement={id=60986}}, colors={"Dark Brown","Olive","Tan"}, budgetCost=3, size="Medium"},
       {decorID=5126, source={type="vendor", itemID=248958, currency="1500", currencytype=1220}, requirements={achievement={id=42275}}, colors={"Copper","Dark Brown","Tan"}, budgetCost=5, size="Large"},
+      {decorID=5888, source={type="vendor", itemID=250123, currency="5000", currencytype=1220}, requirements={achievement={id=42287}}, colors={"Cyan","Navy Blue","Royal Blue"}, budgetCost=3, size="Large"},
       {decorID=11280, source={type="vendor", itemID=256679, currency="3000", currencytype=1220}, requirements={achievement={id=60967}}, colors={"Dark Gray","Gray","Tan"}, budgetCost=5, size="Large"},
       {decorID=14644, source={type="vendor", itemID=262619}, requirements={achievement={id=42292}}, colors={"Bronze","Dark Brown","Teal"}, budgetCost=3, size="Large"},
+      {decorID=18897, source={type="vendor", itemID=267372}, colors={"Dark Brown","Deep Red","Gray"}, budgetCost=3, size="Large"},
     }
   },
 
@@ -139,7 +173,11 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     },
     items={
       {decorID=5526, source={type="vendor", itemID=249458, currency="5000", currencytype=1220}, requirements={achievement={id=42298}}, colors={"Dark Brown","Light Brown","Tan"}, budgetCost=3, size="Large"},
+      {decorID=5528, source={type="vendor", itemID=249460, currency="500", currencytype=1220}, colors={"Dark Brown","Orange","Royal Blue"}, budgetCost=3, size="Large"},
+      {decorID=5529, source={type="vendor", itemID=249461, currency="2000", currencytype=1220}, requirements={achievement={id=60992}}, colors={"Bronze","Dark Brown","Tan"}, budgetCost=5, size="Large"},
+      {decorID=5532, source={type="vendor", itemID=249464, currency="1000", currencytype=1220}, colors={"Copper","Dark Brown","Orange"}, budgetCost=5, size="Small"},
       {decorID=5534, source={type="vendor", itemID=249466, currency="1500", currencytype=1220}, requirements={achievement={id=42282}}, colors={"Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=5562, source={type="vendor", itemID=249551, currency="500", currencytype=1220}, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=3, size="Medium"},
       {decorID=11486, source={type="vendor", itemID=257396, currency="3000", currencytype=1220}, requirements={achievement={id=60973}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
     }
   },
@@ -153,9 +191,14 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       worldmap="702:3862:2377"
     },
     items={
+      {decorID=7606, source={type="vendor", itemID=250302, currency="500", currencytype=1220}, colors={"Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
+      {decorID=7607, source={type="vendor", itemID=250303, currency="500", currencytype=1220}, colors={"Dark Gray","Light Purple","Tan"}, budgetCost=1, size="Small"},
+      {decorID=7608, source={type="vendor", itemID=250304, currency="500", currencytype=1220}, colors={"Dark Brown","Orange","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=7821, source={type="vendor", itemID=250789, currency="1000", currencytype=1220}, colors={"Light Brown","Royal Blue","Silver"}, budgetCost=5, size="Large"},
       {decorID=7822, source={type="vendor", itemID=250790, currency="5000", currencytype=1220}, requirements={achievement={id=42294}}, colors={"Dark Brown","Olive","Silver"}, budgetCost=3, size="Large"},
       {decorID=7823, source={type="vendor", itemID=250791, currency="3000", currencytype=1220}, requirements={achievement={id=60969}}, colors={"Copper","Dark Brown","Light Purple"}, budgetCost=3, size="Medium"},
       {decorID=7824, source={type="vendor", itemID=250792, currency="1500", currencytype=1220}, requirements={achievement={id=42277}}, colors={"Bronze","Dark Brown","Navy Blue"}, budgetCost=3, size="Medium"},
+      {decorID=8768, source={type="vendor", itemID=251636, currency="2000", currencytype=1220}, requirements={achievement={id=60988}}, colors={"Brown","Dark Gray","Tan"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -165,12 +208,16 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
       type="vendor",
       faction="Neutral",
       zone="The Fel Hammer",
-      worldmap="720:6100:5673"
+      worldmap="720:5781:4346"
     },
     items={
       {decorID=5525, source={type="vendor", itemID=249457, currency="5000", currencytype=1220}, requirements={achievement={id=42288}}, colors={"Dark Brown","Orange","Tan"}, budgetCost=3, size="Large"},
       {decorID=5527, source={type="vendor", itemID=249459, currency="1500", currencytype=1220}, requirements={achievement={id=42271}}, colors={"Blue","Dark Gray","Tan"}, budgetCost=1, size="Small"},
+      {decorID=5530, source={type="vendor", itemID=249462, currency="1000", currencytype=1220}, colors={"Dark Gray","Green","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=5531, source={type="vendor", itemID=249463, currency="500", currencytype=1220}, colors={"Blue","Dark Brown","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=5555, source={type="vendor", itemID=249518, currency="2000", currencytype=1220}, requirements={achievement={id=60982}}, colors={"Dark Gray","Forest Green"}, budgetCost=3, size="Medium"},
       {decorID=5575, source={type="vendor", itemID=249690, currency="3000", currencytype=1220}, requirements={achievement={id=60963}}, colors={"Dark Brown","Olive","Teal"}, budgetCost=1, size="Small"},
+      {decorID=11276, source={type="vendor", itemID=256675, currency="500", currencytype=1220}, colors={"Black","Dark Brown","Dark Gray"}, budgetCost=5, size="Huge"},
     }
   },
 
@@ -184,8 +231,32 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     },
     items={
       {decorID=5117, source={type="vendor", itemID=248940, currency="5000", currencytype=1220}, requirements={achievement={id=42297}}, colors={"Forest Green","Green","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=5118, source={type="vendor", itemID=248941}, colors={"Copper","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=5120, source={type="vendor", itemID=248943, currency="1000", currencytype=1220}, colors={"Dark Brown","Forest Green","Tan"}, budgetCost=3, size="Medium"},
+      {decorID=5127, source={type="vendor", itemID=248959, currency="500", currencytype=1220}, colors={"Black"}, budgetCost=3, size="Large"},
       {decorID=5128, source={type="vendor", itemID=248960, currency="1500", currencytype=1220}, requirements={achievement={id=42281}}, colors={"Teal"}, budgetCost=5, size="Large"},
+      {decorID=5292, source={type="vendor", itemID=249004, currency="500", currencytype=1220}, colors={"Forest Green","Green","Teal"}, budgetCost=5, size="Large"},
       {decorID=11307, source={type="vendor", itemID=256907}, requirements={achievement={id=60972}}, colors={"Dark Brown","Forest Green","Olive"}, budgetCost=3, size="Large"},
+      {decorID=15477, source={type="vendor", itemID=264242, currency="2000", currencytype=1220}, requirements={achievement={id=60991}}, colors={"Copper","Teal"}, budgetCost=3, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=112440,
+      type="vendor",
+      faction="Neutral",
+      zone="Hall of the Guardian",
+      worldmap="734:4846:4417"
+    },
+    items={
+      {decorID=750, source={type="vendor", itemID=245429, currency="1500", currencytype=1220}, requirements={achievement={id=42274}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=5894, source={type="vendor", itemID=250130, currency="500", currencytype=1220}, colors={"Copper","Dark Brown","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=5895, source={type="vendor", itemID=250131}, requirements={achievement={id=60985}}, colors={"Cyan","Dark Brown","Royal Blue"}, budgetCost=1, size="Large"},
+      {decorID=5896, source={type="vendor", itemID=250132, currency="500", currencytype=1220}, colors={"Bronze","Dark Gray","Light Purple"}, budgetCost=1, size="Small"},
+      {decorID=7579, source={type="vendor", itemID=250239, currency="1000", currencytype=1220}, colors={"Dark Brown","Dark Purple","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=7609, source={type="vendor", itemID=250306, currency="5000", currencytype=1220}, requirements={achievement={id=42291}}, colors={"Dark Gray","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=11275, source={type="vendor", itemID=256674, currency="3000", currencytype=1220}, requirements={achievement={id=60966}}, colors={"Dark Gray","Magenta","Silver"}, budgetCost=3, size="Medium"},
     }
   },
 
@@ -199,6 +270,10 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
     },
     items={
       {decorID=750, source={type="vendor", itemID=245429, currency="1500", currencytype=1220}, requirements={achievement={id=42274}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=5894, source={type="vendor", itemID=250130, currency="500", currencytype=1220}, colors={"Copper","Dark Brown","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=5895, source={type="vendor", itemID=250131}, requirements={achievement={id=60985}}, colors={"Cyan","Dark Brown","Royal Blue"}, budgetCost=1, size="Large"},
+      {decorID=5896, source={type="vendor", itemID=250132, currency="500", currencytype=1220}, colors={"Bronze","Dark Gray","Light Purple"}, budgetCost=1, size="Small"},
+      {decorID=7579, source={type="vendor", itemID=250239, currency="1000", currencytype=1220}, colors={"Dark Brown","Dark Purple","Royal Blue"}, budgetCost=5, size="Large"},
       {decorID=7609, source={type="vendor", itemID=250306, currency="5000", currencytype=1220}, requirements={achievement={id=42291}}, colors={"Dark Gray","Gray"}, budgetCost=3, size="Medium"},
       {decorID=11275, source={type="vendor", itemID=256674, currency="3000", currencytype=1220}, requirements={achievement={id=60966}}, colors={"Dark Gray","Magenta","Silver"}, budgetCost=3, size="Medium"},
     }

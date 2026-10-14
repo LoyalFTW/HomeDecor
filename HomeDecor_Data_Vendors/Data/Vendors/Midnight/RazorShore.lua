@@ -154,6 +154,38 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       type="vendor",
       faction="Neutral",
       zone="Razorwind Shores",
+      worldmap="2351:5369:5737"
+    },
+    items={
+      {decorID=1430, source={type="vendor", itemID=244347}, colors={"Dark Gray","Olive"}, size="Small"},
+      {decorID=1907, source={type="vendor", itemID=245991}, colors={"Bronze","Dark Brown","Light Brown"}, size="Small"},
+      {decorID=1909, source={type="vendor", itemID=245993}, colors={"Amber","Copper","Dark Brown"}, size="Small"},
+      {decorID=8990, source={type="vendor", itemID=252042}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
+      {decorID=9289, source={type="vendor", itemID=253396}, colors={"Dark Brown","Gray","Light Gray"}, budgetCost=1, size="Small"},
+      {decorID=9627, source={type="vendor", itemID=253703}, colors={"Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=10862, source={type="vendor", itemID=255652}, colors={"Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=10896, source={type="vendor", itemID=255712}, colors={"Dark Gray","Gray"}, budgetCost=1, size="Large"},
+      {decorID=11140, source={type="vendor", itemID=256361}, colors={"Blue","Dark Brown","Teal"}, budgetCost=1, size="Small"},
+      {decorID=11285, source={type="vendor", itemID=256684}, colors={"Blue","Copper","Dark Brown"}, budgetCost=1, size="Small"},
+      {decorID=12145, source={type="vendor", itemID=258540}, colors={"Blue","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=15286, source={type="vendor", itemID=263876}, colors={"Dark Brown","Dark Gray","Dark Purple"}, budgetCost=3, size="Medium"},
+      {decorID=18796, source={type="vendor", itemID=267205}, dyeable=true, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=1, size="Small"},
+      {decorID=18880, source={type="vendor", itemID=267355}, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=3, size="Medium"},
+      {decorID=18960, source={type="vendor", itemID=267435}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Small"},
+      {decorID=20332, source={type="vendor", itemID=268943}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Small"},
+      {decorID=21873, source={type="vendor", itemID=272129}, colors={"Copper","Dark Brown","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=21886, source={type="vendor", itemID=272142}, colors={"Brown","Dark Brown","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=26492, source={type="vendor", itemID=278696}, budgetCost=1, size="Small"},
+      {decorID=26494, source={type="vendor", itemID=278701}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=253596,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
       worldmap="2351:5380:5740"
     },
     items={
@@ -262,7 +294,7 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       type="vendor",
       faction="Neutral",
       zone="Razorwind Shores",
-      worldmap="2351:5413:5905"
+      worldmap="2351:5413:5904"
     },
     items={
       {decorID=1436, source={type="vendor", itemID=244532, currency="100000", currencytype="money"}, requirements={quest={id=93077}}, dyeable=true, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=1, size="Tiny"},
@@ -337,6 +369,8 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       {decorID=1163, source={type="vendor", itemID=253493, currency="1000000", currencytype="money"}, requirements={quest={id=93147}}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
       {decorID=1245, source={type="vendor", itemID=243242, currency="500000", currencytype="money"}, dyeable=true, colors={"Dark Purple","Light Purple","Tan"}, budgetCost=3, size="Medium"},
       {decorID=1246, source={type="vendor", itemID=243243, currency="750000", currencytype="money"}, dyeable=true, colors={"Dark Purple","Light Purple","Tan"}, budgetCost=5, size="Large"},
+      {decorID=1283, source={type="vendor", itemID=243337, currency="500000", currencytype="money"}, colors={"Bronze","Crimson","Deep Red"}, budgetCost=3, size="Medium"},
+      {decorID=1284, source={type="vendor", itemID=243338, currency="500000", currencytype="money"}, colors={"Crimson","Deep Red"}, budgetCost=3, size="Medium"},
       {decorID=1329, source={type="vendor", itemID=243495, currency="1000000", currencytype="money"}, requirements={quest={id=93149}}, dyeable=true, colors={"Dark Brown","Light Purple","Tan"}, budgetCost=3, size="Medium"},
       {decorID=1487, source={type="vendor", itemID=244781, currency="500000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Dark Purple"}, budgetCost=3, size="Large"},
       {decorID=1770, source={type="vendor", itemID=245575, currency="1000000", currencytype="money"}, requirements={quest={id=92994}}, colors={"Black","Dark Brown"}, budgetCost=3, size="Huge"},
@@ -385,7 +419,7 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       type="vendor",
       faction="Neutral",
       zone="Razorwind Shores",
-      worldmap="2351:5345:5853"
+      worldmap="2351:5345:5854"
     },
     items={
       {decorID=986, source={type="vendor", itemID=253437, currency="750000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Purple","Tan"}, budgetCost=3, size="Medium"},
@@ -699,6 +733,19 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       type="vendor",
       faction="Neutral",
       zone="Razorwind Shores",
+      worldmap="2351:3908:7408"
+    },
+    items={
+      {decorID=3913, source={type="vendor", itemID=247776}, colors={"Cyan","Navy Blue","Royal Blue"}, budgetCost=100, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=257168,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
       worldmap="2351:3908:7409"
     },
     items={
@@ -740,11 +787,19 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap="2351:5427:5605"
     },
     items={
+      {decorID=10859, source={type="vendor", itemID=255649, currency="15", currencytype=3363}, colors={"Dark Gray","Royal Blue","Teal"}, budgetCost=1, size="Medium"},
+      {decorID=15157, source={type="vendor", itemID=263317, currency="10", currencytype=3363}, colors={"Dark Brown"}, size="Small"},
+      {decorID=15265, source={type="vendor", itemID=263708, currency="15", currencytype=3363}, colors={"Dark Gray","Gray"}, size="Medium"},
+--       {decorID=22916, source={type="vendor", itemID=274518, currency="20", currencytype=3363}, budgetCost=3, size="Large"}, -- HIDDENCATALOG
 --       {decorID=22917, source={type="vendor", itemID=274521, currency="15", currencytype=3363}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=22918, source={type="vendor", itemID=274523, currency="15", currencytype=3363}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
 --       {decorID=22919, source={type="vendor", itemID=274525, currency="10", currencytype=3363}, budgetCost=1, size="Medium"}, -- HIDDENCATALOG
 --       {decorID=22920, source={type="vendor", itemID=274527, currency="2", currencytype=3363}, budgetCost=1, size="Tiny"}, -- HIDDENCATALOG
 --       {decorID=22921, source={type="vendor", itemID=274529, currency="15", currencytype=3363}, size="Medium"}, -- HIDDENCATALOG
 --       {decorID=22922, source={type="vendor", itemID=274531, currency="10", currencytype=3363}, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=22924, source={type="vendor", itemID=274533, currency="15", currencytype=3363}, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
+--       {decorID=22925, source={type="vendor", itemID=274535, currency="30", currencytype=3363}, budgetCost=5, size="Huge"}, -- HIDDENCATALOG
+--       {decorID=22926, source={type="vendor", itemID=274537, currency="30", currencytype=3363}, budgetCost=5, size="Huge"}, -- HIDDENCATALOG
 --       {decorID=22927, source={type="vendor", itemID=274505, currency="30", currencytype=3363}, budgetCost=5, size="Huge"}, -- HIDDENCATALOG
 --       {decorID=23188, source={type="vendor", itemID=274539, currency="30", currencytype=3363}, budgetCost=5, size="Huge"}, -- HIDDENCATALOG
     }
@@ -759,8 +814,36 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap=""
     },
     items={
+      {decorID=2453, source={type="vendor", itemID=246686, currency="10", currencytype=3363}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Medium"},
+      {decorID=2495, source={type="vendor", itemID=246741, currency="10", currencytype=3363}, colors={"Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=2510, source={type="vendor", itemID=246838, currency="10", currencytype=3363}, colors={"Dark Gray","Deep Red","Gray"}, budgetCost=1, size="Small"},
+      {decorID=4424, source={type="vendor", itemID=248402, currency="15", currencytype=3363}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Huge"},
+      {decorID=4425, source={type="vendor", itemID=248403, currency="10", currencytype=3363}, colors={"Black","Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=4427, source={type="vendor", itemID=248405, currency="5", currencytype=3363}, colors={"Beige","Dark Gray","Light Purple"}, budgetCost=1, size="Tiny"},
+      {decorID=4428, source={type="vendor", itemID=248406, currency="10", currencytype=3363}, colors={"Dark Brown","Dark Purple","Tan"}, budgetCost=1, size="Small"},
+      {decorID=4429, source={type="vendor", itemID=248407, currency="10", currencytype=3363}, colors={"Dark Brown","Deep Red","Light Brown"}, budgetCost=3, size="Medium"},
+      {decorID=8179, source={type="vendor", itemID=251472, currency="10", currencytype=3363}, colors={"Copper","Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=8180, source={type="vendor", itemID=251473, currency="5", currencytype=3363}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=1, size="Tiny"},
+      {decorID=8181, source={type="vendor", itemID=251474, currency="5", currencytype=3363}, colors={"Dark Gray","Gray","Silver"}, budgetCost=1, size="Tiny"},
+      {decorID=8182, source={type="vendor", itemID=251475, currency="10", currencytype=3363}, colors={"Dark Gray","Deep Red","Light Purple"}, budgetCost=1, size="Small"},
+      {decorID=8987, source={type="vendor", itemID=252039, currency="5", currencytype=3363}, colors={"Dark Brown","Tan"}, budgetCost=1, size="Small"},
+      {decorID=8988, source={type="vendor", itemID=252040, currency="5", currencytype=3363}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
+      {decorID=8989, source={type="vendor", itemID=252041, currency="15", currencytype=3363}, colors={"Bronze","Dark Gray","Light Brown"}, budgetCost=3, size="Medium"},
       {decorID=26492, source={type="vendor", itemID=278696}, budgetCost=1, size="Small"},
       {decorID=26494, source={type="vendor", itemID=278701}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=263258,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5515:6194"
+    },
+    items={
+      {decorID=4426, source={type="vendor", itemID=248404}, colors={"Dark Gray","Gray","Silver"}, size="Small"},
     }
   },
 
@@ -773,13 +856,41 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap="2351:5420:5597"
     },
     items={
+      {decorID=23176, source={type="vendor", itemID=276650}, budgetCost=5, size="Huge"},
+      {decorID=23177, source={type="vendor", itemID=276626}, budgetCost=5, size="Huge"},
+      {decorID=23178, source={type="vendor", itemID=276669}, budgetCost=1, size="Medium"},
       {decorID=23179, source={type="vendor", itemID=276671}, budgetCost=1, size="Medium"},
       {decorID=23180, source={type="vendor", itemID=276656}, budgetCost=5, size="Large"},
+      {decorID=23181, source={type="vendor", itemID=276658}, budgetCost=5, size="Large"},
+      {decorID=23182, source={type="vendor", itemID=276663}, budgetCost=3, size="Large"},
       {decorID=23183, source={type="vendor", itemID=276665}, budgetCost=3, size="Large"},
+      {decorID=23184, source={type="vendor", itemID=276667}, budgetCost=5, size="Large"},
+      {decorID=23185, source={type="vendor", itemID=276661}, budgetCost=3, size="Large"},
+      {decorID=23186, source={type="vendor", itemID=276652}, budgetCost=5, size="Huge"},
       {decorID=23548, source={type="vendor", itemID=276654}, size="Small"},
       {decorID=23549, source={type="vendor", itemID=276677}, size="Small"},
       {decorID=23550, source={type="vendor", itemID=276673}, budgetCost=1, size="Small"},
       {decorID=23551, source={type="vendor", itemID=276675}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=267794,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5363:5444"
+    },
+    items={
+      {decorID=15290, source={type="vendor", itemID=263880}, colors={"Copper","Dark Brown","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=25101, source={type="vendor", itemID=277142, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
+      {decorID=25102, source={type="vendor", itemID=277144, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
+      {decorID=25103, source={type="vendor", itemID=277149, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
+      {decorID=25105, source={type="vendor", itemID=277138, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"},
+      {decorID=25106, source={type="vendor", itemID=277160, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"},
+      {decorID=25121, source={type="vendor", itemID=277121, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
+      {decorID=25122, source={type="vendor", itemID=277163, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
     }
   },
 
@@ -798,25 +909,6 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
 
   {
     source={
-      id=267794,
-      type="vendor",
-      faction="Neutral",
-      zone="Razorwind Shores",
-      worldmap="2351:5540:5752"
-    },
-    items={
-      {decorID=25101, source={type="vendor", itemID=277142, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
-      {decorID=25102, source={type="vendor", itemID=277144, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
-      {decorID=25103, source={type="vendor", itemID=277149, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
-      {decorID=25105, source={type="vendor", itemID=277138, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"},
-      {decorID=25106, source={type="vendor", itemID=277160, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"},
-      {decorID=25121, source={type="vendor", itemID=277121, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
-      {decorID=25122, source={type="vendor", itemID=277163, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
-    }
-  },
-
-  {
-    source={
       id=268106,
       type="vendor",
       faction="Neutral",
@@ -825,12 +917,18 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
     },
     items={
       {decorID=26364, source={type="vendor", itemID=280244}, budgetCost=1, size="Tiny"},
+      {decorID=26365, source={type="vendor", itemID=280240}, budgetCost=3, size="Medium"},
 --       {decorID=26367, source={type="vendor", itemID=280873}, budgetCost=1, size="Medium"}, -- HIDDENCATALOG
       {decorID=26370, source={type="vendor", itemID=280230}, budgetCost=3, size="Large"},
+      {decorID=26371, source={type="vendor", itemID=280234}, budgetCost=3, size="Medium"},
       {decorID=26373, source={type="vendor", itemID=280242}, budgetCost=3, size="Medium"},
+      {decorID=26386, source={type="vendor", itemID=280238}, budgetCost=3, size="Medium"},
+      {decorID=26387, source={type="vendor", itemID=280232}, budgetCost=3, size="Large"},
       {decorID=26389, source={type="vendor", itemID=280227}, budgetCost=5, size="Medium"},
       {decorID=26478, source={type="vendor", itemID=280236}, budgetCost=5, size="Large"},
       {decorID=26482, source={type="vendor", itemID=280221}, budgetCost=3, size="Medium"},
+      {decorID=26483, source={type="vendor", itemID=280223}, budgetCost=5, size="Large"},
+      {decorID=26564, source={type="vendor", itemID=280225}, budgetCost=5, size="Large"},
       {decorID=26871, source={type="vendor", itemID=280215}, budgetCost=5, size="Large"},
 --       {decorID=27044, source={type="vendor", itemID=280846}, budgetCost=5, size="Large"}, -- HIDDENCATALOG
     }
@@ -845,13 +943,19 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap="2351:5489:5728"
     },
     items={
+      {decorID=26613, source={type="vendor", itemID=280246}, budgetCost=5, size="Large"},
+      {decorID=26614, source={type="vendor", itemID=280249}, budgetCost=1, size="Small"},
       {decorID=26617, source={type="vendor", itemID=280253}, budgetCost=3, size="Large"},
       {decorID=26618, source={type="vendor", itemID=280255}, budgetCost=1, size="Small"},
       {decorID=26619, source={type="vendor", itemID=280251}, budgetCost=1, size="Small"},
+      {decorID=26621, source={type="vendor", itemID=280257}, budgetCost=1, size="Medium"},
       {decorID=26785, source={type="vendor", itemID=280259}, budgetCost=1, size="Small"},
       {decorID=26786, source={type="vendor", itemID=280261}, budgetCost=5, size="Large"},
       {decorID=26787, source={type="vendor", itemID=280263}, budgetCost=3, size="Medium"},
       {decorID=26788, source={type="vendor", itemID=280267}, budgetCost=5, size="Large"},
+      {decorID=26789, source={type="vendor", itemID=280265}, budgetCost=3, size="Medium"},
+      {decorID=26936, source={type="vendor", itemID=280273}, budgetCost=3, size="Large"},
+      {decorID=26937, source={type="vendor", itemID=280271}, budgetCost=3, size="Large"},
       {decorID=26938, source={type="vendor", itemID=280269}, budgetCost=1, size="Small"},
       {decorID=26939, source={type="vendor", itemID=280275}, budgetCost=3, size="Large"},
 --       {decorID=27167, source={type="vendor", itemID=280513}, dyeable=true, budgetCost=3, size="Medium"}, -- HIDDENCATALOG
@@ -867,6 +971,7 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       worldmap="2351:5239:5428"
     },
     items={
+      {decorID=4157, source={type="vendor", itemID=248101}, colors={"Dark Gray","Gray","Tan"}, budgetCost=1, size="Tiny"},
       {decorID=25675, source={type="vendor", itemID=280335}, budgetCost=3, size="Medium"},
     }
   },

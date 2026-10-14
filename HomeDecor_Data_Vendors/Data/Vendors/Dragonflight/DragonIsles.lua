@@ -30,27 +30,15 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Dragonscale Basecamp",
-      worldmap="2022:4700:8260"
-    },
-    items={
-      {decorID=717, source={type="vendor", itemID=245287, currency="250", currencytype=2003}, colors={"Brown","Copper","Dark Brown"}, budgetCost=5, size="Large"},
-      {decorID=718, source={type="vendor", itemID=245288, currency="250", currencytype=2003}, colors={"Brown","Copper","Dark Brown"}, budgetCost=3, size="Medium"},
-      {decorID=1181, source={type="vendor", itemID=245286, currency="250", currencytype=2003}, colors={"Bronze","Brown","Dark Brown"}, budgetCost=5, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=189226,
-      type="vendor",
-      faction="Neutral",
-      zone="Dragonscale Basecamp",
       worldmap="2022:4710:8260"
     },
     items={
       {decorID=716, source={type="vendor", itemID=245285, currency="100", currencytype=2003}, requirements={reputation={name="Dragonscale Expedition", standing="Renown 10"}}, colors={"Bronze","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=717, source={type="vendor", itemID=245287, currency="250", currencytype=2003}, colors={"Brown","Copper","Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=718, source={type="vendor", itemID=245288, currency="250", currencytype=2003}, colors={"Brown","Copper","Dark Brown"}, budgetCost=3, size="Medium"},
       {decorID=720, source={type="vendor", itemID=238975, currency="750", currencytype=2003}, requirements={reputation={name="Dragonscale Expedition", standing="Renown 24"}}, colors={"Dark Brown","Orange","Teal"}, budgetCost=1, size="Small"},
       {decorID=1177, source={type="vendor", itemID=245283, currency="400", currencytype=2003}, requirements={reputation={name="Dragonscale Expedition", standing="Renown 10"}}, colors={"Copper","Dark Brown","Gold"}, budgetCost=1, size="Medium"},
+      {decorID=1181, source={type="vendor", itemID=245286, currency="250", currencytype=2003}, colors={"Bronze","Brown","Dark Brown"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -89,9 +77,21 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       worldmap=""
     },
     items={
+--       {decorID=4171, source={type="vendor", itemID=248115, currency="100000", currencytype="money"}, requirements={reputation={name="Valdrakken Accord", standing="Renown 25"}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Large"}, -- DNT / do not use
+    }
+  },
+
+  {
+    source={
+      id=193015,
+      type="vendor",
+      faction="Neutral",
+      zone="Valdrakken",
+      worldmap="2112:5817:3512"
+    },
+    items={
       {decorID=4159, source={type="vendor", itemID=248103, currency="300", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 14"}}, colors={"Bronze","Dark Brown","Gray"}, budgetCost=5, size="Large"},
       {decorID=4168, source={type="vendor", itemID=248112, currency="400", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 6"}}, colors={"Dark Brown","Silver","Tan"}, budgetCost=3, size="Large"},
---       {decorID=4171, source={type="vendor", itemID=248115, currency="100000", currencytype="money"}, requirements={reputation={name="Valdrakken Accord", standing="Renown 25"}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Large"}, -- DNT / do not use
       {decorID=4478, source={type="vendor", itemID=248652, currency="250", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 20"}}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
       {decorID=10963, source={type="vendor", itemID=256169, currency="500", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 3"}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
     }
@@ -159,7 +159,20 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Thaldraszus",
-      worldmap="2025:6140:3140"
+      worldmap="2025:6137:3140"
+    },
+    items={
+      {decorID=4173, source={type="vendor", itemID=248117, currency="4000", currencytype=2657}, colors={"Dark Brown","Orange","Purple"}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=209192,
+      type="vendor",
+      faction="Neutral",
+      zone="The Azure Span",
+      worldmap="2024:2695:4650"
     },
     items={
       {decorID=4173, source={type="vendor", itemID=248117, currency="4000", currencytype=2657}, colors={"Dark Brown","Orange","Purple"}, budgetCost=1, size="Small"},
@@ -269,7 +282,7 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Hallowfall",
-      worldmap="2215:1830:2050"
+      worldmap="2215:2828:5618"
     },
     items={
       {decorID=763, source={type="vendor", itemID=245293, currency="1200", currencytype=2815}, requirements={reputation={name="Flame's Radiance", standing="Renown 8"}}, colors={"Copper","Dark Brown","Tan"}, budgetCost=1, size="Tiny"},
@@ -297,31 +310,19 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Valdrakken",
-      worldmap="2112:3360:5700"
-    },
-    items={
-      {decorID=4159, source={type="vendor", itemID=248103, currency="300", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 14"}}, colors={"Bronze","Dark Brown","Gray"}, budgetCost=5, size="Large"},
-      {decorID=4168, source={type="vendor", itemID=248112, currency="400", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 6"}}, colors={"Dark Brown","Silver","Tan"}, budgetCost=3, size="Large"},
-      {decorID=4478, source={type="vendor", itemID=248652, currency="250", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 20"}}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
-      {decorID=10963, source={type="vendor", itemID=256169, currency="500", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 3"}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=253067,
-      type="vendor",
-      faction="Neutral",
-      zone="Valdrakken",
       worldmap="2112:7153:4962"
     },
     items={
       {decorID=2469, source={type="vendor", itemID=246706, currency="100", currencytype=2003}, requirements={quest={id=67047}}, colors={"Dark Gray","Light Brown","Orange"}, budgetCost=1, size="Tiny"},
       {decorID=2594, source={type="vendor", itemID=247223, currency="175", currencytype=2003}, requirements={quest={id=67063}}, colors={"Dark Brown","Red","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=4159, source={type="vendor", itemID=248103, currency="300", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 14"}}, colors={"Bronze","Dark Brown","Gray"}, budgetCost=5, size="Large"},
       {decorID=4160, source={type="vendor", itemID=248104, currency="150", currencytype=2003}, requirements={achievement={id=17773}}, colors={"Amber","Dark Brown","Gray"}, budgetCost=1, size="Large"},
+      {decorID=4168, source={type="vendor", itemID=248112, currency="400", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 6"}}, colors={"Dark Brown","Silver","Tan"}, budgetCost=3, size="Large"},
       {decorID=4477, source={type="vendor", itemID=248651, currency="600", currencytype=2003}, requirements={quest={id=72935}}, colors={"Amber","Cyan","Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=4478, source={type="vendor", itemID=248652, currency="250", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 20"}}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
       {decorID=4479, source={type="vendor", itemID=248653, currency="50", currencytype=2003}, requirements={quest={id=71097}}, colors={"Bronze","Dark Gray","Gray"}, budgetCost=1, size="Small"},
       {decorID=4481, source={type="vendor", itemID=248655, currency="200", currencytype=2003}, requirements={quest={id=70880}}, colors={"Dark Brown","Dark Gray","Gold"}, budgetCost=1, size="Small"},
+      {decorID=10963, source={type="vendor", itemID=256169, currency="500", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 3"}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
       {decorID=11164, source={type="vendor", itemID=256429, currency="200", currencytype=2003}, requirements={quest={id=70745}}, colors={"Dark Brown","Dark Gray","Light Gray"}, budgetCost=5, size="Large"},
     }
   },

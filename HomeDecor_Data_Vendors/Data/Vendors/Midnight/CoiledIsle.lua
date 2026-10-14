@@ -33,6 +33,10 @@ NS.Data.Vendors["Midnight"]["The Coiled Isle"] = {
       worldmap="2512:5880:4600"
     },
     items={
+      {decorID=5648, source={type="vendor", itemID=249765}, colors={"Copper","Dark Brown"}, size="Medium"},
+      {decorID=15156, source={type="vendor", itemID=263316}, colors={"Copper","Dark Brown"}, size="Medium"},
+      {decorID=15506, source={type="vendor", itemID=264271}, colors={"Brown","Dark Brown"}, budgetCost=3, size="Large"},
+      {decorID=15569, source={type="vendor", itemID=264331}, colors={"Copper","Dark Brown"}, budgetCost=3, size="Large"},
       {decorID=18900, source={type="vendor", itemID=267377}, budgetCost=5, size="Huge"},
       {decorID=21324, source={type="vendor", itemID=269778}, budgetCost=1, size="Small"},
       {decorID=21325, source={type="vendor", itemID=269779}, budgetCost=1, size="Small"},
@@ -56,6 +60,9 @@ NS.Data.Vendors["Midnight"]["The Coiled Isle"] = {
       worldmap="2512:5860:4590"
     },
     items={
+      {decorID=1428, source={type="vendor", itemID=244345}, colors={"Black"}, size="Small"},
+      {decorID=5130, source={type="vendor", itemID=248962}, colors={"Dark Brown","Deep Red","Purple"}, size="Small"},
+      {decorID=15283, source={type="vendor", itemID=263873}, colors={"Dark Gray","Deep Red"}, size="Large"},
       {decorID=21615, source={type="vendor", itemID=271175}, budgetCost=1, size="Small"},
       {decorID=21616, source={type="vendor", itemID=271176}, budgetCost=1, size="Small"},
       {decorID=21725, source={type="vendor", itemID=271609}, budgetCost=3, size="Medium"},

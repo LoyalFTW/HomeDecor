@@ -9,4 +9,5 @@ NS.Data.Professions["Enchanting"]["Outland"] = {
   {decorID=11372, decorType="Ornamental", source={type="profession", skillID=1261331, itemID=257037}, colors={"Black","Light Purple","White"}, budgetCost=1, size="Medium"},
   {decorID=11373, decorType="Ornamental", source={type="profession", skillID=1261340, itemID=257038}, colors={"Light Purple","Navy Blue","Purple"}, budgetCost=1, size="Large"},
   {decorID=11431, decorType="Miscellaneous - All", source={type="profession", skillID=1262828, itemID=257093}, colors={"Copper","Dark Purple","Light Purple"}, budgetCost=3, size="Medium"},
+--   {decorID=16754, decorType="Floor", source={type="profession", skillID=1313520, itemID=265331}, colors={"Magenta","Navy Blue","White"}, budgetCost=1, size="Medium"}, -- HIDDENCATALOG
 }

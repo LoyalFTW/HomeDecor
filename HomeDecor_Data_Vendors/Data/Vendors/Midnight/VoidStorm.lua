@@ -12,6 +12,20 @@ NS.Data.Vendors["Midnight"]["VoidStorm"] = {
       type="vendor",
       faction="Neutral",
       zone="Voidstorm",
+      worldmap="2405:5258:7290"
+    },
+    items={
+      {decorID=14603, source={type="vendor", itemID=262473, currency="150", currencytype=3316}, colors={"Light Purple","Navy Blue","Teal"}, budgetCost=1, size="Tiny"},
+      {decorID=15260, source={type="vendor", itemID=263499, currency="250", currencytype=3316}, colors={"Gray","Navy Blue","Teal"}, budgetCost=3, size="Medium"},
+    }
+  },
+
+  {
+    source={
+      id=248328,
+      type="vendor",
+      faction="Neutral",
+      zone="Voidstorm",
       worldmap="2405:5259:7290"
     },
     items={
@@ -19,10 +33,8 @@ NS.Data.Vendors["Midnight"]["VoidStorm"] = {
       {decorID=14592, source={type="vendor", itemID=262462, currency="150", currencytype=3316}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Tiny"},
       {decorID=14593, source={type="vendor", itemID=262463, currency="150", currencytype=3316}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Tiny"},
       {decorID=14596, source={type="vendor", itemID=262466, currency="250", currencytype=3316}, colors={"Dark Gray","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
-      {decorID=14603, source={type="vendor", itemID=262473, currency="150", currencytype=3316}, colors={"Light Purple","Navy Blue","Teal"}, budgetCost=1, size="Tiny"},
       {decorID=14632, source={type="vendor", itemID=262607, currency="250", currencytype=3316}, colors={"Navy Blue","Royal Blue"}, budgetCost=3, size="Medium"},
       {decorID=14634, source={type="vendor", itemID=262609, currency="250", currencytype=3316}, colors={"Light Purple","Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=15260, source={type="vendor", itemID=263499, currency="250", currencytype=3316}, colors={"Gray","Navy Blue","Teal"}, budgetCost=3, size="Medium"},
       {decorID=15575, source={type="vendor", itemID=264337, currency="500", currencytype=3316}, colors={"Cyan","Navy Blue","Tan"}, budgetCost=5, size="Large"},
       {decorID=15578, source={type="vendor", itemID=264339, currency="250", currencytype=3316}, colors={"Dark Gray","Royal Blue"}, budgetCost=5, size="Large"},
       {decorID=15581, source={type="vendor", itemID=264341, currency="250", currencytype=3316}, colors={"Dark Brown","Gray","Royal Blue"}, budgetCost=3, size="Medium"},
