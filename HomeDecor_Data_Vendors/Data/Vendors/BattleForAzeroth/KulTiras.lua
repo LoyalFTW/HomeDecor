@@ -197,4 +197,31 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
     }
   },
 
+  {
+    source={
+      id=274690,
+      type="vendor",
+      faction="Neutral",
+      zone="Drustvar",
+      worldmap="896:3777:4894"
+    },
+    items={
+      {decorID=28456, source={type="vendor", itemID=284478}, budgetCost=5},
+      {decorID=28458, source={type="vendor", itemID=284490}, budgetCost=1},
+      {decorID=28485, source={type="vendor", itemID=284470}, budgetCost=3},
+      {decorID=28486, source={type="vendor", itemID=284484}, budgetCost=5},
+      {decorID=28487, source={type="vendor", itemID=284476}, budgetCost=5},
+      {decorID=28488, source={type="vendor", itemID=284482}, budgetCost=5},
+      {decorID=28489, source={type="vendor", itemID=284466}, budgetCost=1},
+      {decorID=28490, source={type="vendor", itemID=284464}, budgetCost=5},
+      {decorID=28491, source={type="vendor", itemID=284468}, budgetCost=3},
+      {decorID=28492, source={type="vendor", itemID=284486}, budgetCost=3},
+      {decorID=28493, source={type="vendor", itemID=284472}, budgetCost=1},
+      {decorID=28494, source={type="vendor", itemID=284474}, budgetCost=5},
+      {decorID=28497, source={type="vendor", itemID=284488}, budgetCost=1},
+      {decorID=28499, source={type="vendor", itemID=284462}, budgetCost=3},
+      {decorID=28694, source={type="vendor", itemID=284480}, budgetCost=5},
+    }
+  },
+
 }

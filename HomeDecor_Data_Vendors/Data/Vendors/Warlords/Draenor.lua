@@ -114,6 +114,7 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
       {decorID=8193, source={type="vendor", itemID=251484, currency="1000", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Revered"}}, colors={"Dark Brown","Dark Purple","Light Purple"}, budgetCost=5, size="Large"},
       {decorID=8194, source={type="vendor", itemID=251493, currency="500", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Honored"}}, colors={"Dark Gray","Gray","Royal Blue"}, budgetCost=5, size="Large"},
       {decorID=8242, source={type="vendor", itemID=251551, currency="1500", currencytype=824}, requirements={reputation={name="Council of Exarchs", standing="Exalted"}}, colors={"Copper","Dark Gray","Purple"}, budgetCost=5, size="Large"},
+      {decorID=30255, source={type="vendor", itemID=285179}, budgetCost=5},
     }
   },
 
@@ -270,6 +271,33 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
     },
     items={
       {decorID=12202, source={type="vendor", itemID=258742, currency="100000", currencytype="money"}, requirements={quest={id=33582}}, colors={"Dark Gray","Tan"}, budgetCost=1, size="Tiny"},
+    }
+  },
+
+  {
+    source={
+      id=274250,
+      type="vendor",
+      faction="Neutral",
+      zone="Shadowmoon Valley",
+      worldmap="539:5805:2664"
+    },
+    items={
+      {decorID=25323, source={type="vendor", itemID=283220}, budgetCost=5},
+      {decorID=25324, source={type="vendor", itemID=283222}, budgetCost=5},
+      {decorID=25325, source={type="vendor", itemID=283224}, budgetCost=5},
+      {decorID=27606, source={type="vendor", itemID=283226}, budgetCost=3},
+      {decorID=27683, source={type="vendor", itemID=283228}, budgetCost=5},
+      {decorID=28317, source={type="vendor", itemID=283230}, budgetCost=5},
+      {decorID=28318, source={type="vendor", itemID=283232}, budgetCost=1},
+      {decorID=28319, source={type="vendor", itemID=283234}, budgetCost=5},
+      {decorID=28320, source={type="vendor", itemID=283236}, budgetCost=5},
+      {decorID=28321, source={type="vendor", itemID=283238}, budgetCost=5},
+      {decorID=28322, source={type="vendor", itemID=283240}, budgetCost=1},
+      {decorID=28323, source={type="vendor", itemID=283242}, budgetCost=3},
+      {decorID=28324, source={type="vendor", itemID=283244}, budgetCost=5},
+      {decorID=28325, source={type="vendor", itemID=283246}, budgetCost=5},
+      {decorID=28629, source={type="vendor", itemID=283248}, budgetCost=5},
     }
   },
 

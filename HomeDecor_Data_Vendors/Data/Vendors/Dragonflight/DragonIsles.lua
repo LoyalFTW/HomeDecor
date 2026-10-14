@@ -74,24 +74,12 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Valdrakken",
-      worldmap=""
-    },
-    items={
---       {decorID=4171, source={type="vendor", itemID=248115, currency="100000", currencytype="money"}, requirements={reputation={name="Valdrakken Accord", standing="Renown 25"}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Large"}, -- DNT / do not use
-    }
-  },
-
-  {
-    source={
-      id=193015,
-      type="vendor",
-      faction="Neutral",
-      zone="Valdrakken",
       worldmap="2112:5817:3512"
     },
     items={
       {decorID=4159, source={type="vendor", itemID=248103, currency="300", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 14"}}, colors={"Bronze","Dark Brown","Gray"}, budgetCost=5, size="Large"},
       {decorID=4168, source={type="vendor", itemID=248112, currency="400", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 6"}}, colors={"Dark Brown","Silver","Tan"}, budgetCost=3, size="Large"},
+--       {decorID=4171, source={type="vendor", itemID=248115, currency="100000", currencytype="money"}, requirements={reputation={name="Valdrakken Accord", standing="Renown 25"}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Large"}, -- DNT / do not use
       {decorID=4478, source={type="vendor", itemID=248652, currency="250", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 20"}}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
       {decorID=10963, source={type="vendor", itemID=256169, currency="500", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 3"}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
     }
@@ -120,6 +108,19 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
     },
     items={
       {decorID=7835, source={type="vendor", itemID=250912, currency="600", currencytype=2003}, colors={"Copper","Dark Gray","Silver"}, budgetCost=5, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=193955,
+      type="vendor",
+      faction="Neutral",
+      zone="The Waking Shores",
+      worldmap="2022:6153:6999"
+    },
+    items={
+      {decorID=27217, source={type="vendor", itemID=284223}, budgetCost=5},
     }
   },
 
@@ -160,6 +161,19 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       faction="Neutral",
       zone="Thaldraszus",
       worldmap="2025:6137:3140"
+    },
+    items={
+      {decorID=4173, source={type="vendor", itemID=248117, currency="4000", currencytype=2657}, colors={"Dark Brown","Orange","Purple"}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=209192,
+      type="vendor",
+      faction="Neutral",
+      zone="Thaldraszus",
+      worldmap="2025:6147:3132"
     },
     items={
       {decorID=4173, source={type="vendor", itemID=248117, currency="4000", currencytype=2657}, colors={"Dark Brown","Orange","Purple"}, budgetCost=1, size="Small"},

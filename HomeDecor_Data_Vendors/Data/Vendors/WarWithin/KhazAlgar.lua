@@ -314,6 +314,29 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
 
   {
     source={
+      id=252312,
+      type="vendor",
+      faction="Neutral",
+      zone="Dornogal",
+      worldmap="2339:5284:6800"
+    },
+    items={
+      {decorID=1693, source={type="vendor", itemID=245259, currency="500000", currencytype="money"}, colors={"Light Purple","Navy Blue","Tan"}, budgetCost=1, size="Small"},
+      {decorID=1861, source={type="vendor", itemID=245655, currency="10", currencytype=2003}, colors={"Cyan","Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=2330, source={type="vendor", itemID=246487, currency="750000", currencytype="money"}, colors={"Dark Purple","Silver","Tan"}, budgetCost=3, size="Large"},
+      {decorID=2433, source={type="vendor", itemID=246601, costs={{currency="10", itemID=166846}}}, colors={"Dark Gray","Silver"}, budgetCost=1, size="Small"},
+      {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}, colors={"Dark Gray","Light Purple","Orange"}, budgetCost=1, size="Small"},
+      {decorID=4029, source={type="vendor", itemID=247915, currency="1000000", currencytype="money"}, colors={"Dark Gray","Gray","Purple"}, budgetCost=3, size="Large"},
+      {decorID=4172, source={type="vendor", itemID=248116, currency="750000", currencytype="money"}, colors={"Bronze","Dark Brown","Royal Blue"}, budgetCost=1, size="Medium"},
+      {decorID=5111, source={type="vendor", itemID=248934, currency="15000000", currencytype="money"}, colors={"Amber","Copper","Dark Brown"}, budgetCost=3, size="Large"},
+      {decorID=9242, source={type="vendor", itemID=253168, costs={{currency="10000", currencytype="money"},{currency="9500", currencytype="money"},{currency="200000", currencytype="money"},{currency="8000", currencytype="money"}}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
+      {decorID=9247, source={type="vendor", itemID=253173, currency="200000", currencytype="money"}, requirements={quest={id=92572}}, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=5, size="Large"},
+      {decorID=10962, source={type="vendor", itemID=256168, currency="10", currencytype=2003}, colors={"Bronze","Dark Brown","Yellow"}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
       id=252887,
       type="vendor",
       faction="Neutral",

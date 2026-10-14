@@ -223,6 +223,25 @@ NS.Data.Vendors["Legion"]["ClassHalls"] = {
 
   {
     source={
+      id=112407,
+      type="vendor",
+      faction="Neutral",
+      zone="The Fel Hammer",
+      worldmap="720:6100:5673"
+    },
+    items={
+      {decorID=5525, source={type="vendor", itemID=249457, currency="5000", currencytype=1220}, requirements={achievement={id=42288}}, colors={"Dark Brown","Orange","Tan"}, budgetCost=3, size="Large"},
+      {decorID=5527, source={type="vendor", itemID=249459, currency="1500", currencytype=1220}, requirements={achievement={id=42271}}, colors={"Blue","Dark Gray","Tan"}, budgetCost=1, size="Small"},
+      {decorID=5530, source={type="vendor", itemID=249462, currency="1000", currencytype=1220}, colors={"Dark Gray","Green","Olive"}, budgetCost=3, size="Medium"},
+      {decorID=5531, source={type="vendor", itemID=249463, currency="500", currencytype=1220}, colors={"Blue","Dark Brown","Teal"}, budgetCost=3, size="Medium"},
+      {decorID=5555, source={type="vendor", itemID=249518, currency="2000", currencytype=1220}, requirements={achievement={id=60982}}, colors={"Dark Gray","Forest Green"}, budgetCost=3, size="Medium"},
+      {decorID=5575, source={type="vendor", itemID=249690, currency="3000", currencytype=1220}, requirements={achievement={id=60963}}, colors={"Dark Brown","Olive","Teal"}, budgetCost=1, size="Small"},
+      {decorID=11276, source={type="vendor", itemID=256675, currency="500", currencytype=1220}, colors={"Black","Dark Brown","Dark Gray"}, budgetCost=5, size="Huge"},
+    }
+  },
+
+  {
+    source={
       id=112434,
       type="vendor",
       faction="Neutral",

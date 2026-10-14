@@ -68,8 +68,10 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       worldmap="89:3716:4743"
     },
     items={
+      {decorID=858, source={type="vendor", itemID=245518, currency="1500000", currencytype="money"}, requirements={quest={id=24675}}, colors={"Copper","Dark Brown"}, budgetCost=3, size="Medium"},
       {decorID=1794, source={type="vendor", itemID=245603, currency="3500000", currencytype="money"}, requirements={reputation={name="Gilneas", standing="Revered"}}, colors={"Black"}, budgetCost=3, size="Large"},
       {decorID=1796, source={type="vendor", itemID=245605, currency="3000000", currencytype="money"}, requirements={reputation={name="Gilneas", standing="Honored"}}, colors={"Dark Gray"}, budgetCost=1, size="Large"},
+      {decorID=1829, source={type="vendor", itemID=245620, currency="500000", currencytype="money"}, requirements={quest={id=14402}}, colors={"Black","Dark Gray"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -176,6 +178,7 @@ NS.Data.Vendors["Classic"]["Kalimdor"] = {
       {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}, colors={"Dark Gray","Light Purple","Orange"}, budgetCost=1, size="Small"},
       {decorID=4029, source={type="vendor", itemID=247915, currency="1000000", currencytype="money"}, colors={"Dark Gray","Gray","Purple"}, budgetCost=3, size="Large"},
       {decorID=4172, source={type="vendor", itemID=248116, currency="750000", currencytype="money"}, colors={"Bronze","Dark Brown","Royal Blue"}, budgetCost=1, size="Medium"},
+      {decorID=5111, source={type="vendor", itemID=248934, currency="15000000", currencytype="money"}, colors={"Amber","Copper","Dark Brown"}, budgetCost=3, size="Large"},
       {decorID=9242, source={type="vendor", itemID=253168, costs={{currency="10000", currencytype="money"},{currency="9500", currencytype="money"},{currency="200000", currencytype="money"},{currency="8000", currencytype="money"}}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
       {decorID=9247, source={type="vendor", itemID=253173, currency="200000", currencytype="money"}, requirements={quest={id=92572}}, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=5, size="Large"},
       {decorID=10962, source={type="vendor", itemID=256168, currency="10", currencytype=2003}, colors={"Bronze","Dark Brown","Yellow"}, budgetCost=1, size="Small"},

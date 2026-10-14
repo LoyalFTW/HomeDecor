@@ -1,19 +1,272 @@
 HomeDecor_ChangelogMeta = {
-  importance = "Silent", -- Major / Silent
+  importance = "Major", -- Major / Silent
 }
 
 HomeDecor_Changelog = [[
 #HomeDecor
 
-Sept 13, 2026 
+Oct 14, 2026 
 
-* Removed the large gap beneath the filter controls.
-* Prevented multi-source badges such as “Vendors (2)” from covering source text.
-* Realigned the SOURCE column heading.
-* Moved “Full View” beside the X button.
-* Uses Blizzard’s native Endeavor tracking call directly.
-* Immediately refreshes the Objective Tracker.
-* Supports untracking the same way.
-* Preserved the normal full-view layout.
+Database Update Vendors + Items
+
+- Adjutant Nikos
+  - Anima-Powered Kyrian Oven
+  - Ceremonial Kyrian Standard
+  - Ornate Kyrian Glass Platform
+- Adjutant Vortus
+  - Amethyst Argunite Crystal
+  - Carved Argunite Supply
+  - Celadon Argunite Crystal
+  - Ceremonial Lightforged Standard
+  - Decorative Lightforged Holo-Screen
+  - Golden Argunite Crystal
+  - Lightforged Holo-Barricade
+  - Lightforged Holo-Parapet
+  - Lightforged Holo-Shield
+  - Lightforged Holo-Tower
+  - Raw Argunite Supply
+  - Replica Crown of the Triumvirate
+  - Shielded Lightforged Pylon
+- Aithlyn
+  - Blooming Celestial Dreamleaf
+  - Fae Lantern Blossom
+  - Fae Moonbough Cocoon
+  - Fae Moonbough Gate
+  - Hanging Wildseed
+  - Leaning Wildgrove Tree
+  - Small Shimmering Moonvine
+- Botanist Taania
+  - Curved Karabor Hedge
+  - Elaborate Karabor Hedge
+  - Embaari Beech Tree
+  - Gloomshade Glowpod
+  - Huddled Nightmarsh Blossom
+  - Karabor Beech Tree
+  - Karabor Hedge
+  - Lunarfall Beech Tree
+  - Mature Star Lily
+  - Overgrown Valuun Shrub
+  - Pale Shadowmoon Willow
+  - Shadow Lily Bloom
+  - Small Shadowmoon Shadebrush
+  - Verdant Mire Scale-Leaf
+  - Verdant Shadowmoon Willow
+- Captain Lancy Revshon
+  - "Pride of Stormwind" Statue
+- Collector Xorik
+  - Highback Bonewood Chair
+  - Maldraxxi Horned Beast Skull
+  - Maldraxxi Shielding Lattice
+  - Open Bonewood Barrel
+  - Ossified Maldraxxi Spike
+- Curator Ilaros
+  - Ceremonial Kyrian Standard
+  - Elysian Bulbflower
+  - Elysian Heart-Lotus
+  - Elysian Skyfrond
+  - Hanging Elysian Skyvy
+  - Kyrian Steward Effigy
+  - Kyrian Waymarker
+  - Kyrian Waymarker Plaque
+  - Lush Elysian Bellflower Bush
+  - Lush Elysian Lily
+  - Lush Elysian Lotus
+  - Narrow Kyrian Drapes
+  - Radiant Elysian Water Lily
+  - Runic Kyrian Reliquary
+  - Sparse Elysian Pondweed
+  - Verdant Elysian Crownblossom
+  - Windswept Elysian Grass
+  - Windswept Elysian Shrub
+  - Windswept Elysian Skyplume
+  - Windswept Elysian Willow
+  - Winged Elysian Spiralbloom
+- Echo
+  - Candlelit Ogre Jack-o'-Lantern
+  - Candlelit Shrieking Jack-o'-Lantern
+  - Elaborate Heartsbane Ritual Markings
+  - Filled Candy Bucket
+  - Heartsbane Banner
+  - Heartsbane Stone Circle
+  - Horrific Head of the Horseman
+  - Looming Heartsbane Effigy
+  - Ominous Heartsbane Shrine
+  - Unlit Ogre Jack-o'-Lantern
+  - Unlit Shrieking Jack-o'-Lantern
+- Estelia Archtender
+  - Aqir Hunter's Trophy
+  - Dormant Brood Egg
+  - Dormant Brood Egg Cluster
+  - Dormant Clutch of Brood Eggs
+  - Nourished Brood Egg Cluster
+  - Nourished Brood Eggs
+  - Nourished Clutch of Brood Eggs
+- Fenwir
+  - Arching Crimson Ivy
+  - Drustvar Glowcap Cluster
+  - Drustvar Leaf Clump
+  - Drustvar Leaf Patch
+  - Drustvar Shelfcap
+  - Lush Drustvar Witchfern
+  - Scarlet Drustvar Oak
+  - Scarlet Drustvar Thornwood
+  - Short Crimson Oak Stump
+  - Short Drustvar Oak Stump
+  - Snowbound Highroad Pine
+  - Tall Crimson Oak
+  - Twisted Crimson Root
+  - Withered Barrow-weed
+  - Withered Crimson Oak
+- Hoarder Jena
+  - Caravan Smith's Anvil
+  - Damaged Nomad's Makeshift Barricade
+  - Fortified Nomad's Makeshift Barricade
+  - Nomad's Steel Lantern
+  - Nomad's Wooden Lamppost
+  - Reinforced Nomad's Makeshift Barricade
+  - Vacant Buzzard Roost
+  - Vulpera Postbox
+  - Wooden Vulpera Caravan
+- Holly Twinklebright
+  - Buckled Witch Hat
+  - Candlelit Smiling Jack-o'-Lantern
+  - Elaborate Heartsbane Doom Catcher
+  - Enchanted Hallow's End Candle
+  - Eternally Powered Glowskull
+  - Heartsbane Candle
+  - Heartsbane Doom Catcher
+  - Heartsbane Ritual Markings
+  - Looming Heartsbane Effigy
+  - Ominous Heartsbane Banner
+  - Simple Hallow's End Candle
+  - Spooky Scarecrow
+  - Unlit Smiling Jack-o'-Lantern
+- Jack
+  - Candlelit Ogre Jack-o'-Lantern
+  - Candlelit Shrieking Jack-o'-Lantern
+  - Elaborate Heartsbane Ritual Markings
+  - Filled Candy Bucket
+  - Heartsbane Banner
+  - Heartsbane Stone Circle
+  - Horrific Head of the Horseman
+  - Looming Heartsbane Effigy
+  - Ominous Heartsbane Shrine
+  - Unlit Ogre Jack-o'-Lantern
+  - Unlit Shrieking Jack-o'-Lantern
+- Jeni
+  - Black Vulpera Cushion
+  - Blue Vulpera Cushion
+  - Long Red Vulpera Cushion
+  - Nomad's Bowl Set
+  - Nomad's Covered Serving Bowl
+  - Nomad's Mortar and Pestle
+  - Nomad's Refreshment Set
+  - Nomad's Serving Bowl
+  - Nomad's Serving Sundries
+  - Nomad's Stone Pitcher
+  - Nomad's Stone Urn
+  - Nomad's Warped Water Gourd
+  - Nomad's Water Gourd
+  - Nomad's Wooden Table
+  - Nomad's Worn Water Gourd
+  - Ornate Vulpera Caravan
+  - Vulpera War Banner
+- Jolli Maxiboom
+  - Buckled Witch Hat
+  - Candlelit Smiling Jack-o'-Lantern
+  - Elaborate Heartsbane Doom Catcher
+  - Enchanted Hallow's End Candle
+  - Eternally Powered Glowskull
+  - Heartsbane Candle
+  - Heartsbane Doom Catcher
+  - Heartsbane Ritual Markings
+  - Looming Heartsbane Effigy
+  - Ominous Heartsbane Banner
+  - Simple Hallow's End Candle
+  - Spooky Scarecrow
+  - Unlit Smiling Jack-o'-Lantern
+- Lillistrasza
+  - "Pride of Stormwind" Statue
+- Lunelle
+  - Anima-Infused Dreamcatcher
+  - Celestial Grovebush
+  - Dormant Wildseed
+  - Fae Anima Wall Lantern
+  - Fae Animashroom
+  - Fae Animashroom Circle
+  - Fae Moonbough Table
+  - Hanging Wildgrove Ivy
+  - Leaning Celestial Orchid
+  - Lush Celestial Moonbough
+  - Lush Wildgrove Fern
+  - Restored Night Fae Sigil
+  - Starseed Sapling
+  - Wildgrove Leaf Pile
+- Naleidea Rivergleam
+  - Amani Hex Candle
+  - Amani Open Fire Grill
+  - Tusked Amani Canoe
+- Rasil Fireborne
+  - "Gnoma Lisa" Painting
+- Sergeant De Vries
+  - "Pride of Stormwind" Statue
+- Telemancer Astrandis
+  - Ancient Amani Mural
+- Unknown
+  - Buckled Witch Hat
+  - Candlelit Ogre Jack-o'-Lantern
+  - Candlelit Shrieking Jack-o'-Lantern
+  - Candlelit Smiling Jack-o'-Lantern
+  - Curved Karabor Hedge
+  - Elaborate Heartsbane Doom Catcher
+  - Elaborate Heartsbane Ritual Markings
+  - Elaborate Karabor Hedge
+  - Embaari Beech Tree
+  - Enchanted Hallow's End Candle
+  - Eternally Powered Glowskull
+  - Filled Candy Bucket
+  - Gloomshade Glowpod
+  - Heartsbane Banner
+  - Heartsbane Candle
+  - Heartsbane Doom Catcher
+  - Heartsbane Ritual Markings
+  - Heartsbane Stone Circle
+  - Horrific Head of the Horseman
+  - Huddled Nightmarsh Blossom
+  - Karabor Beech Tree
+  - Karabor Hedge
+  - Lunarfall Beech Tree
+  - Mature Star Lily
+  - Ominous Heartsbane Banner
+  - Ominous Heartsbane Shrine
+  - Overgrown Valuun Shrub
+  - Pale Shadowmoon Willow
+  - Shadow Lily Bloom
+  - Simple Hallow's End Candle
+  - Small Shadowmoon Shadebrush
+  - Spooky Scarecrow
+  - Unlit Ogre Jack-o'-Lantern
+  - Unlit Shrieking Jack-o'-Lantern
+  - Unlit Smiling Jack-o'-Lantern
+  - Verdant Mire Scale-Leaf
+  - Verdant Shadowmoon Willow
+- Verayn
+  - Confessor's Anima Jar
+  - Sinfall Arched Bookcase
+  - Sinfall Dining Table
+  - Venthyr Fence
+  - Venthyr Fencepost
+- Vindicator Jaelaana
+  - Argunite Crystal Storage
+  - Argunite Sconce
+  - Gilded Stonework Altar
+  - Gleaming Lightforged Grindstone
+  - Hanging Lightforged Standard
+  - Lightforged Control Console
+  - Reinforced Empyrium Tile
+  - Standing Argunite Lamp
+- Vindicator Nuurem
+  - Ritual Embaari Arch
+
 
 ]]

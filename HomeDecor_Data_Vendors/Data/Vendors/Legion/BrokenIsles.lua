@@ -29,9 +29,35 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:3651:4676"
     },
     items={
+      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
       {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
+      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
       {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}, colors={"Dark Gray","Light Purple","Orange"}, budgetCost=1, size="Small"},
       {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=97140,
+      type="vendor",
+      faction="Neutral",
+      zone="Suramar",
+      worldmap="680:3658:4691"
+    },
+    items={
+      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
+      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
+      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}, colors={"Dark Gray","Light Purple","Orange"}, budgetCost=1, size="Small"},
+      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
       {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
     }
   },
@@ -45,7 +71,15 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       worldmap="680:3688:4661"
     },
     items={
+      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
+      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
       {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}, colors={"Dark Gray","Light Purple","Orange"}, budgetCost=1, size="Small"},
+      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -59,9 +93,34 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     },
     items={
       {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
+      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
       {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
+      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
       {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}, colors={"Dark Gray","Light Purple","Orange"}, budgetCost=1, size="Small"},
+      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
       {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=97140,
+      type="vendor",
+      faction="Neutral",
+      zone="Suramar",
+      worldmap="680:3713:4655"
+    },
+    items={
+      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
+      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
+      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
+      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
+      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
+      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
+      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
     }
   },
 
@@ -253,6 +312,7 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     },
     items={
       {decorID=2517, source={type="vendor", itemID=246851, currency="150000000", currencytype="money"}, colors={"Dark Brown","Dark Purple","Tan"}, budgetCost=1, size="Medium"},
+      {decorID=22399, source={type="vendor", itemID=284264}, budgetCost=1},
     }
   },
 
@@ -274,6 +334,86 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
       {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
       {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=127120,
+      type="vendor",
+      faction="Neutral",
+      zone="Antorus, the Burning Throne",
+      worldmap="909:1191:-497"
+    },
+    items={
+      {decorID=27824, source={type="vendor", itemID=282111}, budgetCost=3},
+      {decorID=28428, source={type="vendor", itemID=282122}, budgetCost=5},
+      {decorID=28431, source={type="vendor", itemID=282128}, budgetCost=3},
+      {decorID=28432, source={type="vendor", itemID=282130}, budgetCost=1},
+      {decorID=28434, source={type="vendor", itemID=282134}, budgetCost=5},
+      {decorID=28438, source={type="vendor", itemID=282142}, budgetCost=1},
+      {decorID=28440, source={type="vendor", itemID=282146}, budgetCost=5},
+      {decorID=28445, source={type="vendor", itemID=282156}, budgetCost=3},
+    }
+  },
+
+  {
+    source={
+      id=127120,
+      type="vendor",
+      faction="Neutral",
+      zone="The Vindicaar",
+      worldmap="831:4326:7439"
+    },
+    items={
+      {decorID=27824, source={type="vendor", itemID=282111}, budgetCost=3},
+      {decorID=28428, source={type="vendor", itemID=282122}, budgetCost=5},
+      {decorID=28431, source={type="vendor", itemID=282128}, budgetCost=3},
+      {decorID=28432, source={type="vendor", itemID=282130}, budgetCost=1},
+      {decorID=28434, source={type="vendor", itemID=282134}, budgetCost=5},
+      {decorID=28438, source={type="vendor", itemID=282142}, budgetCost=1},
+      {decorID=28440, source={type="vendor", itemID=282146}, budgetCost=5},
+      {decorID=28445, source={type="vendor", itemID=282156}, budgetCost=3},
+    }
+  },
+
+  {
+    source={
+      id=127120,
+      type="vendor",
+      faction="Neutral",
+      zone="The Vindicaar",
+      worldmap="883:4339:6714"
+    },
+    items={
+      {decorID=27824, source={type="vendor", itemID=282111}, budgetCost=3},
+      {decorID=28428, source={type="vendor", itemID=282122}, budgetCost=5},
+      {decorID=28431, source={type="vendor", itemID=282128}, budgetCost=3},
+      {decorID=28432, source={type="vendor", itemID=282130}, budgetCost=1},
+      {decorID=28434, source={type="vendor", itemID=282134}, budgetCost=5},
+      {decorID=28438, source={type="vendor", itemID=282142}, budgetCost=1},
+      {decorID=28440, source={type="vendor", itemID=282146}, budgetCost=5},
+      {decorID=28445, source={type="vendor", itemID=282156}, budgetCost=3},
+    }
+  },
+
+  {
+    source={
+      id=127120,
+      type="vendor",
+      faction="Neutral",
+      zone="The Vindicaar",
+      worldmap="886:6263:6394"
+    },
+    items={
+      {decorID=27824, source={type="vendor", itemID=282111}, budgetCost=3},
+      {decorID=28428, source={type="vendor", itemID=282122}, budgetCost=5},
+      {decorID=28431, source={type="vendor", itemID=282128}, budgetCost=3},
+      {decorID=28432, source={type="vendor", itemID=282130}, budgetCost=1},
+      {decorID=28434, source={type="vendor", itemID=282134}, budgetCost=5},
+      {decorID=28438, source={type="vendor", itemID=282142}, budgetCost=1},
+      {decorID=28440, source={type="vendor", itemID=282146}, budgetCost=5},
+      {decorID=28445, source={type="vendor", itemID=282156}, budgetCost=3},
     }
   },
 
@@ -301,6 +441,106 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     items={
       {decorID=930, source={type="vendor", itemID=245422, currency="6400000", currencytype="money"}, requirements={quest={id=47691}}, colors={"Dark Brown","Dark Purple","Tan"}, budgetCost=3, size="Large"},
       {decorID=8189, source={type="vendor", itemID=251480, currency="2400000", currencytype="money"}, requirements={quest={id=44004}}, colors={"Dark Gray","Gray","Tan"}, budgetCost=3, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=127518,
+      type="vendor",
+      faction="Neutral",
+      zone="Antorus, the Burning Throne",
+      worldmap="909:1192:-495"
+    },
+    items={
+      {decorID=27608, source={type="vendor", itemID=281682}, budgetCost=5},
+      {decorID=28106, source={type="vendor", itemID=282113}, budgetCost=3},
+      {decorID=28107, source={type="vendor", itemID=282115}, budgetCost=3},
+      {decorID=28108, source={type="vendor", itemID=282117}, budgetCost=3},
+      {decorID=28109, source={type="vendor", itemID=282119}, budgetCost=3},
+      {decorID=28427, source={type="vendor", itemID=282024}, budgetCost=3},
+      {decorID=28435, source={type="vendor", itemID=282136}, budgetCost=1},
+      {decorID=28436, source={type="vendor", itemID=282138}, budgetCost=1},
+      {decorID=28441, source={type="vendor", itemID=282148}, budgetCost=5},
+      {decorID=28442, source={type="vendor", itemID=282150}, budgetCost=5},
+      {decorID=28443, source={type="vendor", itemID=282152}, budgetCost=5},
+      {decorID=28444, source={type="vendor", itemID=282154}, budgetCost=5},
+      {decorID=28448, source={type="vendor", itemID=282162}, budgetCost=5},
+    }
+  },
+
+  {
+    source={
+      id=127518,
+      type="vendor",
+      faction="Neutral",
+      zone="The Vindicaar",
+      worldmap="831:3210:6661"
+    },
+    items={
+      {decorID=27608, source={type="vendor", itemID=281682}, budgetCost=5},
+      {decorID=28106, source={type="vendor", itemID=282113}, budgetCost=3},
+      {decorID=28107, source={type="vendor", itemID=282115}, budgetCost=3},
+      {decorID=28108, source={type="vendor", itemID=282117}, budgetCost=3},
+      {decorID=28109, source={type="vendor", itemID=282119}, budgetCost=3},
+      {decorID=28427, source={type="vendor", itemID=282024}, budgetCost=3},
+      {decorID=28435, source={type="vendor", itemID=282136}, budgetCost=1},
+      {decorID=28436, source={type="vendor", itemID=282138}, budgetCost=1},
+      {decorID=28441, source={type="vendor", itemID=282148}, budgetCost=5},
+      {decorID=28442, source={type="vendor", itemID=282150}, budgetCost=5},
+      {decorID=28443, source={type="vendor", itemID=282152}, budgetCost=5},
+      {decorID=28444, source={type="vendor", itemID=282154}, budgetCost=5},
+      {decorID=28448, source={type="vendor", itemID=282162}, budgetCost=5},
+    }
+  },
+
+  {
+    source={
+      id=127518,
+      type="vendor",
+      faction="Neutral",
+      zone="The Vindicaar",
+      worldmap="883:3490:5745"
+    },
+    items={
+      {decorID=27608, source={type="vendor", itemID=281682}, budgetCost=5},
+      {decorID=28106, source={type="vendor", itemID=282113}, budgetCost=3},
+      {decorID=28107, source={type="vendor", itemID=282115}, budgetCost=3},
+      {decorID=28108, source={type="vendor", itemID=282117}, budgetCost=3},
+      {decorID=28109, source={type="vendor", itemID=282119}, budgetCost=3},
+      {decorID=28427, source={type="vendor", itemID=282024}, budgetCost=3},
+      {decorID=28435, source={type="vendor", itemID=282136}, budgetCost=1},
+      {decorID=28436, source={type="vendor", itemID=282138}, budgetCost=1},
+      {decorID=28441, source={type="vendor", itemID=282148}, budgetCost=5},
+      {decorID=28442, source={type="vendor", itemID=282150}, budgetCost=5},
+      {decorID=28443, source={type="vendor", itemID=282152}, budgetCost=5},
+      {decorID=28444, source={type="vendor", itemID=282154}, budgetCost=5},
+      {decorID=28448, source={type="vendor", itemID=282162}, budgetCost=5},
+    }
+  },
+
+  {
+    source={
+      id=127518,
+      type="vendor",
+      faction="Neutral",
+      zone="The Vindicaar",
+      worldmap="886:5622:7713"
+    },
+    items={
+      {decorID=27608, source={type="vendor", itemID=281682}, budgetCost=5},
+      {decorID=28106, source={type="vendor", itemID=282113}, budgetCost=3},
+      {decorID=28107, source={type="vendor", itemID=282115}, budgetCost=3},
+      {decorID=28108, source={type="vendor", itemID=282117}, budgetCost=3},
+      {decorID=28109, source={type="vendor", itemID=282119}, budgetCost=3},
+      {decorID=28427, source={type="vendor", itemID=282024}, budgetCost=3},
+      {decorID=28435, source={type="vendor", itemID=282136}, budgetCost=1},
+      {decorID=28436, source={type="vendor", itemID=282138}, budgetCost=1},
+      {decorID=28441, source={type="vendor", itemID=282148}, budgetCost=5},
+      {decorID=28442, source={type="vendor", itemID=282150}, budgetCost=5},
+      {decorID=28443, source={type="vendor", itemID=282152}, budgetCost=5},
+      {decorID=28444, source={type="vendor", itemID=282154}, budgetCost=5},
+      {decorID=28448, source={type="vendor", itemID=282162}, budgetCost=5},
     }
   },
 

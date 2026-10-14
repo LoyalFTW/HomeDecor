@@ -737,6 +737,8 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
     },
     items={
       {decorID=3913, source={type="vendor", itemID=247776}, colors={"Cyan","Navy Blue","Royal Blue"}, budgetCost=100, size="Small"},
+--       {decorID=26477, source={type="vendor", itemID=279458}, budgetCost=1, size="Tiny"}, -- HIDDENCATALOG
+--       {decorID=26491, source={type="vendor", itemID=279455}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
     }
   },
 
@@ -968,11 +970,58 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       type="vendor",
       faction="Neutral",
       zone="Razorwind Shores",
+      worldmap="2351:5238:5428"
+    },
+    items={
+      {decorID=26009, source={type="vendor", itemID=282051}, budgetCost=1},
+      {decorID=26010, source={type="vendor", itemID=282081}, budgetCost=3},
+      {decorID=26018, source={type="vendor", itemID=282090}, budgetCost=1},
+      {decorID=26019, source={type="vendor", itemID=282077}, budgetCost=3},
+      {decorID=26020, source={type="vendor", itemID=282086}, budgetCost=3},
+      {decorID=26050, source={type="vendor", itemID=282072}, budgetCost=1},
+      {decorID=26051, source={type="vendor", itemID=282083}, budgetCost=3},
+      {decorID=26882, source={type="vendor", itemID=282092}, budgetCost=3},
+      {decorID=26886, source={type="vendor", itemID=282095}, budgetCost=3},
+      {decorID=26887, source={type="vendor", itemID=282098}, budgetCost=1},
+      {decorID=26888, source={type="vendor", itemID=282100}, budgetCost=1},
+      {decorID=26889, source={type="vendor", itemID=282075}, budgetCost=1},
+    }
+  },
+
+  {
+    source={
+      id=271366,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
       worldmap="2351:5239:5428"
     },
     items={
       {decorID=4157, source={type="vendor", itemID=248101}, colors={"Dark Gray","Gray","Tan"}, budgetCost=1, size="Tiny"},
       {decorID=25675, source={type="vendor", itemID=280335}, budgetCost=3, size="Medium"},
+    }
+  },
+
+  {
+    source={
+      id=273470,
+      type="vendor",
+      faction="Neutral",
+      zone="Razorwind Shores",
+      worldmap="2351:5241:5440"
+    },
+    items={
+      {decorID=26011, source={type="vendor", itemID=282192}, budgetCost=3},
+      {decorID=26012, source={type="vendor", itemID=282194}, budgetCost=3},
+      {decorID=26016, source={type="vendor", itemID=282196}, budgetCost=3},
+      {decorID=26052, source={type="vendor", itemID=282198}, budgetCost=3},
+      {decorID=26053, source={type="vendor", itemID=282200}, budgetCost=3},
+      {decorID=26054, source={type="vendor", itemID=282289}, budgetCost=1},
+      {decorID=26880, source={type="vendor", itemID=282213}, budgetCost=5},
+      {decorID=26881, source={type="vendor", itemID=282202}, budgetCost=5},
+      {decorID=26883, source={type="vendor", itemID=282206}, budgetCost=3},
+      {decorID=26884, source={type="vendor", itemID=282208}, budgetCost=5},
+      {decorID=26885, source={type="vendor", itemID=282204}, budgetCost=5},
     }
   },
 

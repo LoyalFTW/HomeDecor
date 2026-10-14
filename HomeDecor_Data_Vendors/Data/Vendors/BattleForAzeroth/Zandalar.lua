@@ -25,6 +25,56 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
 
   {
     source={
+      id=135804,
+      type="vendor",
+      faction="Neutral",
+      zone="Vol'dun",
+      worldmap="864:5669:4973"
+    },
+    items={
+      {decorID=27255, source={type="vendor", itemID=283365}, budgetCost=3},
+      {decorID=28463, source={type="vendor", itemID=283277}, budgetCost=5},
+      {decorID=28464, source={type="vendor", itemID=283279}, budgetCost=5},
+      {decorID=28465, source={type="vendor", itemID=283305}, budgetCost=5},
+      {decorID=28466, source={type="vendor", itemID=283323}, budgetCost=3},
+      {decorID=28471, source={type="vendor", itemID=283289}, budgetCost=1},
+      {decorID=28481, source={type="vendor", itemID=283317}, budgetCost=5},
+      {decorID=28498, source={type="vendor", itemID=283319}, budgetCost=5},
+      {decorID=28508, source={type="vendor", itemID=283297}, budgetCost=1},
+    }
+  },
+
+  {
+    source={
+      id=143325,
+      type="vendor",
+      faction="Neutral",
+      zone="Vol'dun",
+      worldmap="864:5634:5048"
+    },
+    items={
+      {decorID=27610, source={type="vendor", itemID=283343}, budgetCost=5},
+      {decorID=27982, source={type="vendor", itemID=283269}, budgetCost=5},
+      {decorID=28467, source={type="vendor", itemID=283287}, budgetCost=1},
+      {decorID=28468, source={type="vendor", itemID=283325}, budgetCost=1},
+      {decorID=28469, source={type="vendor", itemID=283327}, budgetCost=1},
+      {decorID=28470, source={type="vendor", itemID=283329}, budgetCost=3},
+      {decorID=28473, source={type="vendor", itemID=283307}, budgetCost=1},
+      {decorID=28474, source={type="vendor", itemID=283309}, budgetCost=1},
+      {decorID=28475, source={type="vendor", itemID=283311}, budgetCost=1},
+      {decorID=28476, source={type="vendor", itemID=283313}, budgetCost=1},
+      {decorID=28477, source={type="vendor", itemID=283331}, budgetCost=1},
+      {decorID=28478, source={type="vendor", itemID=283333}, budgetCost=1},
+      {decorID=28479, source={type="vendor", itemID=283315}, budgetCost=1},
+      {decorID=28480, source={type="vendor", itemID=283293}, budgetCost=3},
+      {decorID=28482, source={type="vendor", itemID=283335}, budgetCost=1},
+      {decorID=28483, source={type="vendor", itemID=283337}, budgetCost=1},
+      {decorID=28484, source={type="vendor", itemID=283295}, budgetCost=1},
+    }
+  },
+
+  {
+    source={
       id=148923,
       type="vendor",
       faction="Horde",
