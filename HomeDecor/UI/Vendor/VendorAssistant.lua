@@ -77,7 +77,6 @@ local function ProfileState()
   local profile = NS.Systems.Database:GetProfile()
   if not profile then return nil end
   profile.vendorAssistant = type(profile.vendorAssistant) == "table" and profile.vendorAssistant or {}
-  if profile.vendorAssistant.open == nil then profile.vendorAssistant.open = true end
   if profile.vendorAssistant.view ~= "shopping" then profile.vendorAssistant.view = "vendor" end
   return profile.vendorAssistant
 end
@@ -102,7 +101,7 @@ local function RecordsForMerchant(npcID)
   for index = 1, count do
     local itemID = MerchantItemID(index)
     local candidates = itemID and NS.Systems.VendorIndex:GetByItem(itemID)
-    local record = itemID and NS.Systems.Lists:GetRecordByItem(itemID, nil, npcID) or nil
+    local record
     if not record and candidates then
       record = candidates[1]
       for _, candidate in ipairs(candidates) do
@@ -116,6 +115,29 @@ local function RecordsForMerchant(npcID)
     end
   end
   return #out > 0 and out or nil
+end
+
+function VendorAssistant:GetListRecord(itemID, id, npcID)
+  local lists = NS.Systems.Lists
+  local catalog = NS.Systems.Catalog
+  local cache = self.listCache
+  if not cache or cache.revision ~= lists.revision or cache.catalogRevision ~= catalog.revision or cache.listID ~= id or cache.npcID ~= npcID then
+    local entry = id and lists:Get(id) or lists:GetActive()
+    cache = { revision = lists.revision, catalogRevision = catalog.revision, listID = id, npcID = npcID, items = {} }
+    for key, enabled in pairs(entry and entry.keys or {}) do
+      local record = enabled and catalog.byID[key]
+      local item = record and tonumber(record.itemID)
+      if item then
+        local previous = cache.items[item]
+        if not previous or (npcID and tonumber(record.sourceID) == npcID and tonumber(previous.record.sourceID) ~= npcID) then
+          cache.items[item] = { record = record, quantity = math.max(1, tonumber(entry.quantities and entry.quantities[key]) or 1) }
+        end
+      end
+    end
+    self.listCache = cache
+  end
+  local found = cache.items[tonumber(itemID)]
+  return found and found.record, found and found.quantity or 0
 end
 
 local function Preview(record)
@@ -165,7 +187,7 @@ function VendorAssistant:CreateRow(parent)
   row.shopping:SetScript("OnEnter", function(self)
     local record = self:GetParent().record
     if not record or not _G.GameTooltip then return end
-    local existing = NS.Systems.Lists:GetRecordByItem(record.itemID, nil, CurrentNPCID())
+    local existing = VendorAssistant:GetListRecord(record.itemID, nil, CurrentNPCID())
     _G.GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     _G.GameTooltip:SetText("Choose Shopping Lists")
     _G.GameTooltip:AddLine(existing and "This item is on the active list." or "This item is not on the active list.", 0.8, 0.8, 0.8)
@@ -190,6 +212,8 @@ function VendorAssistant:CreateRow(parent)
 end
 
 function VendorAssistant:GetShoppingRecords()
+  local cached = self.shoppingCache
+  if cached and cached.revision == NS.Systems.Lists.revision and cached.catalogRevision == NS.Systems.Catalog.revision then return cached.records, cached.quantity end
   local list, listID = NS.Systems.Lists:GetActive()
   if not list then return {}, 0 end
   local npcID = CurrentNPCID()
@@ -197,7 +221,7 @@ function VendorAssistant:GetShoppingRecords()
   local count = type(_G.GetMerchantNumItems) == "function" and tonumber(_G.GetMerchantNumItems()) or 0
   for index = 1, count do
     local itemID = MerchantItemID(index)
-    local record, needed = NS.Systems.Lists:GetRecordByItem(itemID, listID, npcID)
+    local record, needed = VendorAssistant:GetListRecord(itemID, listID, npcID)
     local key = record and record.storageKey
     if key and needed > 0 and not seen[key] then
       seen[key] = true
@@ -205,10 +229,15 @@ function VendorAssistant:GetShoppingRecords()
       quantity = quantity + needed
     end
   end
+  self.shoppingCache = { revision = NS.Systems.Lists.revision, catalogRevision = NS.Systems.Catalog.revision, records = records, quantity = quantity }
   return records, quantity
 end
 
-function VendorAssistant:GetShoppingPurchase()
+function VendorAssistant:GetShoppingPurchase(fresh)
+  local cached = self.purchaseCache
+  if not fresh and cached and cached.revision == NS.Systems.Lists.revision and cached.catalogRevision == NS.Systems.Catalog.revision then
+    return cached.rows, cached.listID, cached.total, cached.totals, cached.skipped
+  end
   local list, listID = NS.Systems.Lists:GetActive()
   if not list then return {}, nil, 0, {}, 0 end
   local npcID = CurrentNPCID()
@@ -216,7 +245,7 @@ function VendorAssistant:GetShoppingPurchase()
   local count = type(_G.GetMerchantNumItems) == "function" and tonumber(_G.GetMerchantNumItems()) or 0
   for index = 1, count do
     local itemID = MerchantItemID(index)
-    local record, quantity = NS.Systems.Lists:GetRecordByItem(itemID, listID, npcID)
+    local record, quantity = VendorAssistant:GetListRecord(itemID, listID, npcID)
     if record and quantity > 0 and not seen[itemID] then
       seen[itemID] = true
       local info = MerchantInfo(index)
@@ -241,6 +270,7 @@ function VendorAssistant:GetShoppingPurchase()
       end
     end
   end
+  self.purchaseCache = { revision = NS.Systems.Lists.revision, catalogRevision = NS.Systems.Catalog.revision, rows = rows, listID = listID, total = total, totals = totals, skipped = skipped }
   return rows, listID, total, totals, skipped
 end
 
@@ -341,7 +371,7 @@ function VendorAssistant:Create()
   buyAll:SetScript("OnClick", function()
     local queue = NS.Systems.ShoppingBuyQueue
     if queue:IsRunning() then queue:Cancel("cancelled by player") return end
-    local rows, listID, total, costs, skipped = VendorAssistant:GetShoppingPurchase()
+    local rows, listID, total, costs, skipped = VendorAssistant:GetShoppingPurchase(true)
     if total == 0 then return end
     if skipped > 0 and _G.DEFAULT_CHAT_FRAME then _G.DEFAULT_CHAT_FRAME:AddMessage("|cffffd24aHomeDecor:|r " .. tostring(skipped) .. " shopping-list item(s) use an unsupported cost and will be skipped.") end
     _G.StaticPopup_Show("HOMEDECOR_BUY_SHOPPING_LIST", tostring(total), FormatCosts(costs), { rows = rows, listID = listID })
@@ -349,7 +379,7 @@ function VendorAssistant:Create()
   frame:Hide()
   tab:SetScript("OnClick", function()
     local state = ProfileState()
-    if state then VendorAssistant:SetOpen(not state.open) end
+    if state then VendorAssistant:SetOpen(not VendorAssistant.open) end
   end)
   tab:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -365,9 +395,9 @@ end
 function VendorAssistant:SetOpen(open)
   local state = ProfileState()
   if not state then return end
-  state.open = open == true
-  if self.tab then self.tab.arrow:SetText(state.open and ">" or "<") end
-  if state.open and self.records then
+  self.open = open == true
+  if self.tab then self.tab.arrow:SetText(self.open and ">" or "<") end
+  if self.open and self.records then
     self.frame:Show()
     self:Refresh()
   elseif self.frame then
@@ -440,7 +470,7 @@ function VendorAssistant:Refresh()
     local formatter = NS.Systems.Cost
     local cost = formatter and formatter.Format and formatter:Format(record) or nil
     local dyeLabel = NS.Systems.Housing:GetDyeableLabel(record)
-    local _, needed = NS.Systems.Lists:GetRecordByItem(record.itemID, nil, npcID)
+    local _, needed = VendorAssistant:GetListRecord(record.itemID, nil, npcID)
     local shoppingText = needed > 0 and ("Shopping x" .. tostring(needed) .. "  -  ") or ""
     row.meta:SetText(shoppingText .. (owned and "Collected" or "Not collected") .. (dyeLabel and "  -  " .. dyeLabel or "") .. (cost and "  -  " .. cost or ""))
     row.favorite:SetRecord(record)
@@ -475,15 +505,20 @@ function VendorAssistant:ShowForCurrentVendor()
     return
   end
   local frame = self:Create()
+  if not self.records or self.npcID ~= npcID then NS.UI.Controls:ResetScrollFrame(frame.scroll, false) end
   self.records = records
-  NS.UI.Controls:ResetScrollFrame(frame.scroll, false)
+  self.npcID = npcID
   self.tab:Show()
-  local state = ProfileState()
-  self.tab.arrow:SetText(state and state.open and ">" or "<")
-  if state and state.open then frame:Show() self:Refresh() else frame:Hide() end
+  self.tab.arrow:SetText(self.open and ">" or "<")
+  if self.open then frame:Show() self:Refresh() else frame:Hide() end
 end
 
 function VendorAssistant:Hide()
+  self.listCache = nil
+  self.open = false
+  self.npcID = nil
+  self.shoppingCache = nil
+  self.purchaseCache = nil
   self.records = nil
   if self.tab then self.tab:Hide() end
   if self.frame then
@@ -500,19 +535,34 @@ events:RegisterEvent("MERCHANT_SHOW")
 events:RegisterEvent("MERCHANT_UPDATE")
 events:RegisterEvent("MERCHANT_CLOSED")
 local queued = false
+local generation = 0
+local merchantOpen = false
 events:SetScript("OnEvent", function(_, event)
   if event == "MERCHANT_CLOSED" then
+    merchantOpen = false
+    generation = generation + 1
     queued = false
     VendorAssistant:Hide()
   else
+    if event == "MERCHANT_SHOW" then
+      generation = generation + 1
+      queued = false
+      merchantOpen = true
+      VendorAssistant:Hide()
+    end
+    if not merchantOpen then return end
+    VendorAssistant.shoppingCache = nil
+    VendorAssistant.purchaseCache = nil
     if queued then return end
     queued = true
+    local token = generation
     local function show()
+      if token ~= generation or not merchantOpen then return end
       queued = false
       VendorAssistant:ShowForCurrentVendor()
     end
     if _G.C_Timer and _G.C_Timer.After then
-      _G.C_Timer.After(0, show)
+      _G.C_Timer.After(0.1, show)
     else
       show()
     end
