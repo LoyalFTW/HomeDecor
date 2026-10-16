@@ -110,7 +110,7 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       type="vendor",
       faction="Neutral",
       zone="Silvermoon City",
-      worldmap="2393:5276:7790"
+      worldmap="2393:5268:7804"
     },
     items={
 --       {decorID=1429, source={type="vendor", itemID=244346}, colors={"Black"}}, -- DNT / do not use
@@ -854,7 +854,7 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       type="vendor",
       faction="Neutral",
       zone="Silvermoon City",
-      worldmap="2393:3930:8030"
+      worldmap="2393:3927:8019"
     },
     items={
       {decorID=25301, source={type="vendor", itemID=275865}, budgetCost=3},
@@ -879,6 +879,56 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       {decorID=23706, source={type="vendor", itemID=274731, currency="50000000", currencytype="money"}, budgetCost=1, size="Small"},
       {decorID=24193, source={type="vendor", itemID=274734, currency="50000000", currencytype="money"}, budgetCost=1, size="Small"},
       {decorID=24194, source={type="vendor", itemID=274736, currency="50000000", currencytype="money"}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=276362,
+      type="vendor",
+      faction="Neutral",
+      zone="Silvermoon City",
+      worldmap="2393:3908:8007"
+    },
+    items={
+      {decorID=2219, source={type="vendor", itemID=246402, currency="150", currencytype=3316}, colors={"Dark Brown","Dark Gray","Light Brown"}, budgetCost=1, size="Small"},
+      {decorID=2225, source={type="vendor", itemID=246408, currency="150", currencytype=3316}, colors={"Dark Brown","Deep Red","Tan"}, budgetCost=1, size="Small"},
+      {decorID=2588, source={type="vendor", itemID=246959, currency="150", currencytype=3316}, colors={"Bronze","Dark Brown","Deep Red"}, budgetCost=1, size="Small"},
+      {decorID=5651, source={type="vendor", itemID=249768, currency="250", currencytype=3316}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=3, size="Medium"},
+      {decorID=8916, source={type="vendor", itemID=251980, currency="150", currencytype=3316}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
+      {decorID=14825, source={type="vendor", itemID=263039, currency="250", currencytype=3316}, colors={"Dark Brown","Gold","Red"}, budgetCost=5, size="Large"},
+      {decorID=14965, source={type="vendor", itemID=263194, currency="250", currencytype=3316}, colors={"Brown","Copper","Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=14967, source={type="vendor", itemID=263195, currency="250", currencytype=3316}, colors={"Bronze","Dark Brown","Yellow"}, budgetCost=5, size="Large"},
+      {decorID=15502, source={type="vendor", itemID=264267}, colors={"Copper","Olive","Yellow"}, budgetCost=5, size="Huge"},
+      {decorID=15503, source={type="vendor", itemID=264268}, colors={"Dark Brown","Gold","Light Purple"}, budgetCost=5, size="Huge"},
+      {decorID=15504, source={type="vendor", itemID=264269}, colors={"Dark Brown","Gold","Olive"}, budgetCost=5, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=276363,
+      type="vendor",
+      faction="Neutral",
+      zone="Silvermoon City",
+      worldmap="2393:3946:8008"
+    },
+    items={
+      {decorID=5648, source={type="vendor", itemID=249765}, colors={"Copper","Dark Brown"}, size="Medium"},
+      {decorID=15156, source={type="vendor", itemID=263316}, colors={"Copper","Dark Brown"}, size="Medium"},
+      {decorID=15506, source={type="vendor", itemID=264271}, colors={"Brown","Dark Brown"}, budgetCost=3, size="Large"},
+      {decorID=15569, source={type="vendor", itemID=264331}, colors={"Copper","Dark Brown"}, budgetCost=3, size="Large"},
+      {decorID=18900, source={type="vendor", itemID=267377}, budgetCost=5, size="Huge"},
+      {decorID=21324, source={type="vendor", itemID=269778}, budgetCost=1, size="Small"},
+      {decorID=21325, source={type="vendor", itemID=269779}, budgetCost=1, size="Small"},
+      {decorID=21617, source={type="vendor", itemID=271177}, budgetCost=1, size="Small"},
+      {decorID=23873, source={type="vendor", itemID=277323}, budgetCost=1, size="Small"},
+      {decorID=23874, source={type="vendor", itemID=277271}, budgetCost=3, size="Medium"},
+      {decorID=23875, source={type="vendor", itemID=277273}, budgetCost=1, size="Small"},
+      {decorID=23876, source={type="vendor", itemID=277275}, budgetCost=3, size="Medium"},
+      {decorID=25294, source={type="vendor", itemID=276457}, budgetCost=1, size="Tiny"},
+      {decorID=25295, source={type="vendor", itemID=276459}, budgetCost=1, size="Tiny"},
+      {decorID=26097, source={type="vendor", itemID=277280}, budgetCost=5, size="Large"},
     }
   },
 
