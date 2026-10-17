@@ -26,6 +26,24 @@ NS.Data.Vendors["Midnight"]["The Coiled Isle"] = {
 
   {
     source={
+      id=257598,
+      type="vendor",
+      faction="Neutral",
+      zone="The Coiled Isle",
+      worldmap="2512:5163:4982"
+    },
+    items={
+      {decorID=25297, source={type="vendor", itemID=277921}, budgetCost=5, size="Huge"},
+      {decorID=25299, source={type="vendor", itemID=277923}, budgetCost=3, size="Medium"},
+      {decorID=25300, source={type="vendor", itemID=277925}, budgetCost=3, size="Medium"},
+      {decorID=25336, source={type="vendor", itemID=277927}, budgetCost=3, size="Medium"},
+      {decorID=26196, source={type="vendor", itemID=277929}, budgetCost=5, size="Large"},
+      {decorID=26197, source={type="vendor", itemID=277931}, budgetCost=3, size="Large"},
+    }
+  },
+
+  {
+    source={
       id=268228,
       type="vendor",
       faction="Neutral",

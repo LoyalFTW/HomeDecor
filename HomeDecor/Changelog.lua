@@ -1,9 +1,20 @@
 HomeDecor_ChangelogMeta = {
-  importance = "Major", -- Major / Silent
+  importance = "Silent", -- Major / Silent
 }
 
 HomeDecor_Changelog = [[
 #HomeDecor
+
+Oct 17, 2026
+
+- Second Mate Sluggs
+  - Aged Tortollan Scroll Case
+  - Blue Tortollan Signpost
+  - Hanging Yellowed Kelp
+  - Rustic Fishing Rack
+  - Traditional Tortollan Tent
+  - Yellowed Kelp Pile
+
 
 Oct 14, 2026 
 
