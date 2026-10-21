@@ -301,4 +301,31 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
     }
   },
 
+  {
+    source={
+      id=274291,
+      type="vendor",
+      faction="Horde",
+      zone="Nagrand",
+      worldmap="550:8211:4479"
+    },
+    items={
+      {decorID=28326, source={type="vendor", itemID=284106}, budgetCost=1},
+      {decorID=28327, source={type="vendor", itemID=284108}, budgetCost=1},
+      {decorID=28328, source={type="vendor", itemID=284110}, budgetCost=5},
+      {decorID=28329, source={type="vendor", itemID=284112}, budgetCost=5},
+      {decorID=28330, source={type="vendor", itemID=284114}, budgetCost=5},
+      {decorID=28331, source={type="vendor", itemID=284116}, budgetCost=5},
+      {decorID=28332, source={type="vendor", itemID=284118}, budgetCost=3},
+      {decorID=28333, source={type="vendor", itemID=284120}, budgetCost=3},
+      {decorID=28334, source={type="vendor", itemID=284122}, budgetCost=5},
+      {decorID=28335, source={type="vendor", itemID=284124}, budgetCost=3},
+      {decorID=28336, source={type="vendor", itemID=284126}, budgetCost=1},
+      {decorID=28337, source={type="vendor", itemID=284128}, budgetCost=5},
+      {decorID=28338, source={type="vendor", itemID=284130}, budgetCost=3},
+      {decorID=28450, source={type="vendor", itemID=284132}, budgetCost=5},
+      {decorID=28693, source={type="vendor", itemID=284134}, budgetCost=1},
+    }
+  },
+
 }

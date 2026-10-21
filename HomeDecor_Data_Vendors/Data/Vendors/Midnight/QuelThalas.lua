@@ -178,23 +178,12 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
     },
     items={
       {decorID=5564, source={type="vendor", itemID=249559, costs={{currency="100", currencytype=3379},{currency="500", currencytype=3316}}}, colors={"Amber","Copper","Dark Brown"}, budgetCost=5, size="Huge"},
+      {decorID=14641, source={type="vendor", itemID=262616, currency="100", currencytype=3379}, colors={"Dark Brown","Tan","Teal"}, budgetCost=1, size="Small"},
       {decorID=14978, source={type="vendor", itemID=263212, currency="100", currencytype=3379}, colors={"Dark Gray","Dark Purple","Royal Blue"}, budgetCost=1, size="Small"},
       {decorID=14979, source={type="vendor", itemID=263216, currency="150", currencytype=3379}, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=3, size="Medium"},
     }
   },
 
-  {
-    source={
-      id=242724,
-      type="vendor",
-      faction="Neutral",
-      zone="Eversong Woods",
-      worldmap="2395:4352:4752"
-    },
-    items={
-      {decorID=14641, source={type="vendor", itemID=262616, currency="100", currencytype=3379}, colors={"Dark Brown","Tan","Teal"}, budgetCost=1, size="Small"},
-    }
-  },
 
   {
     source={
@@ -205,23 +194,12 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       worldmap="2395:4354:4750"
     },
     items={
+      {decorID=5564, source={type="vendor", itemID=249559, costs={{currency="100", currencytype=3379},{currency="500", currencytype=3316}}}, colors={"Amber","Copper","Dark Brown"}, budgetCost=5, size="Huge"},
       {decorID=14970, source={type="vendor", itemID=263203, currency="100", currencytype=3379}, colors={"Amber","Copper","Dark Brown"}, budgetCost=3, size="Medium"},
 --       {decorID=15505, source={type="vendor", itemID=264270}, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"}, -- DNT / do not use
     }
   },
 
-  {
-    source={
-      id=242725,
-      type="vendor",
-      faction="Neutral",
-      zone="Satheril's Haven, Eversong Woods",
-      worldmap=""
-    },
-    items={
-      {decorID=5564, source={type="vendor", itemID=249559, costs={{currency="100", currencytype=3379},{currency="500", currencytype=3316}}}, colors={"Amber","Copper","Dark Brown"}, budgetCost=5, size="Huge"},
-    }
-  },
 
   {
     source={
@@ -327,22 +305,10 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
     },
     items={
       {decorID=11499, source={type="vendor", itemID=257418, currency="750", currencytype=3316}, requirements={quest={id=92025}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=1, size="Small"},
-    }
-  },
-
-  {
-    source={
-      id=251091,
-      type="vendor",
-      faction="Neutral",
-      zone="Silvermoon City",
-      worldmap="2393:5074:5630"
-    },
-    items={
-      {decorID=11499, source={type="vendor", itemID=257418, currency="750", currencytype=3316}, requirements={quest={id=92025}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=1, size="Small"},
       {decorID=15409, source={type="vendor", itemID=264004}, requirements={achievement={id=42796}}, colors={"Dark Gray","Gold","Olive"}, budgetCost=1, size="Small"},
     }
   },
+
 
   {
     source={
@@ -809,18 +775,6 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
     },
     items={
       {decorID=15406, source={type="vendor", itemID=264001, currency="40000", currencytype="money"}, requirements={achievement={id=42798}}, colors={"Dark Brown","Gold","Olive"}, budgetCost=1, size="Small"},
-    }
-  },
-
-  {
-    source={
-      id=265581,
-      type="vendor",
-      faction="Neutral",
-      zone="Naigtal",
-      worldmap="2600:4811:8329"
-    },
-    items={
       {decorID=18802, source={type="vendor", itemID=267211, currency="150", currencytype=3316}, colors={"Dark Brown","Olive","Tan"}, budgetCost=3, size="Medium"},
       {decorID=25564, source={type="vendor", itemID=276321, currency="150", currencytype=3316}, budgetCost=5, size="Large"},
       {decorID=25565, source={type="vendor", itemID=276318, currency="150", currencytype=3316}, budgetCost=5, size="Large"},
@@ -829,6 +783,7 @@ NS.Data.Vendors["Midnight"]["QuelThalas"] = {
       {decorID=25665, source={type="vendor", itemID=276429, currency="250", currencytype=3316}, budgetCost=5, size="Large"},
     }
   },
+
 
   {
     source={

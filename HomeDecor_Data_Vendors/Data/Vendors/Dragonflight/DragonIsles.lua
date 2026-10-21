@@ -81,22 +81,11 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       {decorID=4168, source={type="vendor", itemID=248112, currency="400", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 6"}}, colors={"Dark Brown","Silver","Tan"}, budgetCost=3, size="Large"},
 --       {decorID=4171, source={type="vendor", itemID=248115, currency="100000", currencytype="money"}, requirements={reputation={name="Valdrakken Accord", standing="Renown 25"}}, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=5, size="Large"}, -- DNT / do not use
       {decorID=4478, source={type="vendor", itemID=248652, currency="250", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 20"}}, colors={"Dark Brown","Dark Gray"}, budgetCost=3, size="Large"},
+      {decorID=10962, source={type="vendor", itemID=256168, currency="10", currencytype=2003}, colors={"Bronze","Dark Brown","Yellow"}, budgetCost=1, size="Small"},
       {decorID=10963, source={type="vendor", itemID=256169, currency="500", currencytype=2003}, requirements={reputation={name="Valdrakken Accord", standing="Renown 3"}}, colors={"Copper","Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
     }
   },
 
-  {
-    source={
-      id=193015,
-      type="vendor",
-      faction="Neutral",
-      zone="Valdrakken",
-      worldmap="2112:5820:3560"
-    },
-    items={
-      {decorID=10962, source={type="vendor", itemID=256168, currency="10", currencytype=2003}, colors={"Bronze","Dark Brown","Yellow"}, budgetCost=1, size="Small"},
-    }
-  },
 
   {
     source={
@@ -167,18 +156,6 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
     }
   },
 
-  {
-    source={
-      id=209192,
-      type="vendor",
-      faction="Neutral",
-      zone="Thaldraszus",
-      worldmap="2025:6147:3132"
-    },
-    items={
-      {decorID=4173, source={type="vendor", itemID=248117, currency="4000", currencytype=2657}, colors={"Dark Brown","Orange","Purple"}, budgetCost=1, size="Small"},
-    }
-  },
 
   {
     source={

@@ -84,7 +84,7 @@ NS.Data.Vendors["WarWithin"]["KhazAlgar"] = {
       worldmap="2339:5652:7038"
     },
     items={
-      {decorID=15411, source={type="vendor", itemID=264006}, requirements={achievement={id=42786}}, colors={"Dark Brown","Gold","Olive"}, budgetCost=1, size="Small"},
+      {decorID=15411, source={type="vendor", itemID=264006}, requirements={achievement={id=42786}}, colors={"Dark Brown","Gold","Olive"}, expansion="Midnight", budgetCost=1, size="Small"},
     }
   },
 

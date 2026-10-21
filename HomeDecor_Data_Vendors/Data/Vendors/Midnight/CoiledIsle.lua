@@ -12,24 +12,6 @@ NS.Data.Vendors["Midnight"]["The Coiled Isle"] = {
       type="vendor",
       faction="Neutral",
       zone="The Coiled Isle",
-      worldmap="2512:5160:4980"
-    },
-    items={
-      {decorID=25297, source={type="vendor", itemID=277921}, budgetCost=5, size="Huge"},
-      {decorID=25299, source={type="vendor", itemID=277923}, budgetCost=3, size="Medium"},
-      {decorID=25300, source={type="vendor", itemID=277925}, budgetCost=3, size="Medium"},
-      {decorID=25336, source={type="vendor", itemID=277927}, budgetCost=3, size="Medium"},
-      {decorID=26196, source={type="vendor", itemID=277929}, budgetCost=5, size="Large"},
-      {decorID=26197, source={type="vendor", itemID=277931}, budgetCost=3, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=257598,
-      type="vendor",
-      faction="Neutral",
-      zone="The Coiled Isle",
       worldmap="2512:5163:4982"
     },
     items={
@@ -42,13 +24,14 @@ NS.Data.Vendors["Midnight"]["The Coiled Isle"] = {
     }
   },
 
+
   {
     source={
       id=268228,
       type="vendor",
       faction="Neutral",
       zone="The Coiled Isle",
-      worldmap="2512:5880:4600"
+      worldmap="2512:5874:4596"
     },
     items={
       {decorID=5648, source={type="vendor", itemID=249765}, colors={"Copper","Dark Brown"}, size="Medium"},
@@ -69,13 +52,14 @@ NS.Data.Vendors["Midnight"]["The Coiled Isle"] = {
     }
   },
 
+
   {
     source={
       id=270399,
       type="vendor",
       faction="Neutral",
       zone="The Coiled Isle",
-      worldmap="2512:5860:4590"
+      worldmap="2512:5862:4594"
     },
     items={
       {decorID=1428, source={type="vendor", itemID=244345}, colors={"Black"}, size="Small"},
@@ -94,5 +78,6 @@ NS.Data.Vendors["Midnight"]["The Coiled Isle"] = {
       {decorID=27042, source={type="vendor", itemID=279508}, budgetCost=5, size="Huge"},
     }
   },
+
 
 }

@@ -168,6 +168,7 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       {decorID=11140, source={type="vendor", itemID=256361}, colors={"Blue","Dark Brown","Teal"}, budgetCost=1, size="Small"},
       {decorID=11285, source={type="vendor", itemID=256684}, colors={"Blue","Copper","Dark Brown"}, budgetCost=1, size="Small"},
       {decorID=12145, source={type="vendor", itemID=258540}, colors={"Blue","Dark Brown","Dark Gray"}, budgetCost=1, size="Small"},
+      {decorID=14583, source={type="vendor", itemID=262453, currency="5000000", currencytype="money"}, colors={"Copper","Dark Brown","Tan"}, budgetCost=5, size="Small"},
       {decorID=15286, source={type="vendor", itemID=263876}, colors={"Dark Brown","Dark Gray","Dark Purple"}, budgetCost=3, size="Medium"},
       {decorID=18796, source={type="vendor", itemID=267205}, dyeable=true, colors={"Dark Brown","Dark Gray","Tan"}, budgetCost=1, size="Small"},
       {decorID=18880, source={type="vendor", itemID=267355}, colors={"Dark Brown","Navy Blue","Tan"}, budgetCost=3, size="Medium"},
@@ -180,18 +181,6 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
     }
   },
 
-  {
-    source={
-      id=253596,
-      type="vendor",
-      faction="Neutral",
-      zone="Razorwind Shores",
-      worldmap="2351:5380:5740"
-    },
-    items={
-      {decorID=14583, source={type="vendor", itemID=262453, currency="5000000", currencytype="money"}, colors={"Copper","Dark Brown","Tan"}, budgetCost=5, size="Small"},
-    }
-  },
 
   {
     source={
@@ -425,6 +414,7 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       {decorID=986, source={type="vendor", itemID=253437, currency="750000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Purple","Tan"}, budgetCost=3, size="Medium"},
       {decorID=990, source={type="vendor", itemID=241623, currency="100000", currencytype="money"}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=1, size="Small"},
       {decorID=991, source={type="vendor", itemID=253439, currency="750000", currencytype="money"}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
+--       {decorID=992, source={type="vendor", itemID=241625, currency="250000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Tan"}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
       {decorID=1155, source={type="vendor", itemID=243088, currency="1000000", currencytype="money"}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
       {decorID=1165, source={type="vendor", itemID=253495, currency="1250000", currencytype="money"}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
       {decorID=1350, source={type="vendor", itemID=244118, currency="1000000", currencytype="money"}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
@@ -439,18 +429,6 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
     }
   },
 
-  {
-    source={
-      id=255299,
-      type="vendor",
-      faction="Neutral",
-      zone="Razorwind Shores",
-      worldmap="2351:5380:5940"
-    },
-    items={
---       {decorID=992, source={type="vendor", itemID=241625, currency="250000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Tan"}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
-    }
-  },
 
   {
     source={
@@ -458,25 +436,12 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       type="vendor",
       faction="Neutral",
       zone="Razorwind Shores",
-      worldmap="2351:5360:5760"
+      worldmap="2351:5400:5840"
     },
     items={
-      {decorID=17873, source={type="vendor", itemID=266244, currency="750000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
-      {decorID=17874, source={type="vendor", itemID=266245, currency="750000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
-      {decorID=17918, source={type="vendor", itemID=266443, costs={{currency="500000", currencytype="money"},{currency="750000", currencytype="money"}}}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
-      {decorID=17919, source={type="vendor", itemID=266444, costs={{currency="750000", currencytype="money"},{currency="500000", currencytype="money"}}}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=1, size="Medium"},
-    }
-  },
-
-  {
-    source={
-      id=255301,
-      type="vendor",
-      faction="Neutral",
-      zone="Razorwind Shores",
-      worldmap="2351:5363:5755"
-    },
-    items={
+      {decorID=4406, source={type="vendor", itemID=248337, currency="500000", currencytype="money"}, colors={"Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
+      {decorID=4407, source={type="vendor", itemID=248338, currency="500000", currencytype="money"}, colors={"Black","Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=4408, source={type="vendor", itemID=248339, currency="500000", currencytype="money"}, colors={"Black"}, budgetCost=5, size="Large"},
       {decorID=4451, source={type="vendor", itemID=248625, currency="1500000", currencytype="money"}, colors={"Dark Brown","Light Brown","Olive"}, budgetCost=5, size="Huge"},
       {decorID=4452, source={type="vendor", itemID=248626, currency="750000", currencytype="money"}, colors={"Dark Brown","Olive"}, budgetCost=3, size="Large"},
       {decorID=4453, source={type="vendor", itemID=248627, currency="100000", currencytype="money"}, colors={"Copper","Dark Brown","Light Brown"}, budgetCost=1, size="Large"},
@@ -502,23 +467,14 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       {decorID=17865, source={type="vendor", itemID=266236, currency="1500000", currencytype="money"}, colors={"Brown","Dark Brown","Olive"}, budgetCost=5, size="Large"},
       {decorID=17866, source={type="vendor", itemID=266237, currency="1500000", currencytype="money"}, colors={"Dark Brown","Deep Red","Forest Green"}, budgetCost=5, size="Large"},
       {decorID=17867, source={type="vendor", itemID=266238, currency="1500000", currencytype="money"}, colors={"Bronze","Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=17873, source={type="vendor", itemID=266244, currency="750000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=17874, source={type="vendor", itemID=266245, currency="750000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=17918, source={type="vendor", itemID=266443, costs={{currency="500000", currencytype="money"},{currency="750000", currencytype="money"}}}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
+      {decorID=17919, source={type="vendor", itemID=266444, costs={{currency="750000", currencytype="money"},{currency="500000", currencytype="money"}}}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=1, size="Medium"},
     }
   },
 
-  {
-    source={
-      id=255301,
-      type="vendor",
-      faction="Neutral",
-      zone="Razorwind Shores",
-      worldmap="2351:5400:5840"
-    },
-    items={
-      {decorID=4406, source={type="vendor", itemID=248337, currency="500000", currencytype="money"}, colors={"Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
-      {decorID=4407, source={type="vendor", itemID=248338, currency="500000", currencytype="money"}, colors={"Black","Dark Brown"}, budgetCost=5, size="Large"},
-      {decorID=4408, source={type="vendor", itemID=248339, currency="500000", currencytype="money"}, colors={"Black"}, budgetCost=5, size="Large"},
-    }
-  },
+
 
   {
     source={
@@ -742,19 +698,6 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
     }
   },
 
-  {
-    source={
-      id=257168,
-      type="vendor",
-      faction="Neutral",
-      zone="Razorwind Shores",
-      worldmap="2351:3908:7409"
-    },
-    items={
---       {decorID=26477, source={type="vendor", itemID=279458}, budgetCost=1, size="Tiny"}, -- HIDDENCATALOG
---       {decorID=26491, source={type="vendor", itemID=279455}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
-    }
-  },
 
   {
     source={
@@ -893,21 +836,10 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       {decorID=25106, source={type="vendor", itemID=277160, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"},
       {decorID=25121, source={type="vendor", itemID=277121, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
       {decorID=25122, source={type="vendor", itemID=277163, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
-    }
-  },
-
-  {
-    source={
-      id=267794,
-      type="vendor",
-      faction="Neutral",
-      zone="Razorwind Shores",
-      worldmap="2351:5363:5446"
-    },
-    items={
 --       {decorID=25546, source={type="vendor", itemID=276230}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
     }
   },
+
 
   {
     source={
@@ -970,9 +902,11 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
       type="vendor",
       faction="Neutral",
       zone="Razorwind Shores",
-      worldmap="2351:5238:5428"
+      worldmap="2351:5239:5428"
     },
     items={
+      {decorID=4157, source={type="vendor", itemID=248101}, colors={"Dark Gray","Gray","Tan"}, budgetCost=1, size="Tiny"},
+      {decorID=25675, source={type="vendor", itemID=280335}, budgetCost=3, size="Medium"},
       {decorID=26009, source={type="vendor", itemID=282051}, budgetCost=1},
       {decorID=26010, source={type="vendor", itemID=282081}, budgetCost=3},
       {decorID=26018, source={type="vendor", itemID=282090}, budgetCost=1},
@@ -988,19 +922,6 @@ NS.Data.Vendors["Midnight"]["RazorShore"] = {
     }
   },
 
-  {
-    source={
-      id=271366,
-      type="vendor",
-      faction="Neutral",
-      zone="Razorwind Shores",
-      worldmap="2351:5239:5428"
-    },
-    items={
-      {decorID=4157, source={type="vendor", itemID=248101}, colors={"Dark Gray","Gray","Tan"}, budgetCost=1, size="Tiny"},
-      {decorID=25675, source={type="vendor", itemID=280335}, budgetCost=3, size="Medium"},
-    }
-  },
 
   {
     source={

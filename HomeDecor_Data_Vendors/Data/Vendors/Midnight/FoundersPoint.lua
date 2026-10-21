@@ -267,25 +267,13 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       type="vendor",
       faction="Neutral",
       zone="Founder's Point",
-      worldmap="2352:5220:3780"
-    },
-    items={
---       {decorID=992, source={type="vendor", itemID=241625, currency="250000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Tan"}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
-    }
-  },
-
-  {
-    source={
-      id=255218,
-      type="vendor",
-      faction="Neutral",
-      zone="Founder's Point",
       worldmap="2352:5223:3777"
     },
     items={
       {decorID=986, source={type="vendor", itemID=253437, currency="750000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Purple","Tan"}, budgetCost=3, size="Medium"},
       {decorID=990, source={type="vendor", itemID=241623, currency="100000", currencytype="money"}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=1, size="Small"},
       {decorID=991, source={type="vendor", itemID=253439, currency="750000", currencytype="money"}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
+--       {decorID=992, source={type="vendor", itemID=241625, currency="250000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Tan"}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
       {decorID=1155, source={type="vendor", itemID=243088, currency="1000000", currencytype="money"}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
       {decorID=1165, source={type="vendor", itemID=253495, currency="1250000", currencytype="money"}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
       {decorID=1350, source={type="vendor", itemID=244118, currency="1000000", currencytype="money"}, dyeable=true, colors={"Copper","Dark Brown","Tan"}, budgetCost=3, size="Medium"},
@@ -299,6 +287,7 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       {decorID=18793, source={type="vendor", itemID=267202, currency="1250000", currencytype="money"}, colors={"Dark Brown","Purple","Tan"}, budgetCost=5, size="Large"},
     }
   },
+
 
   {
     source={
@@ -321,6 +310,9 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       {decorID=1865, source={type="vendor", itemID=245659, currency="100000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=1, size="Small"},
       {decorID=1866, source={type="vendor", itemID=245660, currency="100000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=1, size="Small"},
       {decorID=1867, source={type="vendor", itemID=245661, currency="100000", currencytype="money"}, dyeable=true, colors={"Dark Gray","Gray"}, budgetCost=1, size="Small"},
+      {decorID=4406, source={type="vendor", itemID=248337, currency="500000", currencytype="money"}, colors={"Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
+      {decorID=4407, source={type="vendor", itemID=248338, currency="500000", currencytype="money"}, colors={"Black","Dark Brown"}, budgetCost=5, size="Large"},
+      {decorID=4408, source={type="vendor", itemID=248339, currency="500000", currencytype="money"}, colors={"Black"}, budgetCost=5, size="Large"},
       {decorID=4461, source={type="vendor", itemID=248635, currency="250000", currencytype="money"}, colors={"Beige","Dark Brown","Olive"}, budgetCost=1, size="Large"},
       {decorID=4465, source={type="vendor", itemID=248639, currency="250000", currencytype="money"}, colors={"Dark Brown","Navy Blue","Purple"}, budgetCost=1, size="Large"},
       {decorID=4466, source={type="vendor", itemID=248640, currency="250000", currencytype="money"}, colors={"Dark Brown","Dark Purple","Forest Green"}, budgetCost=1, size="Large"},
@@ -345,27 +337,13 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       {decorID=17870, source={type="vendor", itemID=266241, currency="1500000", currencytype="money"}, colors={"Cyan","Dark Brown","Royal Blue"}, budgetCost=5, size="Large"},
       {decorID=17871, source={type="vendor", itemID=266242, currency="1500000", currencytype="money"}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
       {decorID=17872, source={type="vendor", itemID=266243, currency="1500000", currencytype="money"}, colors={"Dark Brown","Olive","Tan"}, budgetCost=5, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=255221,
-      type="vendor",
-      faction="Neutral",
-      zone="Founder's Point",
-      worldmap="2352:5360:4080"
-    },
-    items={
-      {decorID=4406, source={type="vendor", itemID=248337, currency="500000", currencytype="money"}, colors={"Dark Brown","Dark Gray"}, budgetCost=5, size="Large"},
-      {decorID=4407, source={type="vendor", itemID=248338, currency="500000", currencytype="money"}, colors={"Black","Dark Brown"}, budgetCost=5, size="Large"},
-      {decorID=4408, source={type="vendor", itemID=248339, currency="500000", currencytype="money"}, colors={"Black"}, budgetCost=5, size="Large"},
       {decorID=17873, source={type="vendor", itemID=266244, currency="750000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
       {decorID=17874, source={type="vendor", itemID=266245, currency="750000", currencytype="money"}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
       {decorID=17918, source={type="vendor", itemID=266443, costs={{currency="500000", currencytype="money"},{currency="750000", currencytype="money"}}}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=3, size="Large"},
       {decorID=17919, source={type="vendor", itemID=266444, costs={{currency="750000", currencytype="money"},{currency="500000", currencytype="money"}}}, dyeable=true, colors={"Dark Brown","Dark Gray","Gray"}, budgetCost=1, size="Medium"},
     }
   },
+
 
   {
     source={
@@ -720,19 +698,6 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       type="vendor",
       faction="Neutral",
       zone="Founder's Point",
-      worldmap="2352:5382:4165"
-    },
-    items={
---       {decorID=25546, source={type="vendor", itemID=276230}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
-    }
-  },
-
-  {
-    source={
-      id=267795,
-      type="vendor",
-      faction="Neutral",
-      zone="Founder's Point",
       worldmap="2352:5382:4170"
     },
     items={
@@ -744,8 +709,10 @@ NS.Data.Vendors["Midnight"]["FoundersPoint"] = {
       {decorID=25106, source={type="vendor", itemID=277160, currency="500000", currencytype="money"}, budgetCost=5, size="Medium"},
       {decorID=25121, source={type="vendor", itemID=277121, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
       {decorID=25122, source={type="vendor", itemID=277163, currency="500000", currencytype="money"}, budgetCost=5, size="Small"},
+--       {decorID=25546, source={type="vendor", itemID=276230}, budgetCost=1, size="Small"}, -- HIDDENCATALOG
     }
   },
+
 
   {
     source={

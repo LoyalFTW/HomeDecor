@@ -135,22 +135,11 @@ NS.Data.Vendors["Pandaria"]["Pandaria"] = {
       worldmap="390:6260:2320"
     },
     items={
+      {decorID=3869, source={type="vendor", itemID=247729, currency="2400000", currencytype="money"}, requirements={quest={id=31230}}, colors={"Amber","Copper","Dark Brown"}, budgetCost=3, size="Large"},
       {decorID=15605, source={type="vendor", itemID=264362}, requirements={quest={id=30000}}, colors={"Dark Brown","Gold","Royal Blue"}, budgetCost=3, size="Large"},
     }
   },
 
-  {
-    source={
-      id=64001,
-      type="vendor",
-      faction="Neutral",
-      zone="Shrine of Two Moons, Vale of Eternal Blossoms",
-      worldmap=""
-    },
-    items={
-      {decorID=3869, source={type="vendor", itemID=247729, currency="2400000", currencytype="money"}, requirements={quest={id=31230}}, colors={"Amber","Copper","Dark Brown"}, budgetCost=3, size="Large"},
-    }
-  },
 
   {
     source={

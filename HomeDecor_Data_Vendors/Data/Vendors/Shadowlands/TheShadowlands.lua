@@ -183,4 +183,35 @@ NS.Data.Vendors["Shadowlands"]["TheShadowlands"] = {
     }
   },
 
+  {
+    source={
+      id=274062,
+      type="vendor",
+      faction="Neutral",
+      zone="Revendreth",
+      worldmap="1525:7306:5258"
+    },
+    items={
+      {decorID=27612, source={type="vendor", itemID=282661}, budgetCost=1},
+      {decorID=27613, source={type="vendor", itemID=282695}, budgetCost=3},
+      {decorID=28353, source={type="vendor", itemID=282689}, budgetCost=3},
+      {decorID=28509, source={type="vendor", itemID=282677}, budgetCost=5},
+      {decorID=28510, source={type="vendor", itemID=282663}, budgetCost=5},
+      {decorID=28511, source={type="vendor", itemID=282665}, budgetCost=3},
+      {decorID=28512, source={type="vendor", itemID=282667}, budgetCost=1},
+      {decorID=28513, source={type="vendor", itemID=282669}, budgetCost=3},
+      {decorID=28514, source={type="vendor", itemID=282679}, budgetCost=3},
+      {decorID=28515, source={type="vendor", itemID=282685}, budgetCost=3},
+      {decorID=28517, source={type="vendor", itemID=282691}, budgetCost=1},
+      {decorID=28518, source={type="vendor", itemID=282673}, budgetCost=5},
+      {decorID=28524, source={type="vendor", itemID=282697}, budgetCost=1},
+      {decorID=28525, source={type="vendor", itemID=282681}, budgetCost=5},
+      {decorID=28530, source={type="vendor", itemID=282683}, budgetCost=3},
+      {decorID=28533, source={type="vendor", itemID=282671}, budgetCost=5},
+      {decorID=28552, source={type="vendor", itemID=282693}, budgetCost=1},
+      {decorID=28558, source={type="vendor", itemID=282687}, budgetCost=3},
+      {decorID=28563, source={type="vendor", itemID=282675}, budgetCost=3},
+    }
+  },
+
 }

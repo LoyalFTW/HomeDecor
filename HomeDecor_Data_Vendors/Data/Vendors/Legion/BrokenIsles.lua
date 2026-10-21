@@ -26,69 +26,6 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
       type="vendor",
       faction="Neutral",
       zone="Suramar",
-      worldmap="680:3651:4676"
-    },
-    items={
-      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
-      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
-      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
-      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
-      {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}, colors={"Dark Gray","Light Purple","Orange"}, budgetCost=1, size="Small"},
-      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
-      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=97140,
-      type="vendor",
-      faction="Neutral",
-      zone="Suramar",
-      worldmap="680:3658:4691"
-    },
-    items={
-      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
-      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
-      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
-      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
-      {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}, colors={"Dark Gray","Light Purple","Orange"}, budgetCost=1, size="Small"},
-      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
-      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=97140,
-      type="vendor",
-      faction="Neutral",
-      zone="Suramar",
-      worldmap="680:3688:4661"
-    },
-    items={
-      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
-      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
-      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
-      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
-      {decorID=4022, source={type="vendor", itemID=247908, currency="50", currencytype=1220}, colors={"Dark Gray","Light Purple","Orange"}, budgetCost=1, size="Small"},
-      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
-      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
-    }
-  },
-
-  {
-    source={
-      id=97140,
-      type="vendor",
-      faction="Neutral",
-      zone="Suramar",
       worldmap="680:3709:4623"
     },
     items={
@@ -104,25 +41,9 @@ NS.Data.Vendors["Legion"]["BrokenIsles"] = {
     }
   },
 
-  {
-    source={
-      id=97140,
-      type="vendor",
-      faction="Neutral",
-      zone="Suramar",
-      worldmap="680:3713:4655"
-    },
-    items={
-      {decorID=1440, source={type="vendor", itemID=244536, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Dark Gray","Gold","Red"}, budgetCost=5, size="Huge"},
-      {decorID=2516, source={type="vendor", itemID=246850, costs={{currency="8000000", currencytype="money"},{currency="2000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Exalted"}}, colors={"Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
-      {decorID=3983, source={type="vendor", itemID=247844, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Brown","Olive"}, budgetCost=5, size="Large"},
-      {decorID=3984, source={type="vendor", itemID=247845, costs={{currency="4000000", currencytype="money"},{currency="750", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Honored"}}, colors={"Dark Gray","Dark Purple"}, budgetCost=1, size="Small"},
-      {decorID=3985, source={type="vendor", itemID=247847, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=5, size="Large"},
-      {decorID=4024, source={type="vendor", itemID=247910, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Brown","Gray","Light Brown"}, budgetCost=1, size="Small"},
-      {decorID=4035, source={type="vendor", itemID=247921, costs={{currency="2400000", currencytype="money"},{currency="500", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Friendly"}}, colors={"Dark Gray","Dark Purple","Gray"}, budgetCost=3, size="Medium"},
-      {decorID=4038, source={type="vendor", itemID=247924, costs={{currency="5600000", currencytype="money"},{currency="1000", currencytype=1220}}}, requirements={reputation={name="The Nightfallen", standing="Revered"}}, colors={"Copper","Cyan","Navy Blue"}, budgetCost=5, size="Large"},
-    }
-  },
+
+
+
 
   {
     source={
