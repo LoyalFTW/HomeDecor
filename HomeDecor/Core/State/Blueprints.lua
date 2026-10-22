@@ -426,7 +426,7 @@ function Blueprints:RequestHouseFits(id)
   local houses = self:GetOwnedHouses()
   if #houses == 0 then
     self.pendingHouseFitRecID = rec.id
-    if _G.C_Housing and type(_G.C_Housing.GetPlayerOwnedHouses) == "function" then pcall(_G.C_Housing.GetPlayerOwnedHouses) end
+    pcall(NS.RequestPlayerHouses)
     rec.fitStatus = "loadingHouses"
     notify(rec)
     return true
@@ -629,11 +629,6 @@ function Blueprints:OnContentsReceived(info)
   if code == "" then return end
   local rec = self:GetByCode(code)
   if not rec then
-    -- Blizzard can echo the share code back in a slightly different form
-    -- than what was submitted (e.g. re-encoded), so an exact-string match
-    -- can miss the record we just named. Prefer the record that actually
-    -- triggered the in-flight request over a loose "any pending" scan,
-    -- since stale "checking" records from earlier attempts can linger.
     local lastID = self.lastRequestedRecID
     if lastID then
       rec = self:GetByID(lastID)

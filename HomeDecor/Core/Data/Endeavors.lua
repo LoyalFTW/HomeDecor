@@ -251,7 +251,7 @@ function Endeavors:IsSelectedHouseActive()
 end
 
 function Endeavors:RequestHouseList()
-  if _G.C_Housing and _G.C_Housing.GetPlayerOwnedHouses then SafeCall(_G.C_Housing.GetPlayerOwnedHouses) end
+  SafeCall(NS.RequestPlayerHouses)
 end
 
 function Endeavors:SelectHouse(index)
@@ -288,7 +288,19 @@ function Endeavors:SetSelectedHouseActive()
   return true
 end
 
-function Endeavors:Fetch(force)
+local function DashboardShown()
+  local dashboard = _G.HousingDashboardFrame
+  return dashboard and dashboard:IsShown() and true or false
+end
+
+local function HouseListKey(houses)
+  local keys = {}
+  for index, house in ipairs(houses) do keys[index] = tostring(house.houseGUID) .. "@" .. tostring(house.neighborhoodGUID) end
+  table.sort(keys)
+  return table.concat(keys, ",")
+end
+
+function Endeavors:Fetch(force, fromEvent)
   local api = API()
   if not api then
     state.status = "unsupported"
@@ -312,6 +324,8 @@ function Endeavors:Fetch(force)
     Notify("data")
     return true
   end
+
+  if fromEvent then return false end
   state.status = "loading"
   state.loaded = false
   SafeCall(api.RequestNeighborhoodInitiativeInfo)
@@ -415,6 +429,10 @@ end
 function Endeavors:OnHouseListUpdated(houses)
   local normalized = NormalizeHouses(houses)
   if #normalized == 0 then return end
+
+  local key = HouseListKey(normalized)
+  if key == state.houseListKey and #state.houses > 0 then return end
+  state.houseListKey = key
   wipe(state.houses)
   for _, house in ipairs(normalized) do state.houses[#state.houses + 1] = house end
   local settings = Profile()
@@ -428,7 +446,8 @@ function Endeavors:OnHouseListUpdated(houses)
   local house = state.houses[selected]
   if settings then settings.selectedHouseGUID = house.houseGUID end
   local api = API()
-  if api then SafeCall(api.SetViewingNeighborhood, house.neighborhoodGUID) end
+
+  if api and not DashboardShown() then SafeCall(api.SetViewingNeighborhood, house.neighborhoodGUID) end
   self:Fetch(true)
   self:RequestActivityLog()
   Notify("houses")
@@ -480,11 +499,10 @@ NS.RegisterEvent(Endeavors, "PLAYER_ENTERING_WORLD", function()
   if settings and player then settings.myCharacters[player] = true end
   local quantity = Endeavors:GetCouponInfo()
   state.lastCouponQuantity = quantity
-  C_Timer.After(1, function() Endeavors:RequestHouseList() end)
 end)
 NS.RegisterEvent(Endeavors, "PLAYER_HOUSE_LIST_UPDATED", function(houses) Endeavors:OnHouseListUpdated(houses) end)
-NS.RegisterEvent(Endeavors, "NEIGHBORHOOD_INITIATIVE_UPDATED", function() Endeavors:Fetch() end)
-NS.RegisterEvent(Endeavors, "INITIATIVE_TASKS_TRACKED_UPDATED", function() Endeavors:Fetch() end)
+NS.RegisterEvent(Endeavors, "NEIGHBORHOOD_INITIATIVE_UPDATED", function() Endeavors:Fetch(false, true) end)
+NS.RegisterEvent(Endeavors, "INITIATIVE_TASKS_TRACKED_UPDATED", function() Endeavors:Fetch(false, true) end)
 NS.RegisterEvent(Endeavors, "INITIATIVE_TASKS_TRACKED_LIST_CHANGED", function(taskID, added) Endeavors:OnTrackedChanged(taskID, added) end)
 NS.RegisterEvent(Endeavors, "INITIATIVE_TASK_COMPLETED", function(taskName) Endeavors:OnTaskCompleted(taskName) end)
 NS.RegisterEvent(Endeavors, "INITIATIVE_COMPLETED", function() Endeavors:Fetch(true) end)

@@ -2312,7 +2312,7 @@ function CatalogView:Create()
     CatalogView._quickReopen = nil
     if not reuse then
       if _G.C_Housing and type(_G.C_Housing.GetPlayerOwnedHouses) == "function" then
-        local ok, houses = pcall(_G.C_Housing.GetPlayerOwnedHouses)
+        local ok, houses = pcall(NS.RequestPlayerHouses)
         local house = ok and type(houses) == "table" and houses[1]
         if house and house.houseGUID and type(_G.C_Housing.GetCurrentHouseLevelFavor) == "function" then pcall(_G.C_Housing.GetCurrentHouseLevelFavor, house.houseGUID) end
       end

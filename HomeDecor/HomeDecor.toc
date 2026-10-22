@@ -74,7 +74,6 @@ Core\Data\QueryState.lua
 Core\Data\Pipeline.lua
 Core\Runtime\LegacyMigration.lua
 Core\Runtime\AddonConflict.lua
-Core\Runtime\HousingDashboard.lua
 UI\Shared\Controls.lua
 UI\Shared\Theme.lua
 UI\Catalog\ItemInteractions.lua
@@ -111,3 +110,4 @@ UI\Vendor\VendorAssistant.lua
 UI\Vendor\VendorMarkers.lua
 UI\Shell\Command.lua
 Core\Runtime\Init.lua
+

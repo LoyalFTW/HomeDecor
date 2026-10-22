@@ -66,3 +66,42 @@ function NS.Debounce(delay, callback)
     end)
   end
 end
+
+local pendingHouseRequest = false
+local houseRequestFrame
+
+local function DashboardLoaded()
+  local addons = _G.C_AddOns
+  if not (addons and type(addons.IsAddOnLoaded) == "function") then return true end
+  return addons.IsAddOnLoaded("Blizzard_HousingDashboard") and true or false
+end
+
+local function LoadDashboard()
+  local addons = _G.C_AddOns
+  if not (addons and type(addons.LoadAddOn) == "function") then return false end
+  pcall(addons.LoadAddOn, "Blizzard_HousingDashboard")
+  return DashboardLoaded()
+end
+
+function NS.RequestPlayerHouses()
+  local housing = _G.C_Housing
+  if not (housing and type(housing.GetPlayerOwnedHouses) == "function") then return end
+  if not DashboardLoaded() then
+    if _G.InCombatLockdown and _G.InCombatLockdown() then
+      if not pendingHouseRequest then
+        pendingHouseRequest = true
+        houseRequestFrame = houseRequestFrame or CreateFrame("Frame")
+        houseRequestFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+        houseRequestFrame:SetScript("OnEvent", function(frame)
+          frame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+          pendingHouseRequest = false
+          NS.RequestPlayerHouses()
+        end)
+      end
+      return
+    end
+
+    if LoadDashboard() then return end
+  end
+  return housing.GetPlayerOwnedHouses()
+end
