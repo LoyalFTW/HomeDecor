@@ -213,7 +213,7 @@ function ItemInteractions:CreateSourcePopup()
   frame:SetScript("OnLeave", function()
     if _G.C_Timer and _G.C_Timer.After then
       _G.C_Timer.After(0.25, function()
-        if frame:IsShown() and _G.MouseIsOver and not _G.MouseIsOver(frame) then frame:Hide() end
+        if frame:IsShown() and not NS.UI.Controls:IsPointerOver(frame) then frame:Hide() end
       end)
     end
   end)

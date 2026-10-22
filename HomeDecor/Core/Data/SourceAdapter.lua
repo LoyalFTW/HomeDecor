@@ -163,6 +163,7 @@ local function AddLeaf(leaf, context)
     sourceID = sourceID or vendorSource.id or vendor.npcID
   end
   local worldmap = leaf.worldmap or source.worldmap or (vendor and vendor.worldmap) or vendorSource.worldmap
+  local expansion = leaf.expansion or context.expansion
   local mapID, mapX, mapY = MapLocation(worldmap)
   local record = {
     id = leaf.id,
@@ -173,7 +174,7 @@ local function AddLeaf(leaf, context)
     category = context.category,
     subcategory = leaf.decorType or leaf.subcategory,
     profession = context.profession,
-    expansion = context.expansion,
+    expansion = expansion,
     zone = leaf.zone or source.zone or (vendor and vendor.zone) or vendorSource.zone or context.zone,
     worldmap = worldmap,
     mapID = mapID,
@@ -186,7 +187,7 @@ local function AddLeaf(leaf, context)
     skillID = leaf.skillID or source.skillID,
     vendorName = vendor and (vendor.title or vendor.name) or source.vendorName,
     requirements = requirements,
-    searchText = SearchText(leaf.title, leaf.name, source.name, source.npc, source.encounter, context.category, leaf.decorType, leaf.subcategory, context.profession, context.expansion, leaf.zone, sourceType, source.zone, vendorSource.zone, leaf.faction, source.faction, vendorSource.faction, leaf.class, source.class, leaf.race, source.race, leaf.colors, source.colors),
+    searchText = SearchText(leaf.title, leaf.name, source.name, source.npc, source.encounter, context.category, leaf.decorType, leaf.subcategory, context.profession, expansion, leaf.zone, sourceType, source.zone, vendorSource.zone, leaf.faction, source.faction, vendorSource.faction, leaf.class, source.class, leaf.race, source.race, leaf.colors, source.colors),
     budgetCost = leaf.budgetCost or source.budgetCost or source.cost,
     currency = leaf.currency or source.currency,
     currencyType = leaf.currencytype or leaf.currencyType or source.currencytype or source.currencyType,

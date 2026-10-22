@@ -50,7 +50,8 @@ end
 
 local function FormatMoney(value)
   value = tonumber(value) or 0
-  if GetCoinTextureString then return GetCoinTextureString(math.floor(value + 0.5)) end
+  local coins = NS.Systems.Cost and NS.Systems.Cost:FormatCoins(math.floor(value + 0.5))
+  if coins then return coins end
   return FormatNumber(value / 10000) .. "g"
 end
 

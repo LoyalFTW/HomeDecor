@@ -28,7 +28,8 @@ end
 
 local function FormatGold(value)
   if value <= 0 then return nil end
-  if type(_G.GetCoinTextureString) == "function" then return _G.GetCoinTextureString(value) end
+  local coins = NS.Systems.Cost and NS.Systems.Cost:FormatCoins(value)
+  if coins then return coins end
   return tostring(value) .. " copper"
 end
 

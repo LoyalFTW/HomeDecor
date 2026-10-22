@@ -1413,12 +1413,6 @@ function Architect:ImportAny(text, name)
     return self:ImportWoWDBJSON(text)
   end
 
-  local Catalog = NS.Systems and NS.Systems.Catalog
-  if Catalog then
-    for _, entry in ipairs(Catalog.ordered or {}) do
-      visitNode(entry, out, seen)
-    end
-  end
   return self:ImportLayout(text)
 end
 

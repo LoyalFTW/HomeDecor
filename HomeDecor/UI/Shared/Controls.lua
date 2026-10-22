@@ -180,7 +180,8 @@ function Controls:TextColor(text, color, alpha)
   text:SetTextColor(color[1], color[2], color[3], alpha or color[4] or 1)
   local entry = self.texts[text]
   if not entry then
-    local path, size, flags = text.GetFont and text:GetFont()
+    local path, size, flags
+    if text.GetFont then path, size, flags = text:GetFont() end
     entry = { path = path, size = size, flags = flags }
     self.texts[text] = entry
   end

@@ -127,7 +127,8 @@ function MarketData:Price(candidate, result)
     if LUMBER_NAMES[reagentID] then lumberName = LUMBER_NAMES[reagentID] lumberCount = lumberCount + quantity end
   end
   local estimatedCost = #reagents > 0 and missingPrices < #reagents and totalCost or nil
-  local sell, provider = source and source.GetItemPrice and source.GetItemPrice(candidate.itemID)
+  local sell, provider
+  if source and source.GetItemPrice then sell, provider = source.GetItemPrice(candidate.itemID) end
   local profit = sell and estimatedCost and sell - estimatedCost or nil
   local margin = sell and sell > 0 and profit and profit / sell * 100 or nil
   local ppl = profit and lumberCount > 0 and profit / lumberCount or nil

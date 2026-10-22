@@ -853,7 +853,8 @@ function UIA:Create(parent)
         local blueprintID = type(value) == "string" and value:match("^blueprint:(%d+)$")
         if blueprintID then
           local blueprints = B()
-          local preview, previewErr = blueprints and blueprints:QueueArchitectPreview(tonumber(blueprintID), true)
+          local preview, previewErr
+          if blueprints then preview, previewErr = blueprints:QueueArchitectPreview(tonumber(blueprintID), true) end
           if previewErr then ArchitectChat(previewErr) end
           layout = preview
         elseif value == "new" then
@@ -1408,7 +1409,8 @@ function UIA:Create(parent)
   local function exportBlueprintCode(kind)
     local blueprints = B()
     local layout = activeLayout()
-    local ok, err = blueprints and blueprints:Export(kind, layout and layout.name or "HomeDecor Blueprint")
+    local ok, err
+    if blueprints then ok, err = blueprints:Export(kind, layout and layout.name or "HomeDecor Blueprint") end
     if not ok and err then ArchitectChat(err) end
   end
 
@@ -2228,7 +2230,7 @@ function UIA:Create(parent)
     local canExportRoom, exportError = false, nil
     if roomGUID then
       local blueprints = B()
-      canExportRoom, exportError = blueprints and blueprints:CanExportRoom(roomGUID)
+      if blueprints then canExportRoom, exportError = blueprints:CanExportRoom(roomGUID) end
     end
     self.saveRoomBlueprint:SetShown(capturedRoom and true or false)
     self.saveRoomBlueprint.exportError = exportError
@@ -2636,7 +2638,8 @@ function UIA:Create(parent)
     end
     openBlueprintNamePopup(room.name or "HomeDecor Room", function(name)
       local blueprints = B()
-      local ok, err = blueprints and blueprints:ExportRoom(name, roomGUID)
+      local ok, err
+      if blueprints then ok, err = blueprints:ExportRoom(name, roomGUID) end
       if not ok and err then ArchitectChat(err) end
     end)
   end)

@@ -3,10 +3,18 @@ local _, NS = ...
 local Cost = {}
 NS.Systems.Cost = Cost
 
+function Cost:FormatCoins(amount)
+  amount = tonumber(amount)
+  if not amount then return nil end
+  local format = _G.C_CurrencyInfo and _G.C_CurrencyInfo.GetCoinTextureString or _G.GetCoinTextureString
+  return format and format(amount) or nil
+end
+
 local function FormatEntry(currency, currencyType, itemID)
   local amount = tonumber(currency) or currency
-  if currencyType == "money" and type(amount) == "number" and _G.GetCoinTextureString then
-    return _G.GetCoinTextureString(amount)
+  if currencyType == "money" and type(amount) == "number" then
+    local coins = Cost:FormatCoins(amount)
+    if coins then return coins end
   end
   if itemID then
     local name = NS.Systems.ItemResolver and NS.Systems.ItemResolver:GetName(tonumber(itemID))

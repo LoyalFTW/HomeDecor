@@ -29,8 +29,9 @@ function ItemTooltip:Show(owner, record, mode)
   tooltip:AddLine(owned and "Collected" or "Not collected", owned and 0.35 or 1, owned and 0.9 or 0.35, owned and 0.45 or 0.35)
   tooltip:AddLine(NS.Systems.Housing:IsDyeable(record) and "Dyeable" or "Not Dyeable", 0.4, 0.9, 1)
   local pricing = NS.Systems and NS.Systems.PriceSource
-  local price, provider = pricing and pricing.GetItemPrice and pricing.GetItemPrice(record.itemID)
-  if price then tooltip:AddLine("Market: " .. pricing.FormatGold(price, true) .. "  (" .. tostring(provider) .. ")", 1, 0.76, 0.08) end
+  local price, provider
+  if pricing and pricing.GetItemPrice then price, provider = pricing.GetItemPrice(record.itemID) end
+  if price then tooltip:AddLine("Market: " .. pricing.FormatGold(price, true) .. (provider and ("  (" .. tostring(provider) .. ")") or ""), 1, 0.76, 0.08) end
   local source = record.sourceType and "Source: " .. tostring(record.sourceType) or nil
   if source then tooltip:AddLine(source, 0.8, 0.8, 0.8) end
   if record.sourceName or record.vendorName then tooltip:AddLine(tostring(record.sourceName or record.vendorName), 0.93, 0.91, 0.85) end
