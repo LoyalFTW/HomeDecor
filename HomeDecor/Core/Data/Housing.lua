@@ -109,7 +109,8 @@ function Housing:GetEntry(record)
   end
   local itemInfo = TryItem(itemID)
   if itemInfo then
-    if type(itemInfo.entryType) == "number" then catalogEntryType = itemInfo.entryType end
+    local entryType = itemInfo.entryID and itemInfo.entryID.entryType
+    if type(entryType) == "number" then catalogEntryType = entryType end
     return itemInfo
   end
   if decorID and enum and not catalogDiscoveryAttempted then
@@ -155,7 +156,7 @@ function Housing:GetDisplay(record)
   end
   local info = self:GetEntry(record)
   local title = record.title or (info and info.name)
-  local icon = (info and (info.iconTexture or info.iconFileID)) or record.icon
+  local icon = (info and info.iconTexture) or record.icon
   if not Accessible(title) then title = nil end
   if not Accessible(icon) then icon = nil end
   if title == "" or title == "UNKNOWN" then title = nil end

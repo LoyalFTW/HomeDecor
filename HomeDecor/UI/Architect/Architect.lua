@@ -876,9 +876,7 @@ function UIA:Create(parent)
         if panel.Refresh then panel:Refresh() end
         if nameMode then openLayoutNamePopup(layout, nameMode) end
       end,
-      layoutOptions,
-      nil,
-      Controls(), T
+      layoutOptions
     )
     layoutDropdown:SetSize(230, 26)
     layoutDropdown:SetPoint("BOTTOMLEFT", top, "BOTTOMLEFT", 12, 8)
@@ -946,9 +944,7 @@ function UIA:Create(parent)
       function()
         if panel.GetFloorOptions then return panel:GetFloorOptions() end
         return { { value = "all", text = "All Floors" }, { value = 1, text = "Floor 1" } }
-      end,
-      nil,
-      Controls(), T
+      end
     )
     floorDropdown:SetSize(118, 26)
     floorDropdown:SetPoint("LEFT", captureBtn, "RIGHT", 6, 0)
@@ -1418,28 +1414,29 @@ function UIA:Create(parent)
   popupInteriorCode:SetScript("OnClick", function() exportBlueprintCode("interior") end)
   popupExteriorCode:SetScript("OnClick", function() exportBlueprintCode("exterior") end)
 
+  local function reportBlueprintResult(ok, err)
+    if not ok and err then ArchitectChat(err) end
+  end
+
   applyBlueprint:SetScript("OnClick", function()
     local layout = activeLayout()
     local blueprints = B()
     local rec = layout and blueprints and blueprints:GetByCode(layout.blueprintCode)
-    local ok, err = blueprints and blueprints:Import(rec and rec.id or layout and layout.blueprintCode)
-    if not ok and err then ArchitectChat(err) end
+    if blueprints then reportBlueprintResult(blueprints:Import(rec and rec.id or layout and layout.blueprintCode)) end
   end)
 
   refreshBlueprint:SetScript("OnClick", function()
     local layout = activeLayout()
     local blueprints = B()
     local rec = layout and blueprints and blueprints:GetByCode(layout.blueprintCode)
-    local ok, err = blueprints and blueprints:RequestContents(rec and rec.id or layout and layout.blueprintCode)
-    if not ok and err then ArchitectChat(err) end
+    if blueprints then reportBlueprintResult(blueprints:RequestContents(rec and rec.id or layout and layout.blueprintCode)) end
   end)
 
   checkHouses:SetScript("OnClick", function()
     local layout = activeLayout()
     local blueprints = B()
     local rec = layout and blueprints and blueprints:GetByCode(layout.blueprintCode)
-    local ok, err = blueprints and blueprints:RequestHouseFits(rec and rec.id)
-    if not ok and err then ArchitectChat(err) end
+    if blueprints then reportBlueprintResult(blueprints:RequestHouseFits(rec and rec.id)) end
     if houseFitDropdown and houseFitDropdown.ApplyText then houseFitDropdown:ApplyText() end
     panel:Refresh()
   end)
@@ -2632,7 +2629,7 @@ function UIA:Create(parent)
   saveRoomBlueprint:SetScript("OnClick", function()
     local room = selectedRoom()
     local roomGUID = room and room.capture and room.capture.roomGUID
-    if not roomGUID then
+    if not room or not roomGUID then
       ArchitectChat("Select a captured room first.")
       return
     end

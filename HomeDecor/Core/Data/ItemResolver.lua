@@ -107,6 +107,7 @@ end
 function ItemResolver:Invalidate(itemID)
   if itemID then
     local id = tonumber(itemID)
+    if not id then return end
     names[id] = nil
     icons[id] = nil
     pending[id] = nil

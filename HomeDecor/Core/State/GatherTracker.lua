@@ -47,10 +47,8 @@ local function ItemKind(itemID, name, classID, subclassID)
   local lower = type(name) == "string" and name:lower() or ""
   if lower:find("lumber", 1, true) or lower:find("timber", 1, true) or lower:find("plank", 1, true) then return "lumber" end
   local tradegoods = Enum and Enum.ItemClass and Enum.ItemClass.Tradegoods or 7
-  local metal = Enum and Enum.ItemTradegoodsSubclass and Enum.ItemTradegoodsSubclass.MetalAndStone or 7
-  local herb = Enum and Enum.ItemTradegoodsSubclass and Enum.ItemTradegoodsSubclass.Herb or 9
-  if classID == tradegoods and subclassID == metal then return "ore" end
-  if classID == tradegoods and subclassID == herb then return "herb" end
+  if classID == tradegoods and subclassID == 7 then return "ore" end
+  if classID == tradegoods and subclassID == 9 then return "herb" end
   return nil
 end
 
@@ -221,10 +219,10 @@ function GatherTracker:ScanBags()
       local ok, slots = pcall(C_Container.GetContainerNumSlots, bag)
       slots = ok and tonumber(Accessible(slots)) or 0
       for slot = 1, slots do
-        local infoOK, info = pcall(C_Container.GetContainerItemInfo, bag, slot)
-        info = infoOK and Accessible(info) or nil
+        local infoOK, rawInfo = pcall(C_Container.GetContainerItemInfo, bag, slot)
+        local info = infoOK and Accessible(rawInfo) or nil
         local itemID = info and tonumber(Accessible(info.itemID))
-        if itemID and self:ObserveItem(itemID) then counts[itemID] = (counts[itemID] or 0) + (tonumber(Accessible(info.stackCount)) or 1) end
+        if info and itemID and self:ObserveItem(itemID) then counts[itemID] = (counts[itemID] or 0) + (tonumber(Accessible(info.stackCount)) or 1) end
       end
     end
   end

@@ -209,7 +209,7 @@ function AltProfessions:RefreshCurrentProfessions()
     if not parentID then return end
     foundParents[parentID] = true
     local profession = EnsureProfession(character, parentID, PROFESSION_NAMES[parentID])
-    if lineID ~= parentID then
+    if profession and lineID ~= parentID then
       local level = tonumber(info and info.skillLevel) or 0
       local maximum = tonumber(info and (info.maxSkillLevel or info.maxSkill)) or 0
       profession.tiers[tostring(lineID)] = {
@@ -254,9 +254,11 @@ function AltProfessions:RefreshCurrentProfessions()
           if infoOK and parentID then
             foundParents[parentID] = true
             local profession = EnsureProfession(character, parentID, Accessible(name))
-            profession.icon = Accessible(icon)
-            profession.current = tonumber(current) or profession.current
-            profession.maximum = tonumber(maximum) or profession.maximum
+            if profession then
+              profession.icon = Accessible(icon)
+              profession.current = tonumber(current) or profession.current
+              profession.maximum = tonumber(maximum) or profession.maximum
+            end
           end
         end
       end
@@ -281,25 +283,9 @@ local function RecipeLearned(recipeID)
     local ok, learned = pcall(C_SpellBook.IsSpellKnown, recipeID)
     if ok and learned == true then return true end
   end
-  if IsSpellKnown then
-    local ok, learned = pcall(IsSpellKnown, recipeID)
-    if ok and learned == true then return true end
-  end
   if C_TradeSkillUI and C_TradeSkillUI.GetRecipeInfo then
     local ok, info = pcall(C_TradeSkillUI.GetRecipeInfo, recipeID)
     if ok and info and info.learned == true then return true end
-  end
-  if C_TradeSkillUI and C_TradeSkillUI.IsRecipeLearned then
-    local ok, learned = pcall(C_TradeSkillUI.IsRecipeLearned, recipeID)
-    if ok and learned == true then return true end
-  end
-  if C_TradeSkillUI and C_TradeSkillUI.IsRecipeKnown then
-    local ok, learned = pcall(C_TradeSkillUI.IsRecipeKnown, recipeID)
-    if ok and learned == true then return true end
-  end
-  if C_Professions and C_Professions.IsRecipeKnown then
-    local ok, learned = pcall(C_Professions.IsRecipeKnown, recipeID)
-    if ok and learned == true then return true end
   end
   return false
 end
@@ -337,13 +323,13 @@ function AltProfessions:ScanOpenProfession()
     local ok, children = pcall(C_TradeSkillUI.GetChildProfessionInfos)
     if ok and type(children) == "table" then
       for _, child in ipairs(children) do
-        local lineID = tonumber(child.professionID or child.skillLineID)
+        local lineID = tonumber(child.professionID)
         local detectedParent = parentID or tonumber(child.parentProfessionID) or TIER_TO_PARENT[lineID]
-        if detectedParent and lineID then
-          local profession = EnsureProfession(character, detectedParent, professionName)
+        local profession = lineID and EnsureProfession(character, detectedParent, professionName)
+        if profession then
           profession.tiers[tostring(lineID)] = {
             id = lineID,
-            name = Accessible(child.expansionName or child.professionName or child.name) or tostring(lineID),
+            name = Accessible(child.expansionName or child.professionName) or tostring(lineID),
             current = tonumber(child.skillLevel) or 0,
             maximum = tonumber(child.maxSkillLevel) or 0,
           }
@@ -355,9 +341,9 @@ function AltProfessions:ScanOpenProfession()
   if not recipesOK or type(recipeIDs) ~= "table" then return false end
   local catalog = CandidateIndex()
   local scanned = {}
-  for _, recipeID in ipairs(recipeIDs) do
-    recipeID = tonumber(recipeID)
-    if catalog[recipeID] then
+  for _, rawRecipeID in ipairs(recipeIDs) do
+    local recipeID = tonumber(rawRecipeID)
+    if recipeID and catalog[recipeID] then
       local infoOK, info = pcall(C_TradeSkillUI.GetRecipeInfo, recipeID)
       if infoOK and info and info.learned == true then scanned[tostring(recipeID)] = true end
     end
@@ -430,6 +416,7 @@ end
 function AltProfessions:GetCrafterNames(recipeID)
   self.crafterNames = self.crafterNames or {}
   recipeID = tonumber(recipeID)
+  if not recipeID then return {}, false, 0 end
   local cached = self.crafterNames[recipeID]
   if cached then return cached.names, cached.hasAlt, cached.count end
   local state = State()
@@ -494,8 +481,8 @@ function AltProfessions:ImportLegacy()
     for professionName, oldProfession in pairs(old.professions or {}) do
       local parentID
       for id, knownName in pairs(PROFESSION_NAMES) do if knownName == professionName then parentID = id break end end
-      if parentID then
-        local profession = EnsureProfession(character, parentID, professionName)
+      local profession = parentID and EnsureProfession(character, parentID, professionName)
+      if profession then
         for expansion, levels in pairs(oldProfession.skillLevels or {}) do
           profession.tiers[expansion] = { name = expansion, current = tonumber(levels.current) or 0, maximum = tonumber(levels.max) or 0 }
         end

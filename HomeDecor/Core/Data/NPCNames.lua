@@ -64,7 +64,7 @@ function NPCNames:Get(npcID)
     local ok, value = pcall(function()
       local info = _G.C_TooltipInfo.GetHyperlink(link)
       local line = info and info.lines and info.lines[1]
-      return line and (line.leftText or line.text)
+      return line and line.leftText
     end)
     if ok then name = Clean(value) end
   end

@@ -236,6 +236,7 @@ function Pricing:UpdateSortHeaders()
   local frame = self.panel
   if not frame or not frame.columnHeaders then return end
   local settings = self:GetSettings()
+  if not settings then return end
   for _, column in ipairs(COLUMNS) do
     local header = frame.columnHeaders[column.key]
     local active = settings.sortColumn == column.key
@@ -251,6 +252,7 @@ end
 
 function Pricing:SetSortColumn(key, ascending)
   local settings = self:GetSettings()
+  if not settings then return end
   if settings.sortColumn == key and ascending == nil then
     settings.sortAscending = not settings.sortAscending
   else
@@ -305,6 +307,7 @@ function Pricing:UpdateMetrics()
   local best
   local queueValue = 0
   local settings = self:GetSettings()
+  if not settings then return end
   for _, entry in ipairs(self.entries or {}) do
     if entry.profit ~= nil and entry.missingPrices == 0 then
       priced = priced + 1
@@ -465,6 +468,7 @@ function Pricing:UpdateInspector()
   frame.inspectName:SetText(entry.name)
   frame.inspectMeta:SetText(entry.profession .. "  |  " .. entry.expansion .. "\nItem " .. tostring(entry.itemID))
   local settings = self:GetSettings()
+  if not settings then return end
   local quantity = tonumber(settings.queue[tostring(entry.itemID)]) or 0
   local displayQuantity = math.max(1, quantity)
   frame.queueQty:SetText(tostring(quantity))
@@ -517,6 +521,7 @@ end
 
 function Pricing:ExportQueue()
   local settings = self:GetSettings()
+  if not settings then return end
   local lines = { "HomeDecor crafting queue" }
   local materialTotals = {}
   local itemCount = 0
@@ -528,7 +533,7 @@ function Pricing:ExportQueue()
       for _, reagent in ipairs(getReagents(entry.entry)) do
         local reagentID = tonumber(reagent.itemID)
         local reagentCount = tonumber(reagent.count or reagent.qty or reagent.amount) or 1
-        materialTotals[reagentID] = (materialTotals[reagentID] or 0) + reagentCount * quantity
+        if reagentID then materialTotals[reagentID] = (materialTotals[reagentID] or 0) + reagentCount * quantity end
       end
     end
   end
@@ -537,7 +542,7 @@ function Pricing:ExportQueue()
     lines[#lines + 1] = "1x " .. self.selected.name
     for _, reagent in ipairs(getReagents(self.selected.entry)) do
       local reagentID = tonumber(reagent.itemID)
-      materialTotals[reagentID] = tonumber(reagent.count or reagent.qty or reagent.amount) or 1
+      if reagentID then materialTotals[reagentID] = tonumber(reagent.count or reagent.qty or reagent.amount) or 1 end
     end
   end
   lines[#lines + 1] = ""
@@ -635,8 +640,9 @@ function Pricing:StartScan(force)
     self.entryByItemID = byItemID
     self.viewDirty = true
     local settings = self:GetSettings()
+    local queue = settings and settings.queue or {}
     for _, entry in ipairs(entries) do
-      if (tonumber(settings.queue[tostring(entry.itemID)]) or 0) > 0 then NS.Systems.CraftingQueue:Add(entry, 0, getReagents(entry.entry)) end
+      if (tonumber(queue[tostring(entry.itemID)]) or 0) > 0 then NS.Systems.CraftingQueue:Add(entry, 0, getReagents(entry.entry)) end
     end
     self.scanning = false
     self.lastRefresh = time()
@@ -958,6 +964,7 @@ function Pricing:Create(parent)
 
   local function showOptions(anchor, field, prefix, options)
     local settings = Pricing:GetSettings()
+    if not settings then return end
     NS.UI.Dropdown:Show(anchor, options, settings[field], function(value)
       settings[field] = value
       anchor:SetText(prefix .. value)
@@ -986,6 +993,7 @@ function Pricing:Create(parent)
       { value = "name", label = "Name" },
     }
     local settings = Pricing:GetSettings()
+    if not settings then return end
     NS.UI.Dropdown:Show(self, options, settings.sort, function(value)
       settings.sort = value
       local sorts = {
@@ -1020,6 +1028,7 @@ function Pricing:Create(parent)
 
   frame:SetScript("OnShow", function()
     local settings = Pricing:GetSettings()
+    if not settings then return end
     frame.search:SetText(settings.search or "")
     frame.knownOnly:SetChecked(settings.knownOnly == true)
     frame.profitableOnly:SetChecked(settings.profitableOnly == true)

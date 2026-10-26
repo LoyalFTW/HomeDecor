@@ -304,7 +304,7 @@ function SourceAdapter:ImportAvailable()
 end
 
 function SourceAdapter:LoadAll()
-  local loader = _G.C_AddOns and _G.C_AddOns.LoadAddOn or _G.LoadAddOn
+  local loader = _G.C_AddOns and _G.C_AddOns.LoadAddOn
   if not loader then return 0 end
   self.batchLoading = true
   self.batchAdded = 0
@@ -331,7 +331,7 @@ end
 
 function SourceAdapter:LoadBundle(name)
   if not name or self.imported[name] or self.failed[name] then return 0 end
-  local loader = _G.C_AddOns and _G.C_AddOns.LoadAddOn or _G.LoadAddOn
+  local loader = _G.C_AddOns and _G.C_AddOns.LoadAddOn
   if not loader then
     self.failed[name] = "loader unavailable"
     return 0

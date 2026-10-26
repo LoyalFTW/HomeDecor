@@ -422,6 +422,7 @@ end
 
 function Architect:DuplicateLayout(id)
   local db = ensureProfile()
+  if not db then return nil end
   local src = findLayout(db, id)
   if not src then return nil end
   local nid = db.nextLayoutID
@@ -466,6 +467,7 @@ end
 
 function Architect:AddRoom(layout, name, skipNormalize)
   local db = ensureProfile()
+  if not db then return nil end
   layout = layout or findLayout(db)
   if not layout then return nil end
   local template = type(name) == "table" and name or nil
@@ -633,6 +635,7 @@ function Architect:AddItemToRoom(room, info, qty)
     end
   end
   local db = ensureProfile()
+  if not db then return nil end
   local id = db.nextItemID
   db.nextItemID = id + 1
   local item = {
@@ -1178,6 +1181,7 @@ function Architect:ImportLayout(text)
   local fields = splitFixed(text, "|", 6)
   if fields[1] ~= "HDARCH1" then return nil, "That does not look like a HomeDecor Architect string." end
   local layout = self:CreateLayout(unesc(fields[2] or "Imported Layout"))
+  if not layout then return nil end
   layout.gridW = tonumber(fields[3]) or 24
   layout.gridH = tonumber(fields[4]) or 16
   layout.budgetLimit = tonumber(fields[5]) or 250
@@ -1307,6 +1311,7 @@ function Architect:ImportWoWDBJSON(text)
   if #floorRooms == 0 then return nil, "No rooms were found in that floorplan JSON." end
 
   local layout = self:CreateLayout(source.name or source.title or obj.name or "Imported Floorplan")
+  if not layout then return nil end
   local grid = source.grid or obj.grid or {}
   layout.gridW = tonumber(grid.width or grid.w or source.gridW or source.width) or 24
   layout.gridH = tonumber(grid.height or grid.h or source.gridH or source.height) or 16
@@ -1568,7 +1573,7 @@ local function currentHouseLabel()
   if C_Housing and C_Housing.GetCurrentHouseInfo then
     local ok, info = pcall(C_Housing.GetCurrentHouseInfo)
     if ok and type(info) == "table" then
-      return info.houseName or info.name or info.neighborhoodName or "Captured House", info
+      return info.houseName or info.neighborhoodName or "Captured House", info
     end
   end
   return "Captured House", {}
@@ -1714,11 +1719,7 @@ function Architect:ReadCurrentRooms()
     { C_HousingDecor, "C_HousingDecor" },
     { C_HousingBasicMode, "C_HousingBasicMode" },
     { C_HousingExpertMode, "C_HousingExpertMode" },
-    { _G.C_HousingRoom, "C_HousingRoom" },
-    { _G.C_HousingRooms, "C_HousingRooms" },
-    { _G.C_HousingFloorPlan, "C_HousingFloorPlan" },
-    { _G.C_HousingFloorplan, "C_HousingFloorplan" },
-    { _G.C_HousingLayout, "C_HousingLayout" },
+    { C_HousingLayout, "C_HousingLayout" },
     { _G.C_HousingBlueprint, "C_HousingBlueprint" },
   }
   for _, ns in ipairs(namespaces) do
@@ -1734,12 +1735,11 @@ local function layoutMode()
 end
 
 local function decorateMode()
-  return (Enum and Enum.HouseEditorMode and Enum.HouseEditorMode.Decorate) or 1
+  return (Enum and Enum.HouseEditorMode and Enum.HouseEditorMode.BasicDecor) or 1
 end
 
 local function housingFloorCount()
   if not C_HousingLayout then return nil end
-  if C_HousingLayout.GetNumFloors then return C_HousingLayout.GetNumFloors() end
   if C_HousingLayout.GetHighestOccupiedFloorIndex and C_HousingLayout.GetLowestOccupiedFloorIndex then
     local highest = C_HousingLayout.GetHighestOccupiedFloorIndex()
     local lowest = C_HousingLayout.GetLowestOccupiedFloorIndex()
@@ -2899,6 +2899,7 @@ function Architect:BuildLayoutFromPinCaptures(name, captures, house)
   end)
 
   local db = ensureProfile()
+  if not db then return nil end
   local houseKey = currentHouseKey(house)
   local layout = findCapturedLayout(db, captured, houseKey)
   local oldByGUID = {}
@@ -2912,6 +2913,7 @@ function Architect:BuildLayoutFromPinCaptures(name, captures, house)
   else
     layout = self:CreateLayout(name or "Captured House")
   end
+  if not layout then return nil end
   layout.captureHouseKey = houseKey or layout.captureHouseKey
   layout.rooms = {}
   layout.gridW, layout.gridH = 28, 18
@@ -2922,31 +2924,33 @@ function Architect:BuildLayoutFromPinCaptures(name, captures, house)
   for _, raw in ipairs(captured) do
     local template = TEMPLATE_BY_KEY[raw.templateKey] or TEMPLATE_BY_ATLAS_SHAPE[raw.atlasShape] or self.RoomTemplates[1]
     local room = self:AddRoom(layout, template)
-    room.name = ((raw.floor or 1) > 1 and ("Floor " .. tostring(raw.floor) .. " - ") or "") .. (raw.name or template.name)
-    room.rotation = raw.rotation or 0
-    room.capture = {
-      roomGUID = raw.roomGUID,
-      floor = raw.floor,
-      index = raw.captureIndex,
-      atlasShape = raw.atlasShape,
-      doorCardinals = raw.doorCardinals,
-      occupiedCardinals = raw.occupiedCardinals,
-      doors = raw.doors,
-      pinX = raw.pinX,
-      pinY = raw.pinY,
-      isBase = raw.isBase,
-    }
-    preserveCapturedRoom(oldByGUID[tostring(raw.roomGUID)], room)
-    if raw.isBase or raw.atlasShape == "entry" then
-      entryRooms[#entryRooms + 1] = room
-    else
-      if x > 1 and (x + room.w) > maxRowW then
-        x, y, rowH = 1, y + rowH + 1, 0
+    if room then
+      room.name = ((raw.floor or 1) > 1 and ("Floor " .. tostring(raw.floor) .. " - ") or "") .. (raw.name or template.name)
+      room.rotation = raw.rotation or 0
+      room.capture = {
+        roomGUID = raw.roomGUID,
+        floor = raw.floor,
+        index = raw.captureIndex,
+        atlasShape = raw.atlasShape,
+        doorCardinals = raw.doorCardinals,
+        occupiedCardinals = raw.occupiedCardinals,
+        doors = raw.doors,
+        pinX = raw.pinX,
+        pinY = raw.pinY,
+        isBase = raw.isBase,
+      }
+      preserveCapturedRoom(oldByGUID[tostring(raw.roomGUID)], room)
+      if raw.isBase or raw.atlasShape == "entry" then
+        entryRooms[#entryRooms + 1] = room
+      else
+        if x > 1 and (x + room.w) > maxRowW then
+          x, y, rowH = 1, y + rowH + 1, 0
+        end
+        room.x, room.y = x, y
+        x = x + room.w + 1
+        rowH = math.max(rowH, room.h)
+        maxRight = math.max(maxRight, x)
       end
-      room.x, room.y = x, y
-      x = x + room.w + 1
-      rowH = math.max(rowH, room.h)
-      maxRight = math.max(maxRight, x)
     end
   end
 
@@ -3063,6 +3067,7 @@ end
 function Architect:BuildLayoutFromCapturedRooms(name, rooms)
   if type(rooms) ~= "table" or #rooms == 0 then return nil end
   local layout = self:CreateLayout(name or "Captured House")
+  if not layout then return nil end
   layout.rooms = {}
   local minX, minY = 999999, 999999
   for _, r in ipairs(rooms) do
@@ -3079,11 +3084,13 @@ function Architect:BuildLayoutFromCapturedRooms(name, rooms)
       local template = self:ResolveTemplate(r.templateKey or r.roomType or r.roomID or r.roomId or r.name)
       template = template or self.RoomTemplates[1]
       local room = self:AddRoom(layout, template)
-      room.name = r.name or (template and template.name) or room.name
-      room.x = math.floor((tonumber(r.x or r.posX or r.positionX or (r.position and r.position.x)) or 0) - minX + 1)
-      room.y = math.floor((tonumber(r.y or r.posY or r.positionY or (r.position and r.position.y)) or 0) - minY + 1)
-      room.rotation = tonumber(r.rotation or r.r or r.angle) or 0
-      clampRoom(layout, room)
+      if room then
+        room.name = r.name or (template and template.name) or room.name
+        room.x = math.floor((tonumber(r.x or r.posX or r.positionX or (r.position and r.position.x)) or 0) - minX + 1)
+        room.y = math.floor((tonumber(r.y or r.posY or r.positionY or (r.position and r.position.y)) or 0) - minY + 1)
+        room.rotation = tonumber(r.rotation or r.r or r.angle) or 0
+        clampRoom(layout, room)
+      end
     end
   end
   return layout

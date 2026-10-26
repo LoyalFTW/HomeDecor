@@ -181,7 +181,7 @@ function Lists:DeleteActive()
     if store.order[index] == id then table.remove(store.order, index) end
   end
   profile.ui.activeListID = store.order[1]
-  self:ReconcileTracking(entry.keys)
+  if entry then self:ReconcileTracking(entry.keys) end
   self:Touch()
   return true
 end
@@ -375,6 +375,7 @@ function Lists:Import(encoded)
     entry.meta = meta
   else
     entry, id = self:Create(UniqueName(store, rawName))
+    if not entry then return nil, "Shopping lists are not ready yet." end
     entry.keys = keys
     entry.quantities = quantities
     entry.meta = meta

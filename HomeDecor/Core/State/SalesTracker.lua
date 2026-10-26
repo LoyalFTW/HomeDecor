@@ -82,6 +82,7 @@ function SalesTracker:Record(itemID, name, count, gold)
   gold = tonumber(gold)
   if not itemID or not gold or gold <= 0 then return false end
   local state = State()
+  if not state then return false end
   local timestamp = time()
   local characterKey, characterName = CharacterInfo()
   state.history[#state.history + 1] = {

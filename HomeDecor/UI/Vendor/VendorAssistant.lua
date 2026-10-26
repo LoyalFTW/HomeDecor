@@ -16,14 +16,10 @@ end
 
 local function MerchantInfo(index)
   local api = _G.C_MerchantFrame and _G.C_MerchantFrame.GetItemInfo
-  if type(api) == "function" then
-    local ok, info = pcall(api, index)
-    if ok and type(info) == "table" then return info end
-  end
-  if type(_G.GetMerchantItemInfo) ~= "function" then return nil end
-  local ok, name, texture, price, quantity, numAvailable, isUsable, extendedCost = pcall(_G.GetMerchantItemInfo, index)
-  if not ok then return nil end
-  return { name = name, texture = texture, price = price, quantity = quantity, numAvailable = numAvailable, isUsable = isUsable, hasExtendedCost = extendedCost }
+  if type(api) ~= "function" then return nil end
+  local ok, info = pcall(api, index)
+  if ok and type(info) == "table" then return info end
+  return nil
 end
 
 local function FormatGold(value)
@@ -39,8 +35,8 @@ local function MerchantCosts(index, info, costCount)
   if price > 0 then costs[#costs + 1] = { kind = "gold", amount = price, name = "gold" } end
   if costCount > 0 and type(_G.GetMerchantItemCostItem) ~= "function" then return nil end
   for costIndex = 1, costCount do
-    local ok, texture, value, link, currencyName = pcall(_G.GetMerchantItemCostItem, index, costIndex)
-    value = tonumber(value)
+    local ok, texture, rawValue, link, currencyName = pcall(_G.GetMerchantItemCostItem, index, costIndex)
+    local value = tonumber(rawValue)
     if not ok or not value or value <= 0 or type(link) ~= "string" then return nil end
     local currencyID
     local currencyAPI = _G.C_CurrencyInfo and _G.C_CurrencyInfo.GetCurrencyIDFromLink
@@ -53,7 +49,7 @@ local function MerchantCosts(index, info, costCount)
     else
       local itemID = tonumber(link:match("item:(%d+)"))
       if not itemID then return nil end
-      local itemName = link:match("%[([^%]]+)%]") or "item " .. tostring(itemID)
+      local itemName = link:match("%[([^%]]+)%]") or ("item " .. tostring(itemID))
       costs[#costs + 1] = { kind = "item", id = itemID, amount = value, name = itemName, icon = texture }
     end
   end
@@ -247,7 +243,7 @@ function VendorAssistant:GetShoppingPurchase(fresh)
   for index = 1, count do
     local itemID = MerchantItemID(index)
     local record, quantity = VendorAssistant:GetListRecord(itemID, listID, npcID)
-    if record and quantity > 0 and not seen[itemID] then
+    if itemID and record and quantity > 0 and not seen[itemID] then
       seen[itemID] = true
       local info = MerchantInfo(index)
       local costOK, costCount = pcall(_G.GetMerchantItemCostInfo or function() return 0 end, index)
@@ -358,8 +354,8 @@ function VendorAssistant:Create()
   if _G.StaticPopupDialogs and not _G.StaticPopupDialogs.HOMEDECOR_BUY_SHOPPING_LIST then
     _G.StaticPopupDialogs.HOMEDECOR_BUY_SHOPPING_LIST = {
       text = "Buy %s shopping-list item(s) for %s?",
-      button1 = _G.ACCEPT,
-      button2 = _G.CANCEL,
+      button1 = ACCEPT,
+      button2 = CANCEL,
       timeout = 0,
       whileDead = false,
       hideOnEscape = true,

@@ -144,15 +144,10 @@ function MarketData:Price(candidate, result)
   local knowledge = NS.Systems.RecipeKnowledge
   local known = knowledge and knowledge:IsCurrentKnown(candidate.skillID) or false
   if candidate.skillID then
-    local knownOK, liveKnown
-    if C_TradeSkillUI and C_TradeSkillUI.IsRecipeLearned then
-      knownOK, liveKnown = pcall(C_TradeSkillUI.IsRecipeLearned, candidate.skillID)
-    elseif C_TradeSkillUI and C_TradeSkillUI.IsRecipeKnown then
-      knownOK, liveKnown = pcall(C_TradeSkillUI.IsRecipeKnown, candidate.skillID)
-    elseif C_Professions and C_Professions.IsRecipeKnown then
-      knownOK, liveKnown = pcall(C_Professions.IsRecipeKnown, candidate.skillID)
+    if C_TradeSkillUI and C_TradeSkillUI.GetRecipeInfo then
+      local infoOK, info = pcall(C_TradeSkillUI.GetRecipeInfo, candidate.skillID)
+      if infoOK and info and info.learned == true then known = true end
     end
-    if knownOK and liveKnown == true then known = true end
     if known and knowledge then knowledge:Observe(candidate.skillID, true) end
   end
   local crafters = {}

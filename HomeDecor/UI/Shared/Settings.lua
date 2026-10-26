@@ -394,8 +394,6 @@ local function RegisterPanel(panel, parentCategory)
     panel.category = category
     return category
   end
-  if parentCategory then panel.parent = "HomeDecor" end
-  if _G.InterfaceOptions_AddCategory then _G.InterfaceOptions_AddCategory(panel) end
   return panel
 end
 
@@ -518,8 +516,5 @@ function AddonSettings:OpenOptions()
   if api and api.OpenToCategory and category then
     local id = category.GetID and category:GetID() or category.ID
     if id then api.OpenToCategory(id) else api.OpenToCategory("HomeDecor") end
-  elseif _G.InterfaceOptionsFrame_OpenToCategory then
-    _G.InterfaceOptionsFrame_OpenToCategory(self.optionsPanel)
-    _G.InterfaceOptionsFrame_OpenToCategory(self.optionsPanel)
   end
 end

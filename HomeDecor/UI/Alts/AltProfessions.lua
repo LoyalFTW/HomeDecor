@@ -780,7 +780,7 @@ function AltProfessions:Create(parent)
   end)
   frame.professionButton:SetScript("OnClick", function(self)
     local options = { { label = "All Professions", value = "All" } }
-    for _, name in ipairs(OPPORTUNITY_PROFESSIONS) do options[#options + 1] = name end
+    for _, name in ipairs(OPPORTUNITY_PROFESSIONS) do options[#options + 1] = { label = name, value = name } end
     NS.UI.Dropdown:Show(self, options, AltProfessions:GetSettings().profession, function(value)
       AltProfessions:GetSettings().profession = value
       Controls():ResetScrollFrame(frame.recipeScroll, false)

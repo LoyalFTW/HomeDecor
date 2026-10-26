@@ -101,7 +101,6 @@ local function QuestComplete(id)
   id = tonumber(id)
   if not id then return nil end
   if _G.C_QuestLog and _G.C_QuestLog.IsQuestFlaggedCompleted then return _G.C_QuestLog.IsQuestFlaggedCompleted(id) == true end
-  if _G.IsQuestFlaggedCompleted then return _G.IsQuestFlaggedCompleted(id) == true end
   return nil
 end
 

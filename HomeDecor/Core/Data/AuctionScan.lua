@@ -12,9 +12,8 @@ function AS.IsAuctionatorAvailable()
 end
 
 function AS.CanShowScanInfo()
-  if not C_AuctionHouse then return false end
-  if type(C_AuctionHouse.IsAuctionHouseOpen) ~= "function" then return false end
-  return C_AuctionHouse.IsAuctionHouseOpen() and AS.IsAuctionatorAvailable()
+  local frame = _G.AuctionHouseFrame
+  return frame ~= nil and frame:IsShown() and AS.IsAuctionatorAvailable()
 end
 
 function AS.HasAuctionatorData()

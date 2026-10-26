@@ -505,8 +505,8 @@ function MapPins:RefreshMinimap()
   local pins = HBDPins()
   if not pins or not _G.C_Map or not _G.C_Map.GetBestMapForUnit then return end
   local mapID = _G.C_Map.GetBestMapForUnit("player")
-  local locations = mapID and self.byMapAll[mapID]
-  for index = 1, math.min(#(locations or {}), MAX_MINIMAP_PINS) do
+  local locations = mapID and self.byMapAll[mapID] or {}
+  for index = 1, math.min(#locations, MAX_MINIMAP_PINS) do
     local marker = locations[index]
     local record = marker.record
     local pin = table.remove(self.miniFree) or NewMiniPin()

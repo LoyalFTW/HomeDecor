@@ -83,12 +83,14 @@ function DecorRun:BalanceText(costs)
   local shortages = {}
   for _, cost in pairs(costs or {}) do
     local balance
-    if cost.itemID and C_Item and C_Item.GetItemCount then
-      balance = C_Item.GetItemCount(tonumber(cost.itemID), false, false, true, false)
+    local itemID = tonumber(cost.itemID)
+    local currencyID = tonumber(cost.currencyType)
+    if itemID and C_Item and C_Item.GetItemCount then
+      balance = C_Item.GetItemCount(itemID, false, false, true, false)
     elseif cost.currencyType == "money" and GetMoney then
       balance = GetMoney()
-    elseif tonumber(cost.currencyType) and C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo then
-      local info = C_CurrencyInfo.GetCurrencyInfo(tonumber(cost.currencyType))
+    elseif currencyID and C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo then
+      local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
       balance = info and info.quantity
     end
     if tonumber(balance) and balance < cost.currency then

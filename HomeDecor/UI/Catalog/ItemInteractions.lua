@@ -33,7 +33,7 @@ end
 function ItemInteractions:OpenRequirement(record)
   local achievementID = AchievementID(record)
   if achievementID then
-    local loader = _G.C_AddOns and _G.C_AddOns.LoadAddOn or _G.LoadAddOn
+    local loader = _G.C_AddOns and _G.C_AddOns.LoadAddOn
     if loader then pcall(loader, "Blizzard_AchievementUI") end
     if _G.AchievementFrame_LoadUI then pcall(_G.AchievementFrame_LoadUI) end
     local toggle = _G.AchievementFrame_ToggleAchievementFrame

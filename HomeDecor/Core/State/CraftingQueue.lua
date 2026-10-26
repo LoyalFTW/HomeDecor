@@ -76,7 +76,8 @@ end
 function CraftingQueue:GetItems()
   local state = State()
   local items = {}
-  for key, quantity in pairs(state and state.queue or {}) do
+  if not state then return items end
+  for key, quantity in pairs(state.queue or {}) do
     quantity = tonumber(quantity) or 0
     if quantity > 0 then
       local itemID = tonumber(key)
