@@ -305,9 +305,9 @@ NS.Data.Vendors["Warlords"]["Draenor"] = {
     source={
       id=274291,
       type="vendor",
-      faction="Horde",
+      faction="Neutral",
       zone="Nagrand",
-      worldmap="550:8211:4479"
+      worldmap="550:8211:4481"
     },
     items={
       {decorID=28326, source={type="vendor", itemID=284106}, budgetCost=1},
