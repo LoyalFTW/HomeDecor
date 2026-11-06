@@ -8,6 +8,7 @@
 ## IconTexture: Interface\AddOns\HomeDecor\Media\Icon
 ## X-Curse-Project-ID: 1402921
 ## X-Wago-ID: O67DjgK3
+## Category: Housing
 ## Category-enUS: Housing
 ## Category-deDE: Behausung
 ## Category-esES: Hogares
