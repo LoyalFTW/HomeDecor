@@ -7,7 +7,9 @@ externals:
   Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
   Libs/HereBeDragons: https://repos.wowace.com/wow/herebedragons
   Libs/Krowi_WorldMapButtons: https://github.com/TheKrowi/Krowi_WorldMapButtons.git
-  Libs/Foundry: https://github.com/Royaleint/Foundry.git
+  Libs/Foundry:
+    url: https://github.com/Royaleint/Foundry.git
+    curse-slug: foundry
 
 ignore:
   - .github
