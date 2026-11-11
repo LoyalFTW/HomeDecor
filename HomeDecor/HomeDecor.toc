@@ -5,6 +5,7 @@
 ## X-Website: https://www.curseforge.com/wow/addons/homedecor
 ## Notes: All in one housing addon
 ## SavedVariables: HomeDecorDB
+## OptionalDeps: Foundry-1.0
 ## IconTexture: Interface\AddOns\HomeDecor\Media\Icon
 ## X-Curse-Project-ID: 1402921
 ## X-Wago-ID: O67DjgK3
