@@ -111,5 +111,6 @@ UI\Map\OriginalMapUI.lua
 UI\Vendor\VendorAssistant.lua
 UI\Vendor\VendorMarkers.lua
 UI\Shell\Command.lua
+Core\Map\RequirementTooltips.lua
 Core\Runtime\Init.lua
 
