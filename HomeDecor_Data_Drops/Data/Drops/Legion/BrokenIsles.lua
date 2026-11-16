@@ -12,4 +12,6 @@ NS.Data.Drops["Legion"]["BrokenIsles"] = {
 	{decorID=673,  source={ type="drop", zone="BrokenIsles", itemID=238857, npcID=99192, npc="Shade of Xavius", worldmap="641:5859:3054" }, colors={"Dark Brown","Navy Blue","Royal Blue"}, budgetCost=1, size="Small"},
 	{decorID=4027,  source={ type="drop", zone="BrokenIsles", itemID=247913, npcID=101831, npc="Advisor Melandrus", worldmap="680:5051:6521" }, colors={"Dark Gray","Gray"}, budgetCost=5, size="Large"},
 	{decorID=1232,  source={ type="drop", zone="BrokenIsles", itemID=245451, npcID=91007, npc="Dargrul", worldmap="650:4945:6785" }, colors={"Bronze","Dark Brown","Yellow"}, budgetCost=5, size="Large"},
+    {decorID=28632, source={type="drop", zone="Legion Supply/Treasure Chests", itemID=282164, name="Legion Supply/Treasure Chests"}, budgetCost=5, size="Large"},
+--     {decorID=27822, source={type="encounter", zone="Vault of the Wardens - Cordana Felsong", name="Vault of the Wardens - Cordana Felsong"}, budgetCost=5, size="Huge"}, -- HIDDENCATALOG
 }
