@@ -206,21 +206,34 @@ NS.Data.Vendors["BattleForAzeroth"]["KulTiras"] = {
       worldmap="896:3777:4894"
     },
     items={
-      {decorID=28456, source={type="vendor", itemID=284478}, budgetCost=5},
-      {decorID=28458, source={type="vendor", itemID=284490}, budgetCost=1},
-      {decorID=28485, source={type="vendor", itemID=284470}, budgetCost=3},
-      {decorID=28486, source={type="vendor", itemID=284484}, budgetCost=5},
-      {decorID=28487, source={type="vendor", itemID=284476}, budgetCost=5},
-      {decorID=28488, source={type="vendor", itemID=284482}, budgetCost=5},
-      {decorID=28489, source={type="vendor", itemID=284466}, budgetCost=1},
-      {decorID=28490, source={type="vendor", itemID=284464}, budgetCost=5},
-      {decorID=28491, source={type="vendor", itemID=284468}, budgetCost=3},
-      {decorID=28492, source={type="vendor", itemID=284486}, budgetCost=3},
-      {decorID=28493, source={type="vendor", itemID=284472}, budgetCost=1},
-      {decorID=28494, source={type="vendor", itemID=284474}, budgetCost=5},
-      {decorID=28497, source={type="vendor", itemID=284488}, budgetCost=1},
-      {decorID=28499, source={type="vendor", itemID=284462}, budgetCost=3},
-      {decorID=28694, source={type="vendor", itemID=284480}, budgetCost=5},
+      {decorID=28456, source={type="vendor", itemID=284478, currency="150", currencytype=1560}, budgetCost=5, size="Huge"},
+      {decorID=28458, source={type="vendor", itemID=284490, currency="10", currencytype=1560}, budgetCost=1, size="Tiny"},
+      {decorID=28485, source={type="vendor", itemID=284470, currency="75", currencytype=1560}, budgetCost=3, size="Medium"},
+      {decorID=28486, source={type="vendor", itemID=284484, currency="150", currencytype=1560}, budgetCost=5, size="Huge"},
+      {decorID=28487, source={type="vendor", itemID=284476, currency="150", currencytype=1560}, budgetCost=5, size="Huge"},
+      {decorID=28488, source={type="vendor", itemID=284482, currency="150", currencytype=1560}, budgetCost=5, size="Huge"},
+      {decorID=28489, source={type="vendor", itemID=284466, currency="100", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28490, source={type="vendor", itemID=284464, currency="100", currencytype=1560}, budgetCost=5, size="Medium"},
+      {decorID=28491, source={type="vendor", itemID=284468, currency="100", currencytype=1560}, budgetCost=3, size="Medium"},
+      {decorID=28492, source={type="vendor", itemID=284486, currency="100", currencytype=1560}, budgetCost=3, size="Large"},
+      {decorID=28493, source={type="vendor", itemID=284472, currency="10", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28494, source={type="vendor", itemID=284474, currency="150", currencytype=1560}, budgetCost=5, size="Huge"},
+      {decorID=28497, source={type="vendor", itemID=284488, currency="10", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28499, source={type="vendor", itemID=284462, currency="100", currencytype=1560}, budgetCost=3, size="Large"},
+      {decorID=28694, source={type="vendor", itemID=284480, currency="150", currencytype=1560}, budgetCost=5, size="Huge"},
+    }
+  },
+
+  {
+    source={
+      id=143244,
+      type="vendor",
+      faction="Neutral",
+      zone="Boralus",
+      worldmap="1161:7360:1460"
+    },
+    items={
+      {decorID=28495, source={type="vendor", itemID=284384, currency="150", currencytype=1560}, budgetCost=1, size="Small"},
     }
   },
 
