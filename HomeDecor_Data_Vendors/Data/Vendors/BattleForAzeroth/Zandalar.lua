@@ -32,15 +32,15 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       worldmap="864:5669:4973"
     },
     items={
-      {decorID=27255, source={type="vendor", itemID=283365}, budgetCost=3},
-      {decorID=28463, source={type="vendor", itemID=283277}, budgetCost=5},
-      {decorID=28464, source={type="vendor", itemID=283279}, budgetCost=5},
-      {decorID=28465, source={type="vendor", itemID=283305}, budgetCost=5},
-      {decorID=28466, source={type="vendor", itemID=283323}, budgetCost=3},
-      {decorID=28471, source={type="vendor", itemID=283289}, budgetCost=1},
-      {decorID=28481, source={type="vendor", itemID=283317}, budgetCost=5},
-      {decorID=28498, source={type="vendor", itemID=283319}, budgetCost=5},
-      {decorID=28508, source={type="vendor", itemID=283297}, budgetCost=1},
+      {decorID=27255, source={type="vendor", itemID=283365, currency="150", currencytype=1560}, budgetCost=3, size="Medium"},
+      {decorID=28463, source={type="vendor", itemID=283277, currency="400", currencytype=1560}, budgetCost=5, size="Large"},
+      {decorID=28464, source={type="vendor", itemID=283279, currency="300", currencytype=1560}, budgetCost=5, size="Large"},
+      {decorID=28465, source={type="vendor", itemID=283305, currency="300", currencytype=1560}, budgetCost=5, size="Large"},
+      {decorID=28466, source={type="vendor", itemID=283323, currency="300", currencytype=1560}, budgetCost=3, size="Medium"},
+      {decorID=28471, source={type="vendor", itemID=283289, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28481, source={type="vendor", itemID=283317, currency="300", currencytype=1560}, budgetCost=5, size="Large"},
+      {decorID=28498, source={type="vendor", itemID=283319, currency="300", currencytype=1560}, budgetCost=5, size="Large"},
+      {decorID=28508, source={type="vendor", itemID=283297, currency="300", currencytype=1560}, budgetCost=1, size="Medium"},
     }
   },
 
@@ -53,23 +53,23 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       worldmap="864:5634:5048"
     },
     items={
-      {decorID=27610, source={type="vendor", itemID=283343}, budgetCost=5},
-      {decorID=27982, source={type="vendor", itemID=283269}, budgetCost=5},
-      {decorID=28467, source={type="vendor", itemID=283287}, budgetCost=1},
-      {decorID=28468, source={type="vendor", itemID=283325}, budgetCost=1},
-      {decorID=28469, source={type="vendor", itemID=283327}, budgetCost=1},
-      {decorID=28470, source={type="vendor", itemID=283329}, budgetCost=3},
-      {decorID=28473, source={type="vendor", itemID=283307}, budgetCost=1},
-      {decorID=28474, source={type="vendor", itemID=283309}, budgetCost=1},
-      {decorID=28475, source={type="vendor", itemID=283311}, budgetCost=1},
-      {decorID=28476, source={type="vendor", itemID=283313}, budgetCost=1},
-      {decorID=28477, source={type="vendor", itemID=283331}, budgetCost=1},
-      {decorID=28478, source={type="vendor", itemID=283333}, budgetCost=1},
-      {decorID=28479, source={type="vendor", itemID=283315}, budgetCost=1},
-      {decorID=28480, source={type="vendor", itemID=283293}, budgetCost=3},
-      {decorID=28482, source={type="vendor", itemID=283335}, budgetCost=1},
-      {decorID=28483, source={type="vendor", itemID=283337}, budgetCost=1},
-      {decorID=28484, source={type="vendor", itemID=283295}, budgetCost=1},
+      {decorID=27610, source={type="vendor", itemID=283343, currency="400", currencytype=1560}, requirements={quest={id=51364}}, budgetCost=5, size="Huge"},
+      {decorID=27982, source={type="vendor", itemID=283269, currency="300", currencytype=1560}, requirements={quest={id=49676}}, budgetCost=5, size="Large"},
+      {decorID=28467, source={type="vendor", itemID=283287, currency="50", currencytype=1560}, budgetCost=1, size="Medium"},
+      {decorID=28468, source={type="vendor", itemID=283325, currency="50", currencytype=1560}, budgetCost=1, size="Medium"},
+      {decorID=28469, source={type="vendor", itemID=283327, currency="50", currencytype=1560}, budgetCost=1, size="Medium"},
+      {decorID=28470, source={type="vendor", itemID=283329, currency="200", currencytype=1560}, budgetCost=3, size="Medium"},
+      {decorID=28473, source={type="vendor", itemID=283307, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28474, source={type="vendor", itemID=283309, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28475, source={type="vendor", itemID=283311, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28476, source={type="vendor", itemID=283313, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28477, source={type="vendor", itemID=283331, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28478, source={type="vendor", itemID=283333, currency="100", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28479, source={type="vendor", itemID=283315, currency="100", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28480, source={type="vendor", itemID=283293, currency="100", currencytype=1560}, budgetCost=3, size="Medium"},
+      {decorID=28482, source={type="vendor", itemID=283335, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28483, source={type="vendor", itemID=283337, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28484, source={type="vendor", itemID=283295, currency="100", currencytype=1560}, budgetCost=1, size="Small"},
     }
   },
 
@@ -210,6 +210,56 @@ NS.Data.Vendors["BattleForAzeroth"]["Zandalar"] = {
       {decorID=1697, source={type="vendor", itemID=245263, currency="150", currencytype=1560}, requirements={quest={id=48554}}, colors={"Copper","Dark Brown","Tan"}, budgetCost=1, size="Small"},
       {decorID=11319, source={type="vendor", itemID=256919, currency="300", currencytype=1560}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
       {decorID=11489, source={type="vendor", itemID=257399, currency="300", currencytype=1560}, colors={"Copper","Dark Brown"}, budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=135804,
+      type="vendor",
+      faction="Neutral",
+      zone="Vol'dun",
+      worldmap="863:1177:4136"
+    },
+    items={
+      {decorID=27255, source={type="vendor", itemID=283365, currency="150", currencytype=1560}, budgetCost=3, size="Medium"},
+      {decorID=28463, source={type="vendor", itemID=283277, currency="400", currencytype=1560}, budgetCost=5, size="Large"},
+      {decorID=28464, source={type="vendor", itemID=283279, currency="300", currencytype=1560}, budgetCost=5, size="Large"},
+      {decorID=28465, source={type="vendor", itemID=283305, currency="300", currencytype=1560}, budgetCost=5, size="Large"},
+      {decorID=28466, source={type="vendor", itemID=283323, currency="300", currencytype=1560}, budgetCost=3, size="Medium"},
+      {decorID=28471, source={type="vendor", itemID=283289, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28481, source={type="vendor", itemID=283317, currency="300", currencytype=1560}, budgetCost=5, size="Large"},
+      {decorID=28498, source={type="vendor", itemID=283319, currency="300", currencytype=1560}, budgetCost=5, size="Large"},
+      {decorID=28508, source={type="vendor", itemID=283297, currency="300", currencytype=1560}, budgetCost=1, size="Medium"},
+    }
+  },
+
+  {
+    source={
+      id=143325,
+      type="vendor",
+      faction="Neutral",
+      zone="Vol'dun",
+      worldmap="863:1132:4232"
+    },
+    items={
+      {decorID=27610, source={type="vendor", itemID=283343, currency="400", currencytype=1560}, requirements={quest={id=51364}}, budgetCost=5, size="Huge"},
+      {decorID=27982, source={type="vendor", itemID=283269, currency="300", currencytype=1560}, requirements={quest={id=49676}}, budgetCost=5, size="Large"},
+      {decorID=28467, source={type="vendor", itemID=283287, currency="50", currencytype=1560}, budgetCost=1, size="Medium"},
+      {decorID=28468, source={type="vendor", itemID=283325, currency="50", currencytype=1560}, budgetCost=1, size="Medium"},
+      {decorID=28469, source={type="vendor", itemID=283327, currency="50", currencytype=1560}, budgetCost=1, size="Medium"},
+      {decorID=28470, source={type="vendor", itemID=283329, currency="200", currencytype=1560}, budgetCost=3, size="Medium"},
+      {decorID=28473, source={type="vendor", itemID=283307, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28474, source={type="vendor", itemID=283309, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28475, source={type="vendor", itemID=283311, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28476, source={type="vendor", itemID=283313, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28477, source={type="vendor", itemID=283331, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28478, source={type="vendor", itemID=283333, currency="100", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28479, source={type="vendor", itemID=283315, currency="100", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28480, source={type="vendor", itemID=283293, currency="100", currencytype=1560}, budgetCost=3, size="Medium"},
+      {decorID=28482, source={type="vendor", itemID=283335, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28483, source={type="vendor", itemID=283337, currency="50", currencytype=1560}, budgetCost=1, size="Small"},
+      {decorID=28484, source={type="vendor", itemID=283295, currency="100", currencytype=1560}, budgetCost=1, size="Small"},
     }
   },
 
