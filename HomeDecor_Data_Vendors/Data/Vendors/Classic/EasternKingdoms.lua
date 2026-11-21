@@ -12,10 +12,10 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       type="vendor",
       faction="Neutral",
       zone="Elwynn Forest",
-      worldmap="37:2400:7300"
+      worldmap="37:2408:7320"
     },
     items={
-      {decorID=27217, source={type="vendor", itemID=284223}, budgetCost=5},
+      {decorID=27217, source={type="vendor", itemID=284223, currency="2500000", currencytype="money"}, budgetCost=5, size="Huge"},
     }
   },
 
@@ -166,7 +166,7 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=5116, source={type="vendor", itemID=248939, currency="950000", currencytype="money"}, requirements={reputation={name="Stormwind", standing="Honored"}}, colors={"Bronze","Dark Gray"}, budgetCost=3, size="Medium"},
       {decorID=9242, source={type="vendor", itemID=253168, costs={{currency="10000", currencytype="money"},{currency="9500", currencytype="money"},{currency="200000", currencytype="money"},{currency="8000", currencytype="money"}}}, colors={"Dark Brown","Dark Gray","Teal"}, budgetCost=1, size="Small"},
       {decorID=11274, source={type="vendor", itemID=256673, currency="9500000", currencytype="money"}, requirements={quest={id=7604}}, colors={"Dark Gray","Gray"}, budgetCost=5, size="Huge"},
-      {decorID=27217, source={type="vendor", itemID=284223}, budgetCost=5},
+      {decorID=27217, source={type="vendor", itemID=284223, currency="2500000", currencytype="money"}, budgetCost=5, size="Huge"},
     }
   },
 
@@ -480,10 +480,19 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       {decorID=16971, source={type="vendor", itemID=265551}, colors={"Dark Brown","Navy Blue","Silver"}, expansion="Midnight", budgetCost=1, size="Tiny"},
       {decorID=16972, source={type="vendor", itemID=265552}, colors={"Dark Brown","Navy Blue","Royal Blue"}, expansion="Midnight", budgetCost=1, size="Tiny"},
       {decorID=16973, source={type="vendor", itemID=265553}, colors={"Amber","Dark Brown","Light Brown"}, expansion="Midnight", budgetCost=1, size="Tiny"},
+      {decorID=19688, source={type="vendor", itemID=268337, currency="50000000", currencytype="money"}, colors={"Cyan","Dark Gray","Tan"}, expansion="Midnight", budgetCost=5, size="Huge"},
+      {decorID=19689, source={type="vendor", itemID=268338, currency="5000000", currencytype="money"}, colors={"Dark Gray","Gray","Royal Blue"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=19690, source={type="vendor", itemID=268339, currency="20000000", currencytype="money"}, colors={"Blue","Dark Gray","Tan"}, expansion="Midnight", budgetCost=5, size="Large"},
+      {decorID=19691, source={type="vendor", itemID=268340, currency="50000000", currencytype="money"}, colors={"Dark Gray","Gray","Royal Blue"}, expansion="Midnight", budgetCost=5, size="Large"},
+      {decorID=20166, source={type="vendor", itemID=268722, currency="5000000", currencytype="money"}, colors={"Cyan","Dark Gray","Tan"}, expansion="Midnight", budgetCost=1, size="Small"},
       {decorID=23706, source={type="vendor", itemID=274731, currency="50000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
       {decorID=24193, source={type="vendor", itemID=274734, currency="50000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
       {decorID=24194, source={type="vendor", itemID=274736, currency="50000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
       {decorID=25936, source={type="vendor", itemID=276873}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=27076, source={type="vendor", itemID=280554, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=27077, source={type="vendor", itemID=280556, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=28350, source={type="vendor", itemID=281107, currency="5000000", currencytype="money"}, requirements={achievement={id=63685}}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=29999, source={type="vendor", itemID=285216}, expansion="Midnight", budgetCost=3, size="Small"},
     }
   },
 
@@ -496,17 +505,17 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="18:6080:5260"
     },
     items={
-      {decorID=26011, source={type="vendor", itemID=282192}, budgetCost=3},
-      {decorID=26012, source={type="vendor", itemID=282194}, budgetCost=3},
-      {decorID=26016, source={type="vendor", itemID=282196}, budgetCost=3},
-      {decorID=26052, source={type="vendor", itemID=282198}, budgetCost=3},
-      {decorID=26053, source={type="vendor", itemID=282200}, budgetCost=3},
-      {decorID=26054, source={type="vendor", itemID=282289}, budgetCost=1},
-      {decorID=26880, source={type="vendor", itemID=282213}, budgetCost=5},
-      {decorID=26881, source={type="vendor", itemID=282202}, budgetCost=5},
-      {decorID=26883, source={type="vendor", itemID=282206}, budgetCost=3},
-      {decorID=26884, source={type="vendor", itemID=282208}, budgetCost=5},
-      {decorID=26885, source={type="vendor", itemID=282204}, budgetCost=5},
+      {decorID=26011, source={type="vendor", itemID=282192}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26012, source={type="vendor", itemID=282194}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26016, source={type="vendor", itemID=282196}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26052, source={type="vendor", itemID=282198}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26053, source={type="vendor", itemID=282200}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26054, source={type="vendor", itemID=282289}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26880, source={type="vendor", itemID=282213}, budgetCost=5, size="Large"},
+      {decorID=26881, source={type="vendor", itemID=282202}, budgetCost=5, size="Large"},
+      {decorID=26883, source={type="vendor", itemID=282206}, budgetCost=3, size="Medium"},
+      {decorID=26884, source={type="vendor", itemID=282208}, budgetCost=5, size="Medium"},
+      {decorID=26885, source={type="vendor", itemID=282204}, budgetCost=5, size="Large"},
     }
   },
 
@@ -519,17 +528,100 @@ NS.Data.Vendors["Classic"]["EasternKingdoms"] = {
       worldmap="37:4210:6600"
     },
     items={
-      {decorID=26011, source={type="vendor", itemID=282192}, budgetCost=3},
-      {decorID=26012, source={type="vendor", itemID=282194}, budgetCost=3},
-      {decorID=26016, source={type="vendor", itemID=282196}, budgetCost=3},
-      {decorID=26052, source={type="vendor", itemID=282198}, budgetCost=3},
-      {decorID=26053, source={type="vendor", itemID=282200}, budgetCost=3},
-      {decorID=26054, source={type="vendor", itemID=282289}, budgetCost=1},
-      {decorID=26880, source={type="vendor", itemID=282213}, budgetCost=5},
-      {decorID=26881, source={type="vendor", itemID=282202}, budgetCost=5},
-      {decorID=26883, source={type="vendor", itemID=282206}, budgetCost=3},
-      {decorID=26884, source={type="vendor", itemID=282208}, budgetCost=5},
-      {decorID=26885, source={type="vendor", itemID=282204}, budgetCost=5},
+      {decorID=26011, source={type="vendor", itemID=282192}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26012, source={type="vendor", itemID=282194}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26016, source={type="vendor", itemID=282196}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26052, source={type="vendor", itemID=282198}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26053, source={type="vendor", itemID=282200}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26054, source={type="vendor", itemID=282289}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26880, source={type="vendor", itemID=282213}, budgetCost=5, size="Large"},
+      {decorID=26881, source={type="vendor", itemID=282202}, budgetCost=5, size="Large"},
+      {decorID=26883, source={type="vendor", itemID=282206}, budgetCost=3, size="Medium"},
+      {decorID=26884, source={type="vendor", itemID=282208}, budgetCost=5, size="Medium"},
+      {decorID=26885, source={type="vendor", itemID=282204}, budgetCost=5, size="Large"},
+    }
+  },
+
+  {
+    source={
+      id=152331,
+      type="vendor",
+      faction="Neutral",
+      zone="Stormwind City",
+      worldmap=""
+    },
+    items={
+      {decorID=27217, source={type="vendor", itemID=284223, currency="2500000", currencytype="money"}, budgetCost=5, size="Huge"},
+    }
+  },
+
+  {
+    source={
+      id=273402,
+      type="vendor",
+      faction="Neutral",
+      zone="Tirisfal Glades",
+      worldmap="90:6848:0793"
+    },
+    items={
+      {decorID=26009, source={type="vendor", itemID=282051, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26010, source={type="vendor", itemID=282081, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26011, source={type="vendor", itemID=282192}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26012, source={type="vendor", itemID=282194}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26016, source={type="vendor", itemID=282196}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26018, source={type="vendor", itemID=282090, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26019, source={type="vendor", itemID=282077, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26020, source={type="vendor", itemID=282086, currency="2500000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26050, source={type="vendor", itemID=282072, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26051, source={type="vendor", itemID=282083, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26052, source={type="vendor", itemID=282198}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26053, source={type="vendor", itemID=282200}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26054, source={type="vendor", itemID=282289}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26880, source={type="vendor", itemID=282213}, budgetCost=5, size="Large"},
+      {decorID=26881, source={type="vendor", itemID=282202}, budgetCost=5, size="Large"},
+      {decorID=26882, source={type="vendor", itemID=282092, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26883, source={type="vendor", itemID=282206}, budgetCost=3, size="Medium"},
+      {decorID=26884, source={type="vendor", itemID=282208}, budgetCost=5, size="Medium"},
+      {decorID=26885, source={type="vendor", itemID=282204}, budgetCost=5, size="Large"},
+      {decorID=26886, source={type="vendor", itemID=282095, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26887, source={type="vendor", itemID=282098, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26888, source={type="vendor", itemID=282100, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26889, source={type="vendor", itemID=282075, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+    }
+  },
+
+  {
+    source={
+      id=273403,
+      type="vendor",
+      faction="Neutral",
+      zone="Elwynn Forest",
+      worldmap="84:7460:9561"
+    },
+    items={
+      {decorID=26009, source={type="vendor", itemID=282051, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26010, source={type="vendor", itemID=282081, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26011, source={type="vendor", itemID=282192}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26012, source={type="vendor", itemID=282194}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26016, source={type="vendor", itemID=282196}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26018, source={type="vendor", itemID=282090, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26019, source={type="vendor", itemID=282077, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26020, source={type="vendor", itemID=282086, currency="2500000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26050, source={type="vendor", itemID=282072, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26051, source={type="vendor", itemID=282083, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26052, source={type="vendor", itemID=282198}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26053, source={type="vendor", itemID=282200}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26054, source={type="vendor", itemID=282289}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26880, source={type="vendor", itemID=282213}, budgetCost=5, size="Large"},
+      {decorID=26881, source={type="vendor", itemID=282202}, budgetCost=5, size="Large"},
+      {decorID=26882, source={type="vendor", itemID=282092, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26883, source={type="vendor", itemID=282206}, budgetCost=3, size="Medium"},
+      {decorID=26884, source={type="vendor", itemID=282208}, budgetCost=5, size="Medium"},
+      {decorID=26885, source={type="vendor", itemID=282204}, budgetCost=5, size="Large"},
+      {decorID=26886, source={type="vendor", itemID=282095, currency="5000000", currencytype="money"}, expansion="Midnight", budgetCost=3, size="Medium"},
+      {decorID=26887, source={type="vendor", itemID=282098, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26888, source={type="vendor", itemID=282100, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
+      {decorID=26889, source={type="vendor", itemID=282075, currency="1000000", currencytype="money"}, expansion="Midnight", budgetCost=1, size="Small"},
     }
   },
 
