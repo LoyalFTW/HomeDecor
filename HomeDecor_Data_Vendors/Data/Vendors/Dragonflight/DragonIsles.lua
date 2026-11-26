@@ -109,7 +109,7 @@ NS.Data.Vendors["Dragonflight"]["DragonIsles"] = {
       worldmap="2022:6153:6999"
     },
     items={
-      {decorID=27217, source={type="vendor", itemID=284223}, budgetCost=5},
+      {decorID=27217, source={type="vendor", itemID=284223, currency="2500000", currencytype="money"}, budgetCost=5, size="Huge"},
     }
   },
 
